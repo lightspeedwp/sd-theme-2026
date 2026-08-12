@@ -61,62 +61,107 @@
 				{
 					"name": "Neutral 200",
 					"slug": "neutral-200",
-					"color": "#F9FAFB"
+					"color": "#F7F5F2"
 				},
 				{
 					"name": "Neutral 300",
 					"slug": "neutral-300",
-					"color": "#D8D8D8"
+					"color": "#DFD7CC"
 				},
 				{
 					"name": "Neutral 400",
 					"slug": "neutral-400",
-					"color": "#B8B8B8"
+					"color": "#C3B6A6"
 				},
 				{
 					"name": "Neutral 500",
 					"slug": "neutral-500",
-					"color": "#909090"
+					"color": "#9D8E7B"
 				},
 				{
 					"name": "Neutral 600",
 					"slug": "neutral-600",
-					"color": "#707070"
+					"color": "#7C6E5E"
 				},
 				{
 					"name": "Neutral 700",
 					"slug": "neutral-700",
-					"color": "#505050"
+					"color": "#5B4E41"
 				},
 				{
 					"name": "Neutral 800",
 					"slug": "neutral-800",
-					"color": "#303030"
+					"color": "#382E25"
 				},
 				{
 					"name": "Neutral 900",
 					"slug": "neutral-900",
-					"color": "#181818"
+					"color": "#1D1711"
+				},
+				{
+					"slug": "primary-100",
+					"name": "Primary 100",
+					"color": "#F0E5D9"
+				},
+				{
+					"slug": "primary-200",
+					"name": "Primary 200",
+					"color": "#D1B69C"
+				},
+				{
+					"slug": "primary-300",
+					"name": "Primary 300",
+					"color": "#B99472"
+				},
+				{
+					"slug": "primary-400",
+					"name": "Primary 400",
+					"color": "#89664B"
+				},
+				{
+					"slug": "primary-500",
+					"name": "Primary 500",
+					"color": "#554234"
+				},
+				{
+					"slug": "primary-600",
+					"name": "Primary 600",
+					"color": "#403028"
+				},
+				{
+					"slug": "primary-700",
+					"name": "Primary 700",
+					"color": "#2B1F1C"
+				},
+				{
+					"slug": "primary-800",
+					"name": "Primary 800",
+					"color": "#17100F"
+				},
+				{
+					"slug": "primary-900",
+					"name": "Primary 900",
+					"color": "#030202"
 				},
 				{
 					"name": "Brand 100",
 					"slug": "brand-100",
-					"color": "#F9F5F1"
+					"color": "#FCECCC"
 				},
 				{
 					"name": "Brand 200",
 					"slug": "brand-200",
-					"color": "#EEE0CE"
+					"color": "#F8D597"
 				},
 				{
 					"name": "Brand 300",
 					"slug": "brand-300",
-					"color": "#E3C396"
+					"color": "#F2BC63"
 				},
 				{
 					"name": "Brand 400",
 					"slug": "brand-400",
-					"color": "#EBA647"
+					"color": "#EBA030"
 				},
 				{
 					"name": "Brand 500",
@@ -126,22 +171,67 @@
 				{
 					"name": "Brand 600",
 					"slug": "brand-600",
-					"color": "#9B6111"
+					"color": "#966215"
 				},
 				{
 					"name": "Brand 700",
 					"slug": "brand-700",
-					"color": "#6A420B"
+					"color": "#624411"
 				},
 				{
 					"name": "Brand 800",
 					"slug": "brand-800",
-					"color": "#3D2607"
+					"color": "#32240B"
 				},
 				{
 					"name": "Brand 900",
 					"slug": "brand-900",
-					"color": "#180F03"
+					"color": "#040301"
+				},
+				{
+					"slug": "accent-100",
+					"name": "Accent 100",
+					"color": "#FFF0DA"
+				},
+				{
+					"slug": "accent-200",
+					"name": "Accent 200",
+					"color": "#FFDEA8"
+				},
+				{
+					"slug": "accent-300",
+					"name": "Accent 300",
+					"color": "#FFCC66"
+				},
+				{
+					"slug": "accent-400",
+					"name": "Accent 400",
+					"color": "#F7BB1F"
+				},
+				{
+					"slug": "accent-500",
+					"name": "Accent 500",
+					"color": "#E6AD10"
+				},
+				{
+					"slug": "accent-600",
+					"name": "Accent 600",
+					"color": "#A97F15"
+				},
+				{
+					"slug": "accent-700",
+					"name": "Accent 700",
+					"color": "#705413"
+				},
+				{
+					"slug": "accent-800",
+					"name": "Accent 800",
+					"color": "#3B2D10"
+				},
+				{
+					"slug": "accent-900",
+					"name": "Accent 900",
+					"color": "#050301"
 				},
 				{
 					"name": "Error Foreground",
@@ -215,6 +305,16 @@
 					"padding-horizontal": "clamp(32px, 14vw, 48px)",
 					"padding-vertical": "clamp(14px, 10vw, 18px)"
 				}
+			},
+			"borderWidth": {
+				"0": "0",
+				"100": "1px",
+				"200": "2px",
+				"300": "4px",
+				"400": "8px"
+			},
+			"layout": {
+				"fullWidth": "1920px"
 			}
 		},
 		"layout": {
@@ -336,17 +436,167 @@
 				{
 					"name": "Heading",
 					"slug": "heading",
-					"fontFamily": "Optima, Belleza, Palatino, Georgia, serif"
+					"fontFamily": "Optima, Belleza, sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Optima",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/optima-400-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Optima",
+							"fontWeight": "500",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/optima-500-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Optima",
+							"fontWeight": "600 700",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/optima-700-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Belleza",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/belleza-400-normal.woff2"
+							]
+						}
+					]
 				},
 				{
 					"name": "Body",
 					"slug": "body",
-					"fontFamily": "\"Open Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif"
+					"fontFamily": "\"Open Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "300",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-300-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "300",
+							"fontStyle": "italic",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-300-italic.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-400-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "400",
+							"fontStyle": "italic",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-400-italic.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "600",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-600-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "600",
+							"fontStyle": "italic",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-600-italic.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "700",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-700-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "700",
+							"fontStyle": "italic",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-700-italic.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "800",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-800-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "800",
+							"fontStyle": "italic",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-800-italic.woff2"
+							]
+						}
+					]
 				},
 				{
 					"name": "Accent",
 					"slug": "accent",
-					"fontFamily": "\"La Belle Aurore\", cursive"
+					"fontFamily": "\"Joe Hand\", \"La Belle Aurore\", cursive",
+					"fontFace": [
+						{
+							"fontFamily": "Joe Hand",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/joe-hand-400-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "La Belle Aurore",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/la-belle-aurore-400-normal.woff2"
+							]
+						}
+					]
 				},
 				{
 					"fontFamily": "monospace",

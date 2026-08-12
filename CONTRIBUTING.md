@@ -61,7 +61,46 @@ this is a block theme, and the editor is the build system.
 - **Don't commit or push unless asked.** If on the default branch, branch first.
 - **Never commit secrets** — `.mcp.json` (live Bearer token), `wp-config.php`, app passwords.
   Never copy them into this repo, a zip, or a doc.
-- Keep [CHANGELOG.md](CHANGELOG.md) current.
+
+### 3.1 Branch topology — one branch per Linear issue
+
+```
+main                     ← release-ready only
+└── develop              ← integration branch; the Linear update protocol monitors THIS
+    ├── feature/ls-2012-2-design-audit-tokens-and-asset-preparation
+    ├── feature/ls-2013-…
+    └── feature/ls-….
+```
+
+- **`develop` is the integration branch and the base for all work.** Branch from it, merge
+  back into it. `main` receives release-ready code only.
+- **Every Linear issue gets its own branch, cut from `develop`.** Use the branch name Linear
+  generates for the issue (`gitBranchName` on the issue, shown as *Copy git branch name*) —
+  it already carries the `feature/ls-NNNN-slug` form, so Linear can associate the branch with
+  the issue automatically. Don't invent your own name.
+- **`develop` is what the Linear update protocol watches.** Issue status transitions are
+  driven off activity there, so work that never reaches `develop` is invisible to the
+  project tracker.
+- One issue per branch. If you discover work belonging to a different issue, branch again
+  from `develop` rather than widening the current branch — that keeps each Linear issue's
+  diff reviewable and keeps line-item costs reconcilable against Estimate 3164.
+- Out-of-scope discoveries go to the Change-Control Register, not onto the branch.
+
+### 3.2 CHANGELOG
+
+Keep [CHANGELOG.md](CHANGELOG.md) current **as part of the work, not afterwards.** The format
+is [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) and the project follows
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+- Add entries under `## [Unreleased]`, in one of the six standard section headings, in this
+  order: **Added · Changed · Deprecated · Removed · Fixed · Security.**
+- Only use a section if it has entries. Don't invent headings.
+- Write for a human reading the release notes — say what changed and why it matters, not
+  which files moved.
+- **Tag the Linear issue** the change belongs to, e.g. `*(LS-2012)*`, so an entry can be
+  traced back to its issue and estimate line.
+- Note anything with a deploy or licensing implication under **Security** — that is where a
+  reader looks for "what must I check before shipping this".
 - `.claude/skills/` and `.claude/agents/` here are **copies** of the workspace `.agents/`
   bundle. Fix skills in the master bundle and re-sync; don't diverge them here.
 
