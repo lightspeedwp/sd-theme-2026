@@ -1,0 +1,32 @@
+<?php
+/**
+ * Title: Post Loop Grid Default
+ * Slug: sd-theme-2026/post-loop-grid-default
+ * Description: This post loop grid is best used on index and archive pages where the loop can inherit the query from the page.
+ * Categories: sd-theme-2026/posts
+ * Keywords: blog, posts, query, loop
+ * Viewport Width: 1280
+ * Block Types: core/query
+ * Post Types: 
+ * Inserter: false
+ */
+?>
+<!-- wp:query {"query":{"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[]},"align":"full","layout":{"type":"default"}} -->
+	<div class="wp-block-query alignfull">
+	<!-- wp:group {"metadata":{"name":"Post Grid"},"align":"wide","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"},"blockGap":"var:preset|spacing|50"}},"backgroundColor":"neutral-200","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group alignwide has-neutral-200-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
+		<!-- wp:post-template {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":2}} -->
+			<!-- wp:pattern {"slug":"sd-theme-2026/blog-card"} /-->
+		<!-- /wp:post-template -->
+		<!-- wp:group {"metadata":{"name":"Pagination"},"align":"wide","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group alignwide">
+			<!-- wp:query-pagination {"align":"wide","layout":{"type":"flex","justifyContent":"space-between"}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+			</div>
+		<!-- /wp:group -->
+		</div>
+	<!-- /wp:group -->
+	</div>
+<!-- /wp:query -->

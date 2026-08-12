@@ -1,0 +1,232 @@
+/*
+Theme Name: Southern Destinations 2026
+Theme URI: https://github.com/lightspeedwp/sd-theme-2026
+Author: LightSpeed
+Author URI: https://lightspeedwp.agency/
+Description: The Southern Destinations 2026 WordPress block theme — a Full Site Editing theme for Southern Destinations, a South African inbound tour operator. Carries design only: theme.json tokens, styles, patterns, template parts and templates. All proprietary behaviour lives in the companion Southern Destinations block plugin.
+Tags: block-patterns, block-styles, custom-logo, custom-menu, editor-style, featured-images, full-site-editing, full-width-template, rtl-language-support, template-editing, translation-ready, wide-blocks
+Requires at least: 6.9
+Tested up to: 6.9
+Requires PHP: 7.4
+Version: 0.1.0
+License: GNU General Public License v3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Text Domain: sd-theme-2026
+
+Southern Destinations 2026 WordPress Theme, (C) 2026 Southern Destinations / LightSpeed.
+Southern Destinations 2026 is distributed under the terms of the GNU GPL.
+*/
+
+/* CSS Reset
+---------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+html {
+	box-sizing: border-box;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+}
+
+b,
+strong {
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+}
+
+ol,
+ul {
+	padding: 0;
+}
+
+ol:where(:not([class*="wp-block"])),
+ol:where(.wp-block-list),
+ul:where(:not([class*="wp-block"])),
+ul:where(.wp-block-list) {
+	padding-inline-start: var(--wp--preset--spacing--30);
+}
+
+div[class*="wp-block-"] figcaption {
+	color: var(--wp--preset--color--neutral-700);
+	font-size: var(--wp--preset--font-size--100);
+	margin-bottom: 0;
+	margin-top: 20px;
+	text-align: center;
+}
+
+img,
+figure {
+	max-width: 100%;
+	height: auto;
+}
+
+/* Temporary fix for text-decoration-thickness in Firefox */
+@-moz-document url-prefix() {
+	a {
+		text-decoration-thickness: .1rem !important;
+	}
+}
+
+/* Standardize form styling
+--------------------------------------------- */
+
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}
+
+input[type="button"],
+input[type="email"],
+input[type="search"],
+input[type="submit"],
+input[type="text"],
+textarea {
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+input:not([type="submit"]):not([type="radio"]),
+select,
+textarea,
+.wp-block-post-comments-form input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]),
+.wp-block-post-comments-form textarea {
+	color: var(--wp--preset--color--contrast);
+	border-radius: 5px;
+	border: solid 1px color-mix(in srgb, var(--wp--preset--color--neutral-200) 100%, var(--wp--preset--color--contrast) 20%);
+	padding: .5em 1em;
+	font-size: var(--wp--preset--font-size--300);
+	background-color: var(--wp--preset--color--base);
+	box-shadow: 
+		0 1px 2px rgba(0, 0, 0, 0.02),
+		0 0.5px 1px rgba(0, 0, 0, 0.04);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+	outline-color: var(--wp--preset--color--contrast);
+	outline-offset: 1px;
+}
+
+input[type="checkbox"],
+input[type="image"],
+input[type="radio"] {
+	width: auto;
+}
+
+select {
+	-webkit-appearance: none;
+	appearance: none;
+	background: var(--wp--preset--color--base) url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJmZWF0aGVyIGZlYXRoZXItY2hldnJvbi1kb3duIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSI+PC9wb2x5bGluZT48L3N2Zz4=) no-repeat;
+    background-size: 16px;
+    background-position: calc(100% - 12px) 50%;
+	padding-right: 2.2em;
+}
+
+label {
+	width: 100%;
+	display: block;
+}
+
+::placeholder {
+	color: var(--wp--preset--color--neutral-700);
+	font-size: var(--wp--preset--font-size--300);
+	opacity: 0.75;
+}
+
+/* Helper styles
+---------------------------------------------------------------------------- */
+
+a.more-link {
+	display: block;
+}
+
+/* Inline code */
+*:not(.wp-block-code) > code {
+	background-color: var(--wp--preset--color--neutral-200);
+	padding: 3px 5px;
+	position: relative;
+	border-radius: 3px;
+}
+
+.wp-block-categories {
+	position: relative;
+}
+
+/* Remove margin on term description on archive pages */
+.wp-block-term-description p:last-child {
+	margin-bottom: 0;
+}
+
+/* Hide post meta div if no tags assigned */
+.single .wp-block-group:has(> .post-meta:empty) {
+	display: none;
+}
+
+.wp-block-group:empty:has(+ .comment-respond) {
+	display: none;
+}
+
+/* Sticky header */
+
+body:not(.wp-admin) header:has(>.is-position-sticky) {
+	position: sticky;
+	top: calc( 0px + var( --wp-admin--admin-bar--height, 0px ) );
+	z-index: 100;
+}
+
+/* Account for admin bar on mobile */
+
+@media (max-width: 600px) {
+	header:has(>.is-position-sticky) {
+		top: 0;
+	}
+}
+
+/* Table
+--------------------------------------------- */
+
+.wp-block-table table {
+	background: var(--wp--preset--color--base);
+	border-radius: 5px;
+	border: solid 1px var(--wp--preset--color--neutral-300);
+	font-size: var(--wp--preset--font-size--100);
+}
+.wp-block-table.is-style-stripes {
+	border-bottom: none;
+}
+
+.wp-block-table.is-style-stripes tbody tr:nth-child(odd) {
+	background-color: var(--wp--preset--color--neutral-200);
+}
+
+.wp-block-table td, 
+.wp-block-table th,
+.wp-block-table thead {
+	border: none;
+	border-bottom: solid 1px color-mix(in srgb, var(--wp--preset--color--neutral-300) 50%, var(--wp--preset--color--base) 5%);
+}
+
+.wp-block-table th,
+.wp-block-table tfoot {
+	text-align: left;
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-200) 75%, var(--wp--preset--color--base) 5%);
+}
+
+.wp-block-table td, 
+.wp-block-table th {
+	padding: .8em 1em;
+}
+
+.wp-block-table tfoot {
+	border-top: solid 1px var(--wp--preset--color--neutral-300);
+}
+
+.wp-block-table tfoot td {
+	border-bottom: none;
+}

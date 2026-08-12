@@ -1,0 +1,51 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Mobile Navigation",
+	"slug": "mobile-navigation",
+	"blockTypes": [ "core/navigation" ],
+	"description": "Vertical stacked nav for the dedicated mobile-menu template part. Full-width rows with a hairline divider between items, contrast-coloured links turning brand-500 on press. The borderless hamburger trigger and its 28px icon live in assets/styles/core-navigation.css — the css field cannot express them because they target core's generated .wp-block-navigation__responsive-container-open wrapper at a specificity the :where()-wrapped css field cannot reach.",
+	"styles": {
+		"spacing": {
+			"blockGap": "0"
+		},
+		"elements": {
+			"link": {
+				"color": {
+					"text": "var:preset|color|contrast"
+				},
+				"typography": {
+					"textDecoration": "none"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand-500"
+					},
+					"typography": {
+						"textDecoration": "none"
+					}
+				}
+			}
+		},
+		"blocks": {
+			"core/navigation-link": {
+				"spacing": {
+					"padding": {
+						"top": "var:preset|spacing|20",
+						"bottom": "var:preset|spacing|20"
+					}
+				},
+				"border": {
+					"bottom": {
+						"color": "var:preset|color|neutral-200",
+						"style": "solid",
+						"width": "1px"
+					}
+				},
+				"typography": {
+					"textDecoration": "none"
+				}
+			}
+		}
+	}
+}

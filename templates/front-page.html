@@ -1,0 +1,68 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","metadata":{"name":"Homepage"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|80","padding":{"top":"0","bottom":"var:preset|spacing|90"},"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
+<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:var(--wp--preset--spacing--90)">
+
+	<!-- wp:cover {"dimRatio":40,"overlayColor":"contrast","isUserOverlayColor":true,"minHeight":600,"minHeightUnit":"px","contentPosition":"center center","align":"full","tagName":"section","layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull" style="min-height:600px"><span aria-hidden="true" class="wp-block-cover__background has-contrast-background-color has-background-dim-40 has-background-dim"></span><div class="wp-block-cover__inner-container"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide"><!-- wp:heading {"textAlign":"center","level":1,"textColor":"base","fontSize":"800","fontFamily":"heading"} -->
+	<h1 class="wp-block-heading has-text-align-center has-base-color has-text-color has-heading-font-family has-800-font-size">Tailor-made journeys through Southern Africa</h1>
+	<!-- /wp:heading -->
+
+	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+	<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-cta"} -->
+	<div class="wp-block-button is-style-cta"><a class="wp-block-button__link wp-element-button" href="/contact/">Start planning</a></div>
+	<!-- /wp:button --></div>
+	<!-- /wp:buttons --></div>
+	<!-- /wp:group --></div></section>
+	<!-- /wp:cover -->
+
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Destinations"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull"><!-- wp:group {"metadata":{"name":"Section Header"},"align":"wide","className":"is-style-section-header","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide is-style-section-header"><!-- wp:heading {"align":"wide","fontFamily":"heading"} -->
+	<h2 class="wp-block-heading alignwide has-heading-font-family">Destinations</h2>
+	<!-- /wp:heading --></div>
+	<!-- /wp:group -->
+
+	<!-- wp:query {"queryId":0,"query":{"perPage":6,"pages":0,"offset":0,"postType":"destination","order":"asc","orderBy":"title","search":"","exclude":[],"sticky":"","inherit":false},"align":"wide","layout":{"type":"default"}} -->
+	<div class="wp-block-query alignwide"><!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3}} -->
+	<!-- wp:group {"metadata":{"name":"Destination Card"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+	<div class="wp-block-group"><!-- wp:post-featured-image {"isLink":true,"aspectRatio":"4/3","className":"is-style-image-hover-zoom"} /-->
+
+	<!-- wp:post-title {"isLink":true,"fontSize":"300","fontFamily":"heading"} /--></div>
+	<!-- /wp:group -->
+	<!-- /wp:post-template -->
+
+	<!-- wp:query-no-results -->
+	<!-- wp:paragraph -->
+	<p>No destinations found.</p>
+	<!-- /wp:paragraph -->
+	<!-- /wp:query-no-results --></div>
+	<!-- /wp:query --></section>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Latest News"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull"><!-- wp:group {"metadata":{"name":"Section Header"},"align":"wide","className":"is-style-section-header","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide is-style-section-header"><!-- wp:heading {"align":"wide","fontFamily":"heading"} -->
+	<h2 class="wp-block-heading alignwide has-heading-font-family">Latest News</h2>
+	<!-- /wp:heading --></div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"align":"wide","className":"is-style-inner-page-section","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide is-style-inner-page-section"><!-- wp:query {"queryId":1,"query":{"perPage":4,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false},"align":"wide","layout":{"type":"default"}} -->
+	<div class="wp-block-query alignwide"><!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":4}} -->
+	<!-- wp:pattern {"slug":"sd-theme-2026/blog-card"} /-->
+	<!-- /wp:post-template -->
+
+	<!-- wp:query-no-results -->
+	<!-- wp:paragraph -->
+	<p>No posts found.</p>
+	<!-- /wp:paragraph -->
+	<!-- /wp:query-no-results --></div>
+	<!-- /wp:query --></div>
+	<!-- /wp:group --></section>
+	<!-- /wp:group -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

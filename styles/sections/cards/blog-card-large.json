@@ -1,0 +1,50 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Blog Card Large",
+	"slug": "blog-card-large",
+	"blockTypes": [ "core/group" ],
+	"styles": {
+		"css": "& .wp-block-post-excerpt{text-align:justify}",
+		"elements": {
+			"link": {
+				"color": {
+					"text": "var:preset|color|contrast"
+				},
+				"typography": {
+					"textDecoration": "none"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand-600"
+					},
+					"typography": {
+						"textDecoration": "none"
+					}
+				},
+				"css": "&{transition: color 0.25s ease}"
+			}
+		},
+		"blocks": {
+			"core/post-featured-image": {
+				"border": {
+					"radius": "0"
+				},
+				"spacing": {
+					"margin": {
+						"top": "0",
+						"bottom": "0"
+					}
+				}
+			},
+			"core/post-title": {
+				"typography": {
+					"fontSize": "var:preset|font-size|400",
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"lineHeight": "var:preset|line-height|heading",
+					"textTransform": "uppercase"
+				}
+			}
+		}
+	}
+}

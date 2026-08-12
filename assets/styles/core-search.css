@@ -1,0 +1,16 @@
+/**
+ * Southern Destinations — core/search block styles.
+ *
+ * Auto-enqueued for core/search by the theme's per-block style loader
+ * (see functions.php, enqueue_custom_block_styles).
+ */
+
+/* Generic core/search tweaks. */
+.wp-block-search__button {
+	padding-left: .6em;
+	padding-right: .6em;
+}
+
+.site-header .wp-block-search__input::placeholder {
+	font-size: inherit;
+}

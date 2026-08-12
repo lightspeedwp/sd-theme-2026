@@ -1,0 +1,137 @@
+/* Group
+--------------------------------------------- */
+
+.is-style-background-blur {
+	-webkit-backdrop-filter: blur(20px);
+	backdrop-filter: blur(20px);
+}
+
+@media (max-width: 600px) {
+	header div.is-style-background-blur {
+		backdrop-filter: none;
+	}
+}
+
+/* Improvements for row group */
+@media (max-width: 781px) {
+	.sd-row-stack {
+		flex-direction: column;
+		align-items: flex-start !important;
+	}
+
+	.sd-row-stack > * {
+		flex-basis: 100% !important;
+	}
+
+	.sd-flex-start {
+		align-items: flex-start !important;
+	}
+
+	.sd-justify-start {
+		justify-content: flex-start !important;
+	}
+}
+
+.sd-row-stack > .wp-block-buttons,
+.sd-no-shrink {
+	flex-shrink: 0;
+}
+
+.wp-block-group.sd-sticky-top {
+	top: calc(20px + var(--wp-admin--admin-bar--position-offset, 0px))
+}
+
+/* Helper class to swap order on mobile */
+@media (max-width: 781px) {
+	.sd-swap-order {
+		flex-direction: column-reverse;
+	}
+	.sd-row-reverse {
+		flex-direction: row-reverse;
+	}
+}
+
+/**
+ * Team Member Card — bio overlay reveal animation.
+ *
+ * Structure (card/media/overlay layout + background) lives in the section
+ * style styles/sections/cards/team-member-card.json so it can be applied to a
+ * Group in the editor. The reveal *animation* lives here as plain CSS because
+ * WordPress's block-style-variation compiler drops the `&:hover`/`&:focus-within`
+ * rules from that JSON, which left the overlay snapping in instead of fading.
+ *
+ * The `.is-style-team-member-card` class is on every card; this selector also
+ * out-specifies the `:where()`-wrapped section-style base rule.
+ *
+ * Resting state: hidden, faded out, nudged down. Visibility switches with a
+ * delay so it doesn't cut the opacity/transform fade short on the way out.
+ */
+.is-style-team-member-card .team-member-card__overlay {
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(24px);
+	transition: opacity 300ms ease, transform 300ms ease, visibility 0s linear 300ms;
+}
+
+/* Reveal: fade in and slide up. Visibility flips immediately so the animation is seen. */
+.is-style-team-member-card:hover .team-member-card__overlay,
+.is-style-team-member-card:focus-within .team-member-card__overlay {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+	transition: opacity 300ms ease, transform 300ms ease, visibility 0s linear 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.is-style-team-member-card .team-member-card__overlay {
+		transform: none;
+		transition-duration: 1ms;
+	}
+}
+
+/**
+ * Timeline Milestone — round image with a hover slide-out info panel.
+ *
+ * The structure (round media crop, layout, typography) lives in the section
+ * style styles/sections/cards/timeline-milestone.json so it renders in the
+ * editor. The collapse/expand reveal lives here as plain CSS because the
+ * block-style-variation compiler drops `:hover`/`:focus-within` from that JSON
+ * and wraps it at `:where()` zero specificity (see the theme AGENTS.md
+ * "Styling lives in JSON" rule).
+ *
+ * The panel uses a grid-template-rows 0fr -> 1fr transition so the info slides
+ * open from behind the year and pushes nothing else around. The child needs
+ * min-height:0 + overflow:hidden for the collapsed row to actually clip it.
+ */
+.is-style-timeline-milestone .timeline-milestone__info {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 320ms ease;
+}
+
+.is-style-timeline-milestone .timeline-milestone__info > * {
+	min-height: 0;
+	overflow: hidden;
+}
+
+/* Reveal on hover / keyboard focus within the milestone. */
+.is-style-timeline-milestone:hover .timeline-milestone__info,
+.is-style-timeline-milestone:focus-within .timeline-milestone__info {
+	grid-template-rows: 1fr;
+}
+
+/*
+ * Keep the slide-out permanently open inside the editor so the info text can be
+ * selected and edited without a hover. `.editor-styles-wrapper` only exists in
+ * the editor iframe, so the front end stays collapsed-until-hover. The extra
+ * class also out-specifies the resting rule above.
+ */
+.editor-styles-wrapper .is-style-timeline-milestone .timeline-milestone__info {
+	grid-template-rows: 1fr;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.is-style-timeline-milestone .timeline-milestone__info {
+		transition-duration: 1ms;
+	}
+}

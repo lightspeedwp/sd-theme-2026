@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Subheading Medium",
+	"slug": "subheading-medium",
+	"blockTypes": [
+		"core/paragraph"
+	],
+	"description": "Medium subheading paragraph — font-size 400 with snug line-height.",
+	"styles": {
+		"typography": {
+			"fontSize": "var:preset|font-size|400",
+			"lineHeight": "var:custom|line-height|snug"
+		}
+	}
+}

@@ -1,0 +1,189 @@
+/* Top-level header nav links — Southern Destinations interaction.
+   ---------------------------------------------
+   The resting state (uppercase, font-size 300, medium, centred) lives in the
+   "Main Navigation" block style variation (styles/navigation/main-navigation.json,
+   applied via `is-style-main-navigation`), which scopes it to the main nav's own
+   top-level row so it no longer bleeds into the nested mega-menu nav.
+
+   The brand-300 sliding underline lives here, not in the block style, because the
+   variation's `css` field mangles `content:""` and strips the `:hover`
+   pseudo-class during sanitisation. These selectors mirror the block style's
+   scoping — a direct-child combinator from `.is-style-main-navigation` to its own
+   `.wp-block-navigation__responsive-container` — so they only match this nav's
+   top-level row and never descend into a nested mega-menu nav (which sits far
+   below, not as a direct child). The ::after is anchored by the
+   `position:relative` the block style sets on the link. */
+
+/* The sliding line: hidden by default, scaled from the centre on hover/focus. */
+.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
+.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content::after {
+	content: "";
+	position: absolute;
+	inset-inline: 0;
+	bottom: -1px;
+	height: 1px;
+	background-color: var(--wp--preset--color--brand-300);
+	transform: scaleX(0);
+	transform-origin: center;
+	transition: transform 0.3s ease-in-out;
+}
+
+.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover::after,
+.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible::after,
+.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:hover::after,
+.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible::after {
+	transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
+	.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content::after {
+		transition: none;
+	}
+}
+
+/* Mobile Navigation
+--------------------------------------------- */
+
+.wp-block-navigation__responsive-container.is-menu-open.has-modal-open {
+	padding: var(--wp--preset--spacing--30);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content {
+	gap: var(--wp--preset--spacing--30);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open.has-modal-open .wp-block-navigation__container {
+	width: 100%;
+	gap: 5px !important;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open.has-modal-open .wp-block-page-list {
+	width: 100%;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .has-child .wp-block-navigation__submenu-container {
+	border-radius: 0;
+	margin: 0;
+	padding: 5px 0 0 20px;
+	align-items: flex-start;
+	flex-direction: column;
+	gap: 5px;
+	width: 100%;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__submenu-icon {
+	display: block;
+	position: absolute;
+	right: 0;
+	top: 5px;
+	height: auto;
+	width: 60px;
+	padding: 15px 0;
+	margin: 0;
+	z-index: 10;
+}
+
+body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__submenu-icon {
+	left: 0;
+	right: auto;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__submenu-icon svg {
+	height: 16px;
+	margin: 0;
+}
+
+.wp-block-navigation .has-child .wp-block-navigation__submenu-container {
+	display: none;
+}
+
+.wp-block-navigation-submenu__toggle[aria-expanded="true"] ~ .wp-block-navigation-submenu,
+.wp-block-navigation-submenu__toggle[aria-expanded="true"] ~ .wp-block-navigation__submenu-container {
+	display: flex;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open.has-modal-open .wp-block-navigation__container li:not(.wp-social-link) {
+	width: 100%;
+	padding: 0 0;
+	position: relative;
+}
+
+/* Mobile menu links */
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation-item__content {
+	width: 100%;
+	font-size: var(--wp--preset--font-size--200);
+	padding: 15px 60px 15px 15px;
+	border-radius: var(--wp--preset--border-radius--200);
+}
+
+body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation-item__content {
+	padding: 15px 15px 15px 60px;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container .current-menu-item > .wp-block-navigation-item__content,
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container .wp-block-navigation-item:hover > .wp-block-navigation-item__content {
+	transition: .3s ease;
+	text-decoration: none;
+	background: color-mix(in srgb, currentColor, transparent 97%);
+	-webkit-tap-highlight-color: transparent;
+}
+
+.wp-block-navigation__container .wp-block-navigation-item:has(.wp-block-navigation__submenu-container:hover) > .wp-block-navigation-item__content {
+	background: transparent;
+}
+
+/* Mobile menu open button */
+.wp-block-navigation__responsive-container-close,
+.wp-block-navigation__responsive-container-open {
+	padding: 4px;
+	border-radius: 3px;
+	background: var(--wp--preset--color--neutral-200);
+	color: var(--wp--preset--color--contrast);
+}
+
+/* Mobile menu close button */
+.wp-block-navigation__responsive-container-close {
+	background: var(--wp--preset--color--neutral-200);
+	color: var(--wp--preset--color--contrast);
+}
+
+/* Dedicated Mobile Menu — `is-style-mobile-navigation`
+--------------------------------------------------------------------------- */
+/* The `parts/mobile-menu.html` template part renders a navigation block inside the
+   dedicated mobile-menu template part. These rules build on the shared `.is-menu-open` styles above but are
+   scoped to `.is-style-mobile-navigation` so they never touch the main header
+   nav's own responsive overlay. Tokens only — spacing/colour/shadow presets. */
+
+/* Hamburger trigger: clean and borderless, distinct from the boxed default. */
+.is-style-mobile-navigation .wp-block-navigation__responsive-container-open {
+	background: transparent;
+	padding: var(--wp--preset--spacing--5);
+}
+
+.is-style-mobile-navigation .wp-block-navigation__responsive-container-open svg {
+	width: 28px;
+	height: 28px;
+}
+
+
+/* Footer Navigation
+
+   Hover/focus colour for the footer nav links (is-style-footer-navigation).
+
+   This MUST live in CSS, not in the footer-navigation.json block-style variation.
+   WordPress core's navigation stylesheet (wp-includes/blocks/navigation/style.min.css)
+   ships an always-on reset:
+
+       .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigation-item__content { color: inherit; }
+
+   The doubled class is a deliberate specificity hack -> (0,3,0). Block-style
+   variation partials are emitted by WP wrapped in `:root :where(...)`, i.e. only
+   (0,1,0), so the variation's :hover can never beat that reset and the footer
+   links stay locked to `inherit` (white, from the dark footer group) on hover.
+   The selector below is (0,4,0), so it out-specifies the core reset. */
+.wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item__content:hover,
+.wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item__content:focus-visible {
+	color: var(--wp--preset--color--brand-500);
+}
+

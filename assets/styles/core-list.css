@@ -1,0 +1,50 @@
+/* List
+--------------------------------------------- */
+
+/* List styles for default unordered lists */
+.entry-content ul li,
+.entry-content ol li,
+.wp-block-post-content ul li,
+.wp-block-post-content ol li {
+	margin-bottom: var(--wp--preset--spacing--20);
+}
+
+.entry-content ul ul,
+.entry-content ol ul,
+.wp-block-post-content ul ul,
+.wp-block-post-content ol ul {
+	margin-top: var(--wp--preset--spacing--20);
+}
+
+/* Remove paddings */
+.entry-content :not(.wp-block-group) > li:first-child {
+	padding-top: 0;
+}
+
+.entry-content :not(.wp-block-group) li:last-child {
+	padding-bottom: 0;
+}
+
+/* Check list style (is-style-list-check) — leading ✓ glyph. */
+ul.is-style-list-check,
+ul.is-style-list-check ul {
+	padding-inline-start: 0px !important;
+	padding-left: 0;
+	list-style: none;
+}
+
+.entry-content ul.is-style-list-check {
+	padding-inline-start: .5rem;
+}
+
+ul.is-style-list-check li {
+	position: relative;
+	padding-left: calc(var(--wp--preset--spacing--30) + .5rem);
+}
+
+ul.is-style-list-check li:before {
+	content: "\2713";
+	position: absolute;
+	left: 0;
+	top: .1em;
+}

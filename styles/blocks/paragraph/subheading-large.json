@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Subheading Large",
+	"slug": "subheading-large",
+	"blockTypes": [
+		"core/paragraph"
+	],
+	"description": "Large subheading paragraph — font-size 500 with snug line-height.",
+	"styles": {
+		"typography": {
+			"fontSize": "var:preset|font-size|500",
+			"lineHeight": "var:custom|line-height|snug"
+		}
+	}
+}
