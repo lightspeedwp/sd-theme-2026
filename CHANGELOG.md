@@ -130,21 +130,38 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   pushed**, making them briefly downloadable by anyone. The OFL faces (Open Sans, Belleza,
   La Belle Aurore) remain committed. *(LS-2012)*
 
-  Two mitigations, both applied 2026-08-12 and complementary rather than redundant:
-  - **The repository was switched to `PRIVATE`.** This is what contains the exposure.
-    It was small to begin with: created 2026-08-12 with 0 forks, 0 stars and 0 watchers.
+  Three mitigations, all applied 2026-08-12:
+  - **The repository was switched to `PRIVATE`.** This contains the exposure. It was small
+    to begin with: created 2026-08-12 with 0 forks, 0 stars and 0 watchers.
   - **The faces were untracked** (`git rm --cached`, after the `.gitignore` rules alone
-    proved inert against files git already tracked). This is what keeps them out of future
-    clones and deploys. The files stay in the working tree, so local development is
-    unaffected. A fresh clone now carries 9 OFL faces (353 KB); the other 4 (122 KB) come
-    from the pipeline.
+    proved inert against files git already tracked). This keeps them out of future clones
+    and deploys. The files stay in the working tree, so local development is unaffected.
+    A fresh clone carries 9 OFL faces (353 KB); the other 4 (122 KB) come from the pipeline.
+  - **Branch history was rewritten** so no commit on this branch has ever contained them
+    (`git filter-branch --index-filter` over the branch range, then a force-push). Verified:
+    **0 licensed blobs across all commits**, and the resulting tree is byte-identical to
+    before the rewrite. The now-empty untrack commit was pruned, so the branch carries 3
+    commits rather than 4.
 
-  Two caveats that remain:
-  - ⚠️ **History is not rewritten.** The faces are still retrievable from the earlier
-    commits by anyone with repo access — verified. Acceptable while the repo is private.
-    **If it is ever made public again, history must be rewritten first**
-    (`git filter-repo` over `assets/fonts/optima-*` and `joe-hand-*`, then a force-push,
-    which invalidates existing clones). Cheap now, unpleasant later.
+  Why all three, and not just the rewrite: private contains the exposure, `.gitignore` +
+  untracking prevents recurrence, and the rewrite removes the blobs that were already
+  pushed. The rewrite was done **before merge** deliberately — merging would have propagated
+  the blobs into `develop`'s history and widened the cleanup.
+
+  Remaining caveats:
+  - 🟠 **GitHub still serves the purged blobs at the pre-rewrite commit SHAs.** Verified:
+    `optima-400-normal.woff2` (18,716 b) is still fetchable at `261d97b` after the
+    force-push. Unreferenced objects are not garbage-collected promptly, and the PR
+    timeline records the old SHAs, so they are discoverable by anyone with repo access.
+    **The rewrite makes clones, checkouts and deploys clean; it does not purge GitHub's
+    object store.** Per GitHub's own guidance on removing sensitive data, that requires
+    asking GitHub Support to run `gc` — or, given this repo is only days old with a
+    handful of commits, deleting and recreating it. Residual risk is low: the repo is
+    private, so reach is limited to collaborators who are entitled to the code anyway,
+    and the public exposure window is closed.
+  - ⚠️ Anyone who pulled this branch before the rewrite has divergent history and needs
+    `git fetch && git reset --hard origin/<branch>`. The branch was hours old with only
+    automated reviews at the time, so this is unlikely to affect anyone.
   - ⚠️ `theme.json` still registers all 13 faces, so a fresh clone has **4 unresolved
     `@font-face` rules** until the pipeline supplies the files. Headings fall back to
     Belleza — which is bundled precisely for this — and then `sans-serif`. Degraded, not
