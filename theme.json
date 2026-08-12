@@ -543,33 +543,6 @@
 							"src": [
 								"file:./assets/fonts/open-sans-700-normal.woff2"
 							]
-						},
-						{
-							"fontFamily": "Open Sans",
-							"fontWeight": "700",
-							"fontStyle": "italic",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/open-sans-700-italic.woff2"
-							]
-						},
-						{
-							"fontFamily": "Open Sans",
-							"fontWeight": "800",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/open-sans-800-normal.woff2"
-							]
-						},
-						{
-							"fontFamily": "Open Sans",
-							"fontWeight": "800",
-							"fontStyle": "italic",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/open-sans-800-italic.woff2"
-							]
 						}
 					]
 				},

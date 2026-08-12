@@ -13,7 +13,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   constraints, and the live asset inventory with per-asset porting decisions.
   Companion to the workspace audit report
   (`.github/reports/sd-design-audit-2026-08-12.md`). *(LS-2012)*
-- **`assets/fonts/` — 16 bundled WOFF2 faces (602 KB)**, converted from the live sources
+- **`assets/fonts/` — 13 WOFF2 faces (474 KB)**, converted from the live sources
   with `woff2_compress` and registered as `fontFace` entries in `theme.json`:
   - `Optima` 400, 500 and 600–700 — the 600–700 face is the live site's Optima Demi Bold,
     declared as a weight *range* so `h1`/`h2` (700) and `h3` (600) both resolve to the real
@@ -21,8 +21,13 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   - `Belleza` 400 — registered as a face in its own right so the fallback in the `heading`
     stack actually resolves, and so it works as a standby if the Optima licence does not
     clear.
-  - `Open Sans` 300/400/600/700/800 in normal and italic (10 faces), each with its own
-    weight and style rather than the 11-file single-`src` stack used on live.
+  - `Open Sans` 300/400/600 in normal and italic plus 700 normal (7 faces), each with its
+    own weight and style rather than the 11-file single-`src` stack used on live. Weights
+    800/900 and the 700 italic were dropped as unneeded. Requests above what is bundled
+    resolve to the nearest real face per CSS font matching rather than synthesising — body
+    text at 800/900 renders Open Sans 700, and heading text at 900 renders Optima's
+    demi-bold cut. Unused weights across all families will be pruned at the end of the
+    rebuild.
   - `Joe Hand` 400 and `La Belle Aurore` 400 for the `accent` family.
 - `settings.color.palette`: **`accent-100` … `accent-900`** — a **yellow** ramp anchored on
   `#E6AD10` at step 500, the gold used in several places on the live site (22 references)
@@ -114,13 +119,26 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Security
 
-- 🟠 **Optima and Joe Hand web-embedding licences are unconfirmed — confirmation in
-  progress.** Optima is a commercial Linotype face and is the heading face of the whole site.
-  The faces are **approved for development use as the primary fonts**, but this remains a
-  **release gate: they must not ship to production until the rights are confirmed in
-  writing.** If Optima does not clear, substitution is a Change-Control Register item;
-  Belleza is already registered as its resolvable fallback, so the theme degrades rather
-  than breaks. *(LS-2012)*
+- 🔴 **`assets/fonts/optima-*.woff2` and `joe-hand-*.woff2` are now `.gitignore`d and
+  delivered by the build/deploy pipeline instead of being committed.** They are commercially
+  licensed — Optima is a Linotype face and the heading face of the whole site — with
+  web-embedding rights unconfirmed, and **this repository was public when they were first
+  pushed**, making them briefly downloadable by anyone. Exposure was small: the repo was
+  created 2026-08-12 with 0 forks, 0 stars and 0 watchers, and it is being switched to
+  private. The OFL faces (Open Sans, Belleza, La Belle Aurore) remain committed.
+  *(LS-2012)*
+  - ⚠️ **Neither mitigation cleans git history.** The faces remain in the commits already
+    pushed. Acceptable while the repo is private; if it is ever made public again, history
+    must be rewritten first.
+  - ⚠️ `theme.json` still registers all 13 faces, so a fresh clone has **4 unresolved
+    `@font-face` rules** until the pipeline supplies the files. Headings fall back to
+    Belleza — which is bundled precisely for this — and then `sans-serif`. Degraded, not
+    broken.
+- 🟠 **Optima and Joe Hand web-embedding licences are unconfirmed — written confirmation is
+  being sought from the client.** The faces are **approved for development use as the primary
+  fonts**, but this remains a **release gate: they must not ship to production until the
+  rights are confirmed in writing.** If Optima does not clear, substitution is a
+  Change-Control Register item. *(LS-2012)*
 - `Optima_Italic.ttf` was **not** ported — the live source file is corrupt (its `glyf` table
   range overlaps `cmap`) and `woff2_compress` rejects it. It never loaded on live either.
   Italic Optima will synthesise an oblique until a clean source file is supplied.

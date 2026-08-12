@@ -191,9 +191,16 @@ Figma declares only `lineHeight/heading 125` and `lineHeight/body 150`; both mat
 | Belleza | ✅ OFL (Google Fonts) | Clear |
 | La Belle Aurore | ✅ OFL (Google Fonts) | Clear |
 
-**Status 2026-08-12: confirmation in progress; the faces are approved for development use as the primary fonts.** They are bundled (§3.7) so theme setup is not blocked.
+**Status 2026-08-12: written confirmation is being sought from the client. The faces are approved for development use as the primary fonts** and are present in `assets/fonts/` (§3.7), so theme setup is not blocked.
 
-🟠 **This is still a release gate.** Optima and Joe Hand must not ship to production until the rights are confirmed in writing. If Optima does not clear, substitution is a Change-Control Register item — and Belleza is already registered as its resolvable fallback, so the theme degrades rather than breaks.
+**Two mitigations are in place** because this repo was **public** when the faces were first pushed:
+
+1. **The repo is being switched to private.** Exposure was small — created 2026-08-12, **0 forks, 0 stars, 0 watchers** — so no third party is known to hold a copy.
+2. **`assets/fonts/optima-*.woff2` and `joe-hand-*.woff2` are `.gitignore`d** and delivered by the build/deploy pipeline rather than committed. The OFL faces (Open Sans, Belleza, La Belle Aurore) stay committed.
+
+🟠 **Still a release gate.** Optima and Joe Hand must not ship to production until the rights are confirmed in writing. If Optima does not clear, substitution is a Change-Control Register item — Belleza is already registered as its resolvable fallback, so the theme degrades rather than breaks.
+
+⚠️ **History is not cleaned by either mitigation.** The faces remain in the commits already pushed. That is acceptable while the repo is private; if it is ever made public again, history must be rewritten first.
 
 ### 3.5 Defects in the live `@font-face` blocks — all fixed in the rebuild
 
@@ -203,7 +210,7 @@ Figma declares only `lineHeight/heading 125` and `lineHeight/body 150`; both mat
 | **Invalid descriptors** — `font-family: 'Optima', sans-serif;` *inside* `@font-face`; the descriptor takes one name | ✅ Fixed — one family name per face |
 | **Eleven files, one weight** — all `OpenSans-*.ttf` stacked in a single `src` with no weight/style split, so only the first ever resolved and italics were synthesised | ✅ Fixed — 10 discrete faces, each with its own weight and style |
 | **Broken path** — `'Open Sans Italic'` uses `../../fonts/` where siblings use `../fonts/`, plus a missing comma | ✅ Gone — that pseudo-family no longer exists |
-| **TTF, not WOFF2** | ✅ Fixed — all 16 faces are WOFF2, **55% smaller** |
+| **TTF, not WOFF2** | ✅ Fixed — all 13 faces are WOFF2; the bundle is **474 KB** against 1,340 KB of TTF sources |
 
 ### 3.6 Two corrupt / incorrect source fonts on live
 
@@ -216,25 +223,52 @@ Found by parsing the `OS/2`, `head` and `name` tables of every downloaded face:
 
 ### 3.7 Bundled font layer — `assets/fonts/`
 
-**16 WOFF2 faces, 602 KB total.** Converted from the live sources with `woff2_compress`; every file verified as genuine WOFF2 by magic bytes.
+**13 WOFF2 faces, 474 KB total.** Converted from the live sources with `woff2_compress`; every file verified as genuine WOFF2 by magic bytes.
 
 | Preset | `fontFamily` | Faces |
 |---|---|---|
 | `heading` | `Optima, Belleza, sans-serif` | `Optima` 400 · 500 · **600 700** · `Belleza` 400 |
-| `body` | `"Open Sans", …system…, sans-serif` | `Open Sans` 300 · 400 · 600 · 700 · 800, each in normal + italic (10) |
+| `body` | `"Open Sans", …system…, sans-serif` | `Open Sans` 300 · 400 · 600 in normal + italic, plus **700 normal** (7) |
 | `accent` | `"Joe Hand", "La Belle Aurore", cursive` | `Joe Hand` 400 · `La Belle Aurore` 400 |
 | `monospace` | `monospace` | none — system |
 
 ```
 assets/fonts/
-  optima-400-normal.woff2            18.7 KB
-  optima-500-normal.woff2            27.9 KB
-  optima-700-normal.woff2            26.4 KB   ← registered as font-weight: 600 700
+  optima-400-normal.woff2            18.7 KB   ⚠️ not committed — see below
+  optima-500-normal.woff2            27.9 KB   ⚠️ not committed
+  optima-700-normal.woff2            26.4 KB   ⚠️ not committed · registered as font-weight: 600 700
+  joe-hand-400-normal.woff2          51.4 KB   ⚠️ not committed
   belleza-400-normal.woff2           11.6 KB
-  open-sans-{300,400,600,700,800}-{normal,italic}.woff2   ~42–58 KB each
-  joe-hand-400-normal.woff2          51.4 KB
   la-belle-aurore-400-normal.woff2   23.7 KB
+  open-sans-{300,400,600}-{normal,italic}.woff2   ~42–58 KB each
+  open-sans-700-normal.woff2         45.2 KB
 ```
+
+### Weight coverage
+
+**Open Sans ships 300/400/600 + 700 normal.** Weights 800/900 and the 700 italic were dropped as unneeded (2026-08-12); 700 normal was reinstated after review, since a cutoff at 600 was too aggressive for body copy. Payload went 602 KB → 429 KB → **474 KB**.
+
+`patterns/template-single-post.php` requests `font-weight|bold` (700) on a **paragraph**, which is the body family — that now resolves to the real **Open Sans 700** face rather than falling back to 600.
+
+Still unbundled and resolving to the nearest available weight, by design:
+
+| Requested | Family | Resolves to |
+|---|---|---|
+| `bold` 700 *italic* on body text | Open Sans | 600 italic |
+| `extra-bold` 800 / `black` 900 on body text | Open Sans | 700 normal |
+| `black` 900 on headings *(404, search, archive titles)* | Optima | 700 — the demi-bold cut |
+
+None of these synthesise; CSS font matching picks the nearest real face. The `fontWeight` custom tokens still declare the full 100–900 scale, so a value above what is bundled is legal and simply resolves down.
+
+⏳ **Unused weights get pruned at the end of the rebuild.** The set is deliberately a little wider than today's templates need, since page conversion may call for more of it.
+
+### ⚠️ Four faces are not committed to this repo
+
+`assets/fonts/optima-*.woff2` and `assets/fonts/joe-hand-*.woff2` are **`.gitignore`d** — commercially licensed, web-embedding rights unconfirmed, and this repo was public when they were first pushed. They are delivered by the **build/deploy pipeline** instead. → §3.4
+
+**Consequence:** a fresh clone carries **9 of 13 faces (353 KB)**; the other **4 (122 KB)** arrive from the pipeline. `theme.json` registers all 13, so until the pipeline runs, four `@font-face` rules are unresolved — headings fall back to **Belleza** (bundled, deliberately) and then `sans-serif`. Degraded, not broken.
+
+**`.gitignore` does not remove them from git history.** If this repo is ever public again, history needs rewriting.
 
 Three deliberate choices:
 
@@ -251,7 +285,7 @@ Three deliberate choices:
 | `h4` `h5` | 500 | `optima-500-normal.woff2` |
 | `h6` | 400 *(inherits root)* | `optima-400-normal.woff2` |
 
-Verified via `WP_Theme_JSON` + `WP_Font_Face`: all 16 `fontFace` entries survive WordPress sanitisation, all 16 `src` paths resolve on disk, and 16 `@font-face` rules generate with correct `format('woff2')`.
+Verified via `WP_Theme_JSON` + `WP_Font_Face`: all 13 `fontFace` entries survive WordPress sanitisation, all 13 `src` paths resolve on disk, and 13 `@font-face` rules generate with correct `format('woff2')`.
 
 ### 3.6 Fonts to drop
 
@@ -388,11 +422,11 @@ Partners represented: Natural Selection · MORE · Bush Company · Desert & Delt
 
 ### 9.4 This theme's `assets/` today
 
-**18 CSS files + 16 WOFF2 font faces (602 KB). No images yet.**
+**18 CSS files + 13 WOFF2 font faces (474 KB, 9 of them committed). No images yet.**
 
 ```
 assets/
-├── fonts/                # ✅ 16 WOFF2 faces — see §3.7
+├── fonts/                # ✅ 13 WOFF2 faces (4 gitignored) — see §3.7
 └── styles/               # core-{button,categories,columns,cover,group,image,list,
                           #   navigation,post-author,post-excerpt,post-navigation-link,
                           #   post-template,post-terms,post-title,
@@ -429,7 +463,7 @@ From [AGENTS.md](../../../AGENTS.md) working agreement 4 — non-negotiable:
 | Border width | 5 | ✅ **Added** as `settings.custom.borderWidth` |
 | `layout.fullWidth` | 1 | ✅ **Added** as `settings.custom.layout.fullWidth` |
 | **Font families** | 4 | ✅ **Applied** — live-measured; `alternate` removed as a duplicate |
-| **Font faces** | 16 | ✅ **Bundled** — WOFF2 in `assets/fonts/`, 602 KB, all weights covered |
+| **Font faces** | 13 | ✅ **Bundled** — WOFF2 in `assets/fonts/`, 474 KB. Open Sans 300/400/600 + 700 normal. 4 non-OFL faces `.gitignore`d, pipeline-delivered. Unused weights pruned at the end of the rebuild |
 | Hover / state colours | — | ✅ **Resolved** — `#BF5C17` dropped; hover uses `brand-600` (AA) |
 | Brand orange contrast | — | ✅ **Accepted** — theme styling is being updated; not a blocker |
 | `base` / `contrast` | 2 | ⏳ Deferred — Figma `#F9F9F9`/`#010101` vs live white/black |
@@ -441,6 +475,6 @@ From [AGENTS.md](../../../AGENTS.md) working agreement 4 — non-negotiable:
 | **Font licences** | — | 🟠 Confirmation in progress · **dev use approved** · **release gate** |
 | **Customizer CSS in DB** | ~112 KB | 🔴 **Largest remaining item** — export from live `wp_options` before page conversion |
 
-**Verification run 2026-08-12:** `theme.json` valid · tab round-trip byte-identical · **0 orphaned preset references** across 557 · **46 palette entries** (matching Figma's 46 colour variables exactly), 4 font families and 16 `@font-face` rules confirmed emitted by WordPress · no contrast regression on the 71 `neutral-*` references (max Δ 0.05) · `php -l` clean on 18 files.
+**Verification run 2026-08-12:** `theme.json` valid · tab round-trip byte-identical · **0 orphaned preset references** across 557 · **46 palette entries** (matching Figma's 46 colour variables exactly), 4 font families and 13 `@font-face` rules confirmed emitted by WordPress · no contrast regression on the 71 `neutral-*` references (max Δ 0.05) · `php -l` clean on 18 files.
 
 Update this document whenever the Figma variable layer changes — it is under active development, and a partial extraction silently produces a partial `theme.json`. Full detail and the divergence register: [`.github/reports/sd-design-audit-2026-08-12.md`](../../../.github/reports/sd-design-audit-2026-08-12.md).
