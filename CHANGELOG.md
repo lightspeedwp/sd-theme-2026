@@ -103,6 +103,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   withdrawn: with the Optima family registered across four weights it resolved to the same
   stack as `heading`, making it a duplicate token. Regular Optima is now simply weight 400
   of `heading`. *(LS-2012)*
+- **The four commercially-licensed font faces are no longer tracked in this repository** —
+  `optima-400-normal`, `optima-500-normal`, `optima-700-normal` and `joe-hand-400-normal`.
+  They remain in the working tree and are supplied by the build/deploy pipeline. See
+  **Security** below for why, and for the history caveat. *(LS-2012)*
 
 ### Fixed
 
@@ -119,17 +123,28 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Security
 
-- 🔴 **`assets/fonts/optima-*.woff2` and `joe-hand-*.woff2` are now `.gitignore`d and
-  delivered by the build/deploy pipeline instead of being committed.** They are commercially
+- **`assets/fonts/optima-*.woff2` and `joe-hand-*.woff2` are `.gitignore`d and untracked**,
+  delivered by the build/deploy pipeline instead of being committed. They are commercially
   licensed — Optima is a Linotype face and the heading face of the whole site — with
   web-embedding rights unconfirmed, and **this repository was public when they were first
-  pushed**, making them briefly downloadable by anyone. Exposure was small: the repo was
-  created 2026-08-12 with 0 forks, 0 stars and 0 watchers, and it is being switched to
-  private. The OFL faces (Open Sans, Belleza, La Belle Aurore) remain committed.
-  *(LS-2012)*
-  - ⚠️ **Neither mitigation cleans git history.** The faces remain in the commits already
-    pushed. Acceptable while the repo is private; if it is ever made public again, history
-    must be rewritten first.
+  pushed**, making them briefly downloadable by anyone. The OFL faces (Open Sans, Belleza,
+  La Belle Aurore) remain committed. *(LS-2012)*
+
+  Two mitigations, both applied 2026-08-12 and complementary rather than redundant:
+  - **The repository was switched to `PRIVATE`.** This is what contains the exposure.
+    It was small to begin with: created 2026-08-12 with 0 forks, 0 stars and 0 watchers.
+  - **The faces were untracked** (`git rm --cached`, after the `.gitignore` rules alone
+    proved inert against files git already tracked). This is what keeps them out of future
+    clones and deploys. The files stay in the working tree, so local development is
+    unaffected. A fresh clone now carries 9 OFL faces (353 KB); the other 4 (122 KB) come
+    from the pipeline.
+
+  Two caveats that remain:
+  - ⚠️ **History is not rewritten.** The faces are still retrievable from the earlier
+    commits by anyone with repo access — verified. Acceptable while the repo is private.
+    **If it is ever made public again, history must be rewritten first**
+    (`git filter-repo` over `assets/fonts/optima-*` and `joe-hand-*`, then a force-push,
+    which invalidates existing clones). Cheap now, unpleasant later.
   - ⚠️ `theme.json` still registers all 13 faces, so a fresh clone has **4 unresolved
     `@font-face` rules** until the pipeline supplies the files. Headings fall back to
     Belleza — which is bundled precisely for this — and then `sans-serif`. Degraded, not
