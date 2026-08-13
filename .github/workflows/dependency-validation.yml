@@ -1,0 +1,88 @@
+name: dependency validation
+
+# Untrusted stage. Runs pull-request code inside a disposable one-job container
+# on the dependency-ci-ephemeral group. Holds no merge, enrolment or
+# runner-manager credential. Never uses the persistent trusted merge runner.
+#
+# Deliberately toolchain-free: the container ships git/curl/jq only. Do NOT add
+# shivammathur/setup-php here - its self-hosted locking calls sudo, which is what
+# caused the 2026-08-03 security-mail incident. Anything needing PHP, Composer or
+# npm must bring its own pinned static tooling.
+#
+# Managed centrally by lightspeedwp/dependency-merge-controller.
+
+on:
+  pull_request:
+    branches: [main, master, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependency-validation-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: dependency-validation
+    # Dependency pull requests only. Anything else is not this workflow's job.
+    if: |
+      startsWith(github.head_ref, 'dependabot/') ||
+      startsWith(github.head_ref, 'deps/') ||
+      startsWith(github.head_ref, 'renovate/')
+    runs-on: [self-hosted, linux, x64, dependency-ci-ephemeral]
+    timeout-minutes: 20
+    env:
+      GITLEAKS_VERSION: '8.30.1'
+      GITLEAKS_SHA256: '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb'
+      BASE_REF: ${{ github.base_ref }}
+    steps:
+      - name: Confirm disposable container
+        run: |
+          set -euo pipefail
+          echo "container=$(hostname) user=$(id -un) uid=$(id -u)"
+          # Fail closed if this is not the isolated container we expect.
+          [ "$(id -u)" != "0" ] || { echo 'running as root - refusing'; exit 1; }
+          [ ! -e /var/run/docker.sock ] || { echo 'docker socket present - refusing'; exit 1; }
+          [ ! -d /var/www ] || { echo 'client sites visible - refusing'; exit 1; }
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Secret scan (pinned, checksum verified)
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "${tmp}"' EXIT
+          tarball="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl --fail --silent --show-error --location --retry 3 \
+            -o "${tmp}/${tarball}" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${tarball}"
+          echo "${GITLEAKS_SHA256}  ${tmp}/${tarball}" | sha256sum --check --status
+          tar -xzf "${tmp}/${tarball}" -C "${tmp}" gitleaks
+          if [ -f .gitleaks.toml ]; then
+            "${tmp}/gitleaks" dir . --config .gitleaks.toml --redact --no-banner
+          else
+            "${tmp}/gitleaks" dir . --redact --no-banner
+          fi
+
+      - name: Dependency manifest sanity
+        run: |
+          set -euo pipefail
+          # A lockfile change with no manifest change, or vice versa, is a
+          # signal the trusted stage should not merge on. Report, do not judge.
+          if [ -z "${BASE_REF}" ]; then
+            echo "BASE_REF is empty - refusing to diff against an unbounded ref" >&2
+            exit 1
+          fi
+          changed="$(git diff --name-only "origin/${BASE_REF}"...HEAD || true)"
+          echo "changed files:"; printf '%s\n' "${changed}"
+          for pair in "composer.json:composer.lock" "package.json:package-lock.json"; do
+            m="${pair%%:*}"; l="${pair##*:}"
+            if printf '%s\n' "${changed}" | grep -qx "${l}" \
+               && ! printf '%s\n' "${changed}" | grep -qx "${m}"; then
+              echo "note: ${l} changed without ${m}"
+            fi
+          done
+          echo "validation complete"
