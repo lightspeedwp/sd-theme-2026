@@ -24,6 +24,23 @@ dist/
 .env.*
 wp-config.php
 
+# Commercially-licensed font faces — NOT redistributable via this repo.
+#
+# Optima (commercial, Linotype) and Joe Hand: web-embedding rights unconfirmed as of
+# 2026-08-12, and this repo was public when they were first pushed. They are delivered by
+# the build/deploy pipeline instead of being committed. → LS-2012
+#
+# ⚠️ theme.json still registers these faces, so a fresh clone has 4 unresolved @font-face
+# rules until the pipeline supplies the files. Headings fall back to Belleza (bundled) and
+# then sans-serif — degraded, not broken.
+#
+# ⚠️ These patterns do not remove the files already in git history. If this repo is ever
+# public again, history needs rewriting.
+#
+# The OFL faces (Open Sans, Belleza, La Belle Aurore) are committed and safe to ship.
+assets/fonts/optima-*.woff2
+assets/fonts/joe-hand-*.woff2
+
 # Test artefacts
 tests/**/test-results/
 tests/**/playwright-report/
