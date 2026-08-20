@@ -50,10 +50,12 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   into the overlay by Ollie Menu Designer's `mobileMenuSlug`. Desktop and mobile navigation
   are two blocks swapped by a media query at 1200px, live's own header breakpoint —
   kwv-theme-2026 does this with the Block Visibility plugin, which is not installed here.
-- **Trustpilot mark is a text link for now** — live renders it as a static PNG from the
-  uploads folder. That file is absent on local, and hardcoded uploads URLs are banned in
-  authored files, so shipping an `<img>` would ship a 404. Swap to a `core/image` referencing
-  `assets/images/` once the badge is supplied as a theme asset.
+- **Trustpilot badge** — the static mark in the utility bar, attachment 50269
+  (`2019/07/trust-pilot-badge.png`, 423×31), shown at 160px so it sits level with the bar's
+  type. Linked to the reviews page rather than live's `href="#"`, which gives a keyboard user
+  a focus stop that does nothing. The media library holds several near-identical marks; 55331
+  (`trust-pilot-top-menu.svg`) is an SVG named for this slot and would scale better if the
+  badge is ever shown larger.
 
 ### Removed
 

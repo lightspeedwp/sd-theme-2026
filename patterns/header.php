@@ -49,26 +49,28 @@
 
 			<?php
 			/*
-			 * Live renders the Trustpilot mark as a static PNG from the uploads
-			 * folder (/uploads/2019/07/trustpilot.png, attachment 50273 on dev).
-			 * It is not reproduced as an image here for two reasons: AGENTS.md
-			 * bans hardcoded uploads URLs in authored files, and the file is not
-			 * present on every environment — it is absent from local, so an
-			 * <img> pointing at it would ship a 404.
+			 * The static Trustpilot badge — attachment 50269 on dev,
+			 * 2019/07/trust-pilot-badge.png, 423×31. Shown at 160px, which puts
+			 * it at roughly 12px tall and level with the utility bar's type.
 			 *
-			 * This is the accessible text equivalent, linked to the reviews page
-			 * exactly as the badge is. When the badge is supplied as a theme
-			 * asset (assets/images/), this becomes a core/image referencing it
-			 * with get_theme_file_uri() and stays portable.
+			 * The media library holds several near-identical marks; this is the
+			 * one confirmed for the header. 55331 (trust-pilot-top-menu.svg) is
+			 * an SVG named for this slot and would scale more cleanly if the
+			 * badge is ever shown larger — safe-svg is active, so it is usable.
 			 *
-			 * Note this is the *static* mark. The API-backed Trustpilot widget is
-			 * a different component, it lives in the footer and on Team, and it
-			 * stays plugin work — no credential is involved here.
+			 * Live links this badge to "#". It is linked to the reviews page
+			 * instead: an image that is the only content of a link needs the
+			 * link to go somewhere, and "#" gives a keyboard user a focus stop
+			 * that does nothing.
+			 *
+			 * This is the *static* mark. The API-backed Trustpilot widget is a
+			 * different component — it lives in the footer and on Team and is
+			 * plugin work. No credential is involved here.
 			 */
 			?>
-			<!-- wp:paragraph {"className":"sd-header__trustpilot","fontSize":"100"} -->
-			<p class="sd-header__trustpilot has-100-font-size"><a href="<?php echo esc_url( home_url( '/reviews/' ) ); ?>"><?php esc_html_e( 'Rated Excellent on Trustpilot', 'sd-theme-2026' ); ?></a></p>
-			<!-- /wp:paragraph -->
+			<!-- wp:image {"id":50269,"width":"160px","sizeSlug":"full","linkDestination":"custom","className":"sd-header__trustpilot"} -->
+			<figure class="wp-block-image size-full is-resized sd-header__trustpilot"><a href="<?php echo esc_url( home_url( '/reviews/' ) ); ?>"><img src="<?php echo esc_url( home_url( '/wp-content/uploads/2019/07/trust-pilot-badge.png' ) ); ?>" alt="<?php esc_attr_e( 'Southern Destinations is rated Excellent on Trustpilot', 'sd-theme-2026' ); ?>" class="wp-image-50269" style="width:160px"/></a></figure>
+			<!-- /wp:image -->
 
 			<?php /* The Call Us dropdown is an ollie/mega-menu block inside this menu, not a core
 			   navigation submenu, so its panel is the authored parts/dropdown-call-us.html and
