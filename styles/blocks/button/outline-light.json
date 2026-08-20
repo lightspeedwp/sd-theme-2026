@@ -35,7 +35,7 @@
 		":hover": {
 			"color": {
 				"background": "var:preset|color|base",
-				"text": "var:preset|color|base"
+				"text": "var:preset|color|primary-500"
 			},
 			"border": {
 				"color": "var:preset|color|base"
