@@ -8,6 +8,6 @@
 	],
 	"description": "Subtle dark shadow for headings over image backgrounds",
 	"styles": {
-		"css": "&{text-shadow: 2px 2px 4px rgba(0,0,0,0.5);}"
+		"css": "& { text-shadow: 2px 2px 4px color-mix(in srgb, var(--wp--preset--color--neutral-900) 50%, transparent); }"
 	}
 }
