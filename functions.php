@@ -227,3 +227,15 @@ add_filter( 'default_wp_template_part_areas', __NAMESPACE__ . '\template_part_ar
 // it — and a non-core block is outside enqueue_custom_block_styles()' core-*
 // scan.
 require_once get_theme_file_path( 'inc/mega-menu.php' );
+
+// Styles sd/call-us for the same two reasons: the button, panel and rows are
+// emitted by the plugin's render.php, and `sd/call-us` is not a core block so it
+// is outside the core-* scan. Design only — the disclosure's behaviour is the
+// plugin's, in blocks/call-us/view.js.
+require_once get_theme_file_path( 'inc/call-us.php' );
+
+// Answers the plugin's `sd_enh_trustpilot_stars_image` filter with the theme's
+// own rating tile. The plugin exposes the rating as a number and says explicitly
+// that picking the graphic is the theme's job; this is the theme doing that, and
+// it is the only place that knows where the tiles live.
+require_once get_theme_file_path( 'inc/trustpilot.php' );

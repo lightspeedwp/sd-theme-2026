@@ -216,18 +216,15 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
 
 /* Utility bar: the Call Us dropdown
    ---------------------------------------------------------------------------
-   Opens on click (`openSubmenusOnClick`), so the toggle is a real button and
-   the numbers are reachable by keyboard without a hover trap. */
-.sd-header__call-us .wp-block-navigation__submenu-container {
-	border: 1px solid var(--wp--preset--color--neutral-300);
-	border-radius: var(--wp--preset--border-radius--200);
-	box-shadow: var(--wp--preset--shadow--200);
-	min-width: 14rem;
-}
+   Nothing here any more. The Call Us dropdown used to be a `core/navigation`
+   submenu, and these rules styled `.wp-block-navigation__submenu-container`
+   inside `.sd-header__call-us`. It is `sd/call-us` now — a real disclosure
+   button with a panel, not a menu — so that container no longer exists and the
+   rules were dead. Its design lives in assets/styles/sd-call-us.css, which is
+   attached to the block itself by inc/call-us.php.
 
-.sd-header__call-us .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
-	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
-}
+   `.sd-header__call-us` is still on the block in patterns/header.php, kept as a
+   hook for anything header-specific that comes up. */
 
 /* Mega-menu columns
    ---------------------------------------------------------------------------

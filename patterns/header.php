@@ -23,9 +23,12 @@
  *
  * The menus are content, built and edited on dev under Appearance → Navigation:
  *
- *   65879  SD Utility Navigation      the Call Us dropdown
  *   65876  SD Main Navigation         4 mega menus + Specials
  *   65877  SD Mobile Navigation       the tiered mobile tree
+ *
+ * 65879 ("SD Utility Navigation") used to be here for the Call Us dropdown and
+ * is no longer referenced: that widget is `sd/call-us` now, and its numbers are
+ * a template part. The menu can be deleted on dev once this ships.
  *
  * The columns inside each mega-menu panel reference their own menus; those refs
  * live in parts/mega-menu-*.html.
@@ -49,33 +52,59 @@
 
 			<?php
 			/*
-			 * The static Trustpilot badge — attachment 50269 on dev,
-			 * 2019/07/trust-pilot-badge.png, 423×31. Shown at 160px, which puts
-			 * it at roughly 12px tall and level with the utility bar's type.
+			 * The Trustpilot badge.
 			 *
-			 * The media library holds several near-identical marks; this is the
-			 * one confirmed for the header. 55331 (trust-pilot-top-menu.svg) is
-			 * an SVG named for this slot and would scale more cleanly if the
-			 * badge is ever shown larger — safe-svg is active, so it is usable.
+			 * An earlier pass at this file had a static image here — attachment
+			 * 50269, `uploads/2019/07/trust-pilot-badge.png`, linked to the
+			 * reviews page. That was the wrong one of live's *two* Trustpilot
+			 * marks. Live's header carries both:
 			 *
-			 * Live links this badge to "#". It is linked to the reviews page
-			 * instead: an image that is the only content of a link needs the
-			 * link to go somewhere, and "#" gives a keyboard user a focus stop
-			 * that does nothing.
+			 *   1. `#tb-horizon-review.tb-color-brown` — the real badge, from
+			 *      `[tp_show_score color="brown"]`: the band word, the mark, a
+			 *      star tile and "TrustScore 5 | 349 reviews".
+			 *   2. A `trust-menu` nav item holding
+			 *      `uploads/2019/07/trustpilot.png`, linked to `#`.
 			 *
-			 * This is the *static* mark. The API-backed Trustpilot widget is a
-			 * different component — it lives in the footer and on Team and is
-			 * plugin work. No credential is involved here.
+			 * The second is what got reproduced. It is dropped — it duplicates
+			 * the badge beside it and its link goes nowhere — and the first is
+			 * built properly, as patterns/trustpilot-score.php, reading the live
+			 * score through the `sd/trustpilot` binding source.
+			 *
+			 * `require`, not `<!-- wp:pattern -->`: a nested pattern reference is
+			 * silently dropped on front-end render (and resolves fine under
+			 * WP-CLI, so a CLI test would not catch it). `require` inlines the
+			 * markup at registration while leaving trustpilot-score.php an
+			 * independently registered, separately insertable pattern.
+			 * → .claude/skills/wp-pattern-runtime-pitfalls
+			 */
+			require __DIR__ . '/trustpilot-score.php';
+			?>
+
+			<?php
+			/*
+			 * Call Us.
+			 *
+			 * `sd/call-us` — a real `<button>` whose `aria-expanded` tracks the
+			 * panel, with Escape, click-outside and focus-out dismissal, all in
+			 * the plugin. This replaces the `wp:navigation` block that used to be
+			 * here, and with it menu 65879 ("SD Utility Navigation"), which
+			 * existed only to hold two phone numbers.
+			 *
+			 * Live builds this as a Bootstrap dropdown on an `<a href="#">` in a
+			 * nav menu, and builds it *again*, differently, on the safari expert
+			 * panel — which is how the header ended up with two numbers and the
+			 * expert panel with four. One block now, and one list of numbers:
+			 * parts/dropdown-call-us.html, which is a template part rather than
+			 * inline markup precisely so both placements read the same file and
+			 * so the numbers stay editable in the Site Editor.
+			 *
+			 * `placement: end` because this sits at the right-hand end of the
+			 * utility bar; a start-aligned panel would hang off the viewport.
 			 */
 			?>
-			<!-- wp:image {"id":50269,"width":"160px","sizeSlug":"full","linkDestination":"custom","className":"sd-header__trustpilot"} -->
-			<figure class="wp-block-image size-full is-resized sd-header__trustpilot"><a href="<?php echo esc_url( home_url( '/reviews/' ) ); ?>"><img src="<?php echo esc_url( home_url( '/wp-content/uploads/2019/07/trust-pilot-badge.png' ) ); ?>" alt="<?php esc_attr_e( 'Southern Destinations is rated Excellent on Trustpilot', 'sd-theme-2026' ); ?>" class="wp-image-50269" style="width:160px"/></a></figure>
-			<!-- /wp:image -->
-
-			<?php /* The Call Us dropdown is an ollie/mega-menu block inside this menu, not a core
-			   navigation submenu, so its panel is the authored parts/dropdown-call-us.html and
-			   its disclosure is the plugin's (a real button with aria-expanded). */ ?>
-			<!-- wp:navigation {"ref":65879,"overlayMenu":"never","className":"sd-header__call-us","ariaLabel":"<?php esc_attr_e( 'Contact numbers', 'sd-theme-2026' ); ?>","fontSize":"100","layout":{"type":"flex","justifyContent":"right"}} /-->
+			<!-- wp:sd/call-us {"label":"<?php esc_attr_e( 'Call Us Today', 'sd-theme-2026' ); ?>","placement":"end","className":"sd-header__call-us","fontSize":"100"} -->
+			<!-- wp:template-part {"slug":"dropdown-call-us","area":"menu"} /-->
+			<!-- /wp:sd/call-us -->
 
 		</div>
 		<!-- /wp:group -->

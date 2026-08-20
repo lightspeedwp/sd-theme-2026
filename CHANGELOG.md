@@ -8,6 +8,66 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **Trustpilot score badge** — `patterns/trustpilot-score.php`, the band word, the Trustpilot
+  mark, the star tile and the `TrustScore 4.8 | 349 reviews` line, reading the live score
+  through the plugin's `sd/trustpilot` binding source. Replaces `[tp_show_score]`, which live
+  calls three times with three `color=` variants; nothing here sets a colour, so the badge
+  inherits whatever ground it is placed on and the three variants collapse into one file.
+- **`inc/trustpilot.php`** — answers the plugin's `sd_enh_trustpilot_stars_image` filter with
+  the theme's own rating tile. The plugin exposes the rating as a *number* and says explicitly
+  that picking the graphic is the theme's job; this is the theme doing that, and the only place
+  that knows where the tiles live. Ships the ten **official** Trustpilot RGB tiles as
+  `assets/images/trustpilot/stars/`. Their colour is data — the scale runs red at one star to
+  green at four and a half — so they are the one asset set deliberately exempt from the token
+  rule, and the child theme's `5star-brown.svg` / `5star-white.svg` recolours are **not**
+  ported: they only ever rendered because `tp_overall_score()` hardcoded `$stars = 5`.
+- **`assets/styles/sd-call-us.css` + `inc/call-us.php`** — the design for the plugin's new
+  `sd/call-us` disclosure, attached to the block so it loads only where a Call Us button
+  renders (the `inc/mega-menu.php` arrangement — a non-core block is outside
+  `enqueue_custom_block_styles()`' `core-*` scan). Enqueued CSS rather than a JSON style
+  because three of the `css` field's documented limits apply at once: `content: ""` is mangled
+  and every glyph here is a pseudo-element, `:hover` is stripped, and a non-core block's *base*
+  styles have no JSON home at all — `theme.json`'s `styles.blocks` reaches only the block
+  wrapper, never the `__toggle` / `__panel` / `__number` descendants that need styling.
+- **`patterns/safari-expert.php`** — the "Chat to your safari expert" panel (K-01/K-02),
+  replacing `sd_lsx_to_contact()` / `sd_lsx_to_enquiry_contact()`. Portrait, eyebrow, name, the
+  Call Us disclosure, an email action and the Trustpilot badge. Live's `<h5>` eyebrow above an
+  `<h3>` name is a skipped level in the wrong direction; the eyebrow is a paragraph here (it
+  labels the panel, it does not head a section) and the name is an `<h2>`.
+- **Flag assets** — `assets/images/flags/{us,uk,za,aus}.svg`, ported unchanged from
+  `sd-lsx-child/images/`. Live sets them with `content: url(…)` on a `:before`, which cannot be
+  sized; they are background images on a sized box here so the row height is the theme's.
+
+### Changed
+
+- **The header's Trustpilot mark is the real badge, not a static image.** The previous pass put
+  `uploads/2019/07/trust-pilot-badge.png` in the utility bar — that reproduced the wrong one of
+  live's *two* Trustpilot marks. Live carries both: `#tb-horizon-review.tb-color-brown`, the
+  API-backed badge, and a `trust-menu` nav item holding a PNG linked to `#`. The second is
+  dropped (it duplicates the badge beside it and its link goes nowhere) and the first is now
+  built properly. The badge is inlined with `require`, **not** a nested `<!-- wp:pattern -->`
+  reference, which is silently dropped on front-end render while resolving fine under WP-CLI —
+  so `trustpilot-score.php` stays an independently insertable pattern.
+- **The Call Us dropdown is `sd/call-us`**, not a `core/navigation` submenu and not an
+  `ollie/mega-menu` block. A real disclosure button with `aria-expanded`, supplied by the
+  plugin. This drops the `wp:navigation` block from the utility bar and with it menu **65879**
+  ("SD Utility Navigation"), which existed only to hold two phone numbers — it can be deleted
+  on dev once this ships.
+- **`parts/dropdown-call-us.html` now holds the four office numbers** — US, UK (toll free),
+  South Africa and Australia (toll free), each with its flag class. It stays a template part
+  rather than becoming inline pattern markup precisely so the header utility bar and the safari
+  expert panel read the *same* file: live builds the widget twice and the two drifted to two
+  numbers and four. It also keeps the numbers editable in the Site Editor, which is right —
+  they are content.
+- **The Call Us panel is softened from live.** Live draws a hard-edged white rectangle with a
+  1px grey border butted flush against the trigger. This has a `200` radius, a `300` shadow, a
+  caret notch pointing at its button, hairline row separators and a hover tint. The 8px of
+  clearance between button and panel is affordable only because this opens on *click* — live's
+  expert-panel copy opens on hover, where a gap would drop the panel mid-travel.
+- **`assets/styles/core-navigation.css`** — the `.sd-header__call-us
+  .wp-block-navigation__submenu-container` rules are removed. They styled a submenu container
+  that no longer exists now that Call Us is not a navigation block.
+
 - **Site header rebuilt as blocks** — LS-2014 task 4, the header half. A slim utility bar
   (Trustpilot link, Call Us dropdown) above a main row (logo, mega-menu navigation, search,
   "Get in touch"), replacing the scaffold. Four mega-menu panels ship as `menu`-area template
@@ -25,8 +85,9 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `ollie/mega-menu` by the new `inc/mega-menu.php`. A non-core block is outside
   `enqueue_custom_block_styles()`' `core-*` scan, and the panel container is generated by the
   plugin's own `render.php`, so no block-style variation can reach it.
-- **`parts/dropdown-call-us.html`** — the Call Us dropdown panel, rendered by the Ollie
-  mega-menu block in the utility bar.
+- **`parts/dropdown-call-us.html`** — the Call Us dropdown panel. (Superseded further up this
+  release: it is the panel of the plugin's `sd/call-us` block now, and it holds four numbers
+  rather than two.)
 - **`styles/sections/utility-bar.json`** — the utility bar's section style.
 
 ### Changed
@@ -40,22 +101,22 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   flat URLs they were first authored with (`/why-book-with-us/`) were simply wrong; the
   correct path is `/about-us/why-book-with-us/`.
   Local is a fixture environment with no menus, so the header renders core's fallback there.
-- **The Call Us dropdown is an `ollie/mega-menu` block**, not a core navigation submenu — its
-  panel is the authored `parts/dropdown-call-us.html` and its disclosure is a real button with
-  `aria-expanded`, supplied by the plugin. Its menu was flattened out of the classic-menu
-  structure it was migrated in, dropping the Font Awesome `<i>` markup and `<br>` from the
-  labels.
+- **The Call Us dropdown's menu was flattened** out of the classic-menu structure it was
+  migrated in, dropping the Font Awesome `<i>` markup and `<br>` from the labels.
+  (This entry originally said the dropdown was an `ollie/mega-menu` block with a
+  plugin-supplied disclosure. Neither half was true: it shipped as a `core/navigation` submenu,
+  and no such disclosure existed in the plugin. It is `sd/call-us` now, and the disclosure is
+  real — see further up this release.)
 - **`parts/mobile-menu.html` rewritten** — logo, search, the tiered mobile navigation, a
   full-width "Get in touch" and the Call Us numbers, on the dark panel live uses. Rendered
   into the overlay by Ollie Menu Designer's `mobileMenuSlug`. Desktop and mobile navigation
   are two blocks swapped by a media query at 1200px, live's own header breakpoint —
   kwv-theme-2026 does this with the Block Visibility plugin, which is not installed here.
-- **Trustpilot badge** — the static mark in the utility bar, attachment 50269
-  (`2019/07/trust-pilot-badge.png`, 423×31), shown at 160px so it sits level with the bar's
-  type. Linked to the reviews page rather than live's `href="#"`, which gives a keyboard user
-  a focus stop that does nothing. The media library holds several near-identical marks; 55331
-  (`trust-pilot-top-menu.svg`) is an SVG named for this slot and would scale better if the
-  badge is ever shown larger.
+- **Trustpilot badge** — originally the static mark in the utility bar, attachment 50269
+  (`2019/07/trust-pilot-badge.png`), linked to the reviews page rather than live's `href="#"`.
+  **Superseded further up this release:** that was the wrong one of live's two Trustpilot
+  marks — the static `trust-menu` PNG rather than the API-backed `#tb-horizon-review` badge —
+  and the utility bar now carries `patterns/trustpilot-score.php` instead.
 
 ### Removed
 

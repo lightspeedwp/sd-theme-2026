@@ -1,0 +1,352 @@
+/* Call Us — the contact-number disclosure
+   ---------------------------------------------------------------------------
+   Design for `sd/call-us`, which ships the button and the panel wiring and no
+   markup beyond them. Everything visual is here: the phone glyph, the chevron,
+   the flags, and the shape of the panel.
+
+   Attached to the block by inc/call-us.php, so none of this loads on a page
+   with no Call Us button on it.
+
+   ## Why this is enqueued CSS and not a JSON style
+
+   AGENTS.md, "Styling lives in JSON", makes `assets/styles/*.css` the last
+   resort. Three of its named limits apply here at once, and between them they
+   account for nearly every rule in this file:
+
+     1. **`content: ""` is mangled by the `css` field.** The phone glyph, the
+        chevron and the notch are all pseudo-element shapes, so every one of
+        them needs `content` — the single largest category of rule here.
+     2. **`:hover` / `:focus` are stripped from the `css` field.** The row tint
+        and the link underline are hover flips.
+     3. **A non-core block's *base* styles have no JSON home.** `styles/**`
+        partials are *variations* — they register an `is-style-*` class an author
+        has to apply — and `theme.json`'s `styles.blocks` reaches only the block
+        *wrapper* (`.wp-block-sd-call-us`), never a descendant. Almost everything
+        that needs styling here is a descendant: `__toggle`, `__panel`,
+        `__number`. There is no structured-props route to any of them.
+
+   So the structural rules sit alongside the pseudo-elements they belong with,
+   rather than being split across two files for the sake of the form. Colour,
+   spacing, radius, shadow, border-width, weight and letter-spacing are all read
+   from presets, so the tokens are still the single source of truth.
+
+   ## What changed from live, and why
+
+   Live draws the panel as a hard-edged rectangle — `#fff`, a 1px `#ccc` border,
+   no radius and no shadow, butted flush against the trigger. Zared asked for
+   the same content in a softer container, so:
+
+     * a 200 radius and a 300 shadow, both theme presets, so the panel reads as
+       floating above the page rather than welded to the bar;
+     * a small caret notch pointing at the button, which is what tells a reader
+       *which* control opened this thing — live has nothing, so on the expert
+       panel the numbers appear to belong to whatever is beside them;
+     * 8px of clearance between button and panel, which live does not have.
+       It is affordable here only because this opens on *click* — the live
+       expert-panel copy opens on hover, where a gap would drop the panel
+       mid-travel;
+     * rows separated by hairlines instead of nothing, and a hover tint, so a
+       four-row list reads as four targets.
+
+   Everything else is live's: the four numbers, their labels, the flags, the
+   label-above-number stacking, and the phone glyph on both the button and each
+   row.
+
+   ## The flags
+
+   Live sets them with `content: url(../../images/us.svg)` on an `:before`,
+   which cannot be sized — the glyph renders at the SVG's intrinsic size and the
+   rule has no way to constrain it. These are background images on a sized box
+   instead, so the row height is ours and the flag scales with the type.
+
+   The four SVGs are ported from sd-lsx-child/images/ unchanged. */
+
+/* Wrapper. `position: relative` is the anchor for the absolutely-positioned
+   panel, and the stacking context that keeps it above the utility bar's
+   siblings without needing a z-index war.
+
+   The phone glyph is a data URI rather than a file: it is one 24px path, it is
+   used by both the button and every row, and inlining it means the icon cannot
+   404 out of a deploy that missed an asset. The flags are files — they are
+   detailed enough that inlining four of them would bloat this sheet. */
+.sd-call-us {
+	--sd-call-us-phone: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.6 10.8c1 1.9 2.6 3.6 4.6 4.6l1.5-1.5c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-8.3 0-15-6.7-15-15 0-.6.4-1 1-1h3.7c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.3 1.1l-1.6 1.2z"/></svg>');
+	--sd-flag-us: url("../images/flags/us.svg");
+	--sd-flag-uk: url("../images/flags/uk.svg");
+	--sd-flag-za: url("../images/flags/za.svg");
+	--sd-flag-aus: url("../images/flags/aus.svg");
+
+	position: relative;
+	display: inline-flex;
+}
+
+/* Toggle
+   ---------------------------------------------
+   A real <button>, so it arrives carrying the UA's button styling. Reset that
+   to nothing and inherit type from the context: in the utility bar this sits in
+   a 100-size row, in the expert panel it is styled as a button by the pattern's
+   own classes. The block is used in both places, so this must not impose a
+   size. */
+.sd-call-us__toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	letter-spacing: inherit;
+	text-transform: inherit;
+	cursor: pointer;
+}
+
+/* The phone glyph, live's `<i class="fa fa-phone">`. A mask rather than a font
+   glyph or an inline SVG: the theme carries no icon font, and a mask takes
+   `currentColor`, so the icon follows the button's colour into the utility bar,
+   the dark expert panel and every hover state without a second asset. */
+.sd-call-us__toggle::before {
+	content: "";
+	flex: 0 0 auto;
+	width: 1em;
+	height: 1em;
+	background-color: currentColor;
+	-webkit-mask: var(--sd-call-us-phone) center / contain no-repeat;
+	mask: var(--sd-call-us-phone) center / contain no-repeat;
+}
+
+/* The chevron, live's `<span class="caret">`. A CSS triangle, so it inherits
+   colour and needs no asset at all. */
+.sd-call-us__toggle::after {
+	content: "";
+	flex: 0 0 auto;
+	width: 0;
+	height: 0;
+	border-inline: 0.3em solid transparent;
+	border-block-start: 0.35em solid currentColor;
+	transition: transform 0.2s ease;
+}
+
+/* Rotated off `aria-expanded`, not off a class: that attribute is the state as
+   far as assistive technology is concerned, so styling from it means the arrow
+   can never disagree with what a screen reader is announcing. */
+.sd-call-us__toggle[aria-expanded="true"]::after {
+	transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sd-call-us__toggle::after {
+		transition-duration: 1ms;
+	}
+}
+
+/* Panel
+   ---------------------------------------------
+   The block sets `hidden` while closed, so there is no closed state to write
+   here — `hidden` does it. Nothing below may re-show the panel with `display`,
+   or the attribute stops being the single source of truth and a keyboard user
+   can tab into an invisible list. */
+.sd-call-us__panel {
+	position: absolute;
+	inset-block-start: calc(100% + 8px);
+	z-index: 200;
+	min-width: max(14rem, 100%);
+	padding: var(--wp--preset--spacing--10) 0;
+	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-300);
+	border-radius: var(--wp--preset--border-radius--200);
+	background-color: var(--wp--preset--color--base);
+	box-shadow: var(--wp--preset--shadow--300);
+	color: var(--wp--preset--color--neutral-800);
+	text-align: start;
+}
+
+/* Alignment. `start` is the default and the header's case; `end` is for a button
+   sitting at the right of its row, where a start-aligned panel would push off
+   the viewport. Logical properties, so both flip under RTL for free. */
+.sd-call-us--start > .sd-call-us__panel {
+	inset-inline-start: 0;
+}
+
+.sd-call-us--end > .sd-call-us__panel {
+	inset-inline-end: 0;
+}
+
+/* The notch. Two stacked squares — the lower one border-coloured, the upper one
+   base-coloured and 1px further down — so the caret gets the panel's own
+   1px border on its two exposed edges without a second element in the markup. */
+.sd-call-us__panel::before,
+.sd-call-us__panel::after {
+	content: "";
+	position: absolute;
+	inset-block-start: -5px;
+	width: 10px;
+	height: 10px;
+	transform: rotate(45deg);
+	pointer-events: none;
+}
+
+.sd-call-us__panel::before {
+	background-color: var(--wp--preset--color--neutral-300);
+}
+
+.sd-call-us__panel::after {
+	inset-block-start: -4px;
+	background-color: var(--wp--preset--color--base);
+}
+
+.sd-call-us--start > .sd-call-us__panel::before,
+.sd-call-us--start > .sd-call-us__panel::after {
+	inset-inline-start: 18px;
+}
+
+.sd-call-us--end > .sd-call-us__panel::before,
+.sd-call-us--end > .sd-call-us__panel::after {
+	inset-inline-end: 18px;
+}
+
+/* Rows
+   ---------------------------------------------
+   The template part authors each number as a paragraph: a <strong> label, a
+   <br>, then a `tel:` link. The paragraph is the row. */
+.sd-call-us__numbers {
+	display: flex;
+	flex-direction: column;
+}
+
+.sd-call-us__number {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	column-gap: var(--wp--preset--spacing--10);
+	align-items: center;
+	margin: 0;
+	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
+	line-height: var(--wp--custom--line-height--snug);
+	transition: background-color 0.2s ease;
+}
+
+/* Hairlines between rows, not around them, so the list reads as one object. */
+.sd-call-us__number + .sd-call-us__number {
+	border-block-start: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-200);
+}
+
+.sd-call-us__number:hover,
+.sd-call-us__number:focus-within {
+	background-color: var(--wp--preset--color--neutral-100);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sd-call-us__number {
+		transition-duration: 1ms;
+	}
+}
+
+/* The flag occupies the first grid column and spans both rows of the row's
+   content, so it sits centred against the label-and-number stack rather than
+   against the label alone. */
+.sd-call-us__number::before {
+	content: "";
+	grid-column: 1;
+	grid-row: 1;
+	width: 1.5em;
+	height: 1.125em;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	/* A hairline so a flag with white at its edge (the US and UK ones both do)
+	   still reads as a rectangle against the panel. color-mix on a preset rather
+	   than a raw rgba(), same as the scrim in core-group.css. */
+	box-shadow: 0 0 0 var(--wp--custom--border-width--100)
+		color-mix(in srgb, var(--wp--preset--color--neutral-900) 12%, transparent);
+}
+
+.sd-call-us__number--us::before {
+	background-image: var(--sd-flag-us);
+}
+
+.sd-call-us__number--uk::before {
+	background-image: var(--sd-flag-uk);
+}
+
+.sd-call-us__number--za::before {
+	background-image: var(--sd-flag-za);
+}
+
+.sd-call-us__number--aus::before {
+	background-image: var(--sd-flag-aus);
+}
+
+/* The label ("US:", "UK (Toll free):") and the number share the second column.
+   `<strong>` inherits the theme's semi-bold; drop it to the muted neutral so the
+   number is the thing the eye lands on — live gives both the same weight and
+   colour, which makes a four-row list hard to scan. */
+.sd-call-us__number > strong {
+	color: var(--wp--preset--color--neutral-600);
+	font-size: 0.85em;
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+	letter-spacing: var(--wp--custom--letter-spacing--narrow);
+	text-transform: uppercase;
+}
+
+.sd-call-us__number a {
+	color: inherit;
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.sd-call-us__number a:hover,
+.sd-call-us__number a:focus-visible {
+	text-decoration: underline;
+}
+
+/* Each row carries live's phone glyph in front of the number. Same mask as the
+   button's, so there is one asset for both. */
+.sd-call-us__number a::before {
+	content: "";
+	display: inline-block;
+	width: 0.85em;
+	height: 0.85em;
+	margin-inline-end: 0.4em;
+	background-color: currentColor;
+	-webkit-mask: var(--sd-call-us-phone) center / contain no-repeat;
+	mask: var(--sd-call-us-phone) center / contain no-repeat;
+}
+
+/* Narrow viewports
+   ---------------------------------------------
+   Below the point where an anchored pop-out has room to be anchored, the panel
+   spans the wrapper and stops trying to point at anything. */
+@media (max-width: 480px) {
+	.sd-call-us__panel {
+		position: absolute;
+		inset-inline: auto;
+		inset-inline-start: 0;
+		min-width: min(20rem, calc(100vw - 2 * var(--wp--preset--spacing--20)));
+	}
+
+	.sd-call-us--end > .sd-call-us__panel {
+		inset-inline-start: auto;
+		inset-inline-end: 0;
+	}
+}
+
+/* Editor
+   ---------------------------------------------
+   `edit` renders the inner blocks as a plain open stack with no button, so the
+   panel must not be absolutely positioned there or it would float over the
+   blocks after it and be unselectable. `.editor-styles-wrapper` only exists
+   inside the editor iframe, so the front end is untouched. */
+.editor-styles-wrapper .sd-call-us {
+	display: block;
+}
+
+.editor-styles-wrapper .sd-call-us__panel {
+	position: static;
+	box-shadow: none;
+}
+
+.editor-styles-wrapper .sd-call-us__panel::before,
+.editor-styles-wrapper .sd-call-us__panel::after {
+	display: none;
+}
