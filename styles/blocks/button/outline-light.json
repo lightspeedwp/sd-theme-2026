@@ -1,0 +1,54 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Outline Light",
+	"slug": "outline-light",
+	"blockTypes": [ "core/button" ],
+	"description": "The secondary action on dark and brand-filled grounds — the live `.btn.white-border-btn` pairing, and the counterpart to the core Outline variation, which is brand-bordered for light grounds. Transparent fill, a base border, base label. Square, like every button in the theme: the live rule carries a 2px radius but nothing else in the design does, so it is squared off here. Hover fills with base and flips the label to primary-500 so the contrast holds in both directions. Geometry, type and padding are inherited from the button element.",
+	"styles": {
+		"color": {
+			"background": "transparent",
+			"text": "var:preset|color|base"
+		},
+		"border": {
+			"radius": "var:preset|border-radius|0",
+			"width": "var:custom|border-width|200",
+			"style": "solid",
+			"color": "var:preset|color|base"
+		},
+		"spacing": {
+			"padding": {
+				"top": "var:custom|spacing|button|padding-vertical",
+				"right": "var:custom|spacing|button|padding-horizontal",
+				"bottom": "var:custom|spacing|button|padding-vertical",
+				"left": "var:custom|spacing|button|padding-horizontal"
+			}
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|heading",
+			"fontSize": "var:preset|font-size|300",
+			"fontWeight": "var:custom|font-weight|semi-bold",
+			"lineHeight": "var:custom|line-height|button",
+			"textTransform": "uppercase",
+			"letterSpacing": "var:custom|letter-spacing|narrow"
+		},
+		":hover": {
+			"color": {
+				"background": "var:preset|color|base",
+				"text": "var:preset|color|primary-500"
+			},
+			"border": {
+				"color": "var:preset|color|base"
+			}
+		},
+		":focus": {
+			"color": {
+				"background": "var:preset|color|base",
+				"text": "var:preset|color|primary-500"
+			},
+			"border": {
+				"color": "var:preset|color|base"
+			}
+		}
+	}
+}

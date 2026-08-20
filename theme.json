@@ -302,8 +302,8 @@
 			},
 			"spacing": {
 				"button": {
-					"padding-horizontal": "clamp(32px, 14vw, 48px)",
-					"padding-vertical": "clamp(14px, 10vw, 18px)"
+					"padding-vertical": "0.875rem",
+					"padding-horizontal": "2rem"
 				}
 			},
 			"borderWidth": {
@@ -436,35 +436,13 @@
 				{
 					"name": "Heading",
 					"slug": "heading",
-					"fontFamily": "Optima, Belleza, sans-serif",
+					"fontFamily": "Optima, Belleza, sans-serif"
+				},
+				{
+					"name": "Belleza",
+					"slug": "belleza",
+					"fontFamily": "Belleza, sans-serif",
 					"fontFace": [
-						{
-							"fontFamily": "Optima",
-							"fontWeight": "400",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/optima-400-normal.woff2"
-							]
-						},
-						{
-							"fontFamily": "Optima",
-							"fontWeight": "500",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/optima-500-normal.woff2"
-							]
-						},
-						{
-							"fontFamily": "Optima",
-							"fontWeight": "600 700",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/optima-700-normal.woff2"
-							]
-						},
 						{
 							"fontFamily": "Belleza",
 							"fontWeight": "400",
@@ -559,7 +537,14 @@
 							"src": [
 								"file:./assets/fonts/joe-hand-400-normal.woff2"
 							]
-						},
+						}
+					]
+				},
+				{
+					"name": "La Belle Aurore",
+					"slug": "la-belle-aurore",
+					"fontFamily": "\"La Belle Aurore\", cursive",
+					"fontFace": [
 						{
 							"fontFamily": "La Belle Aurore",
 							"fontWeight": "400",
@@ -668,7 +653,17 @@
 		"blocks": {
 			"core/button": {
 				"variations": {
-					"outline": {
+					"fill": {
+						"color": {
+							"background": "var:preset|color|brand-500",
+							"text": "var:preset|color|base"
+						},
+						"border": {
+							"radius": "var:preset|border-radius|0",
+							"width": "var:custom|border-width|200",
+							"style": "solid",
+							"color": "transparent"
+						},
 						"spacing": {
 							"padding": {
 								"top": "var:custom|spacing|button|padding-vertical",
@@ -678,29 +673,72 @@
 							}
 						},
 						"typography": {
+							"fontFamily": "var:preset|font-family|heading",
 							"fontSize": "var:preset|font-size|300",
-							"fontWeight": "var:custom|font-weight|medium",
+							"fontWeight": "var:custom|font-weight|semi-bold",
+							"lineHeight": "var:custom|line-height|button",
 							"textTransform": "uppercase",
-							"letterSpacing": "var:custom|letter-spacing|wide"
-						},
-						"color": {
-							"background": "var:preset|color|contrast",
-							"text": "var:preset|color|base"
-						},
-						"border": {
-							"width": "1px",
-							"style": "solid",
-							"color": "var:preset|color|base"
+							"letterSpacing": "var:custom|letter-spacing|narrow"
 						},
 						":hover": {
 							"color": {
-								"background": "var:preset|color|base",
-								"text": "var:preset|color|contrast"
+								"background": "var:preset|color|brand-600",
+								"text": "var:preset|color|base"
 							},
 							"border": {
-								"width": "1px",
-								"style": "solid",
-								"color": "var:preset|color|base"
+								"color": "transparent"
+							}
+						},
+						":focus": {
+							"color": {
+								"background": "var:preset|color|brand-600",
+								"text": "var:preset|color|base"
+							}
+						}
+					},
+					"outline": {
+						"color": {
+							"background": "transparent",
+							"text": "var:preset|color|brand-600"
+						},
+						"border": {
+							"radius": "var:preset|border-radius|0",
+							"width": "var:custom|border-width|200",
+							"style": "solid",
+							"color": "var:preset|color|brand-500"
+						},
+						"spacing": {
+							"padding": {
+								"top": "var:custom|spacing|button|padding-vertical",
+								"right": "var:custom|spacing|button|padding-horizontal",
+								"bottom": "var:custom|spacing|button|padding-vertical",
+								"left": "var:custom|spacing|button|padding-horizontal"
+							}
+						},
+						"typography": {
+							"fontFamily": "var:preset|font-family|heading",
+							"fontSize": "var:preset|font-size|300",
+							"fontWeight": "var:custom|font-weight|semi-bold",
+							"lineHeight": "var:custom|line-height|button",
+							"textTransform": "uppercase",
+							"letterSpacing": "var:custom|letter-spacing|narrow"
+						},
+						":hover": {
+							"color": {
+								"background": "var:preset|color|brand-500",
+								"text": "var:preset|color|base"
+							},
+							"border": {
+								"color": "var:preset|color|brand-500"
+							}
+						},
+						":focus": {
+							"color": {
+								"background": "var:preset|color|brand-500",
+								"text": "var:preset|color|base"
+							},
+							"border": {
+								"color": "var:preset|color|brand-500"
 							}
 						}
 					}
@@ -1037,18 +1075,18 @@
 		},
 		"color": {
 			"background": "var:preset|color|base",
-			"text": "var:preset|color|contrast"
+			"text": "var:preset|color|neutral-700"
 		},
 		"elements": {
 			"button": {
 				"border": {
-					"radius": "0",
-					"width": "1px",
-					"color": "var:preset|color|base",
-					"style": "solid"
+					"radius": "var:preset|border-radius|0",
+					"width": "var:custom|border-width|200",
+					"style": "solid",
+					"color": "transparent"
 				},
 				"color": {
-					"background": "color-mix(in srgb, var(--wp--preset--color--contrast) 20%, transparent)",
+					"background": "var:preset|color|brand-500",
 					"text": "var:preset|color|base"
 				},
 				"spacing": {
@@ -1060,17 +1098,19 @@
 					}
 				},
 				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
 					"fontSize": "var:preset|font-size|300",
-					"fontWeight": "var:custom|font-weight|medium",
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"lineHeight": "var:custom|line-height|button",
 					"textTransform": "uppercase",
-					"letterSpacing": "var:custom|letter-spacing|wide"
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				},
 				":hover": {
 					"color": {
-						"background": "var:preset|color|contrast"
+						"background": "var:preset|color|brand-600"
 					}
 				},
-				"css": "& { transition: all 0.25s ease-in-out; } & svg { transition: all 0.25s ease-in-out; }"
+				"css": "& { transition: background-color 0.25s ease-in-out, border-color 0.25s ease-in-out, color 0.25s ease-in-out; } & svg { transition: all 0.25s ease-in-out; }"
 			},
 			"h1": {
 				"typography": {
@@ -1085,7 +1125,8 @@
 					"fontSize": "var:preset|font-size|500",
 					"lineHeight": "var:custom|line-height|heading",
 					"fontWeight": "var:custom|font-weight|bold",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"letterSpacing": "var:custom|letter-spacing|heading",
+					"textTransform": "uppercase"
 				}
 			},
 			"h3": {
@@ -1116,15 +1157,13 @@
 				"typography": {
 					"fontSize": "var:preset|font-size|200",
 					"lineHeight": "var:custom|line-height|button",
-					"textTransform": "uppercase",
 					"letterSpacing": "var:custom|letter-spacing|wide"
 				}
 			},
 			"heading": {
 				"typography": {
 					"fontFamily": "var:preset|font-family|heading",
-					"lineHeight": "var:custom|line-height|heading",
-					"textTransform": "uppercase"
+					"lineHeight": "var:custom|line-height|heading"
 				}
 			},
 			"link": {

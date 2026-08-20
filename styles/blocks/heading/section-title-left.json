@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Section Title (Left)",
+	"slug": "section-title-left",
+	"blockTypes": [ "core/heading" ],
+	"description": "The left-aligned variant of Section Title, matching the live `.lsx-title.lsx-title-left:after` rule, which swaps the gold rule's `margin: 8px auto` for `margin: 8px 0` so it sits flush with the text rather than centred. Used where a section header shares a row with body copy or a card, as on the accommodation and tour singles. The rule is drawn in assets/styles/core-heading.css.",
+	"styles": {
+		"color": {
+			"text": "var:preset|color|neutral-700"
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|heading",
+			"fontSize": "var:preset|font-size|500",
+			"fontWeight": "var:custom|font-weight|bold",
+			"lineHeight": "var:custom|line-height|heading",
+			"textTransform": "uppercase",
+			"letterSpacing": "var:custom|letter-spacing|none"
+		},
+		"spacing": {
+			"margin": {
+				"bottom": "var:preset|spacing|20"
+			}
+		}
+	}
+}

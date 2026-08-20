@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Shadow Text",
+	"slug": "shadow-text",
+	"blockTypes": [
+		"core/heading", "core/paragraph", "core/post-title"
+	],
+	"description": "Subtle dark shadow for headings over image backgrounds",
+	"styles": {
+		"css": "& { text-shadow: 2px 2px 4px color-mix(in srgb, var(--wp--preset--color--neutral-900) 50%, transparent); }"
+	}
+}

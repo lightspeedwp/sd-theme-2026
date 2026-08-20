@@ -4,10 +4,11 @@
 	"title": "Light Page Section",
 	"slug": "light-page-section",
 	"blockTypes": [ "core/group" ],
+	"description": "The default page band: a base (white) background with neutral-700 body copy. On the live site this is the plain `.lsx-block-container` — the homepage alternates it with the tinted band all the way down the page. Vertical padding is preset 70, which lands on the ~64-71px the live containers resolve to at 1440px (they use percentage padding, so the block theme pins it to the spacing scale instead).",
 	"styles": {
 		"color": {
 			"background": "var:preset|color|base",
-			"text": "var:preset|color|contrast"
+			"text": "var:preset|color|neutral-700"
 		},
 		"spacing": {
 			"blockGap": "var:preset|spacing|40",
@@ -19,6 +20,23 @@
 				"right": "var:preset|spacing|20",
 				"bottom": "var:preset|spacing|70",
 				"left": "var:preset|spacing|20"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|brand-600"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand-500"
+					}
+				}
 			}
 		}
 	}

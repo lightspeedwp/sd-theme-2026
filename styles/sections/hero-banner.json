@@ -1,0 +1,40 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Hero Banner",
+	"slug": "hero-banner",
+	"blockTypes": [ "core/cover", "core/group" ],
+	"description": "The page banner: a full-bleed image roughly 680px tall on the homepage and 454px on inner pages, with a warm-dark scrim and the title block sitting left of centre on the content measure. The live pairing is a Joe Hand script line over an uppercase heading-face subtitle, both in base — see the Script Accent and Section Title heading styles. The scrim is neutral-900 at 45%, a step up from the 30% the archive cards use, because the banner carries text rather than just a label. Positioning of the inner text block stays with the pattern; this style owns the ground, the scrim and the type colours.",
+	"styles": {
+		"color": {
+			"text": "var:preset|color|base"
+		},
+		"spacing": {
+			"blockGap": "var:preset|spacing|10",
+			"padding": {
+				"top": "var:preset|spacing|90",
+				"right": "var:preset|spacing|20",
+				"bottom": "var:preset|spacing|90",
+				"left": "var:preset|spacing|20"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|base"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|base"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|accent-300"
+					}
+				}
+			}
+		},
+		"css": "& { position: relative; min-height: 454px; display: flex; align-items: center; } & > .wp-block-cover__background, & > .wp-block-group__inner-container { z-index: 1; } & .wp-block-cover__background { background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 45%, transparent) !important; }"
+	}
+}

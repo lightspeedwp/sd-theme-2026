@@ -1,5 +1,33 @@
 /* Query pagination
---------------------------------------------- */
+---------------------------------------------
+Ported from the live site's `.lsx-pagination > .page-numbers` rule, measured
+2026-08-20 on /blog/: each number is a 40x40 square with a 2px #B4A48C border,
+no radius, transparent fill and #4C5250 label type at 15px. The current page
+inverts — the border colour becomes the fill and the label goes white.
+
+Colour, revised 2026-08-20: the border and label are primary-500 (#554234) and
+the plate fills with primary-500 on hover. Live draws them in the warm taupe
+#B4A48C, which maps to neutral-400 (#C3B6A6) — but that step is only 1.9:1
+against white, so the borders barely register and the label on the filled
+current page is weak. primary-500 measures 9.48:1 both ways, so the resting
+border, the label and the inverted current plate are all AAA. The taupe stays
+mapped to neutral-400 for the slider arrows, where it is decorative.
+
+The border is 1px rather than the 2px live uses — at primary-500's weight a 2px
+rule reads much heavier than the taupe original did.
+
+Why CSS and not a block-style JSON: the numbers are bare <a>/<span> children of
+the block with no per-item block support to hang a variation off, and the
+`current` state needs a class selector core does not expose to theme.json.
+
+Specificity note — this bit matters. theme.json sets a link treatment for this
+block at `styles.blocks.core/query-pagination.elements.link`, which compiles to
+`:root :where(.wp-block-query-pagination a:where(:not(.wp-element-button)))`.
+Everything inside `:where()` counts as zero, so that rule lands at (0,1,0) —
+exactly tying a bare `.wp-block-query-pagination-next` and beating it on source
+order, which silently stripped the border off the prev/next arrows. Every
+selector below is therefore descendant-scoped to reach (0,2,1) or higher. Don't
+flatten them back to single classes. */
 
 .wp-block-query-pagination-previous,
 .wp-block-query-pagination-next,
@@ -7,11 +35,57 @@
 	margin: 0 !important;
 }
 
-.wp-block-query-pagination-numbers a {
-	display: inline-block;
+.wp-block-query-pagination .wp-block-query-pagination-numbers .page-numbers,
+.wp-block-query-pagination a.wp-block-query-pagination-previous,
+.wp-block-query-pagination a.wp-block-query-pagination-next {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 40px;
+	min-height: 40px;
+	padding: 0 0.5em;
+	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--primary-500);
+	border-radius: var(--wp--preset--border-radius--0);
+	background-color: transparent;
+	color: var(--wp--preset--color--primary-500);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--200);
+	line-height: 1;
+	text-decoration: none;
+	transition: background-color 0.25s, border-color 0.25s, color 0.25s;
 }
 
-.wp-block-query-pagination-numbers span.page-numbers {
-	padding-left: .7em;
-	padding-right: .7em;
+/* The current page inverts to a filled plate. */
+.wp-block-query-pagination .wp-block-query-pagination-numbers .page-numbers.current {
+	background-color: var(--wp--preset--color--primary-500);
+	color: var(--wp--preset--color--base);
+}
+
+/* Live has no hover state on pagination at all. A click target with no hover
+   feedback is a defect rather than a design decision, so the brand fill is
+   added here — recorded as a deliberate departure in style.md. */
+.wp-block-query-pagination .wp-block-query-pagination-numbers a.page-numbers:hover,
+.wp-block-query-pagination .wp-block-query-pagination-numbers a.page-numbers:focus,
+.wp-block-query-pagination a.wp-block-query-pagination-previous:hover,
+.wp-block-query-pagination a.wp-block-query-pagination-previous:focus,
+.wp-block-query-pagination a.wp-block-query-pagination-next:hover,
+.wp-block-query-pagination a.wp-block-query-pagination-next:focus {
+	background-color: var(--wp--preset--color--primary-500);
+	border-color: var(--wp--preset--color--primary-500);
+	color: var(--wp--preset--color--base);
+}
+
+/* The ellipsis is a label, not a target — no plate, no border. */
+.wp-block-query-pagination .wp-block-query-pagination-numbers .page-numbers.dots {
+	min-width: auto;
+	border-color: transparent;
+	background-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-query-pagination .wp-block-query-pagination-numbers .page-numbers,
+	.wp-block-query-pagination a.wp-block-query-pagination-previous,
+	.wp-block-query-pagination a.wp-block-query-pagination-next {
+		transition-duration: 1ms;
+	}
 }

@@ -4,22 +4,17 @@
 	"title": "Section Header",
 	"slug": "section-header",
 	"blockTypes": [ "core/group" ],
+	"description": "The centred cluster that opens a section: an optional Script Accent line, a Section Title heading, and a short intro paragraph, held to the content measure and centred as a group. It carries no rule of its own — the gold rule belongs to the Section Title heading inside it, which is how the live site draws it (`.lsx-title:after`). The previous KWV version put a 1px brand border along the bottom of the group; the live site has no such border anywhere, so it was removed rather than recoloured.",
 	"styles": {
-		"border": {
-			"bottom": {
-				"color": "var:preset|color|brand-500",
-				"style": "solid",
-				"width": "1px"
+		"spacing": {
+			"blockGap": "var:preset|spacing|10",
+			"margin": {
+				"top": "0",
+				"bottom": "var:preset|spacing|50"
 			}
 		},
-		"spacing": {
-			"margin": {
-				"top": "0"
-			},
-			"padding": {
-				"bottom": "var:preset|spacing|10",
-				"left": "var:preset|spacing|30"
-			}
+		"typography": {
+			"textAlign": "center"
 		}
 	}
 }
