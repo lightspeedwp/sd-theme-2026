@@ -4,10 +4,11 @@
 	"title": "Tinted Page Section",
 	"slug": "tinted-page-section",
 	"blockTypes": [ "core/group" ],
+	"description": "The warm off-white band — neutral-200, which is #F7F5F2 exactly as measured on the live site, where it is the second most used colour after the brand orange (34 references). It alternates with the Light Page Section to break a long page into readable stripes, and is also the header bar's fill. Same padding and link treatment as the light band; only the ground changes.",
 	"styles": {
 		"color": {
-			"background": "var:preset|color|brand-100",
-			"text": "var:preset|color|contrast"
+			"background": "var:preset|color|neutral-200",
+			"text": "var:preset|color|neutral-700"
 		},
 		"spacing": {
 			"blockGap": "var:preset|spacing|40",
@@ -15,10 +16,27 @@
 				"top": "0"
 			},
 			"padding": {
-				"top": "var:preset|spacing|50",
+				"top": "var:preset|spacing|70",
 				"right": "var:preset|spacing|20",
-				"bottom": "var:preset|spacing|50",
+				"bottom": "var:preset|spacing|70",
 				"left": "var:preset|spacing|20"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|brand-600"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand-500"
+					}
+				}
 			}
 		}
 	}

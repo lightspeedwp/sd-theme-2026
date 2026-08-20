@@ -41,7 +41,7 @@
 				"typography": {
 					"fontSize": "var:preset|font-size|400",
 					"fontWeight": "var:custom|font-weight|semi-bold",
-					"lineHeight": "var:preset|line-height|heading",
+					"lineHeight": "var:custom|line-height|heading",
 					"textTransform": "uppercase"
 				}
 			}

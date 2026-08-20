@@ -1,0 +1,40 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Brand Page Section",
+	"slug": "brand-page-section",
+	"blockTypes": [ "core/group", "core/column" ],
+	"description": "The solid brand-500 panel — on the live site this is the \"Chat to our safari expert\" block that appears beside the intro copy on every archive and single, and the enquiry panel on the team singles. Base text throughout, and links stay base rather than going gold, because gold on orange fails contrast badly. Pair it with the Outline Light and CTA buttons. Note that brand-500 carries white text at 3.17:1, which is AA-large only: keep the type in here at 18.66px bold or larger, which is what the live panel already does.",
+	"styles": {
+		"color": {
+			"background": "var:preset|color|brand-500",
+			"text": "var:preset|color|base"
+		},
+		"spacing": {
+			"blockGap": "var:preset|spacing|30",
+			"padding": {
+				"top": "var:preset|spacing|40",
+				"right": "var:preset|spacing|40",
+				"bottom": "var:preset|spacing|40",
+				"left": "var:preset|spacing|40"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|base"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|base"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand-100"
+					}
+				}
+			}
+		}
+	}
+}

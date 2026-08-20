@@ -8,6 +8,54 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **Block and section styles ported from the live site** — 18 styles covering LS-2013 tasks
+  3.6 and 3.7, measured off the rendered page on 2026-08-20 rather than the theme repos,
+  because roughly half the live styling is generated at render time from `wp_options`.
+  Provenance, the JSON-vs-CSS routing table and ten open decisions are recorded in
+  `style.md` §12. *(LS-2013)*
+  - **Buttons** — the two most-used treatments are now **core's own variations**, defined in
+    `theme.json` under `styles.blocks.core/button.variations`: `fill` carries the live `.btn`
+    rule (`brand-500` plate, uppercase heading face at semi-bold, square) and `outline` carries
+    the live brand-bordered secondary. Putting them there rather than in `styles/blocks/button/`
+    means a button is correct with **no style picked in the editor**. Two ground-specific
+    treatments remain partials: `outline-light` for dark and brand grounds, and `accent-cta`,
+    an `accent-400` plate with a black label for use inside a brand-filled panel where a Fill
+    button would be brand-on-brand and disappear — at 12.08:1 it is the most legible button in
+    the theme, against roughly 2.4:1 for the brighter orange with white text that live uses there.
+    Every button shares one box: a single padding pair in `settings.custom.spacing.button`
+    (14px / 32px), zero radius, and a 2px border that is simply transparent on the filled
+    variants — which is what keeps a filled and an outlined button exactly the same height.
+  - **Headings** (`core/heading`) — `section-title` and `section-title-left`, carrying the
+    site's most repeated device: an 80×2px `accent-500` rule under the title. Plus
+    `script-accent`, the Joe Hand line live uses for warmth.
+  - **Sections** (`core/group`) — `light-page-section`, `tinted-page-section` and
+    `dark-page-section` rewritten from KWV's black-and-white generics to the measured SD
+    grounds; `section-header` stripped of the brand bottom-border KWV gave it, which appears
+    nowhere on live; and `brand-page-section`, `hero-banner` and `slider-frame` added.
+  - **Cards** — `media-overlay-card` added, reproducing the archive card whose scrim
+    *lifts* to transparent on hover rather than deepening; `team-member-card` rewritten to
+    the live 70px name band. Both are keyboard-reachable via `:focus-within` and honour
+    `prefers-reduced-motion`.
+  - **Pagination** — `assets/styles/core-query-pagination-numbers.css` rewritten to the live
+    40×40 plates with an inverted current page, drawn in `primary-500` at 1px rather than
+    live's 2px `#B4A48C`. `neutral-400` measures 1.9:1 against white, so the taupe borders
+    barely register and the white label on the filled current page is weak; `primary-500` is
+    9.48:1 in both directions.
+- **`assets/styles/core-heading.css`** — new per-block sheet holding the section-title gold
+  rule. It cannot live in the style JSON: a `css`-field rule containing `content: ""` is
+  dropped whole, so a `::after` pseudo-element is unreachable from there. *(LS-2013)*
+
+- **`assets/fonts/LICENCES.md`** — the font licence register: per-face rights, evidence,
+  the obligations that ride with each commercial licence, and why Optima is still blocked.
+  Client licences were supplied 2026-08-18 and are held in `docs/SD Fonts & Licenses/`.
+  *(LS-2012, LS-2641, LS-2642)*
+- **`belleza` and `la-belle-aurore` font-family presets** — Belleza and La Belle Aurore are
+  now families in their own right rather than faces registered inside `heading` and
+  `accent`. This is not cosmetic: WordPress ignores a `fontFace`'s own `fontFamily` (see
+  **Fixed**), so a fallback face can only be declared correctly from its own preset.
+  `heading` and `accent` keep their slugs and stacks, so all 62 existing
+  `var:preset|font-family|heading` references are untouched. *(LS-2013)*
+
 - **`style.md`** — the token map and asset inventory for the theme: measured token state
   across Figma, the live site and `theme.json`, the bundled font layer, the WCAG contrast
   constraints, and the live asset inventory with per-asset porting decisions.
@@ -61,6 +109,28 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Body copy is `neutral-700`, not `contrast`.** `styles.color.text` moved off black. It
+  measures 8.04:1 on `base` against live's 7.98:1 — within 0.06, so the page reads at the
+  weight it does today while staying AAA. `neutral-800` was rejected at 13.24:1 as materially
+  heavier than the site has ever been. *(LS-2013)*
+- **Only `h2` is uppercase.** `textTransform` moved off `elements.heading` and onto
+  `elements.h2`, so h1, h3 and h4 return to sentence case as live has them. `h6` lost its
+  uppercase with the global rule — that was a base-theme label treatment rather than part of
+  the hierarchy, and live uses no h6, but it is a one-line restore if the eyebrow style is
+  wanted. Section headings are unaffected at any level, because `section-title` sets its own
+  uppercase. *(LS-2013)*
+- **Media Overlay Card** — resting scrim raised from live's 30% to 45% so the title holds
+  against a bright photograph, title up one step to preset `500`, and the chevron enlarged to
+  1.15em with an optical nudge onto the cap-height centre. *(LS-2013)*
+- **Slider navigation** — arrows are now a 44px round target with a 32px glyph, flex-centred,
+  with both vendors' pseudo-element glyph styles reset so the centring governs. The Slick dot
+  row is normalised so the dots sit on the arrows' centre line. *(LS-2013)*
+
+- **`joe-hand-400-normal.woff2` replaced with JOEBOB's official webfont build** — the
+  licensed file (`joehand_2_15-webfont.woff2`, **532 glyphs**, 44.5 KB) rather than the
+  226-glyph copy converted from the live site. Better coverage *and* the file the licence
+  actually covers. *(LS-2012)*
+
 - Identity: `Theme Name: Southern Destinations 2026`, PHP namespace
   `SdTheme2026`, text domain `sd-theme-2026`, block-style handles
   `sd-theme-2026-block-*`, pattern namespace `sd-theme-2026/*`.
@@ -90,6 +160,12 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Removed
 
+- **The `cta`, `outline-dark` and `raised` button styles.** `cta` became core's `fill` and
+  `outline-dark` became core's `outline`, both now in `theme.json`; the six `is-style-cta`
+  references in `patterns/header.php`, `patterns/footer.php` and `templates/front-page.html`
+  were repointed to `is-style-fill`. `raised` — the live `2px 2px 0 0` offset plate — is
+  retired outright; Fill replaces its instances. *(LS-2013)*
+
 - **All WooCommerce**: `inc/woocommerce.php`, 11 `woo-*` patterns, 9 commerce
   templates, 5 commerce parts, 7 commerce stylesheets, cart/product block styles.
 - **All KWV-specific artifacts**: 8 `inc/` behaviour modules, ~30 brand page
@@ -103,12 +179,85 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   withdrawn: with the Optima family registered across four weights it resolved to the same
   stack as `heading`, making it a duplicate token. Regular Optima is now simply weight 400
   of `heading`. *(LS-2012)*
-- **The four commercially-licensed font faces are no longer tracked in this repository** —
-  `optima-400-normal`, `optima-500-normal`, `optima-700-normal` and `joe-hand-400-normal`.
-  They remain in the working tree and are supplied by the build/deploy pipeline. See
-  **Security** below for why, and for the history caveat. *(LS-2012)*
+- 🔴 **The three Optima faces have been removed entirely — none was ever licensed.**
+  Deregistered from `theme.json` and deleted from `assets/fonts/`, 2026-08-18. The client's
+  licences arrived that day and revealed that none of the three is the face Southern
+  Destinations owns:
+
+  | File | Real identity | Embedding bits |
+  |---|---|---|
+  | `optima-400-normal.woff2` | `Optima` — **©1991 AG Baltia**, a 1993 clone | `fsType 1` — **embedding forbidden outright** |
+  | `optima-500-normal.woff2` | `Optima Medium` — Adobe Systems 1995 | `fsType 260` — preview/print, **no subsetting** |
+  | `optima-700-normal.woff2` | `Optima Demi Bold` — Adobe Systems 1995 | `fsType 4` — preview/print only |
+
+  What SD actually owns is MyFonts order #9528082 (2018) for **Monotype Optima Bold, desktop
+  OTF/TTF only** — a different foundry's cut, one weight, and no self-hosting kit. The
+  `fsType 1` on the 400 is the sharpest point: that font's own metadata refuses embedding.
+  The live site serves an equivalent conversion today, so the exposure **predates the
+  rebuild**. The files were moved aside rather than shredded, and are recoverable from live.
+  *(LS-2012, LS-2641)*
+
+  The `heading` preset keeps its `Optima, Belleza, sans-serif` stack but now registers **no
+  face**, so locally-installed Optima resolves where present and **Belleza** everywhere else
+  — the standby it was bundled to be. A permanent substitute heading face is a
+  Change-Control Register decision, per the position recorded here on 2026-08-12.
+
+- **`joe-hand-400-normal.woff2` is still untracked**, now on redistribution grounds rather
+  than doubt: its web-embedding rights are confirmed, but EULA §1.5/§1.6 forbid direct
+  download and transfer, and a repository is a distribution channel. Supplied by the
+  build/deploy pipeline. *(LS-2012)*
 
 ### Fixed
+
+- **A 37px strip of bare image showed along the top of both cards.** WordPress gives
+  flow-layout siblings a `margin-block-start` from `--wp--style--block-gap`, and because the
+  scrim and the name band are `position: absolute` with `inset: 0`, that margin still shifts
+  them rather than being ignored. The variation's own `blockGap: 0` does not win. *(LS-2013)*
+- **Both cards rendered stacked instead of overlaid inside the block editor.** Gutenberg's
+  `content.css` sets `position: relative` on block wrappers at (0,2,0), which beats a block
+  style's `css` field at (0,1,0), so the scrim dropped below the image. Fixed with an
+  `.editor-styles-wrapper` rule at (0,3,0). The same rule keeps the Team Member Card's bio
+  panel open in the editor so its text can be selected and edited without a hover.
+  *(LS-2013)*
+- **`styles/sections/cards/blog-card-large.json` referenced `var:preset|line-height|heading`.**
+  Line height is a `custom` family, not a preset, so the reference resolved to nothing and the
+  rule silently did not apply. KWV-inherited; the theme is back to 0 orphaned references.
+  *(LS-2013)*
+
+- **Inline `<code>` was invisible on dark and brand-filled sections.** `style.css` gave it a
+  fixed `neutral-200` plate but let it inherit its text colour, so inside any section setting
+  `base` text it rendered white on near-white. The rule now sets `color` explicitly.
+  KWV-inherited. *(LS-2013)*
+- **Pagination prev/next lost their border.** `theme.json` sets
+  `styles.blocks.core/query-pagination.elements.link`, which compiles to
+  `:root :where(.wp-block-query-pagination a:where(:not(.wp-element-button)))`. Everything
+  inside `:where()` counts as zero, so that rule lands at (0,1,0) — exactly tying a bare
+  `.wp-block-query-pagination-next` and winning on source order. Every selector in that
+  sheet is now descendant-scoped to (0,2,1) or higher. *(LS-2013)*
+- **`style.md` §2.2 — `#4C5250` was wrongly excluded from the token map** as "Trustpilot
+  chrome". The child theme sets it on a bare `p` selector, so it is the body-copy colour of
+  the entire site; only 3 of its 21 uses are Trustpilot-scoped. It still has no token, and
+  the theme currently renders body copy as `contrast` — a visible change on every page.
+  Now the largest open item in the colour map. *(LS-2012, LS-2013)*
+
+- 🔴 **Every bundled fallback face was emitted under the wrong `font-family` name.**
+  `WP_Font_Face_Resolver::convert_font_face_properties()` sets
+  `$font_face['font-family']` unconditionally from the **first name of the preset's
+  `fontFamily` stack** (`wp-includes/fonts/class-wp-font-face-resolver.php:142`, with
+  `:120–125` doing the `explode(',')`), so a `fontFace` entry's own `fontFamily` is
+  **ignored entirely**. Registering Belleza inside `heading` and La Belle Aurore inside
+  `accent` therefore mislabelled both. Two live consequences:
+
+  - `accent` rendered **La Belle Aurore instead of Joe Hand** — both faces were emitted as
+    `font-family:"Joe Hand"` at the same weight and style, so the later declaration won.
+  - An `@font-face` claiming the name `Optima` **outranked locally-installed Optima**, so
+    even macOS visitors got Belleza's glyphs under Optima's name.
+
+  Fixed by giving each typeface its own preset. Verified against the rendered front page:
+  10 rules, each with the correct descriptor. The earlier verification missed it because it
+  asserted on `fontFace` entries surviving sanitisation and on `src`/`format()`, never on
+  the descriptor the resolver had overwritten — **assert on emitted CSS, not parsed input.**
+  *(LS-2013)*
 
 - Two dead preset references in `patterns/template-index-news.php` and
   `patterns/template-category.php`, which called `var:preset|spacing|0` where no `0` slug
@@ -162,15 +311,28 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   - ⚠️ Anyone who pulled this branch before the rewrite has divergent history and needs
     `git fetch && git reset --hard origin/<branch>`. The branch was hours old with only
     automated reviews at the time, so this is unlikely to affect anyone.
-  - ⚠️ `theme.json` still registers all 13 faces, so a fresh clone has **4 unresolved
-    `@font-face` rules** until the pipeline supplies the files. Headings fall back to
-    Belleza — which is bundled precisely for this — and then `sans-serif`. Degraded, not
-    broken.
-- 🟠 **Optima and Joe Hand web-embedding licences are unconfirmed — written confirmation is
-  being sought from the client.** The faces are **approved for development use as the primary
-  fonts**, but this remains a **release gate: they must not ship to production until the
-  rights are confirmed in writing.** If Optima does not clear, substitution is a
-  Change-Control Register item. *(LS-2012)*
+  - ⚠️ `theme.json` registers **10** faces as of 2026-08-18, of which 9 are committed, so a
+    fresh clone has **1 unresolved `@font-face` rule** until the pipeline supplies Joe Hand.
+    The `accent` family falls back to La Belle Aurore — bundled precisely for this — and
+    then `cursive`. Degraded, not broken.
+- ✅ **Joe Hand's web-embedding licence is confirmed** — JOEBOB graphics Webfont EULA 1.0,
+  licence owner Southern Destinations, supplied 2026-08-18. The release gate is **cleared for
+  this face**, subject to three obligations now tracked as work, not risk: a **10,000
+  pageview per copy per month** cap that SD's traffic will exceed (§1.3 → LS-2642), a
+  **single licensed domain plus 5 subdomains** that does **not** include the
+  `.lightspeedwp.dev` dev host (§1.4), and an **anti-hotlinking/no-direct-download**
+  obligation on however the file is served (§1.5). *(LS-2012, LS-2642)*
+- 🔴 **Optima's release gate stands, and the predicted consequence has triggered.** The
+  licence supplied covers **desktop use of Optima Bold only**. Its EULA §3 states *"You may
+  not link to, or put online, Web Font Software not supplied to you in a self-hosting kit"*
+  and forbids modifying the software — so the delivered OTF/TTF cannot lawfully be converted
+  and served, mandatory Tracking Code ships only with the kit, and weights 400 and 500 are
+  not licensed at any format. No Optima face is bundled or registered as of 2026-08-18.
+  SD needs to download the **webfont/self-hosting kit** from the MyFonts account holding
+  order #9528082; under current Software-for-Creatives terms web rights are bundled with the
+  purchase, so this is likely a download rather than a new purchase, but Monotype should
+  confirm in writing which EULA governs a 2018 order. → **LS-2641**, and the substitution
+  question is on the Change-Control Register. *(LS-2012, LS-2641)*
 - `Optima_Italic.ttf` was **not** ported — the live source file is corrupt (its `glyf` table
   range overlaps `cmap`) and `woff2_compress` rejects it. It never loaded on live either.
   Italic Optima will synthesise an oblique until a clean source file is supplied.

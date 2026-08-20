@@ -26,18 +26,24 @@ wp-config.php
 
 # Commercially-licensed font faces — NOT redistributable via this repo.
 #
-# Optima (commercial, Linotype) and Joe Hand: web-embedding rights unconfirmed as of
-# 2026-08-12, and this repo was public when they were first pushed. They are delivered by
-# the build/deploy pipeline instead of being committed. → LS-2012
+# Joe Hand is licensed for web embedding (JOEBOB graphics Webfont EULA 1.0, licence owner
+# Southern Destinations), but §1.5 forbids direct download/hotlinking and §1.6 forbids
+# transfer or sublicensing — and a repository is a distribution channel. So the face is
+# delivered by the build/deploy pipeline rather than committed. This is about
+# redistribution, not doubt: the rights themselves are confirmed. → assets/fonts/LICENCES.md
 #
-# ⚠️ theme.json still registers these faces, so a fresh clone has 4 unresolved @font-face
-# rules until the pipeline supplies the files. Headings fall back to Belleza (bundled) and
-# then sans-serif — degraded, not broken.
+# ⚠️ A fresh clone has 1 unresolved @font-face rule until the pipeline supplies the file.
+# The `accent` family falls back to La Belle Aurore (bundled) and then cursive — degraded,
+# not broken.
 #
 # ⚠️ These patterns do not remove the files already in git history. If this repo is ever
-# public again, history needs rewriting.
+# public again, history needs rewriting. See CHANGELOG.md → Security.
 #
-# The OFL faces (Open Sans, Belleza, La Belle Aurore) are committed and safe to ship.
+# No Optima face is registered or bundled: the three previously here were unlicensed and
+# were removed 2026-08-18. The optima-* pattern is kept so a stray conversion cannot be
+# committed by accident while the self-hosting kit is outstanding. → LS-2641
+#
+# The OFL/Apache faces (Open Sans, Belleza, La Belle Aurore) are committed and safe to ship.
 assets/fonts/optima-*.woff2
 assets/fonts/joe-hand-*.woff2
 

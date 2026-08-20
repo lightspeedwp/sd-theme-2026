@@ -1,0 +1,41 @@
+/* Section Title — the gold rule
+---------------------------------------------
+`styles/blocks/heading/section-title.json` and `section-title-left.json` carry
+the type, colour and spacing. The 80x2px accent rule underneath cannot live in
+either of them: a block style's `css` field drops the *entire* rule when it
+contains `content: ""`, so a `::after` pseudo-element is unreachable from JSON.
+It is drawn here instead, scoped to the `is-style-*` class so natural
+specificity wins without `!important`.
+
+Measured on the live site 2026-08-20 (`.lsx-title:after`):
+width 80px, height 2px, background #E6AD10 (accent-500),
+`margin: 8px auto 4.25rem` centred / `margin: 8px 0 4.25rem` left-aligned.
+
+The 4.25rem bottom margin is why Section Title itself only carries a small
+bottom margin — the rule supplies the gap to the section body. */
+
+.wp-block-heading.is-style-section-title::after,
+.wp-block-heading.is-style-section-title-left::after {
+	content: "";
+	display: block;
+	width: 80px;
+	height: 2px;
+	background-color: var(--wp--preset--color--accent-500);
+}
+
+.wp-block-heading.is-style-section-title::after {
+	margin: var(--wp--preset--spacing--10) auto var(--wp--preset--spacing--70);
+}
+
+.wp-block-heading.is-style-section-title-left::after {
+	margin: var(--wp--preset--spacing--10) 0 var(--wp--preset--spacing--70);
+}
+
+/* On a dark or brand-filled section the title text inverts to base. The gold
+   rule is legible on both, so it is deliberately not inverted. */
+.is-style-dark-page-section .wp-block-heading.is-style-section-title,
+.is-style-dark-page-section .wp-block-heading.is-style-section-title-left,
+.is-style-brand-page-section .wp-block-heading.is-style-section-title,
+.is-style-brand-page-section .wp-block-heading.is-style-section-title-left {
+	color: var(--wp--preset--color--base);
+}

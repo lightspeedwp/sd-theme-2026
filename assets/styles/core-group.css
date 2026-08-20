@@ -52,6 +52,84 @@
 }
 
 /**
+ * Media Overlay Card — the scrim lift.
+ *
+ * Structure (image crop, absolute scrim, centred type) lives in the section
+ * style styles/sections/cards/media-overlay-card.json so it renders in the
+ * editor. Three pieces cannot live there:
+ *
+ *   1. the resting scrim colour + the :hover flip to transparent — the
+ *      block-style compiler strips :hover entirely;
+ *   2. the trailing chevron, because a css-field rule containing
+ *      `content: ""` is dropped whole, not just the content line;
+ *   3. the prefers-reduced-motion fallback.
+ *
+ * Measured on the live site 2026-08-20: rgba(26, 18, 5, 0.3) resting,
+ * transparent on hover, `transition: background-color 0.5s ease`. The scrim
+ * lifting rather than deepening is deliberate — the photograph is the subject.
+ *
+ * :focus-within matches the hover so the card is reachable by keyboard.
+ */
+.is-style-media-overlay-card .media-overlay-card__scrim {
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 45%, transparent);
+	transition: background-color 0.5s ease;
+}
+
+.is-style-media-overlay-card:hover .media-overlay-card__scrim,
+.is-style-media-overlay-card:focus-within .media-overlay-card__scrim {
+	background-color: transparent;
+}
+
+/* The chevron the live card appends to its title (FontAwesome \f105 there; a
+   plain character here so the theme carries no icon-font dependency). Set at
+   1.15em so it reads as a deliberate affordance next to the enlarged title
+   rather than a stray punctuation mark, and nudged optically to sit on the
+   cap-height centre. */
+.is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6)::after {
+	content: "\203A";
+	display: inline-block;
+	margin-inline-start: 0.3em;
+	font-size: 1.15em;
+	font-weight: var(--wp--custom--font-weight--extra-light);
+	line-height: 1;
+	transform: translateY(0.06em);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.is-style-media-overlay-card .media-overlay-card__scrim {
+		transition-duration: 1ms;
+	}
+}
+
+/*
+ * Editor: restore the overlay stack.
+ *
+ * Gutenberg's content.css sets
+ *   .block-editor-block-list__layout .block-editor-block-list__block { position: relative }
+ * at specificity (0,2,0). A block-style `css` field compiles to
+ * `:root :where(…)` at (0,1,0), so inside the editor the scrim loses its
+ * `position: absolute` and drops *below* the image instead of covering it —
+ * the card reads as a stacked image-then-caption rather than the overlay it is.
+ *
+ * These rules are (0,3,0), so they beat the editor reset without !important.
+ * They apply to both cards, and to the team card's name band, which has the
+ * same problem.
+ */
+.editor-styles-wrapper .is-style-media-overlay-card .media-overlay-card__scrim,
+.editor-styles-wrapper .is-style-team-member-card .team-member-card__overlay {
+	position: absolute;
+	inset: 0;
+}
+
+.editor-styles-wrapper .is-style-team-member-card .team-member-card__name {
+	position: absolute;
+	inset-inline: 0;
+	inset-block-start: auto;
+	bottom: 0;
+}
+
+
+/**
  * Team Member Card — bio overlay reveal animation.
  *
  * Structure (card/media/overlay layout + background) lives in the section
@@ -80,6 +158,20 @@
 	visibility: visible;
 	transform: translateY(0);
 	transition: opacity 300ms ease, transform 300ms ease, visibility 0s linear 0s;
+}
+
+/*
+ * Keep the bio panel permanently open inside the editor so its text can be
+ * selected and edited without a hover — the same treatment the Timeline
+ * Milestone slide-out gets below. `.editor-styles-wrapper` only exists in the
+ * editor iframe, so the front end stays hidden-until-hover. The extra class
+ * also out-specifies the resting rule above.
+ */
+.editor-styles-wrapper .is-style-team-member-card .team-member-card__overlay {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -132,6 +224,112 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.is-style-timeline-milestone .timeline-milestone__info {
+		transition-duration: 1ms;
+	}
+}
+
+
+/**
+ * Slider Frame — arrow and dot presentation for third-party carousels.
+ *
+ * The three colours are declared as custom properties by the section style
+ * styles/sections/slider-frame.json; this block binds them to the markup two
+ * different carousels emit. Neither vendor's nav elements are ours, so they
+ * cannot be driven from a block-style JSON at all — see the
+ * wp-thirdparty-markup-styling skill. Everything is scoped to the
+ * `.is-style-slider-frame` class so natural specificity beats the vendor
+ * sheets without reaching for !important.
+ *
+ * Measured on the live site 2026-08-20 (`.slick-arrow`, `.slick-dots button`):
+ * arrows #B4A48C, border-radius 50%, 2px solid transparent border;
+ * dots #938673, border-radius 50%.
+ *
+ * Slick ships with Tour Operator; Swiper ships with the Carousel Block. Both
+ * are covered so a slider styles correctly whichever engine renders it.
+ */
+.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next) {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	color: var(--sd-slider-nav-color);
+	border: var(--wp--custom--border-width--200) solid transparent;
+	border-radius: var(--wp--preset--border-radius--500);
+	background-color: transparent;
+	font-size: 2rem;
+	line-height: 1;
+	transition: color 0.25s, border-color 0.25s;
+}
+
+/* Slick and Swiper both draw their glyph in a pseudo-element with their own
+   font-size and absolute positioning. Reset both so the flex centring above
+   actually governs, and the glyph sits on the centre of the 44px target
+   instead of hanging off it. */
+.is-style-slider-frame :is(.slick-prev, .slick-next)::before,
+.is-style-slider-frame :is(.swiper-button-prev, .swiper-button-next)::after {
+	position: static;
+	display: block;
+	width: auto;
+	height: auto;
+	margin: 0;
+	font-size: inherit;
+	line-height: 1;
+	color: inherit;
+	opacity: 1;
+}
+
+.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):hover,
+.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):focus-visible {
+	color: var(--sd-slider-nav-color-active);
+	border-color: var(--sd-slider-nav-color-active);
+}
+
+/* Slick sizes the <li> itself and leaves it with a text line-height, which
+   pushes the dot row off the arrows' centre line. Normalise the item so the
+   dot is the only thing with height. */
+.is-style-slider-frame .slick-dots {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.is-style-slider-frame .slick-dots li {
+	display: flex;
+	align-items: center;
+	width: auto;
+	height: auto;
+	margin: 0;
+}
+
+.is-style-slider-frame :is(.slick-dots li button, .swiper-pagination-bullet) {
+	display: block;
+	width: 14px;
+	height: 14px;
+	padding: 0;
+	background-color: var(--sd-slider-dot-color);
+	border: 0;
+	border-radius: var(--wp--preset--border-radius--500);
+	font-size: 0;
+	line-height: 0;
+	opacity: 1;
+	transition: background-color 0.25s;
+}
+
+/* The active dot takes the brand fill. Live leaves both states on #938673,
+   which gives the reader no position cue — this is the one deliberate
+   improvement in the slider port, and it is recorded in style.md. */
+.is-style-slider-frame :is(.slick-dots li.slick-active button, .swiper-pagination-bullet-active) {
+	background-color: var(--sd-slider-nav-color-active);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next, .slick-dots li button, .swiper-pagination-bullet) {
 		transition-duration: 1ms;
 	}
 }

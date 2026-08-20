@@ -146,9 +146,13 @@ a.more-link {
 	display: block;
 }
 
-/* Inline code */
+/* Inline code
+   The text colour is set explicitly rather than inherited. Without it, inline
+   code inside a dark or brand-filled section inherits that section's `base`
+   text colour and renders white on this fixed light plate — invisible. */
 *:not(.wp-block-code) > code {
 	background-color: var(--wp--preset--color--neutral-200);
+	color: var(--wp--preset--color--neutral-800);
 	padding: 3px 5px;
 	position: relative;
 	border-radius: 3px;

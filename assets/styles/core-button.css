@@ -1,43 +1,55 @@
-/* Button - Outline Style
+/* Button hover/focus flips
 ---------------------------------------------
-The "outline" button variation is now defined in theme.json under
-styles.blocks.core/button.variations.outline (token-driven: 1px base
-border, contrast background, base text, with colours swapping on hover).
-Shared button styling (custom spacing, no radius, uppercase, base size,
-medium weight) is inherited from the button element in theme.json.
+The two most-used treatments are the *core* variations, set in theme.json under
+`styles.blocks.core/button.variations`:
 
-The previous `border: none` + `outline: 2px solid currentColor` rules were
-removed here because they conflicted with that token-driven border. */
+  fill     — brand-500 plate, base label. The site's principal action.
+  outline  — transparent, 2px brand-500 border, brand-600 label. Secondary on
+             light and tinted grounds.
+
+Putting them there rather than in `styles/blocks/button/` means a button is
+correct with no style picked in the editor, and the Fill/Outline pair authors
+already reach for carries the SD design. Two further variations live as JSON
+partials because they are ground-specific:
+
+  outline-light — base border and label, for dark and brand grounds.
+  accent-cta    — accent-500 plate with contrast label, for brand grounds.
+
+Every button shares one box. The button element in theme.json sets the padding
+(the two `spacing.button` custom properties), a zero radius and a **2px
+transparent** border; each variation only recolours that border. The transparent
+border is the reason a filled and an outlined button are exactly the same height
+— without it the outline would sit 4px taller.
+
+Why the flips are here and not only in the JSON: every rule theme.json emits is
+wrapped in `:root :where(…)`, which compiles at specificity (0,1,0). A
+variation's own `:hover` therefore only beats the button *element* `:hover` by
+source order, which is fragile. These rules carry real specificity, so they land
+regardless of order. Keep each one in sync with its JSON or theme.json partner.
+
+Hover colour note: the live site hovers to #BF5C17. That value was dropped in
+the design audit (divergence D2) because it measures 4.41:1 on white and misses
+WCAG AA by 0.09. brand-600 (#966215, 5.18:1) is the settled replacement and
+reads as the same colour. Confirmed 2026-08-20. Anything that changes brand-500
+itself is a Change-Control Register entry. */
 
 
-/* Button - CTA Style hover/focus
----------------------------------------------
-The "cta" variation (styles/blocks/button/cta.json) sets a contrast fill that
-should flip to a base fill on hover/focus. Its base background is already
-`contrast`, which is identical to the global button-element `:hover` in
-theme.json — and because every theme.json rule is wrapped in `:root :where(…)`
-(zero specificity), the variation's own `:hover` only wins the element rule by
-source order, which is fragile. These rules carry real specificity, so the
-flip lands regardless of source order. Keep in sync with cta.json. */
-.wp-block-button.is-style-cta .wp-block-button__link:hover,
-.wp-block-button.is-style-cta .wp-block-button__link:focus {
+/* Outline Light — base-bordered on dark and brand grounds → fills with base.
+   Pairs with styles/blocks/button/outline-light.json */
+.wp-block-button.is-style-outline-light .wp-block-button__link:hover,
+.wp-block-button.is-style-outline-light .wp-block-button__link:focus {
 	background-color: var(--wp--preset--color--base);
-	color: var(--wp--preset--color--contrast);
-	transition: background-color 0.25s, color 0.25s;
+	border-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--primary-500);
 }
 
 
-/* Button - Outline Dark Style hover/focus
----------------------------------------------
-The "outline-dark" variation (styles/blocks/button/outline-dark.json) is a
-transparent, contrast-bordered button for light sections that flips to a
-contrast fill with base text on hover/focus. As with the cta variation, the
-JSON `:hover`/`:focus` compiles to `:root :where(…)` (zero specificity) and only
-wins by fragile source order — these rules carry real specificity so the flip
-lands regardless. Keep in sync with outline-dark.json. */
-.wp-block-button.is-style-outline-dark .wp-block-button__link:hover,
-.wp-block-button.is-style-outline-dark .wp-block-button__link:focus {
-	background-color: var(--wp--preset--color--contrast);
-	color: var(--wp--preset--color--base);
-	transition: background-color 0.25s, color 0.25s;
+/* Accent CTA — gold plate with a black label, for use on brand grounds.
+   Hover lifts to accent-200 rather than darkening, because the label is black:
+   darkening the plate would close the gap to the panel behind it instead of
+   opening it. Pairs with styles/blocks/button/accent-cta.json */
+.wp-block-button.is-style-accent-cta .wp-block-button__link:hover,
+.wp-block-button.is-style-accent-cta .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--accent-200);
+	border-color: transparent;
 }

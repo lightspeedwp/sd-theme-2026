@@ -49,15 +49,27 @@ Measured from `sd-lsx-child/assets/css/custom.css` — 273 hex references, **35 
 | `#F7F5F2` | 34 | **Dominant warm off-white section background** | ✅ **`neutral-200`** — exact |
 | `#60483B` | 30 | Brown — body and heading text | ✅ `neutral-700` (ΔE 5.6) |
 | `#E6AD10` | 22 | Gold accent | ✅ **`accent-500`** — the yellow ramp's anchor |
-| ~~`#4C5250`~~ | 21 | ~~Cool-green grey~~ | ⛔️ **Trustpilot chrome, not SD design** — excluded |
+| `#4C5250` | 21 | **The body-copy colour of the whole site** — set on the bare `p` selector | ✅ **`neutral-700`** (8.04:1 vs live 7.98). Previously excluded as Trustpilot chrome; that was wrong — see below |
 | `#BF5C17` | 17 | Hover / active orange | ⛔️ **Dropped** — hover reworked; uses `brand-600` |
-| `#B4A48C` | 13 | Warm taupe | 🟠 `neutral-400` (ΔE 8.1) — near-fit, map during page conversion |
+| `#B4A48C` | 13 | Warm taupe — pagination borders, slider arrows, FacetWP sort control | ✅ `neutral-400` (ΔE 8.1) — **mapped 2026-08-20**; load-bearing, not incidental |
 | `#41382E` | 11 | Dark warm grey | ✅ `neutral-800` (ΔE 4.5) |
 | `#3E3530` | 10 | Dark warm grey | ✅ `neutral-800` (ΔE 4.3) |
 | `#ECE9E3` | 10 | Warm light grey | ✅ `neutral-200` (ΔE 4.5) |
 | `#938673` `#534A40` `#847C73` `#C1BDB4` `#DCD6C9` `#F6F3F0` `#F0EBE5` | 6→3 | Warm neutral family | ✅ absorbed into the warm `neutral-*` ramp |
 
-✅ **Resolved.** The live neutral family is warm and Figma's `neutral-*` ramp was pure grey — mapping one onto the other would have visibly cooled the site. Instead `neutral-*` was **re-derived as a warm ramp from these live values** (§2.6), so the ramp now *is* the live palette. The one colour that could not sit on it, the cool-green `#4C5250` at hue 173°, turned out to be Trustpilot widget chrome and leaves the token map entirely.
+✅ **Resolved for the warm family.** The live neutral family is warm and Figma's `neutral-*` ramp was pure grey — mapping one onto the other would have visibly cooled the site. Instead `neutral-*` was **re-derived as a warm ramp from these live values** (§2.6), so the ramp now *is* the live palette.
+
+🔴 **Correction, 2026-08-20 — `#4C5250` is not Trustpilot chrome.** The 2026-08-12 pass excluded it on the strength of its hue (cool green at 173°, ΔE 11.1 against every warm step) and a reading of its selectors. Re-measured against the rendered page, that is wrong. `sd-lsx-child/assets/css/custom.css` contains:
+
+```css
+p { font-family: "Open Sans", sans-serif; font-weight: 400; font-size: 15px; color: #4c5250; line-height: 22px; }
+```
+
+A bare `p` selector — so **`#4C5250` is the body-copy colour of every page on the site**, and it also draws the breadcrumb bar, the pagination labels, the FacetWP sort control, the mega-menu excerpt text and the footer links. Of its 21 uses only **3** are Trustpilot-scoped; the excluded 18 are SD design. Computed colour on `p` was confirmed as `rgb(76, 82, 80)` on the homepage, the tours archive, the accommodation archive, the blog and an accommodation single.
+
+✅ **Resolved 2026-08-20 — body copy is `neutral-700`.** `styles.color.text` moved from `contrast` to `neutral-700` (`#5B4E41`). It measures **8.04:1** on `base`, against live's **7.98:1** — the two are within 0.06 of each other, so the page reads at the weight it does today while staying AAA. `neutral-800` was the alternative and was rejected: at 13.24:1 it is materially heavier than the site has ever been. The hue still differs (warm brown against live's cool green-grey), but at this lightness the difference is not legible in running text, and no new variable was added — which is the standing rule.
+
+`neutral-700` now carries both body copy and headings, which is how live behaves: `#4C5250` and `#60483B` are close enough in weight that the site reads as one colour.
 
 ### 2.3 In Figma, not yet in `theme.json`
 
@@ -165,9 +177,9 @@ Slug `300`'s max is `1.20rem` against Figma's 20px — likely a typo for `1.25re
 **Resolved in the theme, 2026-08-12** (decision: use live-measured values now):
 
 - `heading` no longer carries the wrong `Palatino, Georgia, serif` fallback — Optima is a humanist **sans**.
-- The webfont-generator family name `optimademi_bold` is gone. It is now simply **weight 600–700 of the `Optima` family**, which is the correct way to express it — see §3.7.
+- The webfont-generator family name `optimademi_bold` is gone. It would have been simply **weight 600–700 of the `Optima` family**, which is the correct way to express it — but no Optima face is bundled at all now, the licence covering desktop use only. See §3.4.
 - `accent` gained Joe Hand ahead of La Belle Aurore, matching live.
-- An `alternate` preset was briefly added for regular Optima, then **removed**: with the Optima family registered across four weights, `alternate` resolved to the identical stack as `heading`. Shipping two presets with the same value would repeat exactly the `accent`/`brand` duplication criticised in Figma.
+- An `alternate` preset was briefly added for regular Optima, then **removed**: with the Optima family then registered across four weights, `alternate` resolved to the identical stack as `heading`. Shipping two presets with the same value would repeat exactly the `accent`/`brand` duplication criticised in Figma.
 
 ### 3.3 Line height, weight, letter spacing
 
@@ -181,26 +193,70 @@ Slug `300`'s max is `1.20rem` against Figma's 20px — likely a typo for `1.25re
 
 Figma declares only `lineHeight/heading 125` and `lineHeight/body 150`; both match. The theme is a superset — keep the extras. Figma silence is not deletion.
 
-### 3.4 🔴 Font licensing — unresolved, blocks the font layer
+### 3.4 Font licensing — resolved for Joe Hand, still blocking for Optima
+
+Client licences supplied **2026-08-18** (`docs/SD Fonts & Licenses/`). Full register:
+**`assets/fonts/LICENCES.md`**.
 
 | Face | Licence | Status |
 |---|---|---|
-| **Optima / Optima Demi Bold** | 🔴 **Commercial (Linotype)** | **Web-embedding rights must be confirmed in writing.** It is the heading face of the entire site. If unlicensed, substitution is a design decision → Change-Control Register. |
-| **Joe Hand** | 🔴 Unconfirmed | Same check needed. |
-| Open Sans | ✅ OFL (Google Fonts) | Clear |
-| Belleza | ✅ OFL (Google Fonts) | Clear |
-| La Belle Aurore | ✅ OFL (Google Fonts) | Clear |
+| **Joe Hand** | JOEBOB graphics **Webfont** EULA 1.0 | ✅ **Cleared for web embedding.** Capped — see below |
+| **Optima** | Monotype/MyFonts order #9528082 (24 Jul 2018), *Optima Bold* | 🔴 **Still blocked.** Desktop OTF/TTF only; no self-hosting kit; Bold only |
+| Open Sans | ✅ Apache 2.0 | Clear |
+| Belleza | ✅ SIL OFL 1.1 | Clear |
+| La Belle Aurore | ✅ SIL OFL 1.1 | Clear |
 
-**Status 2026-08-12: written confirmation is being sought from the client. The faces are approved for development use as the primary fonts** and are present in `assets/fonts/` (§3.7), so theme setup is not blocked.
+**Joe Hand cleared.** The installed file is now JOEBOB's **official webfont build**
+(`joehand_2_15-webfont.woff2`, 532 glyphs) rather than the 226-glyph copy converted from
+live. Three obligations ride with it: **10,000 pageviews per copy per month** (§1.3 —
+SD's traffic will exceed one copy → LS-2642), **one domain plus 5 subdomains** (§1.4 — the
+`.lightspeedwp.dev` dev host is *not* covered), and **no hotlinking or direct download**
+(§1.5).
 
-**Two mitigations are in place** because this repo was **public** when the faces were first pushed:
+**Optima is still blocked, on three independent grounds:**
 
-1. **The repo is being switched to private.** Exposure was small — created 2026-08-12, **0 forks, 0 stars, 0 watchers** — so no third party is known to hold a copy.
-2. **`assets/fonts/optima-*.woff2` and `joe-hand-*.woff2` are `.gitignore`d** and delivered by the build/deploy pipeline rather than committed. The OFL faces (Open Sans, Belleza, La Belle Aurore) stay committed.
+1. **No self-hosting kit.** The EULA's website grant covers the *Web Font Software* supplied
+   "in a self-hosting kit"; §3 Restrictions then states *"You may not link to, or put
+   online, Web Font Software not supplied to you in a self-hosting kit."* Only desktop
+   OTF/TTF were delivered. Converting them ourselves also trips *"Modify the Software in
+   any way."*
+2. **Tracking Code is mandatory** on all non-development Websites, and removing it is
+   prohibited. It ships only with the kit.
+3. **Bold only.** The invoice's "2 font styles" are the Pro and Std cuts of the *same* Bold
+   weight. **Optima 400 and 500 are not licensed at all** — and `h4`/`h5` used 500.
 
-🟠 **Still a release gate.** Optima and Joe Hand must not ship to production until the rights are confirmed in writing. If Optima does not clear, substitution is a Change-Control Register item — Belleza is already registered as its resolvable fallback, so the theme degrades rather than breaks.
+Where it *is* permissive: 250,000 pageviews/month, Development Websites explicitly allowed,
+and SD (not the agency) is the named licence owner, satisfying the per-client clause.
 
-⚠️ **History is not cleaned by either mitigation.** The faces remain in the commits already pushed. That is acceptable while the repo is private; if it is ever made public again, history must be rewritten first.
+**→ Action:** SD downloads the **webfont/self-hosting kit** for Optima Bold from the MyFonts
+account holding #9528082. Under current Software-for-Creatives terms web rights are bundled
+with the purchase, so this is likely a download, not a new purchase — but the 2018 order
+predates those terms, so Monotype should confirm which EULA governs it. → LS-2641
+
+#### 🔴 The three Optima faces previously bundled were never licensed
+
+Removed **2026-08-18**. None is the face the client owns:
+
+| File | Real identity | Embedding bits |
+|---|---|---|
+| `optima-400-normal.woff2` | `Optima` — **©1991 AG Baltia**, a 1993 clone | `fsType 1` — **embedding forbidden outright** |
+| `optima-500-normal.woff2` | `Optima Medium` — Adobe Systems 1995 | `fsType 260` — preview/print, **no subsetting** |
+| `optima-700-normal.woff2` | `Optima Demi Bold` — Adobe Systems 1995 | `fsType 4` — preview/print only |
+
+The `fsType 1` on the 400 is the sharpest point: that font's own metadata refuses embedding.
+The live site serves an equivalent conversion (`optima-demibold_1-webfont.woff2`) today, so
+this exposure **predates the rebuild** and carries over to it.
+
+**Consequence, and it was designed for:** `theme.json` registers no Optima face, but the
+`heading` stack still *names* Optima — so a visitor with Optima installed locally (every
+macOS) renders it, and everyone else resolves to **Belleza**, which is bundled as a real
+face for exactly this eventuality. The design degrades rather than breaks. Substituting a
+permanent heading face is a **Change-Control Register** item, per the decision already
+recorded here on 2026-08-12.
+
+⚠️ **History is not cleaned.** The faces remain in commits already pushed, and GitHub still
+serves the purged blobs at the pre-rewrite SHAs. Acceptable while the repo is private; if it
+is ever public again, history must be rewritten first. → `CHANGELOG.md` → Security.
 
 ### 3.5 Defects in the live `@font-face` blocks — all fixed in the rebuild
 
@@ -210,7 +266,7 @@ Figma declares only `lineHeight/heading 125` and `lineHeight/body 150`; both mat
 | **Invalid descriptors** — `font-family: 'Optima', sans-serif;` *inside* `@font-face`; the descriptor takes one name | ✅ Fixed — one family name per face |
 | **Eleven files, one weight** — all `OpenSans-*.ttf` stacked in a single `src` with no weight/style split, so only the first ever resolved and italics were synthesised | ✅ Fixed — 10 discrete faces, each with its own weight and style |
 | **Broken path** — `'Open Sans Italic'` uses `../../fonts/` where siblings use `../fonts/`, plus a missing comma | ✅ Gone — that pseudo-family no longer exists |
-| **TTF, not WOFF2** | ✅ Fixed — all 13 faces are WOFF2; the bundle is **474 KB** against 1,340 KB of TTF sources |
+| **TTF, not WOFF2** | ✅ Fixed — all 10 faces are WOFF2; the bundle is **398 KB** against 1,340 KB of TTF sources |
 
 ### 3.6 Two corrupt / incorrect source fonts on live
 
@@ -223,32 +279,70 @@ Found by parsing the `OS/2`, `head` and `name` tables of every downloaded face:
 
 ### 3.7 Bundled font layer — `assets/fonts/`
 
-**13 WOFF2 faces, 474 KB total.** Converted from the live sources with `woff2_compress`; every file verified as genuine WOFF2 by magic bytes.
+**10 WOFF2 faces, 398 KB total.** Nine converted from the live sources with
+`woff2_compress`; Joe Hand is the vendor's own webfont build. Every file verified as genuine
+WOFF2 by magic bytes.
 
 | Preset | `fontFamily` | Faces |
 |---|---|---|
-| `heading` | `Optima, Belleza, sans-serif` | `Optima` 400 · 500 · **600 700** · `Belleza` 400 |
+| `heading` | `Optima, Belleza, sans-serif` | **none** — Optima unlicensed (§3.4), resolves to `belleza` |
+| `belleza` | `Belleza, sans-serif` | `Belleza` 400 |
 | `body` | `"Open Sans", …system…, sans-serif` | `Open Sans` 300 · 400 · 600 in normal + italic, plus **700 normal** (7) |
-| `accent` | `"Joe Hand", "La Belle Aurore", cursive` | `Joe Hand` 400 · `La Belle Aurore` 400 |
+| `accent` | `"Joe Hand", "La Belle Aurore", cursive` | `Joe Hand` 400 |
+| `la-belle-aurore` | `"La Belle Aurore", cursive` | `La Belle Aurore` 400 |
 | `monospace` | `monospace` | none — system |
 
 ```
 assets/fonts/
-  optima-400-normal.woff2            18.7 KB   ⚠️ not committed — see below
-  optima-500-normal.woff2            27.9 KB   ⚠️ not committed
-  optima-700-normal.woff2            26.4 KB   ⚠️ not committed · registered as font-weight: 600 700
-  joe-hand-400-normal.woff2          51.4 KB   ⚠️ not committed
-  belleza-400-normal.woff2           11.6 KB
-  la-belle-aurore-400-normal.woff2   23.7 KB
-  open-sans-{300,400,600}-{normal,italic}.woff2   ~42–58 KB each
+  joe-hand-400-normal.woff2          44.5 KB   ⚠️ not committed — licensed, non-redistributable
+  belleza-400-normal.woff2           11.4 KB
+  la-belle-aurore-400-normal.woff2   23.1 KB
+  open-sans-{300,400,600}-{normal,italic}.woff2   ~41–57 KB each
   open-sans-700-normal.woff2         45.2 KB
+  LICENCES.md                                  ← the licence register
 ```
 
-### Weight coverage
+#### 🔴 Fixed 2026-08-18 — WordPress rewrites every `fontFace.fontFamily`
 
-**Open Sans ships 300/400/600 + 700 normal.** Weights 800/900 and the 700 italic were dropped as unneeded (2026-08-12); 700 normal was reinstated after review, since a cutoff at 600 was too aggressive for body copy. Payload went 602 KB → 429 KB → **474 KB**.
+`WP_Font_Face_Resolver::convert_font_face_properties()` sets
+`$font_face['font-family'] = $font_family_property` unconditionally
+(`wp-includes/fonts/class-wp-font-face-resolver.php:142`), where `$font_family_property` is
+the **first name of the preset's `fontFamily` stack**, taken by
+`maybe_parse_name_from_comma_separated_list()` (`:120–125`). **A `fontFace` entry's own
+`fontFamily` is ignored entirely.**
 
-`patterns/template-single-post.php` requests `font-weight|bold` (700) on a **paragraph**, which is the body family — that now resolves to the real **Open Sans 700** face rather than falling back to 600.
+So registering a fallback face *inside* another family's preset — Belleza inside `heading`,
+La Belle Aurore inside `accent` — silently mislabels it. The emitted CSS was:
+
+```css
+@font-face{font-family:Optima;      …src:…/belleza-400-normal.woff2}          /* wrong */
+@font-face{font-family:"Joe Hand";  …src:…/joe-hand-400-normal.woff2}
+@font-face{font-family:"Joe Hand";  …src:…/la-belle-aurore-400-normal.woff2}  /* wrong */
+```
+
+Two live consequences: the second `"Joe Hand"` rule had **identical descriptors** to the
+first, so the later declaration won and the `accent` family rendered **La Belle Aurore
+instead of Joe Hand**; and an `@font-face` claiming the name `Optima` **outranked
+locally-installed Optima**, so even macOS visitors got Belleza's glyphs under Optima's name.
+
+**Fix:** every typeface gets its own preset, whose `fontFamily` *leads* with that
+typeface's name — hence the new `belleza` and `la-belle-aurore` presets. `heading` and
+`accent` keep their slugs and stacks unchanged, so all 62 `var:preset|font-family|heading`
+references are untouched. Verified against the rendered front page: 10 rules, each with the
+correct descriptor.
+
+> The earlier verification missed this because it counted `fontFace` entries surviving
+> sanitisation and checked `src` paths and `format()` hints — never the `font-family`
+> descriptor the resolver had overwritten. **Assert on emitted CSS, not on parsed input.**
+
+#### Weight coverage
+
+**Open Sans ships 300/400/600 + 700 normal.** Weights 800/900 and the 700 italic were
+dropped as unneeded (2026-08-12); 700 normal was reinstated after review, since a cutoff at
+600 was too aggressive for body copy.
+
+`patterns/template-single-post.php` requests `font-weight|bold` (700) on a **paragraph**,
+which is the body family — that resolves to the real **Open Sans 700** face.
 
 Still unbundled and resolving to the nearest available weight, by design:
 
@@ -256,36 +350,39 @@ Still unbundled and resolving to the nearest available weight, by design:
 |---|---|---|
 | `bold` 700 *italic* on body text | Open Sans | 600 italic |
 | `extra-bold` 800 / `black` 900 on body text | Open Sans | 700 normal |
-| `black` 900 on headings *(404, search, archive titles)* | Optima | 700 — the demi-bold cut |
 
-None of these synthesise; CSS font matching picks the nearest real face. The `fontWeight` custom tokens still declare the full 100–900 scale, so a value above what is bundled is legal and simply resolves down.
+**Headings no longer have a bundled cut at any weight.** `h1`/`h2` (700), `h3` (600),
+`h4`/`h5` (500) and `h6` (400) all resolve to locally-installed Optima where present, else
+to **Belleza 400** — which means the heading weight hierarchy is currently expressed by
+size and synthesised bolding, not by real cuts. This is the visible cost of §3.4 and it
+reverses the moment the Optima self-hosting kit lands. → LS-2641
 
-⏳ **Unused weights get pruned at the end of the rebuild.** The set is deliberately a little wider than today's templates need, since page conversion may call for more of it.
+None of the body weights synthesise; CSS font matching picks the nearest real face. The
+`fontWeight` custom tokens still declare the full 100–900 scale, so a value above what is
+bundled is legal and simply resolves down.
 
-### ⚠️ Four faces are not committed to this repo
+⏳ **Unused weights get pruned at the end of the rebuild.** The set is deliberately a little
+wider than today's templates need, since page conversion may call for more of it.
 
-`assets/fonts/optima-*.woff2` and `assets/fonts/joe-hand-*.woff2` are **`.gitignore`d** — commercially licensed, web-embedding rights unconfirmed, and this repo was public when they were first pushed. They are delivered by the **build/deploy pipeline** instead. → §3.4
+#### ⚠️ One face is not committed to this repo
 
-**Consequence:** a fresh clone carries **9 of 13 faces (353 KB)**; the other **4 (122 KB)** arrive from the pipeline. `theme.json` registers all 13, so until the pipeline runs, four `@font-face` rules are unresolved — headings fall back to **Belleza** (bundled, deliberately) and then `sans-serif`. Degraded, not broken.
+`assets/fonts/joe-hand-*.woff2` is **`.gitignore`d** and delivered by the **build/deploy
+pipeline**. This is about redistribution, not doubt — its rights are confirmed, but EULA
+§1.5/§1.6 forbid direct download and transfer, and a repository is a distribution channel.
+The `optima-*` ignore pattern is kept so a stray conversion cannot be committed by accident.
+→ §3.4
 
-**`.gitignore` does not remove them from git history.** If this repo is ever public again, history needs rewriting.
+**Consequence:** a fresh clone carries **9 of 10 faces (353 KB)**; Joe Hand (44.5 KB) arrives
+from the pipeline. Until it does, `accent` resolves to La Belle Aurore (bundled) and then
+`cursive`. Degraded, not broken.
 
-Three deliberate choices:
+Two remaining deliberate choices:
 
-1. **The demi-bold face is registered as `font-weight: 600 700`,** a range, so it serves both. This is what makes the heading scale resolve without synthesis: `h1`/`h2` ask for 700, `h3` asks for 600, and both land on the real cut.
-2. **Belleza is registered as its own face inside the `heading` family.** A fallback name in a stack does nothing without an `@font-face`, so without this the `Belleza` in the stack would be dead text and the browser would drop straight to `sans-serif`. This also makes Belleza a working standby if the Optima licence does not clear.
-3. **`fontDisplay: swap`** on every face, matching live.
-
-**Weight coverage verified against the heading scale** — every level resolves to a real file, none synthesised:
-
-| | Weight | Resolves to |
-|---|---|---|
-| `h1` `h2` | 700 | `optima-700-normal.woff2` |
-| `h3` | 600 | `optima-700-normal.woff2` *(range)* |
-| `h4` `h5` | 500 | `optima-500-normal.woff2` |
-| `h6` | 400 *(inherits root)* | `optima-400-normal.woff2` |
-
-Verified via `WP_Theme_JSON` + `WP_Font_Face`: all 13 `fontFace` entries survive WordPress sanitisation, all 13 `src` paths resolve on disk, and 13 `@font-face` rules generate with correct `format('woff2')`.
+1. **Belleza and La Belle Aurore are registered as families in their own right** — a
+   fallback name in a stack does nothing without an `@font-face`, and as shown above it
+   cannot be declared from inside another family's preset. The cost is two extra entries in
+   the editor's font picker; the benefit is that both stacks actually resolve.
+2. **`fontDisplay: swap`** on every face, matching live.
 
 ### 3.6 Fonts to drop
 
@@ -478,3 +575,218 @@ From [AGENTS.md](../../../AGENTS.md) working agreement 4 — non-negotiable:
 **Verification run 2026-08-12:** `theme.json` valid · tab round-trip byte-identical · **0 orphaned preset references** across 557 · **46 palette entries** (matching Figma's 46 colour variables exactly), 4 font families and 13 `@font-face` rules confirmed emitted by WordPress · no contrast regression on the 71 `neutral-*` references (max Δ 0.05) · `php -l` clean on 18 files.
 
 Update this document whenever the Figma variable layer changes — it is under active development, and a partial extraction silently produces a partial `theme.json`. Full detail and the divergence register: [`.github/reports/sd-design-audit-2026-08-12.md`](../../../.github/reports/sd-design-audit-2026-08-12.md).
+
+---
+
+## 12. Block and section styles — the live port
+
+**LS-2013 tasks 3.6 and 3.7 · measured 2026-08-20 at 1440px, Chrome 151.**
+
+Method matters here. The 2026-08-12 pass read the two theme repos; this one read the
+**rendered page**, because roughly half the live styling is generated at render time from
+`wp_options` and is in neither repo. Every value below is a computed style off a real page,
+cross-checked against the authored rule that produces it.
+
+Two things that changed the picture:
+
+- **The 112 KB Customizer CSS is no longer an unknown.** It was extracted from the rendered
+  homepage (`lsx-customizer-inline-css`, 490 rule blocks) and read. It turns out to carry
+  **LSX's unconfigured defaults for buttons** — `#991703` fill with a `#751203` plate, a dark
+  red that appears nowhere on the site — because the child theme's `custom.css` overrides all
+  of it. So the Customizer blob is *not* the record of SD's interaction palette that the audit
+  assumed; `custom.css` is. That closes divergence **DB** for styling purposes.
+- **`sd-lsx-child/assets/css/custom.css` in the repo is byte-identical to the copy live
+  serves.** Diffed 2026-08-20. The "repo does not match production" caution still holds for
+  the PHP templates, but not for this stylesheet — it can be trusted as the authored source.
+
+### 12.1 What was built
+
+| Style | Slug | Block | Ported from |
+|---|---|---|---|
+| **Fill** *(core variation, `theme.json`)* | `fill` | `core/button` | `.btn` — `#CC7F16` plate, uppercase Optima Demi 18px/600, square |
+| **Outline** *(core variation, `theme.json`)* | `outline` | `core/button` | `.btn.ssm-apply-btn` — 2px brand border, fills on hover |
+| Outline Light | `outline-light` | `core/button` | `.btn.white-border-btn` — base border, for dark and brand grounds |
+| Accent CTA | `accent-cta` | `core/button` | The expert panel's "Send an Email" — `accent-400` plate, black label |
+| Section Title | `section-title` | `core/heading` | `.lsx-title` + `:after` — uppercase, 80×2px `#E6AD10` rule |
+| Section Title (Left) | `section-title-left` | `core/heading` | `.lsx-title.lsx-title-left:after` |
+| Script Accent | `script-accent` | `core/heading` | `.sd-title` — Joe Hand 37px/200 |
+| Light Page Section | `light-page-section` | `core/group` | Plain `.lsx-block-container` |
+| Tinted Page Section | `tinted-page-section` | `core/group` | `.lsx-block-container` at `#F7F5F2` |
+| Dark Page Section | `dark-page-section` | `core/group` | `.footer-cta-section` — 70px padding |
+| Brand Page Section | `brand-page-section` | `core/group`, `core/column` | The expert / enquiry panel |
+| Hero Banner | `hero-banner` | `core/cover`, `core/group` | `#lsx-banner .page-banner` — 680px home / 454px inner |
+| Section Header | `section-header` | `core/group` | The centred title cluster |
+| Media Overlay Card | `media-overlay-card` | `core/group` | `.lsx-to-archive-wrapper` — scrim **lifts** on hover |
+| Team Member Card | `team-member-card` | `core/group` | Team archive — `rgba(26,18,5,.7)` 70px strip |
+| Slider Frame | `slider-frame` | `core/group` | `.slick-arrow` / `.slick-dots` |
+| — (CSS only) | — | `core/query-pagination-numbers` | `.lsx-pagination` — 40×40 plates |
+
+**The two most-used treatments are core's own variations.** Fill and Outline are defined in
+`theme.json` under `styles.blocks.core/button.variations`, not as partials in
+`styles/blocks/button/`. That means a button carries the SD design with **no style picked in
+the editor**, and the Fill/Outline pair an author already reaches for is the right one. Only
+the two ground-specific treatments — Outline Light and Accent CTA — remain partials.
+
+Dropped along the way: `cta` (became `fill`), `outline-dark` (became `outline`) and `raised`
+(the live `2px 2px 0 0` offset plate, retired — Fill replaces its instances). The six
+`is-style-cta` references in `patterns/header.php`, `patterns/footer.php` and
+`templates/front-page.html` were repointed to `is-style-fill`.
+
+**27 block-level style variations** register, plus the two core button variations defined
+directly in `theme.json`. Verified via `WP_Theme_JSON_Resolver::get_style_variations( 'block' )`
+and the merged `core/button.variations` keys.
+
+### 12.2 Where each rule lives, and why
+
+The rule is JSON-first, per `wp-blockstyle-css-field`. Three things forced CSS:
+
+| What | Where | Which limit |
+|---|---|---|
+| The gold `::after` rule | `assets/styles/core-heading.css` | A `css`-field rule containing `content: ""` is dropped **whole** |
+| Every hover/focus flip | `assets/styles/core-button.css` | The `css` field **strips `:hover`** entirely; and a variation's JSON `:hover` only beats the button element rule on source order |
+| The card scrim lift + chevron | `assets/styles/core-group.css` | Both of the above |
+| The `:active` press-in on Raised | `assets/styles/core-button.css` | `:active` is stripped like `:hover` |
+| Pagination plates | `assets/styles/core-query-pagination-numbers.css` | The numbers are bare `<a>`/`<span>` with no block support to hang a variation off, and `current` needs a class selector core does not expose |
+| Slider arrows and dots | `assets/styles/core-group.css` | Slick and Swiper markup belongs to plugins — per `wp-thirdparty-markup-styling`, scope to the `is-style-*` class |
+| Editor-only overrides for both cards | `assets/styles/core-group.css` | Gutenberg out-specifies the `css` field — see the second trap below |
+
+⚠️ **Three specificity traps, recorded so they are not reintroduced.**
+
+**1 — the absolutely-positioned card children get a block-gap margin.** WordPress gives
+flow-layout siblings a `margin-block-start` from `--wp--style--block-gap`. Because the scrim
+and the team card's name band are `position: absolute` with `inset: 0`, that margin *still*
+shifts them — it does not get ignored — so a 37px strip of bare image showed along the top of
+every card. The variation's own `blockGap: 0` does not win. Both cards now carry
+`margin: 0 !important` on their absolute children, and a `& > *` reset for good measure.
+
+**2 — Gutenberg forces `position: relative` on block wrappers in the editor.** `content.css`
+sets `.block-editor-block-list__layout .block-editor-block-list__block { position: relative }`
+at **(0,2,0)**. A block-style `css` field compiles to `:root :where(…)` at **(0,1,0)**, so
+inside the editor the scrim lost `position: absolute` and dropped *below* the image — the card
+read as a stacked image-then-caption rather than an overlay. The fix is a
+`.editor-styles-wrapper …` rule at (0,3,0) in `core-group.css`. The same rule keeps the team
+card's bio panel open in the editor so its text can be selected and edited without a hover.
+
+**3 — the pagination link rule.** `theme.json` sets
+`styles.blocks.core/query-pagination.elements.link`, which compiles to
+`:root :where(.wp-block-query-pagination a:where(:not(.wp-element-button)))`. Everything
+inside `:where()` counts as zero, so that rule lands at **(0,1,0)** — exactly tying a bare
+`.wp-block-query-pagination-next` and winning on source order. It silently stripped the
+border off the prev/next arrows. Every selector in that sheet is now descendant-scoped to
+(0,2,1) or higher. **Do not flatten them back to single classes.**
+
+### 12.3 Deliberate departures from live
+
+Everything else is a faithful port. These are not, and each is recorded as an improvement
+rather than drift. Four of the five buy contrast:
+
+1. **Pagination is `primary-500`, not the taupe.** Live draws it in `#B4A48C` → `neutral-400`,
+   which is **1.9:1** on white — the borders barely register and the current page's white
+   label on that fill is weak. `primary-500` is **9.48:1** in both directions. The rule also
+   thins from 2px to 1px, because that weight of colour needs less of it.
+2. **Pagination has a hover state.** Live has none at all. A click target with no hover
+   feedback is a defect, not a design decision.
+3. **The brand-panel CTA is gold with a black label.** Live uses a brighter orange
+   (`#FF9900`) with white text, roughly 2.4:1. `accent-400` with `contrast` is **12.08:1** —
+   the most legible button in the theme rather than the least.
+4. **The archive card scrim rests at 45%, not 30%.** At live's 30% the title loses the fight
+   against a bright photograph; the beach card on the reference page is the test case.
+5. **The active slider dot takes the brand fill.** Live leaves resting and active on the
+   same `#938673`, which gives the reader no position cue.
+
+Two shape changes that are not about contrast:
+
+6. **No radius anywhere.** Live's `.btn.white-border-btn` carries a 2px radius; nothing else
+   in the design does, so it is squared off.
+7. **One button box.** See §12.8.
+
+### 12.4 A defect fixed on the way through
+
+`style.css` gave inline `<code>` a fixed `neutral-200` plate but let it inherit its text
+colour. Inside any dark or brand-filled section it inherited `base` and rendered white on
+near-white — invisible. The rule now sets `color` explicitly. KWV-inherited; it would have
+surfaced the first time a dark section carried inline code.
+
+### 12.5 Ten decisions, all taken 2026-08-20
+
+Rendered as a table on the **Block & Section Style Reference** page (local,
+`/block-section-style-reference/`, page ID 239, `page-no-title` template).
+
+| # | Item | Live | Now | Decision |
+|---|---|---|---|---|
+| 1 | **Body copy** | `#4C5250` | `neutral-700` | 8.04:1 AAA, within 0.06 of live's 7.98. `neutral-800` rejected at 13.24 as materially heavier than the site has ever been |
+| 2 | Button hover | `#BF5C17` | `brand-600` | Confirmed. Keeps the AA step |
+| 3 | Type scale | 28px title, 15px body | preset `500` / `300` | Align to the new scale; no new steps. The larger type is the intended modernisation |
+| 4 | Brand-panel button | `#FF9900` + white | `accent-400` + `contrast` | Became **Accent CTA**. 12.08:1 against roughly 2.4 |
+| 5 | Card meta strip | `#F0EBE5` | `neutral-200` | Nearest existing step; no new variable. The subtle step between card body and strip is lost |
+| 6 | Heading case | only h2 uppercase | only h2 uppercase | `elements.heading` no longer uppercases globally |
+| 7 | Dark section ground | `#3E3530` + watermark | `neutral-800`, flat | Watermark goes on during template/page dev, as WebP or SVG. The live PNG is 1.6 MB |
+| 8 | Pagination | 2px `#B4A48C`, no hover | 1px `primary-500`, hover fills | `neutral-400` is 1.9:1 on white; `primary-500` is 9.48:1 both ways |
+| 9 | Heading brown | `#60483B` | `neutral-700` | Accepted. ΔE 5.6, and now the same token as body copy — which is how live reads |
+| 10 | Button geometry | 15px pad, one 2px radius, 55px | 14/32px pad, square, one box | See §12.8 |
+
+Two consequences worth noting. **Heading case (6)** removes `textTransform: uppercase` from
+`elements.heading` and puts it on `elements.h2` alone, so h1, h3 and h4 return to sentence
+case as live has them. `h6`'s uppercase went with it — that was a base-theme label treatment
+rather than part of the hierarchy, and live uses no h6, but restoring it is a one-line change
+if the eyebrow style is wanted. Section headings are unaffected at any level, because
+`section-title` sets its own uppercase.
+
+**Type scale (3)** is why the section title renders at 32px against live's 28px, h3 at 24px
+against 22px, and body copy at 19.2px against 15px. That is the sanctioned modernisation, and
+it should be applied consistently rather than corrected per-component.
+
+### 12.6 Not ported, and why
+
+- **The blog card.** Its live treatment is a horizontal list row — image left, Optima title,
+  italic meta in orange, an `…../` read-more. That is composition, not a token decision, so
+  it belongs to the blog page-conversion issue. `blog-card.json` and `blog-card-large.json`
+  are untouched and still carry their KWV structure.
+- **The list-card variant** of the archive card (container `#F6F3F0`, meta strip `#F0EBE5`,
+  read-more `#3E3530` → `#4A4A4A`). Measured and ready, blocked on open decision 5.
+- **The breadcrumb bar** (`#ECE9E3` ground, italic `#4C5250` links). Breadcrumbs are a Yoast
+  filter — plugin behaviour, so the bar lands with `sd-enhancements`, not here.
+
+### 12.7 Verification
+
+- **27 block style variations** register, plus `fill` and `outline` in `theme.json`; every one
+  resolves its `var:preset|*` reference to a real custom property.
+- **0 orphaned preset references** across 101 files.
+- **Task 3.8 clean.** No raw hex and no font literal in any declaration across `styles/`,
+  `parts/`, `patterns/`, `templates/` and `assets/styles/`. Every hex that appears is inside a
+  comment or a `description`, documenting the measured live value it came from.
+- Computed styles confirmed on the reference page: all four buttons at **58px** with identical
+  14/32px padding, zero radius and a 2px border; the card scrim at 45% with a **0px** top gap;
+  the overlay title at preset `500` with a 36px chevron; pagination at 40×40 with a 1px
+  `primary-500` border and an inverted current plate; slider arrows at 44×44 with a 32px glyph
+  centred on the dot row to **0px** offset; body copy at `rgb(91, 78, 65)`.
+- Heading case confirmed in the compiled global stylesheet: `h2` is the **only** heading
+  carrying `text-transform: uppercase`.
+- **Editor checked, not just the front end.** Both cards render as overlays in the block
+  editor, and the team card's bio panel is open and editable there.
+- Local only. Nothing was written to dev — its theme is deployed by pull, and the MCP endpoint
+  there is content-only (`editable: false`).
+
+### 12.8 One button box
+
+Every button in the theme is the same size. That is worth spelling out because it is not how
+live behaves, and because the mechanism is not obvious.
+
+`settings.custom.spacing.button` holds the only padding values any button uses:
+
+| Token | Value | Live |
+|---|---|---|
+| `--wp--custom--spacing--button--padding-vertical` | `0.875rem` (14px) | 15px on the CTA, 10px on the outline |
+| `--wp--custom--spacing--button--padding-horizontal` | `2rem` (32px) | 15px |
+
+The horizontal padding roughly doubles live's, which is the single most visible piece of the
+modernisation — live's buttons are tight around their label.
+
+The button **element** in `theme.json` also sets a `2px solid transparent` border, and each
+variation only ever recolours it. Without that, an outlined button would compute 4px taller
+than a filled one and the two would never line up in a row. Every variation resolves to
+**58px** at the default font size, which replaced the per-variation `min-height` hacks the
+first pass used (55px on most, 45px on Outline Light).
+
+Radius is `0` everywhere. Live carries a 2px radius on `.btn.white-border-btn` alone; nothing
+else in the design has one, so it was squared off rather than propagated.

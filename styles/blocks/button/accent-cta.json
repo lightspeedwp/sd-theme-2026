@@ -1,0 +1,50 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Accent CTA",
+	"slug": "accent-cta",
+	"blockTypes": [
+		"core/button"
+	],
+	"description": "The call to action for use inside a Brand Page Section, where a Fill button would be brand-on-brand and disappear. An accent-400 plate with contrast text: black on gold measures 12.08:1 AAA, against 3.17:1 for the base-on-brand-500 pairing it replaces, so this is the most legible button in the theme rather than the least. The plate reads as distinct from the orange panel even though the two are only 1.83:1 apart, because the black label carries the edge. Hover lifts to accent-200 rather than darkening — the label is black, so darkening the plate would close the gap to the panel behind it instead of opening it. Geometry, type and padding are inherited from the button element, so it is the same box as every other button.",
+	"styles": {
+		"color": {
+			"background": "var:preset|color|accent-400",
+			"text": "var:preset|color|primary-600"
+		},
+		"border": {
+			"radius": "var:preset|border-radius|0",
+			"width": "var:custom|border-width|200",
+			"style": "solid",
+			"color": "transparent"
+		},
+		"spacing": {
+			"padding": {
+				"top": "var:custom|spacing|button|padding-vertical",
+				"right": "var:custom|spacing|button|padding-horizontal",
+				"bottom": "var:custom|spacing|button|padding-vertical",
+				"left": "var:custom|spacing|button|padding-horizontal"
+			}
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|heading",
+			"fontSize": "var:preset|font-size|300",
+			"fontWeight": "var:custom|font-weight|semi-bold",
+			"lineHeight": "var:custom|line-height|button",
+			"textTransform": "uppercase",
+			"letterSpacing": "var:custom|letter-spacing|narrow"
+		},
+		":hover": {
+			"color": {
+				"background": "var:preset|color|accent-200",
+				"text": "var:preset|color|primary-600"
+			}
+		},
+		":focus": {
+			"color": {
+				"background": "var:preset|color|accent-200",
+				"text": "var:preset|color|primary-600"
+			}
+		}
+	}
+}
