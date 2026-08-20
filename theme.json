@@ -961,8 +961,7 @@
 							"width": "0"
 						},
 						"color": {
-							"background": "transparent !important",
-							"text": "var:preset|color|neutral-700"
+							"text": "var:preset|color|primary-500"
 						},
 						"spacing": {
 							"padding": {
@@ -973,14 +972,14 @@
 							}
 						},
 						"typography": {
-							"fontSize": "var:preset|font-size|300",
+							"fontSize": "var:preset|font-size|200",
 							"fontWeight": "var:custom|font-weight|medium",
 							"textDecoration": "none"
 						},
 						":hover": {
 							"color": {
-								"text": "var:preset|color|brand-600",
-								"background": "transparent !important"
+								"text": "var:preset|color|base",
+								"background": "var:preset|color|primary-500"
 							},
 							"typography": {
 								"textDecoration": "none"
@@ -989,9 +988,9 @@
 					}
 				},
 				"typography": {
-					"fontSize": "var:preset|font-size|300"
+					"fontSize": "var:preset|font-size|200"
 				},
-				"css": "& .wp-block-query-pagination-numbers{gap:var(--wp--preset--spacing--10)} & .page-numbers{color:var(--wp--preset--color--neutral-700);} & .page-numbers.current{color:var(--wp--preset--color--brand-600);font-weight:var(--wp--custom--font-weight--bold);} & .page-numbers.dots{color:var(--wp--preset--color--neutral-700)}"
+				"css": "& .wp-block-query-pagination-numbers{gap:var(--wp--preset--spacing--10)} & .page-numbers.current{background-color:var(--wp--preset--color--primary-500);color:var(--wp--preset--color--base);font-weight:var(--wp--custom--font-weight--bold)} & .page-numbers.dots{border-color:transparent;background-color:transparent}"
 			},
 			"core/quote": {
 				"elements": {
@@ -1245,13 +1244,28 @@
 			"area": "sidebar"
 		},
 		{
-			"name": "mega-menu",
-			"title": "Mega Menu",
+			"name": "dropdown-call-us",
+			"title": "Dropdown — Call Us",
 			"area": "menu"
 		},
 		{
-			"name": "dropdown-menu",
-			"title": "Dropdown Menu",
+			"name": "mega-menu-destinations",
+			"title": "Mega Menu — Destinations",
+			"area": "menu"
+		},
+		{
+			"name": "mega-menu-tours",
+			"title": "Mega Menu — Tours & Safaris",
+			"area": "menu"
+		},
+		{
+			"name": "mega-menu-accommodation",
+			"title": "Mega Menu — Accommodation",
+			"area": "menu"
+		},
+		{
+			"name": "mega-menu-about",
+			"title": "Mega Menu — About Us",
 			"area": "menu"
 		},
 		{

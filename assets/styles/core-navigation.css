@@ -187,3 +187,53 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
 	color: var(--wp--preset--color--brand-500);
 }
 
+
+/* Header navigation swap — desktop vs mobile
+   ---------------------------------------------------------------------------
+   The header carries two navigation blocks: `.sd-nav-desktop`, which renders the
+   mega menus inline, and `.sd-nav-mobile`, whose overlay is filled from
+   parts/mobile-menu.html by Ollie Menu Designer's `mobileMenuSlug`. They cannot
+   be one block — the mega menus and the mobile panel are different structures,
+   not two layouts of the same one.
+
+   kwv-theme-2026 does the same swap with the Block Visibility plugin
+   (patterns/header-transparent.php). That plugin is not installed on this site,
+   so the swap is a media query instead. No JavaScript either way.
+
+   1200px is the live site's own header breakpoint: below it the live header
+   drops the top bar and stops sticking (sd-lsx-child/assets/js/custom.js:23). */
+@media (max-width: 1199px) {
+	.sd-nav-desktop {
+		display: none;
+	}
+}
+
+@media (min-width: 1200px) {
+	.sd-nav-mobile {
+		display: none;
+	}
+}
+
+/* Utility bar: the Call Us dropdown
+   ---------------------------------------------------------------------------
+   Opens on click (`openSubmenusOnClick`), so the toggle is a real button and
+   the numbers are reachable by keyboard without a hover trap. */
+.sd-header__call-us .wp-block-navigation__submenu-container {
+	border: 1px solid var(--wp--preset--color--neutral-300);
+	border-radius: var(--wp--preset--border-radius--200);
+	box-shadow: var(--wp--preset--shadow--200);
+	min-width: 14rem;
+}
+
+.sd-header__call-us .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
+	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
+}
+
+/* Mega-menu columns
+   ---------------------------------------------------------------------------
+   `is-style-mega-menu-nav` fixes the list to 13.75rem, which is right for a
+   standalone fold-out and wrong inside a panel column that already has a width.
+   Inside a panel the list fills its column. */
+.sd-mega-panel .is-style-mega-menu-nav .wp-block-navigation__container {
+	width: 100%;
+}

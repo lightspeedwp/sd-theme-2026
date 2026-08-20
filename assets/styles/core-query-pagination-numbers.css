@@ -82,6 +82,24 @@ flatten them back to single classes. */
 	background-color: transparent;
 }
 
+/* Chevrons: larger than the number labels and centred (core adds 1ch margin on the arrow span). */
+.wp-block-query-pagination a.wp-block-query-pagination-previous,
+.wp-block-query-pagination a.wp-block-query-pagination-next {
+	padding-left: 0;
+	padding-right: 0;
+	font-size: var(--wp--preset--font-size--300);
+}
+
+.wp-block-query-pagination .wp-block-query-pagination-previous-arrow {
+	margin-right: 2px !important;
+	margin-bottom: 1px !important;
+}
+
+.wp-block-query-pagination .wp-block-query-pagination-next-arrow {
+	margin-left: 2px !important;
+	margin-bottom: 1px !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.wp-block-query-pagination .wp-block-query-pagination-numbers .page-numbers,
 	.wp-block-query-pagination a.wp-block-query-pagination-previous,

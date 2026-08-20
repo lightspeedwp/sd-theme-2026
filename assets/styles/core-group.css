@@ -182,54 +182,6 @@
 }
 
 /**
- * Timeline Milestone — round image with a hover slide-out info panel.
- *
- * The structure (round media crop, layout, typography) lives in the section
- * style styles/sections/cards/timeline-milestone.json so it renders in the
- * editor. The collapse/expand reveal lives here as plain CSS because the
- * block-style-variation compiler drops `:hover`/`:focus-within` from that JSON
- * and wraps it at `:where()` zero specificity (see the theme AGENTS.md
- * "Styling lives in JSON" rule).
- *
- * The panel uses a grid-template-rows 0fr -> 1fr transition so the info slides
- * open from behind the year and pushes nothing else around. The child needs
- * min-height:0 + overflow:hidden for the collapsed row to actually clip it.
- */
-.is-style-timeline-milestone .timeline-milestone__info {
-	display: grid;
-	grid-template-rows: 0fr;
-	transition: grid-template-rows 320ms ease;
-}
-
-.is-style-timeline-milestone .timeline-milestone__info > * {
-	min-height: 0;
-	overflow: hidden;
-}
-
-/* Reveal on hover / keyboard focus within the milestone. */
-.is-style-timeline-milestone:hover .timeline-milestone__info,
-.is-style-timeline-milestone:focus-within .timeline-milestone__info {
-	grid-template-rows: 1fr;
-}
-
-/*
- * Keep the slide-out permanently open inside the editor so the info text can be
- * selected and edited without a hover. `.editor-styles-wrapper` only exists in
- * the editor iframe, so the front end stays collapsed-until-hover. The extra
- * class also out-specifies the resting rule above.
- */
-.editor-styles-wrapper .is-style-timeline-milestone .timeline-milestone__info {
-	grid-template-rows: 1fr;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.is-style-timeline-milestone .timeline-milestone__info {
-		transition-duration: 1ms;
-	}
-}
-
-
-/**
  * Slider Frame — arrow and dot presentation for third-party carousels.
  *
  * The three colours are declared as custom properties by the section style
@@ -332,4 +284,37 @@
 	.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next, .slick-dots li button, .swiper-pagination-bullet) {
 		transition-duration: 1ms;
 	}
+}
+
+/* Sticky header
+   ---------------------------------------------
+   The approved header behaviour is that the slim utility bar scrolls away and
+   the main row pins to the top of the viewport.
+
+   This sticks the **row**, not the header. Sticking the header and pulling it
+   up by the utility bar's height — `top: calc(-1 * <height>)` — would need that
+   height as a number, and the utility bar is sized by a spacing preset and a
+   font-size preset, both of which are clamp()-based and therefore not knowable
+   here. Sticking the row needs no arithmetic at all: the utility bar is a
+   normal block that scrolls out of view, and the row stops at the top.
+
+   This is CSS only, which is why it is theme work. The live site does the same
+   job with jQuery scrollToFixed via `lsx_sticky_menu_selector`
+   (sd-lsx-child/assets/js/custom.js:23); that filter and its script are
+   replaced here, not ported. inc/README.md's ban on "sticky-header behaviour"
+   is about exactly that kind of scroll-handler module — there is none here.
+
+   Requires that no ancestor of .sd-header__row sets `overflow` to anything but
+   `visible`, or position:sticky is silently inert. */
+.sd-header__row {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+}
+
+/* The mega-menu panels drop out of the row, so the row has to stack above the
+   page content that follows it. */
+.sd-header {
+	position: relative;
+	z-index: 100;
 }
