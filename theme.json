@@ -315,6 +315,20 @@
 			},
 			"layout": {
 				"fullWidth": "1920px"
+			},
+			"header": {
+				"utility-height": "56px",
+				"row-height": "80px",
+				"logo-width": "310px",
+				"logo-lift": "24px",
+				"nav-link-height": "50px",
+				"search-panel-width": "600px"
+			},
+			"footer": {
+				"widgets-min-height": "615px",
+				"logo-width": "254px",
+				"badge-width": "131px",
+				"instagram-tile": "83px"
 			}
 		},
 		"layout": {

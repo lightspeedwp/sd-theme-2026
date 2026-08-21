@@ -40,6 +40,115 @@ function asset_version( $relative_path ) {
 }
 
 /**
+ * Object-cache key holding the resolved uploads-path → attachment ID map.
+ */
+const ATTACHMENT_PATH_CACHE_KEY = 'attachment_ids_by_path';
+
+/**
+ * Attachment ID for a media-library file, addressed by its uploads-relative path.
+ *
+ * The media-library counterpart to asset_version() above: that one addresses a
+ * file shipped inside the theme, this one addresses a file that lives in the
+ * database.
+ *
+ * **Why patterns address media by path and not by ID.** Live's footer markup
+ * carries raw attachment IDs (`wp-image-50258`), and patterns/header.php makes
+ * the case for hardcoding dev's IDs for `wp_navigation` refs — dev is deployed
+ * wholesale to live, database included, so those IDs travel. That reasoning
+ * holds for menus and it holds for the eleven footer assets that already exist
+ * on dev under live's own IDs. It does **not** hold for an asset added during
+ * the rebuild: `2026/08/footer-bg.jpg` is 65885 locally and will be whatever
+ * dev assigns it, so no literal can be right in both places.
+ *
+ * The uploads-relative path is the identifier that *is* the same everywhere —
+ * that is the whole point of seeding each asset at live's own path — so the
+ * patterns resolve through it and get the right ID per environment for free.
+ * A missing asset then degrades to a skipped image rather than a hotlink to
+ * some unrelated attachment that happens to hold that ID.
+ *
+ * Resolution goes through core's attachment_url_to_postid(), which queries
+ * `_wp_attached_file` — the same column the seeding script writes — so the
+ * lookup and the contract are the same thing.
+ *
+ * The resolved map is held in the object cache under a single key, so a site
+ * with a persistent cache pays nothing per request. Without one (local, today)
+ * each distinct path costs one query on first use and is free thereafter.
+ *
+ * @param string $relative_path Path relative to the uploads base directory,
+ *                              e.g. '2019/07/footer-logo.svg'.
+ * @return int Attachment ID, or 0 if nothing is registered at that path.
+ */
+function attachment_id_by_path( $relative_path ) {
+	$relative_path = ltrim( (string) $relative_path, '/' );
+
+	if ( '' === $relative_path ) {
+		return 0;
+	}
+
+	$map = wp_cache_get( ATTACHMENT_PATH_CACHE_KEY, 'sd-theme-2026' );
+
+	if ( ! is_array( $map ) ) {
+		$map = array();
+	}
+
+	if ( ! array_key_exists( $relative_path, $map ) ) {
+		$uploads = wp_get_upload_dir();
+
+		$map[ $relative_path ] = (int) attachment_url_to_postid(
+			trailingslashit( $uploads['baseurl'] ) . $relative_path
+		);
+
+		wp_cache_set( ATTACHMENT_PATH_CACHE_KEY, $map, 'sd-theme-2026' );
+	}
+
+	return (int) $map[ $relative_path ];
+}
+
+/**
+ * Flush the path → attachment ID map when the media library changes.
+ *
+ * Without this, a re-uploaded or re-seeded asset keeps resolving to the ID the
+ * cache learned before it moved — and on a site with a persistent object cache
+ * that stays wrong until the cache is flushed by hand.
+ */
+function flush_attachment_path_cache() {
+	wp_cache_delete( ATTACHMENT_PATH_CACHE_KEY, 'sd-theme-2026' );
+}
+add_action( 'add_attachment', __NAMESPACE__ . '\flush_attachment_path_cache' );
+add_action( 'attachment_updated', __NAMESPACE__ . '\flush_attachment_path_cache' );
+add_action( 'delete_attachment', __NAMESPACE__ . '\flush_attachment_path_cache' );
+
+/**
+ * Source URL for a media-library file, addressed by its uploads-relative path.
+ *
+ * Falls back to the attachment's own URL when no sized source exists. That is
+ * not an edge case here: an SVG carries no width/height in its attachment
+ * metadata, so image_downsize() has nothing to size against and
+ * wp_get_attachment_image_url() returns false for every size including 'full'.
+ * `2019/07/footer-logo.svg` — the footer's brand mark — is exactly that file.
+ *
+ * @param string $relative_path Path relative to the uploads base directory.
+ * @param string $size          Registered image size. Default 'full'.
+ * @return string URL, or '' if nothing is registered at that path.
+ */
+function attachment_src_by_path( $relative_path, $size = 'full' ) {
+	$id = attachment_id_by_path( $relative_path );
+
+	if ( ! $id ) {
+		return '';
+	}
+
+	$src = wp_get_attachment_image_url( $id, $size );
+
+	if ( ! $src ) {
+		$src = wp_get_attachment_url( $id );
+	}
+
+	return $src ? $src : '';
+}
+
+
+/**
  * Set up theme defaults and register various WordPress features.
  */
 function setup() {
@@ -233,6 +342,13 @@ require_once get_theme_file_path( 'inc/mega-menu.php' );
 // is outside the core-* scan. Design only — the disclosure's behaviour is the
 // plugin's, in blocks/call-us/view.js.
 require_once get_theme_file_path( 'inc/call-us.php' );
+
+// Prints the footer's mobile-background media query. The desktop photograph is a
+// block attribute in patterns/footer.php, but its mobile counterpart is a media
+// query — not expressible as a block attribute — over an attachment URL that only
+// exists at runtime, so neither a styles/** partial nor a static stylesheet can
+// hold it.
+require_once get_theme_file_path( 'inc/footer.php' );
 
 // Answers the plugin's `sd_enh_trustpilot_stars_image` filter with the theme's
 // own rating tile. The plugin exposes the rating as a number and says explicitly

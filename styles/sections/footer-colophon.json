@@ -1,0 +1,41 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Footer Colophon",
+	"slug": "footer-colophon",
+	"blockTypes": [ "core/group" ],
+	"description": "The dark bar under the footer photograph — live's `footer#colophon.content-info`: the copyright line on the left, the Privacy Policy / Terms & Conditions pair on the right. Measured on live 2026-08-20: `#41382E` ground (`primary-600` is `#403028`, a distance of 10 in sRGB) and 15px of vertical padding (`spacing.20` is 14–20px). ⚠️ **The text colour is deliberately NOT live's.** Live sets both the credit and the terms links to `#847C73` on `#41382E`, which measures **2.54:1** — a WCAG AA failure on 15px type, which needs 4.5:1. `neutral-400` measures **6.33:1** on this ground and passes AA and AAA. It is also the resting half of a pair live already implies: live's terms-link hover is `#DCD6C9`, which is `neutral-300` to within a distance of 4, and that is kept exactly. The alternative, `neutral-500`, was rejected at 3.95:1 — closer to live's tone but still failing AA for body text. Recorded in style.md as an accessibility correction, not a design change; the gesture (muted warm grey on brown, brightening on hover) is live's.",
+	"styles": {
+		"color": {
+			"background": "var:preset|color|primary-600",
+			"text": "var:preset|color|neutral-400"
+		},
+		"spacing": {
+			"blockGap": "var:preset|spacing|20",
+			"margin": {
+				"top": "0"
+			},
+			"padding": {
+				"top": "var:preset|spacing|20",
+				"right": "var:preset|spacing|20",
+				"bottom": "var:preset|spacing|20",
+				"left": "var:preset|spacing|20"
+			}
+		},
+		"typography": {
+			"fontSize": "var:preset|font-size|200"
+		},
+		"elements": {
+			"link": {
+				"color": {
+					"text": "var:preset|color|neutral-400"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|neutral-300"
+					}
+				}
+			}
+		}
+	}
+}

@@ -286,35 +286,149 @@
 	}
 }
 
-/* Sticky header
-   ---------------------------------------------
-   The approved header behaviour is that the slim utility bar scrolls away and
-   the main row pins to the top of the viewport.
-
-   This sticks the **row**, not the header. Sticking the header and pulling it
-   up by the utility bar's height — `top: calc(-1 * <height>)` — would need that
-   height as a number, and the utility bar is sized by a spacing preset and a
-   font-size preset, both of which are clamp()-based and therefore not knowable
-   here. Sticking the row needs no arithmetic at all: the utility bar is a
-   normal block that scrolls out of view, and the row stops at the top.
-
-   This is CSS only, which is why it is theme work. The live site does the same
-   job with jQuery scrollToFixed via `lsx_sticky_menu_selector`
-   (sd-lsx-child/assets/js/custom.js:23); that filter and its script are
-   replaced here, not ported. inc/README.md's ban on "sticky-header behaviour"
-   is about exactly that kind of scroll-handler module — there is none here.
-
-   Requires that no ancestor of .sd-header__row sets `overflow` to anything but
-   `visible`, or position:sticky is silently inert. */
-.sd-header__row {
-	position: sticky;
-	top: 0;
+/* The mega-menu panels drop out of the header row, so the header has to stack
+   above the page content that follows it. The sticky positioning itself is on the
+   block, in patterns/header.php — `core/group` supports `position: sticky`
+   natively, so it needs no CSS. */
+.sd-header {
 	z-index: 100;
 }
 
-/* The mega-menu panels drop out of the row, so the row has to stack above the
-   page content that follows it. */
-.sd-header {
-	position: relative;
-	z-index: 100;
+/* The Trustpilot badge in the header
+   ===========================================================================
+   Live shows only the Trustpilot mark and the star tile in its header — the
+   band word is hidden globally (`#tb-horizon-review .tp-wording{display:none}`)
+   and the score line is hidden in the header specifically
+   (`.sd-top-menu-wrapper #tb-horizon-review .tb-score{display:none}`). Measured
+   2026-08-20: the rendered top bar carries a 90x24 logo and a 133x25 star tile,
+   and nothing else.
+
+   Scoped to `.sd-header__utility`, so patterns/trustpilot-score.php keeps its
+   full badge — band word, score and review count — everywhere else it is placed.
+   To show the whole badge in the header instead, delete this rule; that is the
+   only change needed. */
+.sd-header__utility .sd-trustpilot__wording,
+.sd-header__utility .sd-trustpilot__score,
+.sd-header__utility .sd-trustpilot__count {
+	display: none;
+}
+
+/* The badge is the left-hand end of a right-aligned cluster, so it needs no
+   growth of its own; live keeps it hard against the Call Us button. */
+.sd-header__utility .sd-trustpilot {
+	align-items: center;
+	align-self: center;
+	flex: 0 0 auto;
+	margin-inline-end: var(--wp--preset--spacing--20);
+}
+
+
+/* The utility bar below the tablet breakpoint
+   ===========================================================================
+   Live drops the whole top menu at 991px and leaves the Trustpilot mark alone,
+   centred:
+
+       @media (max-width: 991px) {
+           .sd-top-menu-wrapper #top-menu { display: none }
+           .sd-top-menu-wrapper #tb-horizon-review { justify-content: center }
+       }
+
+   Reproduced, because without it the bar breaks: measured at 390px before this
+   rule, "Call Us Today" wrapped onto three lines and the enquiry plate read
+   "GET IN TOU / CH". Note the breakpoint — live uses **992px** for the utility
+   bar and **1200px** for the nav swap, and they are genuinely two different
+   numbers, not one rounded twice.
+
+   Nothing is lost by hiding them, which is the reason live can do it: both
+   actions are already in the mobile menu — `parts/mobile-menu.html` carries a
+   full-width "Get in touch" button and a "Call us today" numbers list — and
+   that is the menu the hamburger opens at these widths.
+
+   ⚠️ **The two `display: none` rules are placeholders — convert to Block
+   Visibility.** Hiding a block belongs on the block as a visibility control, not
+   in a stylesheet; the plugin is planned for this site but not installed yet. The
+   `justify-content` and `margin-inline-end` rules below are real responsive
+   styling and stay whatever happens. Same note on the nav swap in
+   assets/styles/core-navigation.css.
+
+   All three rules sit together here rather than being split across
+   sd-call-us.css and core-button.css by block: this is one responsive decision
+   about one component, and every one of those stylesheets loads on the header
+   anyway. Splitting it would only make it possible to change half of it.
+
+   `.sd-call-us` is doubled up because assets/styles/sd-call-us.css sets
+   `display: flex` on the same hook class, and relative source order between two
+   lazily-enqueued block stylesheets is not something to rely on. */
+@media (max-width: 991px) {
+	.sd-call-us.sd-header__call-us,
+	.wp-block-buttons.sd-header__cta {
+		display: none;
+	}
+
+	.sd-header__utility > .wp-block-group {
+		justify-content: center;
+	}
+
+	.sd-header__utility .sd-trustpilot {
+		margin-inline-end: 0;
+	}
+}
+
+
+/* The footer band below the tablet breakpoint
+   ===========================================================================
+   Live collapses its four footer columns into one centred 290px stack at 767px:
+
+       @media (max-width: 767px) {
+           #footer-widgets .widget-title,
+           #footer-widgets p, #footer-widgets .textwidget, #footer-widgets ul li,
+           #footer-widgets a:not(.btn):not(button)        { text-align: center }
+           #footer-widgets .widget_media_image            { margin-left: auto; margin-right: auto }
+           #footer-widgets .col-md-3:not(:first-child)    { margin-top: 20px; margin-left: auto; margin-right: auto }
+       }
+       @media (max-width: 900px) {
+           #footer-widgets .col-md-3:not(:first-child)    { max-width: 290px }
+       }
+
+   Core already stacks `wp-block-columns` at 781px, so only the centring is
+   reproduced — the 767px breakpoint is live's, and it is deliberately not
+   rounded to core's 781: the stack and the centring are two different decisions
+   on live and the fourteen pixels between them are where the columns are stacked
+   but still left-aligned, which is what live does.
+
+   Live's 290px cap is applied to every column here, not to
+   `:not(:first-child)`. On live the first column is exempt because the brand
+   logo is 254px inside a Bootstrap column that is already narrower; capping it
+   too is what keeps the stack on one axis rather than leaving the logo aligned
+   to a different edge than everything under it.
+
+   This is one responsive decision about one component, so it sits in one block
+   rather than being split by block type across core-columns.css,
+   core-social-links.css and core-image.css — the same reasoning as the utility
+   bar above. The images' own `margin-inline` is the exception: it lives with
+   their widths in core-image.css, because a centred image needs to know how wide
+   it is. */
+@media (max-width: 767px) {
+	.sd-footer__widgets .wp-block-column {
+		max-width: 290px;
+		margin-inline: auto;
+		text-align: center;
+	}
+
+	/* The social rows and the Instagram grid centre as boxes, not as text: both
+	   are flex/grid containers, so `text-align` on the column does not reach
+	   them. */
+	.sd-footer__widgets .sd-footer__social {
+		align-items: center;
+	}
+
+	.sd-footer__widgets .wp-block-group.is-layout-grid {
+		justify-content: center;
+	}
+
+	/* The colophon stacks; live leaves both rows left-aligned rather than
+	   centring them, so only the horizontal distribution changes. */
+	.is-style-footer-colophon .wp-block-group.is-layout-flex {
+		justify-content: flex-start;
+	}
 }

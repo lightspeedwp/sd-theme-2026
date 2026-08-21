@@ -14,3 +14,165 @@
 .site-header .wp-block-search__input::placeholder {
 	font-size: inherit;
 }
+
+
+/* The header's fold-out search — `.sd-header__search`
+   ===========================================================================
+   Live's header search is already a disclosure: `#masthead #searchform` is
+   absolutely positioned at the row's top-right, its `.search-field` sits at
+   `width: 20px; opacity: 0` with a `0.4s ease-in-out` transition, and only the
+   20px magnifier is visible until it opens. Measured on live 2026-08-20. This
+   reproduces that, borrowing the ATI theme's overlay geometry — which is the
+   "folds out nicely" the brief asked for — with SD's tokens throughout.
+
+   ## No JavaScript here, and none needed
+
+   On WordPress 7.0 `core/search` is expandable *natively* whenever
+   `buttonPosition` is `button-only`: wp-includes/blocks/search.php enqueues the
+   Interactivity API view module, binds `aria-expanded` and `aria-label` on the
+   button, and toggles `wp-block-search__searchfield-hidden` on the form via
+   `data-wp-class`. Escape and focus-out close it. So the disclosure, its ARIA
+   and its keyboard behaviour are all core's, and the theme only draws it.
+
+   (The `isSearchFieldHidden` attribute that ATI's pattern sets is a leftover
+   from the pre-Interactivity implementation — it is not in core's block.json
+   any more and does nothing. Don't copy it across.)
+
+   ## Why this overrides core rather than extending it
+
+   Core's own button-only styling grows the input *in flow* from `width: 0`,
+   which shoves the button leftwards and reflows the whole header row as it
+   opens. Live's doesn't move: the field is taken out of flow and unrolls
+   leftwards over the row. That is the one thing being changed, and it is why
+   these rules need `!important` — core sets `width/min-width/padding-inline` on
+   the hidden input with `!important` itself.
+
+   ## Why CSS and not a JSON block style
+
+   Three of the `css` field's documented limits apply at once: `:hover`/`:focus`
+   flips are stripped, the state selectors are a comma-separated list (all but
+   one is dropped), and the geometry has to key off core's own
+   `.wp-block-search__searchfield-hidden` state class, which is not a variation
+   root. → .claude/skills/wp-blockstyle-css-field */
+
+/* The form fills the header row's height but drops its contents to the bottom of
+   it, so the magnifier sits on the same line as the navigation labels rather than
+   floating in the middle of the row. That is live's arrangement — its
+   `#searchform` is pinned `top: 30px` inside an 80px row, which lands the icon's
+   centre within a pixel of the nav's. */
+.sd-header__search {
+	display: flex;
+	align-items: flex-end;
+	align-self: stretch;
+}
+
+/* The trigger is a bare icon, not a button plate. `core/search` runs its button
+   through `wp_theme_get_element_class_name('button')`, so without this it picks
+   up the button element's brand-500 ground, padding and radius from theme.json
+   and renders as a large orange tile — which is what it was doing. */
+.sd-header__search .wp-block-search__button {
+	background: transparent;
+	border: 0;
+	box-shadow: none;
+	color: var(--wp--preset--color--neutral-800);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	min-width: 0;
+	padding: var(--wp--preset--spacing--5);
+	transition: color 0.3s ease;
+}
+
+.sd-header__search .wp-block-search__button:hover,
+.sd-header__search .wp-block-search__button:focus-visible {
+	background: transparent;
+	color: var(--wp--preset--color--brand-500);
+}
+
+/* Live's magnifier is 20px. The `min-*` pair is not belt-and-braces: core ships
+   `.wp-block-search__button svg{min-width:24px;min-height:24px;width:1.25em}`,
+   and a bare `width` loses to that `min-width` every time. */
+.sd-header__search .wp-block-search__button svg.search-icon {
+	display: block;
+	width: 20px;
+	height: 20px;
+	min-width: 20px;
+	min-height: 20px;
+}
+
+/* Core nests the input and the button inside `.wp-block-search__inside-wrapper`,
+   so a `height: 100%` on the button resolves against *that* box, not the form —
+   which is why the trigger stayed 32px tall inside a stretched form. The wrapper
+   has to carry the height through, and it is sized to the nav-link band rather
+   than the whole row so the trigger's hit area matches the nav's.
+
+   It is also the positioning context for the field below, not the form: pinning
+   the field to the *form* would centre it in the 80px row while the icon sits at
+   the bottom of it, and the two would visibly disagree. */
+.sd-header__search .wp-block-search__inside-wrapper {
+	position: relative;
+	height: var(--wp--custom--header--nav-link-height);
+	align-items: center;
+}
+
+/* The field, open: out of flow, unrolled to the left of the icon, on its own
+   plate so it reads against the neutral-200 header ground. */
+.sd-header__search .wp-block-search__input {
+	position: absolute;
+	right: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 20;
+	width: var(--wp--custom--header--search-panel-width) !important;
+	max-width: calc(100vw - var(--wp--preset--spacing--80));
+	background-color: var(--wp--preset--color--base);
+	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-300);
+	border-radius: var(--wp--preset--border-radius--100);
+	box-shadow: var(--wp--preset--shadow--200);
+	color: var(--wp--preset--color--neutral-800);
+	font-size: var(--wp--preset--font-size--200);
+	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20) !important;
+	opacity: 1;
+	transition:
+		width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+		opacity 0.2s ease-in-out,
+		padding 0.2s ease-in-out;
+}
+
+/* The field, closed. Core puts `wp-block-search__searchfield-hidden` on the
+   form and keeps it there until the button is pressed, so this is the resting
+   state on every page load. `pointer-events: none` matters: core also sets
+   `tabindex="-1"` and `aria-hidden="true"` on the closed input, so this is
+   about the mouse only — the field is already out of the tab order and out of
+   the accessibility tree. */
+.sd-header__search.wp-block-search__searchfield-hidden .wp-block-search__input {
+	width: 0 !important;
+	min-width: 0 !important;
+	border-inline-width: 0 !important;
+	box-shadow: none;
+	opacity: 0;
+	padding-inline: 0 !important;
+	pointer-events: none;
+}
+
+/* Narrower viewports: the panel can't be wider than the room it has. The header
+   hides the desktop row below 1200px, but the search stays, so these widths are
+   what it opens to on tablet and phone. */
+@media (max-width: 960px) {
+	.sd-header__search .wp-block-search__input {
+		width: 360px !important;
+	}
+}
+
+@media (max-width: 600px) {
+	.sd-header__search .wp-block-search__input {
+		width: 240px !important;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sd-header__search .wp-block-search__input {
+		transition: none;
+	}
+}

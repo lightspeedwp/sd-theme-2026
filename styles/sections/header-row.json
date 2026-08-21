@@ -4,30 +4,23 @@
 	"title": "Header — Row",
 	"slug": "header-row",
 	"blockTypes": [ "core/group" ],
+	"description": "The header's main band: logo, navigation and the search disclosure. Matches live's `#masthead` — the same neutral-200 ground as the utility bar above it (live paints it on the shared `.sticky-menu-wrap` and leaves the row transparent; one ground on both bands is the same result with one less layer), no vertical padding, and a drop shadow rather than a hairline border. The 80px band height is `custom.header.row-height`, set as `dimensions.minHeight` on the row inside this band in patterns/header.php — it has to be on the row, because this band is a constrained (block-level) group and a minHeight here would leave the row at content height. Live's shadow is `0 4px 3px -1px rgba(0,0,0,.4)`; preset 300 is the token that reads the same. The row has no padding of its own because the nav links stretch to its full height so the hover underline lands flush on its bottom edge, exactly as live's `border-bottom` does.",
 	"styles": {
 		"color": {
-			"background": "var:preset|color|base",
-			"text": "var:preset|color|contrast"
+			"background": "var:preset|color|neutral-200",
+			"text": "var:preset|color|neutral-800"
 		},
+		"shadow": "var:preset|shadow|300",
 		"spacing": {
 			"padding": {
-				"top": "var:preset|spacing|20",
-				"right": "var:preset|spacing|20",
-				"bottom": "var:preset|spacing|20",
-				"left": "var:preset|spacing|20"
-			}
-		},
-		"border": {
-			"bottom": {
-				"color": "var:preset|color|neutral-300",
-				"width": "1px",
-				"style": "solid"
+				"top": "0",
+				"bottom": "0"
 			}
 		},
 		"elements": {
 			"link": {
 				"color": {
-					"text": "var:preset|color|contrast"
+					"text": "var:preset|color|neutral-800"
 				}
 			}
 		}

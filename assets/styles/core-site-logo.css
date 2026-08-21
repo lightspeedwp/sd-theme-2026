@@ -1,0 +1,79 @@
+/**
+ * Southern Destinations — core/site-logo block styles.
+ *
+ * Auto-enqueued for core/site-logo by the theme's per-block style loader
+ * (see functions.php, enqueue_custom_block_styles).
+ */
+
+/* The header logo — base box
+   ===========================================================================
+   The header row stretches its children so the navigation can reach the row's
+   bottom edge (see patterns/header.php). The logo is the one item that must not
+   stretch — a stretched box would pull the mark to the top of an 80px cell — and
+   it must not shrink either, or the wordmark squashes when the nav gets long.
+
+   These come before the media queries below on purpose: the overhang rule
+   replaces `align-self: center` with `flex-start` at the same specificity, so it
+   has to be able to win on source order. */
+.wp-block-site-logo.sd-header__logo {
+	align-self: center;
+	flex: 0 0 auto;
+}
+
+.wp-block-site-logo.sd-header__logo img {
+	display: block;
+	height: auto;
+	width: 100%;
+}
+
+
+/* The header logo's overhang
+   ===========================================================================
+   The live header's most recognisable move: the elephants break out of the main
+   row and rise into the utility bar above it. Live does it with
+
+       #masthead .navbar-header .custom-logo-link > img {
+           min-height: 84px; position: relative; bottom: 45px; margin-bottom: -30px;
+       }
+
+   at `min-width: 993px`. Don't port those three numbers — they don't mean what
+   they look like. `bottom: 45px` is measured from a static position that the
+   `margin-bottom: -30px` has itself already moved, so the *net* lift on live is
+   about half of it. Measured on live at 1440px, 2026-08-20: the header row's top
+   edge is at y=56 and the 310x84 mark's top edge is at y=31.5 — so the logo
+   overhangs the row by **24px**, which is what `header.logo-lift` holds.
+
+   Expressed as a negative top margin against `align-self: flex-start` rather
+   than live's relative-offset-plus-negative-margin pair. That way one token is
+   the whole story, and because the item's outer height becomes 84 - 24 = 60px —
+   comfortably inside the 80px row — the row cannot grow to fit the taller mark
+   and needs no compensating negative margin at the bottom.
+
+   This is the whole reason the utility bar and the header row share one
+   neutral-200 ground: the logo crosses the seam between them, so a second colour
+   or a border on that seam would cut through the elephants.
+
+   ## Why CSS and not a JSON block style
+
+   `core/site-logo` has no structured style property for a negative margin or
+   `align-self`, and the rule has to sit inside a media query keyed to the
+   header's own 1200px breakpoint. It is also scoped to `.sd-header__logo`, a
+   pattern hook, not to a style variation. */
+
+@media (min-width: 1200px) {
+	.wp-block-site-logo.sd-header__logo {
+		align-self: flex-start;
+		margin-block-start: calc(-1 * var(--wp--custom--header--logo-lift));
+		position: relative;
+		z-index: 1;
+	}
+}
+
+/* Below the header breakpoint the mark sits in the row like any other logo —
+   live drops the overhang at the same point — and shrinks to fit alongside the
+   hamburger. */
+@media (max-width: 1199px) {
+	.wp-block-site-logo.sd-header__logo {
+		width: min(100%, 248px);
+	}
+}

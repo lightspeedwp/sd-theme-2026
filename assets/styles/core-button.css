@@ -53,3 +53,34 @@ itself is a Change-Control Register entry. */
 	background-color: var(--wp--preset--color--accent-200);
 	border-color: transparent;
 }
+
+
+/* The header's enquiry action — `.sd-header__cta`
+   ===========================================================================
+   Live's `#menu-top-menu-right .cta-btn` is a 55px-tall plate that fills the
+   utility bar's full height and sits flush against the container's right edge —
+   no radius, no shadow, no gap. `is-style-fill` already carries the colour,
+   face and casing from theme.json; all that is left is the geometry, and the
+   button element's own vertical padding has to come off for the plate to be
+   exactly the bar's height rather than taller.
+
+   These rules live here rather than in a JSON style because they target the
+   `core/buttons` wrapper and its generated `.wp-block-button` child from a
+   pattern hook class, which is not a variation root — and because
+   `assets/styles/core-button.css` is enqueued for `core/button`, a block that
+   is by definition present wherever a `core/buttons` wrapper is. */
+.wp-block-buttons.sd-header__cta {
+	align-self: stretch;
+	margin-inline-start: var(--wp--preset--spacing--20);
+}
+
+.wp-block-buttons.sd-header__cta .wp-block-button,
+.wp-block-buttons.sd-header__cta .wp-block-button__link {
+	height: 100%;
+}
+
+.wp-block-buttons.sd-header__cta .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	padding-block: 0;
+}

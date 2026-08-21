@@ -4,21 +4,20 @@
 	"title": "Header — Utility Bar",
 	"slug": "utility-bar",
 	"blockTypes": [ "core/group" ],
+	"description": "The header's slim top band: the Trustpilot mark, the Call Us disclosure and the enquiry action. Matches live's `.sd-top-menu-wrapper` — neutral-200 ground, no vertical padding of its own so its full-height children sit flush top and bottom. The 56px band height is `custom.header.utility-height`, set as `dimensions.minHeight` on the row inside this band in patterns/header.php: it has to be on the row, because this band is a constrained (block-level) group and a minHeight here would leave the row at content height with dead space beneath it. The ground is the same neutral-200 the header row uses, so the two bands read as one field and the logo can overhang between them.",
 	"styles": {
 		"color": {
 			"background": "var:preset|color|neutral-200",
 			"text": "var:preset|color|neutral-700"
 		},
 		"typography": {
-			"fontSize": "var:preset|font-size|100",
+			"fontSize": "var:preset|font-size|300",
 			"lineHeight": "var:custom|line-height|button"
 		},
 		"spacing": {
 			"padding": {
-				"top": "var:preset|spacing|10",
-				"right": "var:preset|spacing|20",
-				"bottom": "var:preset|spacing|10",
-				"left": "var:preset|spacing|20"
+				"top": "0",
+				"bottom": "0"
 			}
 		},
 		"elements": {

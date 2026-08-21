@@ -350,3 +350,31 @@
 .editor-styles-wrapper .sd-call-us__panel::after {
 	display: none;
 }
+
+
+/* The header placement — `.sd-header__call-us`
+   ===========================================================================
+   Live's utility-bar Call Us is bold: `#menu-top-menu-right .menu-item a
+   { color:#cc7f16; font-size:18px; font-weight:700 }`. Colour and size travel
+   on the block instance in patterns/header.php as `textColor` and `fontSize`;
+   the weight cannot, because the block's render callback does not emit the
+   style-engine output for `typography.__experimentalFontWeight` — a
+   `style.typography.fontWeight` attribute serialises to nothing and the button
+   renders at 400. Verified on the rendered page 2026-08-20.
+
+   So the weight is set here, scoped to the header hook class, which leaves the
+   safari-expert panel's Call Us at its own inherited weight.
+
+   `.sd-call-us__toggle` takes `font: inherit`, so setting the weight on the
+   wrapper is enough — the button follows it, and so do the glyph and caret,
+   which are sized in `em`.
+
+   Live's stated 55px item height is the utility bar's full height; that comes
+   from the bar's inner row stretching (assets/styles/core-group.css), not from
+   anything here. */
+.sd-header__call-us {
+	align-items: center;
+	display: flex;
+	font-weight: var(--wp--custom--font-weight--bold);
+	padding-inline: var(--wp--preset--spacing--20);
+}
