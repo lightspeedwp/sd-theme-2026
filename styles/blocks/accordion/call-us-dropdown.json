@@ -1,0 +1,102 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Call Us Dropdown",
+	"slug": "call-us-dropdown",
+	"blockTypes": [
+		"core/accordion"
+	],
+	"description": "The contact-number disclosure — live's `li.call-cta.dropdown` in the Top Menu Right nav, and the copy of it on the safari expert panel. Applied to a `core/accordion` holding one `core/accordion-item`, whose panel contains the `dropdown-call-us` template part. Used by patterns/header.php and patterns/safari-expert.php.\n\n## Why this is a core accordion and not a block\n\nIt was `sd/call-us` until 2026-08-21 — a plugin block that emitted a `<button>`, a panel and the ARIA wiring between them, and nothing else. WordPress 7.1 ships that: `core/accordion-heading` renders a real `<button class=\"wp-block-accordion-heading__toggle\">` that resets the UA button styling and inherits type, `core/accordion` carries the chevron and the `autoclose` behaviour, and the open/close state runs through the Interactivity API in @wordpress/block-library/accordion/view — toggled by `hidden=\"until-found\"` on the panel and `.is-open` on the item, so there is no inline height animation to fight.\n\nThat swap is what made this file possible. `sd/call-us` was a non-core block, and assets/styles/sd-call-us.css opened by explaining why it had to be 300 lines of CSS: `styles.blocks` reaches only a block's own wrapper, and every part that needed styling — the toggle, the panel, the rows — was a descendant of it with no JSON home. Every one of those is now a block in its own right, so it has one. What is left in assets/styles/core-accordion.css is four things this format genuinely cannot express, listed at the top of that file.\n\nIt also retired three class hooks: `.sd-call-us__toggle`, `.sd-call-us__panel` and `.sd-call-us__number`, plus the `.sd-call-us--start` / `--end` placement pair and the `.sd-header__call-us` and `.sd-expert__call` instance hooks. Nothing authored carries an `sd-*` class for this component now.\n\n## The closed panel has to be `display: none`\n\nThe Interactivity API closes the panel with `hidden=\"until-found\"`, and that value does **not** mean `display: none`. The HTML rendering spec is `[hidden]:not([hidden=until-found]){display:none}` plus `[hidden=until-found]{content-visibility:hidden}` — so the panel's *box* went on rendering with its ground, border, radius and shadow, and because it is absolutely positioned 8px below the trigger it read as a white bar under the closed accordion. Seen on local 2026-08-21. The `[hidden]` rule in the `css` field below is the fix.\n\nThe cost is `beforematch`: `until-found` exists so in-page find and hash links can open a closed panel, and `display: none` takes that away. It is the right trade here — these are four phone numbers in a header, not page content anyone searches for with Ctrl+F — but it would be the wrong one in a FAQ accordion, so do not copy this rule into a section style without re-reading this note.\n\n## The pop-out\n\nAn accordion panel is in flow — it pushes what follows it down, which is right in a FAQ and wrong in a header bar. The four declarations that lift it out are in the `css` field below, and they are the whole cost of using an accordion here.\n\nAlignment defaults to the panel's inline start, which is the safari expert panel's case. The header's Call Us sits at the right-hand end of the utility cluster, where a start-aligned panel would run past the content edge; that one flip is in core-accordion.css, keyed off the `is-style-header` section style already on the header group, so it needs no second variation and no new class.\n\n## What changed from live, and why\n\nLive draws the panel as a hard-edged rectangle — `#fff`, a 1px `#ccc` border, no radius, no shadow — butted flush against the trigger, and gives the label and the number the same weight and colour. Zared asked for the same content in a softer container, so: a 200 radius and a 300 shadow, both presets, so the panel reads as floating rather than welded to the bar; 8px of clearance under the button, affordable because this opens on click where live's expert-panel copy opens on hover; and the label dropped to neutral-600 so the number is what the eye lands on. The rows' hairlines and hover tint are in core-accordion.css.\n\nThe number does *not* underline on row hover. The tint already says the row is live, and underlining the number on top of it makes a four-row list flicker as the pointer crosses it. `:focus` still underlines, because a keyboard user gets the tint from `:focus-within` on the row and needs the link itself identified as well.\n\nEverything else is live's: the numbers, their labels, the flags, and the order.\n\n## Not carried here\n\nThe trigger's own weight, colour and size. The header wants brand-500 at font-size 300 and bold, the expert panel wants inherited colour at 200 and semi-bold — so those travel on each block instance, where they are visible in the editor. `core/accordion` serialises `typography.fontWeight` properly, which `sd/call-us` did not: its render callback dropped the style-engine output and the attribute silently rendered at 400, which is why the old stylesheet set the weight from a class.",
+	"styles": {
+		"blocks": {
+			"core/accordion-panel": {
+				"color": {
+					"background": "var(--wp--preset--color--base)",
+					"text": "var(--wp--preset--color--neutral-800)"
+				},
+				"border": {
+					"color": "var(--wp--preset--color--neutral-300)",
+					"radius": "var(--wp--preset--border-radius--200)",
+					"style": "solid",
+					"width": "var(--wp--custom--border-width--100)"
+				},
+				"shadow": "var(--wp--preset--shadow--300)",
+				"spacing": {
+					"blockGap": "0",
+					"padding": {
+						"top": "var(--wp--preset--spacing--10)",
+						"right": "0",
+						"bottom": "var(--wp--preset--spacing--10)",
+						"left": "0"
+					}
+				},
+				"typography": {
+					"fontWeight": "var(--wp--custom--font-weight--regular)",
+					"letterSpacing": "var(--wp--custom--letter-spacing--none)",
+					"lineHeight": "var(--wp--custom--line-height--snug)",
+					"textTransform": "none"
+				}
+			},
+			"core/group": {
+				"spacing": {
+					"blockGap": "var(--wp--preset--spacing--10)",
+					"padding": {
+						"top": "var(--wp--preset--spacing--10)",
+						"right": "var(--wp--preset--spacing--20)",
+						"bottom": "var(--wp--preset--spacing--10)",
+						"left": "var(--wp--preset--spacing--20)"
+					}
+				}
+			},
+			"core/image": {
+				"spacing": {
+					"margin": {
+						"top": "0",
+						"right": "0",
+						"bottom": "0",
+						"left": "0"
+					}
+				}
+			},
+			"core/paragraph": {
+				"color": {
+					"text": "var(--wp--preset--color--neutral-600)"
+				},
+				"spacing": {
+					"margin": {
+						"top": "0",
+						"bottom": "0"
+					}
+				},
+				"typography": {
+					"letterSpacing": "var(--wp--custom--letter-spacing--narrow)"
+				}
+			}
+		},
+		"elements": {
+			"link": {
+				"color": {
+					"text": "var(--wp--preset--color--neutral-800)"
+				},
+				"typography": {
+					"fontWeight": "var(--wp--custom--font-weight--semi-bold)",
+					"textDecoration": "none"
+				},
+				":hover": {
+					"color": {
+						"text": "var(--wp--preset--color--neutral-900)"
+					},
+					"typography": {
+						"textDecoration": "none"
+					}
+				},
+				":focus": {
+					"typography": {
+						"textDecoration": "underline"
+					}
+				}
+			}
+		},
+		"css": "&{position:relative;display:inline-flex;} & .wp-block-accordion-heading__toggle{width:auto !important;padding-block:0 !important;} & .wp-block-accordion-panel[hidden]{display:none !important;} & .wp-block-accordion-panel{position:absolute;inset-block-start:calc(100% + 8px);inset-inline-start:0;z-index:200;min-width:max(19rem, 100%);text-align:start;} & .wp-block-accordion-panel > .wp-block-template-part{display:flex;flex-direction:column;} & .wp-block-accordion-panel .wp-block-group{position:relative;} & .wp-block-accordion-panel .wp-block-image img{display:block;height:auto;}"
+	}
+}

@@ -21,14 +21,6 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   green at four and a half — so they are the one asset set deliberately exempt from the token
   rule, and the child theme's `5star-brown.svg` / `5star-white.svg` recolours are **not**
   ported: they only ever rendered because `tp_overall_score()` hardcoded `$stars = 5`.
-- **`assets/styles/sd-call-us.css` + `inc/call-us.php`** — the design for the plugin's new
-  `sd/call-us` disclosure, attached to the block so it loads only where a Call Us button
-  renders (the `inc/mega-menu.php` arrangement — a non-core block is outside
-  `enqueue_custom_block_styles()`' `core-*` scan). Enqueued CSS rather than a JSON style
-  because three of the `css` field's documented limits apply at once: `content: ""` is mangled
-  and every glyph here is a pseudo-element, `:hover` is stripped, and a non-core block's *base*
-  styles have no JSON home at all — `theme.json`'s `styles.blocks` reaches only the block
-  wrapper, never the `__toggle` / `__panel` / `__number` descendants that need styling.
 - **`patterns/safari-expert.php`** — the "Chat to your safari expert" panel (K-01/K-02),
   replacing `sd_lsx_to_contact()` / `sd_lsx_to_enquiry_contact()`. Portrait, eyebrow, name, the
   Call Us disclosure, an email action and the Trustpilot badge. Live's `<h5>` eyebrow above an
@@ -36,7 +28,19 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   labels the panel, it does not head a section) and the name is an `<h2>`.
 - **Flag assets** — `assets/images/flags/{us,uk,za,aus}.svg`, ported unchanged from
   `sd-lsx-child/images/`. Live sets them with `content: url(…)` on a `:before`, which cannot be
-  sized; they are background images on a sized box here so the row height is the theme's.
+  sized; they are `core/image` blocks in the `dropdown-call-us` template part now, so each one
+  is a real block an editor can swap and the row height is the theme's.
+- **`styles/blocks/accordion/call-us-dropdown.json`** — the design for the Call Us disclosure,
+  now that it is a `core/accordion`. Panel ground, border, radius, shadow and padding; the
+  rows' padding and gap; the label colour; and the number link's weight, colour and hover
+  underline — all structured JSON, with four declarations in the `css` field lifting the
+  in-flow accordion panel into a pop-out.
+- **`assets/styles/core-accordion.css`** — the four things that JSON genuinely cannot hold:
+  the caret and the row-wide hit area (both need `content: ""`, which the `css` field mangles),
+  the row tint (`:hover` and `:focus-within` are stripped), and the hairlines between rows
+  (no structured equivalent for an adjacent-sibling selector). Auto-attached to
+  `core/accordion` by `enqueue_custom_block_styles()`' `core-*` scan — no module, no explicit
+  registration; the filename is the wiring.
 - **`styles/sections/footer-colophon.json`** — the dark bar under the footer photograph,
   live's `footer#colophon`: `primary-600` ground (live's `#41382E`), spacing-20 vertical
   padding (live's 15px), `neutral-400` text brightening to `neutral-300`.
@@ -46,6 +50,57 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   have to be prised off the icon's font-size.
 
 ### Changed
+
+- **The Call Us disclosure is a `core/accordion`, not a plugin block.** WordPress 7.1 ships
+  everything `sd/call-us` was written to provide: `core/accordion-heading` renders a real
+  `<button>` that resets the UA styling and inherits type, with `aria-expanded` and
+  `aria-controls`, and the panel state runs through the Interactivity API. All four defects the
+  block was built to fix — a `<a href="#">` trigger, no `aria-expanded`, a hover-only copy on
+  the expert panel with no keyboard path, and two widgets with two number lists — stay fixed,
+  upstream. Two things core does *not* do are Escape and click-outside dismissal; both are
+  behaviour, so they belong in `sd-enhancements` if they come back. → LS-2033
+
+  The reason to move is that a non-core block has no JSON styling surface. `sd-call-us.css`
+  opened by saying so: `styles.blocks` reaches only a block's own wrapper, and the toggle, the
+  panel and the rows were all descendants of it. Each of them is a block in its own right now.
+  **300 lines of CSS became 130 of JSON and ~40 of CSS**, and six class hooks were retired
+  outright — `.sd-call-us__toggle`, `.sd-call-us__panel`, `.sd-call-us__number`, the
+  `.sd-call-us--start` / `--end` placement pair, and the `.sd-header__call-us` and
+  `.sd-expert__call` instance hooks. Nothing authored carries an `sd-*` class for this
+  component now.
+
+  It also fixes what prompted the change: with `sd/call-us` unregistered, the editor collapsed
+  the block and left only the bare `wp:template-part` inside it — no trigger, and no way to
+  edit the numbers. Every part of it is a core block, so every part is editable.
+
+  `parts/dropdown-call-us.html` still holds the four numbers and nothing else, so the header
+  and the safari expert panel go on reading one list. Each row is a `core/group` — a 28px
+  `core/image` flag beside a font-size-200 paragraph carrying the label and the `tel:` link —
+  and the whole row is the hit area, as it is on live. The number does not underline on row
+  hover; the tint is the affordance, and both at once makes the list flicker under the pointer.
+
+  Two fixes on top of the first pass, both worth knowing about beyond this component:
+
+  - **A closed accordion panel needs `display: none`.** The Interactivity API closes it with
+    `hidden="until-found"`, which the HTML rendering spec maps to `content-visibility: hidden`,
+    *not* `display: none`. The panel's box went on rendering — ground, border, radius, shadow —
+    and since it is absolutely positioned 8px below the trigger it read as a white bar under
+    the closed accordion. The trade is `beforematch`: in-page find and hash links can no
+    longer open the panel. Right for four phone numbers in a header, wrong for a FAQ.
+  - **`neutral-100` is `#FFFFFF`** in this palette — the same value as `base`. The row hover
+    was written against it and did nothing at all. The first tinted step above white is
+    `neutral-200`. Worth remembering before reaching for `neutral-100` as a hover or stripe
+    colour anywhere else in the theme: it is not a tint, it is white.
+
+  The trigger's weight now travels on the block. `sd/call-us` supported
+  `typography.__experimentalFontWeight` but dropped the style-engine output for it, so the
+  attribute silently rendered at 400 and live's 700 had to come from a class in a stylesheet.
+  `core/accordion` serialises it properly.
+
+  One cost, recorded plainly: core's accordion always wraps its toggle in a heading — the
+  block's save is `"h" + headingLevel` and there is no opt-out — so the header gains an `<h3>`
+  inside the banner landmark that live does not have. Level 3 in the header and level 4 on the
+  expert panel, so neither competes with a page's own `<h2>`s.
 
 - **The footer addresses its media by URL and carries no bespoke CSS classes.** Two changes
   to one pattern, both simplifications.

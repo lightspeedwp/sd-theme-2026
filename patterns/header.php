@@ -198,29 +198,58 @@
 
 				<?php
 				/*
-				 * Call Us — `sd/call-us`, a real `<button>` whose `aria-expanded`
-				 * tracks the panel, with Escape, click-outside and focus-out
-				 * dismissal, all in the plugin.
+				 * Call Us — a `core/accordion` carrying `is-style-call-us-dropdown`.
 				 *
-				 * Live builds this as a Bootstrap dropdown on an `<a href="#">`,
-				 * and builds it *again*, differently, on the safari expert panel —
-				 * which is how the header ended up with two numbers and the expert
-				 * panel with four. One block now, and one list of numbers:
-				 * parts/dropdown-call-us.html, a template part precisely so both
-				 * placements read the same file and the numbers stay editable.
+				 * This was the `sd/call-us` plugin block until 2026-08-21. WP 7.1
+				 * ships everything that block existed to provide:
+				 * `core/accordion-heading` renders a real `<button>` with
+				 * `aria-expanded` and `aria-controls`, and the open/close state runs
+				 * through the Interactivity API. Live's version is a Bootstrap
+				 * `data-toggle` on an `<a href="#">` — a link that goes nowhere,
+				 * with no `aria-expanded` at all — so all four of the defects the
+				 * old block was written to fix are still fixed, upstream.
 				 *
-				 * The weight is *not* set here. `sd/call-us` supports
-				 * `typography.__experimentalFontWeight`, but its render callback
-				 * does not emit the style-engine output for it, so the attribute
-				 * serialises to nothing and the button renders at 400. Live's 700
-				 * is applied in assets/styles/sd-call-us.css instead. Setting it
-				 * here would look correct in the editor and be wrong on the front
-				 * end.
+				 * Two things the custom block did that core does not: dismiss on
+				 * Escape, and dismiss on click-outside. Both are behaviour, so if
+				 * they come back they come back in `sd-enhancements`, not here.
+				 * → LS-2033
+				 *
+				 * Live builds this widget twice — as this dropdown, and again,
+				 * differently, on the safari expert panel — which is how the header
+				 * ended up with two numbers and the expert panel with four. One
+				 * list now: parts/dropdown-call-us.html, a template part precisely
+				 * so both placements read the same file and the numbers stay
+				 * editable in the Site Editor.
+				 *
+				 * The weight *is* set here, unlike under the old block. `sd/call-us`
+				 * supported `typography.__experimentalFontWeight` but its render
+				 * callback dropped the style-engine output, so the attribute
+				 * serialised to nothing and the button rendered at 400 — which is
+				 * why live's 700 used to be applied from a class in a stylesheet.
+				 * `core/accordion` serialises it properly.
+				 *
+				 * `showIcon: false` because core's indicator is a `+` that rotates
+				 * into an `×`. Live's caret is drawn in
+				 * assets/styles/core-accordion.css instead.
+				 *
+				 * `headingLevel: 3` — core's accordion always wraps its toggle in a
+				 * heading, which is the ARIA pattern for an accordion and is not
+				 * optional (the block's save is `"h" + headingLevel`). It puts one
+				 * heading inside the banner landmark that live does not have. Level
+				 * 3 rather than 2 so it does not compete with a page's own h2s.
 				 */
 				?>
-				<!-- wp:sd/call-us {"label":"<?php esc_attr_e( 'Call Us Today', 'sd-theme-2026' ); ?>","placement":"end","className":"sd-header__call-us","textColor":"brand-500","fontSize":"300"} -->
-				<!-- wp:template-part {"slug":"dropdown-call-us","area":"menu"} /-->
-				<!-- /wp:sd/call-us -->
+				<!-- wp:accordion {"showIcon":false,"headingLevel":3,"className":"is-style-call-us-dropdown","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"},"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"textColor":"brand-500","fontSize":"300"} -->
+				<div role="group" class="wp-block-accordion is-style-call-us-dropdown has-brand-500-color has-text-color has-300-font-size" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);font-weight:var(--wp--custom--font-weight--bold)"><!-- wp:accordion-item -->
+				<div class="wp-block-accordion-item"><!-- wp:accordion-heading {"title":"<?php esc_attr_e( 'Call Us Today', 'sd-theme-2026' ); ?>","level":3,"showIcon":false} -->
+				<h3 class="wp-block-accordion-heading"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title"><?php esc_html_e( 'Call Us Today', 'sd-theme-2026' ); ?></span></button></h3>
+				<!-- /wp:accordion-heading -->
+
+				<!-- wp:accordion-panel -->
+				<div role="region" class="wp-block-accordion-panel"><!-- wp:template-part {"slug":"dropdown-call-us","area":"menu"} /--></div>
+				<!-- /wp:accordion-panel --></div>
+				<!-- /wp:accordion-item --></div>
+				<!-- /wp:accordion -->
 
 				<?php
 				/*

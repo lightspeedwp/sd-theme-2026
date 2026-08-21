@@ -35,18 +35,27 @@
  *
  * ## Call Us
  *
- * The disclosure is `sd/call-us` and the numbers are
- * parts/dropdown-call-us.html — the same block and the same template part the
- * header utility bar uses. That is the point of doing it this way: live builds
- * the widget twice, as a Bootstrap dropdown in the header nav and as a whole
- * `wp_nav_menu()` call here (functions.php:173), and the two drifted to two
- * numbers and four. One file now.
+ * The disclosure is a `core/accordion` carrying `is-style-call-us-dropdown`, and
+ * the numbers are parts/dropdown-call-us.html — the same construction and the
+ * same template part the header utility bar uses. That is the point of doing it
+ * this way: live builds the widget twice, as a Bootstrap dropdown in the header
+ * nav and as a whole `wp_nav_menu()` call here (functions.php:173), and the two
+ * drifted to two numbers and four. One file now.
+ *
+ * It was the `sd/call-us` plugin block until 2026-08-21. WP 7.1's accordion
+ * ships the whole of what that block did — a real `<button>` with
+ * `aria-expanded` and `aria-controls`, and the panel state on the Interactivity
+ * API — so the block was retired rather than maintained. Escape and
+ * click-outside dismissal are the two things core does not do; both are
+ * behaviour, so they belong in `sd-enhancements` if they come back. → LS-2033
  *
  * Live's copy of this one opens on **hover** — `ul.menu-call-us:hover
  * .dropdown-menu` in assets/css/custom.css:3871 — with no keyboard path to the
  * numbers at all. It opens on click here.
  *
- * `placement: start` because the button sits at the left of its row.
+ * The panel drops from the button's inline start, which is the variation's
+ * default and right here because the button sits at the left of its row. The
+ * header flips it; see assets/styles/core-accordion.css.
  *
  * ## What is deliberately not here
  *
@@ -78,17 +87,34 @@
 
 			<?php
 			/*
-			 * The Call Us disclosure. Same block, same template part as the
-			 * header — see the note above. The button takes its look from the
-			 * pattern's own type tokens rather than a button style variation,
-			 * because a `<button>` is not a `core/button` and cannot carry
-			 * `is-style-*`; if this needs to read as a bordered button, add the
-			 * rule to assets/styles/sd-call-us.css scoped to `.sd-expert`.
+			 * The Call Us disclosure. Same construction, same template part as
+			 * the header — see the note above. It takes its look from the
+			 * pattern's own type tokens: `is-style-call-us-dropdown` styles the
+			 * panel and the rows, and the trigger's size and weight are set on
+			 * the block, which is where they belong now that `core/accordion`
+			 * serialises `typography.fontWeight` properly.
+			 *
+			 * `showIcon: false` — core's indicator is a `+` that rotates into an
+			 * `×`; live's caret is drawn in assets/styles/core-accordion.css.
+			 *
+			 * `headingLevel: 4`, not the header's 3: this panel's own name is an
+			 * h2 (see the outline note above), so the disclosure's heading sits
+			 * under it rather than beside it. Core's accordion always wraps its
+			 * toggle in a heading — the block's save is `"h" + headingLevel` and
+			 * there is no way to opt out — so the only choice is which level.
 			 */
 			?>
-			<!-- wp:sd/call-us {"label":"<?php esc_attr_e( 'Call Us', 'sd-theme-2026' ); ?>","placement":"start","className":"sd-expert__call","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"200"} -->
-			<!-- wp:template-part {"slug":"dropdown-call-us","area":"menu"} /-->
-			<!-- /wp:sd/call-us -->
+			<!-- wp:accordion {"showIcon":false,"headingLevel":4,"className":"is-style-call-us-dropdown","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"200"} -->
+			<div role="group" class="wp-block-accordion is-style-call-us-dropdown has-200-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><!-- wp:accordion-item -->
+			<div class="wp-block-accordion-item"><!-- wp:accordion-heading {"title":"<?php esc_attr_e( 'Call Us', 'sd-theme-2026' ); ?>","level":4,"showIcon":false} -->
+			<h4 class="wp-block-accordion-heading"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title"><?php esc_html_e( 'Call Us', 'sd-theme-2026' ); ?></span></button></h4>
+			<!-- /wp:accordion-heading -->
+
+			<!-- wp:accordion-panel -->
+			<div role="region" class="wp-block-accordion-panel"><!-- wp:template-part {"slug":"dropdown-call-us","area":"menu"} /--></div>
+			<!-- /wp:accordion-panel --></div>
+			<!-- /wp:accordion-item --></div>
+			<!-- /wp:accordion -->
 
 			<?php /* Placeholder for the Enquiry module's modal — see the note above. */ ?>
 			<!-- wp:buttons {"className":"sd-expert__email","layout":{"type":"flex","flexWrap":"nowrap"}} -->
