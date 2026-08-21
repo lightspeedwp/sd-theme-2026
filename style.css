@@ -90,21 +90,51 @@ textarea {
 	appearance: none;
 }
 
-input:not([type="submit"]):not([type="radio"]),
-select,
-textarea,
-.wp-block-post-comments-form input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]),
-.wp-block-post-comments-form textarea {
-	color: var(--wp--preset--color--contrast);
-	border-radius: 5px;
-	border: solid 1px color-mix(in srgb, var(--wp--preset--color--neutral-200) 100%, var(--wp--preset--color--contrast) 20%);
-	padding: .5em 1em;
-	font-size: var(--wp--preset--font-size--300);
-	background-color: var(--wp--preset--color--base);
-	box-shadow: 
-		0 1px 2px rgba(0, 0, 0, 0.02),
-		0 0.5px 1px rgba(0, 0, 0, 0.04);
-}
+/* ⚠️ Removed 2026-08-21 — the blanket form-control rule.
+   ---------------------------------------------------------------------------
+   This used to be
+
+       input:not([type="submit"]):not([type="radio"]),
+       select,
+       textarea,
+       .wp-block-post-comments-form input:not(…),
+       .wp-block-post-comments-form textarea {
+           color; border-radius: 5px; border: solid 1px color-mix(…);
+           padding: .5em 1em; font-size: 300; background-color;
+           box-shadow: 0 1px 2px rgba(0,0,0,.02), 0 .5px 1px rgba(0,0,0,.04);
+       }
+
+   Inherited from the KWV base. Two problems, both structural:
+
+   1. **It hardcodes.** A raw 5px radius (the theme has a radius scale) and two
+      raw rgba shadows (the theme has a shadow scale), against the tokens-only
+      rule in AGENTS.md.
+   2. **It out-specifies every block style.** At (0,2,1) it beat any sanely
+      scoped `.is-style-x .wp-block-…__input` rule at (0,2,0), so a block style
+      could not set an input's border, radius, padding, font-size, background or
+      shadow without either doubling a class or reaching for `!important`. The
+      header search was quietly rendering this rule's values instead of the
+      tokens its own file named — see assets/styles/core-search.css.
+
+   Form controls now take the browser default unless a block style says
+   otherwise. theme.json has no `elements.input`, so there is no global
+   replacement to move this to: inputs get styled per block, by the block style
+   that owns them, which is the point.
+
+   Blocks in this theme that render a form control, and where their styling now
+   lives:
+
+     core/search       styles/blocks/search/header-search.json
+                       + assets/styles/core-search.css  (header, done)
+                       patterns/template-page-search.php, template-page-404.php,
+                       parts/mobile-menu.html — these render a bare core/search
+                       with no style variation and are now unstyled. → clean-up
+     core/post-comments-form  no template renders it; nothing to do
+     Gravity Forms     plugin markup, styled by the plugin
+     FacetWP           plugin markup, styled by the plugin
+
+   Do not reinstate this as a blanket selector. If a shared input treatment is
+   wanted, it belongs in a block style applied per block. */
 
 input:focus-visible,
 textarea:focus-visible,

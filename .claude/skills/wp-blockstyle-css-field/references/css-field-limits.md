@@ -5,7 +5,8 @@ A block style variation's `styles.css` field is **not** raw CSS. WP sanitises it
 ## The limits
 
 - **Zero specificity.** Every compiled selector becomes `:root :where(.is-style-X--N …)` → specificity **`(0,1,0)`**. It ties with or loses to core, theme.json, and plugin rules. **To win, put `!important` on each declaration** that something else also sets.
-- **`:hover` and `:first-child` are stripped entirely.** They don't compile — the rule is dropped. (`:focus-within`, `:not(.class)`, `::after`, `::before`, and `@media` **survive**.)
+- **`:hover` and `:first-child` are stripped entirely.** They don't compile — the rule is dropped. (`:focus-within`, `:not(.class)`, `::after` and `::before` **survive**. So do `&.class`, `&:not(.class)`, multi-level descendants `& .a .b`, and commas *inside declaration values* — `min()`, `cubic-bezier()`, a multi-part `transition`.)
+- **`@media` does not survive — and fails silently *wrong*.** Re-measured on WP 7.0, 2026-08-21: an `@media` block compiles to a dead rule whose at-rule text is concatenated into the selector — `:root :where(.is-style-x--N@media (max-width: 960px)){}` — and its inner rule is emitted **unconditionally, at every width**. That is worse than being dropped: the styling appears to work and is applied where it shouldn't be. An earlier version of this reference claimed `@media` survived; it does not. Keep media queries in an enqueued `.css` file, or design them out (a `min()`/`clamp()` width often replaces a pair of breakpoint overrides outright).
 - **`content:""` mangles the whole rule.** It breaks selector expansion, so the entire rule is dropped — not just the `content` line.
 - **Comma-separated `&` selectors lose all but one.** Only the *last* selector in a comma list survives compilation. Write each selector as its own rule.
 

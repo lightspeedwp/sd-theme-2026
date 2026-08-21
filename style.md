@@ -71,6 +71,10 @@ A bare `p` selector — so **`#4C5250` is the body-copy colour of every page on 
 
 `neutral-700` now carries both body copy and headings, which is how live behaves: `#4C5250` and `#60483B` are close enough in weight that the site reads as one colour.
 
+🔴 **Accessibility correction, 2026-08-20 — the footer colophon's text is not live's colour.** Live sets both the copyright line and the terms links to `#847C73` on a `#41382E` ground. Measured, that is **2.54:1** — a WCAG AA failure on 15px type, which needs 4.5:1. `neutral-400` (`#C3B6A6`) measures **6.33:1** on `primary-600` and passes AA and AAA; `neutral-500` was the closer match to live's tone and was rejected at **3.95:1**, which still fails for body text. Live's *hover* colour, `#DCD6C9`, is `neutral-300` to within a distance of 4 and is kept exactly — so the gesture (muted warm grey on brown, brightening on hover) is live's, and only the resting value moves. → `styles/sections/footer-colophon.json`
+
+✅ **Deviation agreed 2026-08-20 — the footer's mobile height.** Live sets `min-height: 1400px` on `#footer-widgets` below 600px, which at 390px leaves roughly 400px of empty photograph between the Instagram grid and the copyright bar. The band keeps its `cover` fit and its 615px floor and otherwise ends where its content ends (1077px measured). Dropping the height forces the background's anchor to move with it: bottom-anchoring the shorter band over a 1431px-tall crop slides the dark water up behind the "Follow Us" and "Instagram" labels, so mobile anchors to `50% 0%` and keeps live's relationship between the text and the pale sky. → `assets/styles/core-group.css`
+
 ### 2.3 In Figma, not yet in `theme.json`
 
 **`primary-*`** — a warm brown ramp, the closest thing Figma has to the live warm neutrals. Safe to add; no conflict.
@@ -482,8 +486,8 @@ Referenced as `background-image` from `custom.css`.
 | `tour-search-banner.jpg` | 187KB | Tour search banner | Port → WebP |
 | `banner-search-tc-faq-1920x454.jpg` | 184KB | Search / T&C / FAQ banner | Port → WebP |
 | `current-accommodation-bg.jpg` | 152KB | Accommodation background | Port → WebP |
-| `footer-bg.jpg` | 124KB | Footer background | Port → WebP |
-| `mobile-footer-bg-img.jpg` | 60KB | Mobile footer background | Port → WebP |
+| ~~`footer-bg.jpg`~~ | 124KB | Footer background | ✅ **Moved to the media library** — `uploads/2026/08/`, attachment resolved by path. WebP conversion still outstanding |
+| ~~`mobile-footer-bg-img.jpg`~~ | 60KB | Mobile footer background | ✅ **Moved to the media library** — `uploads/2026/08/`. WebP conversion still outstanding |
 | `sd-modal-newsletter-sign-up.jpg` | 52KB | Newsletter modal | Port → WebP |
 | `privacy-bg.jpg` | 47KB | Privacy page background | Port → WebP |
 | `why-choose-sd-bg-img.jpg` | 18KB | "Why Choose SD" section | Port → WebP |
@@ -512,7 +516,10 @@ Referenced as `background-image` from `custom.css`.
 |---|---|---|
 | `sd-logo.svg` | `/uploads/2019/07/` | Site logo (`custom-logo`) |
 | `home-intro-logo.svg` | `/uploads/2019/07/` | Homepage intro logo |
-| `footer-logo.svg` | `/uploads/2019/07/` | Footer logo |
+| `footer-logo.svg` | `/uploads/2019/07/` | Footer logo — ✅ seeded locally as attachment 50258, live's own ID |
+| 9 × `instagram-1…9.jpg` | `/uploads/2019/07/` | Footer Instagram grid — ✅ seeded locally as 50259–50267 |
+| `WAA-Tribe-Member-Badge-2024-34-white.png` | `/uploads/2024/02/` | We Are Africa badge, footer — ✅ seeded locally as 64289 |
+| `footer-bg.jpg`, `mobile-footer-bg-img.jpg` | `/uploads/2026/08/` | Footer backgrounds, **moved here from §9.1** — no uploads path on live |
 | 17 × `brands-logo-*.svg` + `asilia-logo.svg` | `/uploads/2019/08–09/` | "Finest Brands" homepage section |
 
 Partners represented: Natural Selection · MORE · Bush Company · Desert & Delta · MalaMala · Wild Horizons · Belmond · Africa Bush Camps · Sanctuary · Ilios · One&Only · Time + Tide · Londolozi · Royal Portfolio · Asilia.

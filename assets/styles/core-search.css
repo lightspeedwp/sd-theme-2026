@@ -2,15 +2,230 @@
  * Southern Destinations — core/search block styles.
  *
  * Auto-enqueued for core/search by the theme's per-block style loader
- * (see functions.php, enqueue_custom_block_styles).
+ * (see functions.php, enqueue_custom_block_styles), on the front end and in the
+ * editor.
  */
 
-/* Generic core/search tweaks. */
-.wp-block-search__button {
-	padding-left: .6em;
-	padding-right: .6em;
-}
-
+/* ⚠️ `.site-header` is a classic-theme class and exists nowhere in this block
+   theme — inherited from the KWV base, it matches nothing. Flagged for the
+   header clean-up rather than removed here. */
 .site-header .wp-block-search__input::placeholder {
 	font-size: inherit;
+}
+
+
+/* Header Search — the fold-out mechanism
+   ===========================================================================
+   Paired with styles/blocks/search/header-search.json ("Header Search"), which
+   is where the treatment is registered and chosen from, and which holds the
+   trigger's design as structured `elements.button` properties. This file holds
+   the mechanism: the panel's geometry and its two states, plus the icon.
+
+   Everything here hangs off the registered `is-style-header-search` class, so
+   it travels with the block style. It replaces `.sd-header__search`, which was
+   a bespoke header class doing the same job invisibly.
+
+   ## Why the mechanism is here and not in the style's `css` field
+
+   Most of it *would* compile there. It is here because a `css` field long
+   enough to hold all of it is a single-line JSON string that cannot be read,
+   diffed or commented — which is how this drifted the first time. One rule
+   genuinely cannot go there either: `@media`. Measured on WP 7.0, 2026-08-21,
+   an `@media` block in a variation's `css` field compiles to a dead
+   `:root :where(.is-style-header-search--N@media (max-width: 960px)){}` and
+   emits its inner rule *unconditionally, at every width* — silently wrong
+   rather than silently absent. → .claude/skills/wp-blockstyle-css-field
+
+   ## No JavaScript here, and none needed
+
+   On WordPress 7.0 `core/search` is expandable natively whenever
+   `buttonPosition` is `button-only`: core enqueues the Interactivity view
+   module, binds `aria-expanded` and `aria-label` on the button, and toggles
+   `wp-block-search__searchfield-hidden` on the **form** via `data-wp-class`.
+   Escape and focus-out close it. The disclosure and its whole accessibility
+   contract are core's.
+
+   ## Why this overrides core rather than extending it
+
+   Core's own button-only styling grows the input *in flow* from `width: 0`,
+   which shoves the button leftwards and reflows the header row as it opens.
+   Live's doesn't move: the field is taken out of flow and unrolls leftwards
+   over the row. That is the one thing being changed.
+
+   ## Specificity: why the panel selectors carry `.wp-block-search` as well
+
+   style.css styles bare form controls with
+
+       input:not([type="submit"]):not([type="radio"]), select, textarea { … }
+
+   which is **(0,2,1)** and sets `border`, `border-radius`, `padding`,
+   `font-size`, `background-color` and a `box-shadow`. The obvious scoping —
+   `.is-style-header-search .wp-block-search__input` — is (0,2,0) and *loses* to
+   it. Not hypothetical: the `.sd-header__search` version this replaces was
+   written at exactly that specificity, so the panel quietly rendered with
+   style.css's 5px radius, its `color-mix` border, font-size 300 and its faint
+   input shadow instead of the tokens the file named. Measured 2026-08-21.
+
+   Prefixing `.wp-block-search` takes each rule to (0,3,0) — three classes beats
+   two classes plus an element — which clears style.css without `!important`,
+   and still sits below core's `!important` collapse rules, where we want to
+   lose (see the state model below).
+
+   ⚠️ The real fix is upstream: that blanket form-control rule belongs in
+   theme.json as `styles.blocks`/`elements` config, and it hardcodes a 5px
+   radius and raw rgba shadows against the theme's tokens-only rule. While it
+   stands, every block style touching an input has to out-specify it. Logged for
+   the clean-up.
+
+   ## The state model
+
+   Closed is the **base** rule; open is
+   `:not(.wp-block-search__searchfield-hidden)`. Not the other way round —
+   closed is the resting state on every page load, and core's own collapse rules
+   are `!important` at (0,4,0), which nothing here could beat. Agreeing with
+   core when closed and overriding only the open state, where core sets nothing
+   `!important`, means there is no specificity fight and no `!important` below.
+
+   ⚠️ The hidden class is on the `<form>` — the block's own root, not a
+   descendant. The sibling ATI theme targets it as a descendant
+   (`.is-style-header-search .wp-block-search__searchfield-hidden`), which
+   matched when the class was on the input and matches nothing on 7.0. Don't
+   copy that shape across. */
+
+/* The form fills the header row but drops its contents to the bottom of it, so
+   the magnifier sits on the navigation labels' line rather than floating in the
+   middle of the row. That is live's arrangement: its `#searchform` is pinned
+   `top: 30px` inside an 80px row, landing the icon's centre within a pixel of
+   the nav's. */
+.wp-block-search.is-style-header-search {
+	display: flex;
+	align-items: flex-end;
+	align-self: stretch;
+}
+
+/* Core nests the input and the button inside `.wp-block-search__inside-wrapper`,
+   so a `height: 100%` on the button resolves against *that* box, not the form —
+   which is why the trigger stayed 32px tall inside a stretched form. The wrapper
+   carries the height through, sized to the nav-link band so the trigger's hit
+   area matches the nav's.
+
+   It is also the positioning context for the panel, not the form: pinning the
+   panel to the *form* would centre it in the 80px row while the icon sits at the
+   bottom of it, and the two would visibly disagree. */
+.wp-block-search.is-style-header-search .wp-block-search__inside-wrapper {
+	position: relative;
+	height: var(--wp--custom--header--nav-link-height);
+	align-items: center;
+}
+
+/* The trigger's box. Its colour, padding, border and hover/focus flip are
+   structured properties in header-search.json; this is only its shape. */
+.wp-block-search.is-style-header-search .wp-block-search__button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	min-width: 0;
+	margin-inline-start: 0;
+	box-shadow: none;
+	transition: color 0.25s ease;
+}
+
+/* The magnifier, at 32px — a literal, not a token. It was briefly
+   `custom.header.search-icon-size`; four references in one rule is repetition
+   inside a single declaration block, not a shared design decision, and a token
+   for it is a token too many.
+
+   The `min-*` pair is not belt-and-braces: core ships
+   `.wp-block-search__button svg{min-width:24px;min-height:24px;width:1.25em}`,
+   and a bare `width` loses to that `min-width` every time. */
+.wp-block-search.is-style-header-search .wp-block-search__button svg.search-icon {
+	display: block;
+	width: 32px;
+	height: 32px;
+	min-width: 32px;
+	min-height: 32px;
+}
+
+/* The panel, closed — out of flow to the left of the icon, on its own plate so
+   it reads against the neutral-200 header ground once it opens.
+
+   `pointer-events: none` is about the mouse only: core already sets
+   `tabindex="-1"` and `aria-hidden="true"` on the closed input, so it is out of
+   the tab order and out of the accessibility tree without help. */
+.wp-block-search.is-style-header-search .wp-block-search__input {
+	position: absolute;
+	inset-inline-end: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 20;
+	width: 0;
+	min-width: 0;
+	opacity: 0;
+	pointer-events: none;
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--neutral-800);
+	font-size: var(--wp--preset--font-size--200);
+	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-300);
+	border-inline-width: 0;
+	border-radius: var(--wp--preset--border-radius--100);
+	box-shadow: none;
+	padding-block: var(--wp--preset--spacing--10);
+	padding-inline: 0;
+	transition:
+		width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+		opacity 0.2s ease-in-out,
+		padding 0.2s ease-in-out;
+}
+
+/* The panel, open. One `min()` rather than a stack of breakpoint overrides: the
+   panel is `search-panel-width`, or whatever the viewport leaves, whichever is
+   smaller. That replaces the 960px and 600px width rules this file used to
+   carry, and degrades continuously instead of in two steps. */
+.wp-block-search.is-style-header-search:not(.wp-block-search__searchfield-hidden) .wp-block-search__input {
+	width: min(
+		var(--wp--custom--header--search-panel-width),
+		calc(100vw - var(--wp--preset--spacing--80))
+	);
+	opacity: 1;
+	pointer-events: auto;
+	border-inline-width: var(--wp--custom--border-width--100);
+	box-shadow: var(--wp--preset--shadow--200);
+	padding-inline: var(--wp--preset--spacing--20);
+}
+
+/* The panel's focus ring.
+   ---------------------------------------------------------------------------
+   Core moves focus to the input as soon as the panel opens, so this is on
+   screen every single time the search is used — it is not an edge case.
+
+   Without it the ring comes from style.css's
+
+       input:focus-visible { outline-color: contrast; outline-offset: 1px }
+
+   which only *recolours* the browser's default `outline-style: auto`. That
+   renders as a heavy ~3px dark ring at 1px offset, which swamps the 1px
+   neutral-300 border and the 4px radius underneath and makes the whole panel
+   read as an unstyled input. Measured 2026-08-21 — this, not the blanket
+   form-control rule, is what "the input still looks default" was.
+
+   A designed 2px brand-500 ring instead. brand-500 (#cc7f16) against the base
+   ground is 3.4:1, which clears WCAG 1.4.11 for a non-text indicator, and the
+   1px offset keeps it clear of the border rather than reading as one thick
+   edge.
+
+   ⚠️ The global `input:focus-visible` rule in style.css is deliberately left in
+   place. It is the only focus indicator every other input on the site has, and
+   removing it would be a WCAG 2.4.7 regression — it wants replacing per block,
+   the same way this one just was, not deleting. */
+.wp-block-search.is-style-header-search .wp-block-search__input:focus,
+.wp-block-search.is-style-header-search .wp-block-search__input:focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-500);
+	outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-search.is-style-header-search .wp-block-search__input {
+		transition: none;
+	}
 }

@@ -4,26 +4,45 @@
 	"title": "Site Footer",
 	"slug": "site-footer",
 	"blockTypes": [ "core/group" ],
+	"description": "The footer's upper band — live's `#footer-widgets`: four columns of brand, contact, social and Instagram set over a full-bleed sunset photograph. Measured on live 2026-08-20 at 1440px: 615px min-height, 35px top padding, `background-position: center bottom` at `cover`. Padding is spacing 50/60 rather than 40/50: both scales are fluid clamps whose lower bound holds until well past 1440px, so 40/50 measured 26px/33px on the rendered page where live is 35px/42.5px — 50/60 lands on 33px/37px there and closes most of the gap. The photograph itself is set on the block in patterns/footer.php, because `background` is a block support and only the block can carry it; everything that is not the image URL is here.\n\nColour is almost all inherited — live's footer body copy is `#4C5250`, which style.md §2.2 already resolved to `neutral-700` as the site-wide body colour, and the widget titles' `#60483B` resolved to the same token, so this band overrides neither. The two things it does override are the link colour, because the global `elements.link` is `contrast` and live's footer links sit at body weight, and the heading scale, because the global `h2` is 32px uppercase and live's widget titles are 18px sentence-case.\n\n## The `css` field: the \"Follow Us\" list\n\nThese two rules used to be a `.sd-footer__social` hook class and a block of assets/styles/core-social-links.css. They are here now, keyed off this band's own style class, so the footer carries no bespoke classes at all.\n\nLive builds that list as a nav menu of six text links with a FontAwesome glyph on each `li::before`:\n\n    #footer-widgets #menu-social-footer-menu li:before { font-family: FontAwesome; margin-right: 15px; color: #60483b }\n\n`core/social-links` with `showLabels` is the same composition without the icon font — mark, gap, label — so the port is a block-level match and needs no markup of its own. What it needs is to undo core's assumption that a labelled social link is an icon with a caption, because live's is an icon beside body copy. Core sizes the mark from the *list's* font-size (`.wp-block-social-links .wp-social-link svg { width: 1em }`, `.has-small-icon-size { font-size: 16px }`, which is why `has-small-icon-size` is on the block — live's glyphs measure ~15px and this is the token-free way to get 16px ones), but the label hangs off the same font-size at a caption's scale with its own margins:\n\n    .wp-block-social-links .wp-social-link span:not(.screen-reader-text) { margin-left: .5em; margin-right: .5em; font-size: .65em }   (0,3,1)\n\nso shrinking the mark shrank the words with it — measured at 10.4px against live's 15px. On live the two are independent and they are made independent here. Core also flattens the anchor's line box (`.wp-block-social-link a { align-items: center; display: flex; line-height: 0 }`, (0,1,1)), which is right for an icon-only row and wrong for a labelled one: it leaves the label with a zero-height box sitting off the mark's centre.\n\n`!important` throughout, as in this theme's other `css` fields, and it is load-bearing rather than lazy. WordPress emits a variation's css with the **whole** selector inside `:where()` — measured on this file 2026-08-21, the rendered rule is `:root :where(.wp-block-group.is-style-site-footer--30 .wp-block-social-links .wp-block-social-link-anchor)` — so however many classes are written here, the rule lands at (0,1,0) and loses to core's `.wp-block-social-link a` (0,1,1) and its label rule (0,3,1). Adding descendant classes does not help; only `!important` does. `spacing.30` is the token that measures live's 20px mark-to-label gap — `spacing.20` looks like the closer name but is a 14–20px clamp that holds at its 14px floor until well past 1440px. The label colour is a second, separate correction: live paints the glyph `#60483B` (primary-500, set as `iconColor` on the block) and leaves the text at body colour, so the two are deliberately different, and core puts the icon colour on the `<li>` for the label to inherit.\n\n## What is still in a stylesheet, and why\n\nassets/styles/core-group.css holds two things this file cannot: the band's responsive collapse below 767px, and the mobile photograph that replaces the desktop one below 600px. Both are `@media`, and `@media` does not compile in a `css` field — measured on WP 7.0, 2026-08-21, and written up in styles/blocks/search/header-search.json. Both are scoped to `.is-style-site-footer`.",
 	"styles": {
-		"color": {
-			"background": "var:preset|color|contrast",
-			"text": "var:preset|color|base"
+		"dimensions": {
+			"minHeight": "var:custom|footer|widgets-min-height"
 		},
 		"spacing": {
-			"blockGap": "var:preset|spacing|60",
+			"blockGap": "var:preset|spacing|50",
+			"margin": {
+				"top": "0"
+			},
 			"padding": {
-				"top": "var:preset|spacing|80",
+				"top": "var:preset|spacing|50",
 				"right": "var:preset|spacing|20",
-				"bottom": "var:preset|spacing|40",
+				"bottom": "var:preset|spacing|60",
 				"left": "var:preset|spacing|20"
 			}
 		},
 		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|300",
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"letterSpacing": "var:custom|letter-spacing|none",
+					"lineHeight": "var:custom|line-height|heading",
+					"textTransform": "none"
+				}
+			},
 			"link": {
 				"color": {
-					"text": "var:preset|color|neutral-400"
+					"text": "var:preset|color|neutral-700"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|neutral-500"
+					}
 				}
 			}
-		}
+		},
+		"css": "& .wp-block-social-links .wp-block-social-link-anchor{display:flex !important;align-items:center !important;gap:var(--wp--preset--spacing--30) !important;line-height:var(--wp--custom--line-height--body) !important;} & .wp-block-social-links .wp-social-link .wp-block-social-link-label{margin:0 !important;color:var(--wp--preset--color--neutral-700) !important;font-size:var(--wp--preset--font-size--200) !important;line-height:var(--wp--custom--line-height--body) !important;}"
 	}
 }

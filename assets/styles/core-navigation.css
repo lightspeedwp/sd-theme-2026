@@ -1,43 +1,112 @@
-/* Top-level header nav links — Southern Destinations interaction.
-   ---------------------------------------------
-   The resting state (uppercase, font-size 300, medium, centred) lives in the
-   "Main Navigation" block style variation (styles/navigation/main-navigation.json,
-   applied via `is-style-main-navigation`), which scopes it to the main nav's own
-   top-level row so it no longer bleeds into the nested mega-menu nav.
+/* Top-level header nav links — the hover treatment.
+   ---------------------------------------------------------------------------
+   Everything else about this nav is in the "Main Navigation" block style
+   variation (styles/blocks/navigation/main-navigation.json, applied via
+   `is-style-main-navigation`): the resting type, the nav stretching to the header
+   row's height, its list dropping to the bottom of that, and the hidden
+   mega-menu chevron. Prefer adding to that file over adding here.
 
-   The brand-300 sliding underline lives here, not in the block style, because the
-   variation's `css` field mangles `content:""` and strips the `:hover`
-   pseudo-class during sanitisation. These selectors mirror the block style's
-   scoping — a direct-child combinator from `.is-style-main-navigation` to its own
-   `.wp-block-navigation__responsive-container` — so they only match this nav's
-   top-level row and never descend into a nested mega-menu nav (which sits far
-   below, not as a direct child). The ::after is anchored by the
-   `position:relative` the block style sets on the link. */
+   Only the hover state is here, because the `css` field provably cannot hold it —
+   it needs `content: ""` (mangled by sanitisation), `:hover` (stripped), and
+   comma-separated selectors (all but one dropped), and this needs all three.
+   → .claude/skills/wp-blockstyle-css-field
 
-/* The sliding line: hidden by default, scaled from the centre on hover/focus. */
-.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
-.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content::after {
+   ## What live does, and what this reproduces
+
+   Live draws the hover state as a border on the link itself:
+
+       .menu-item > a          { border-bottom: 5px solid transparent }
+       .menu-item:hover > a    { border-bottom: 5px solid #cc7f16; color: #cc7f16 }
+
+   The link is 50px tall in an 80px row with no vertical padding, so that border
+   lands flush on the row's bottom edge and reads as a tab underline rather than a
+   rule under the words.
+
+   One thing changes, inside "modernise a little":
+
+   **It rises up from the bottom edge** rather than appearing all at once — the
+   line grows to its full 5px out of the row's bottom edge, which is also why it
+   is an `::after` and not a border: a border cannot be scaled independently of
+   its box. `scaleY` with `transform-origin: bottom` is what produces the rise;
+   an earlier pass used `scaleX` from `center`, which read as the line unzipping
+   sideways out of the middle of the word. Reduced motion gets the plain
+   appear-in-place.
+
+   The weight is live's own 5px, written as a literal. It was briefly a
+   `custom.header.nav-underline-height` token, which was a token too many: one
+   number, used once, in the only rule that draws this line. (It does not fit the
+   `borderWidth` preset scale either — that is 0/1/2/4/8.)
+
+   `brand-500` is live's `#cc7f16` exactly, for both the line and the label. The
+   `::after` is anchored by the `position: relative` the block style puts on the
+   link, and `bottom: 0` is therefore the row's bottom edge.
+
+   The selectors mirror the block style's — a direct-child combinator from the nav
+   to its own `.wp-block-navigation__container` — so they never reach into a
+   mega-menu panel's own nav.
+
+   ⚠️ These selectors only match while the nav block carries `overlayMenu: "never"`
+   ("Overlay Menu → Off" in the block's Display settings). Leave it at the default
+   and core wraps the list in
+   `.wp-block-navigation__responsive-container > .wp-block-navigation__responsive-close
+   > .wp-block-navigation__responsive-dialog > .wp-block-navigation__responsive-container-content`,
+   the direct-child chain misses, and both this file and the block style variation
+   fall silent — the nav renders at core's defaults. That is the correct fix when
+   it happens: turn the overlay off on the block, do not chase the wrapper with a
+   second selector. This nav is desktop-only (Block Visibility hides it below the
+   large breakpoint, and a separate block carries the mobile menu), so it has no
+   business emitting an overlay at all. Measured on dev 2026-08-21. */
+
+/* The rising line: flat against the bottom edge by default, grown upward on
+   hover/focus. */
+.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
+.is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content::after {
 	content: "";
 	position: absolute;
 	inset-inline: 0;
-	bottom: -1px;
-	height: 1px;
-	background-color: var(--wp--preset--color--brand-300);
-	transform: scaleX(0);
-	transform-origin: center;
-	transition: transform 0.3s ease-in-out;
+	bottom: 0;
+	height: 5px;
+	background-color: var(--wp--preset--color--brand-500);
+	transform: scaleY(0);
+	transform-origin: bottom;
+	transition: transform 0.20s ease-in-out;
 }
 
-.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover::after,
-.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible::after,
-.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:hover::after,
-.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible::after {
-	transform: scaleX(1);
+.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover::after,
+.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible::after,
+.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content[aria-expanded="true"]::after,
+.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item > .wp-block-navigation-item__content::after,
+.is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:hover::after,
+.is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible::after,
+.is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item.current-menu-item > .wp-block-navigation-item__content::after {
+	transform: scaleY(1);
+}
+
+/* The label takes live's hover colour with it.
+   ---------------------------------------------------------------------------
+   `!important` here is forced by `!important` there. The resting colour lives in
+   the block style variation and has to be `!important` itself, because WordPress
+   emits a variation's `css` inside `:root :where()` — specificity (0,1,0) —
+   while core's navigation stylesheet ships an always-on
+   `.wp-block-navigation .wp-block-navigation-item__content.wp-block-navigation-item__content{color:inherit}`
+   reset at (0,3,0). Once the resting colour is important, no amount of
+   specificity here beats it: measured on the rendered page, the hovered link
+   stayed neutral-800 until this declaration was marked too.
+
+   The doubled class is kept regardless, so this still out-specifies the core
+   reset on its own terms. Same shape as the footer nav rule below. */
+.wp-block-navigation.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover,
+.wp-block-navigation.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible,
+.wp-block-navigation.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content[aria-expanded="true"],
+.wp-block-navigation.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item > .wp-block-navigation-item__content,
+.wp-block-navigation.is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:hover,
+.wp-block-navigation.is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible {
+	color: var(--wp--preset--color--brand-500) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
-	.is-style-main-navigation > .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content::after {
+	.is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
+	.is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content::after {
 		transition: none;
 	}
 }
@@ -167,23 +236,91 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
 }
 
 
-/* Footer Navigation
+/* Footer Navigation — the terms links in the colophon
+   ===========================================================================
+   Two rules, both forced out of styles/blocks/navigation/footer-navigation.json
+   for different reasons.
 
-   Hover/focus colour for the footer nav links (is-style-footer-navigation).
+   ## 1. The hover/focus colour
 
-   This MUST live in CSS, not in the footer-navigation.json block-style variation.
-   WordPress core's navigation stylesheet (wp-includes/blocks/navigation/style.min.css)
-   ships an always-on reset:
+   This MUST live in CSS, not in the block-style variation. WordPress core's
+   navigation stylesheet (wp-includes/blocks/navigation/style.min.css) ships an
+   always-on reset:
 
        .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigation-item__content { color: inherit; }
 
    The doubled class is a deliberate specificity hack -> (0,3,0). Block-style
    variation partials are emitted by WP wrapped in `:root :where(...)`, i.e. only
    (0,1,0), so the variation's :hover can never beat that reset and the footer
-   links stay locked to `inherit` (white, from the dark footer group) on hover.
-   The selector below is (0,4,0), so it out-specifies the core reset. */
+   links stay locked to `inherit` on hover. The selector below is (0,4,0), so it
+   out-specifies the core reset.
+
+   `neutral-300` is live's hover exactly — `#DCD6C9` against the token's
+   `#DFD7CC`, a distance of 4. The resting colour is `neutral-400` rather than
+   live's `#847C73`, which fails WCAG AA on this ground; the measurements are in
+   styles/sections/footer-colophon.json.
+
+   ## 2. The dividing rule between the two items
+
+   Live draws it as
+
+       #colophon #footer-navigation ul li:not(:last-child):after { background-color: #847c73 }
+
+   at 1px x 14px. A `css` field cannot hold this at all: it needs `content: ""`
+   (dropped whole), `::after`, `:not(:last-child)` (stripped) and a comma pair of
+   `&` selectors (all but one dropped) — four of the field's limits in one rule.
+   -> .claude/skills/wp-blockstyle-css-field
+
+   Centred in the flex gap rather than hung off the item's own padding, because
+   the gap here is `blockGap` and not live's fixed 10px of `padding-right`;
+   halving the same token is what keeps the rule on the optical centre at every
+   viewport. The token must be the one set on the block in patterns/footer.php
+   (spacing.30) — a variation's own `spacing.blockGap` is not emitted as the flex
+   layout gap, so footer-navigation.json cannot own this number. */
 .wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item__content:hover,
 .wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item__content:focus-visible {
-	color: var(--wp--preset--color--brand-500);
+	color: var(--wp--preset--color--neutral-300);
 }
 
+.wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item:not(:last-child) {
+	position: relative;
+}
+
+.wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item:not(:last-child)::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	right: calc(var(--wp--preset--spacing--30) / -2);
+	width: var(--wp--custom--border-width--100);
+	height: 14px;
+	background-color: var(--wp--preset--color--neutral-400);
+	transform: translateY(-50%);
+}
+
+
+/* Header navigation swap — removed 2026-08-21
+   ===========================================================================
+   Two media queries lived here, hiding `.sd-nav-desktop` below 1200px and
+   `.sd-nav-mobile` above it. Both are gone.
+
+   The swap is a **Block Visibility control set** on each nav's wrapper group in
+   patterns/header.php now — a per-block setting, editable with the block
+   selected, instead of a breakpoint buried in a stylesheet. That was always the
+   intent; the media queries were explicitly marked as placeholders until the
+   plugin was installed, and it is active on dev.
+
+   `sd-nav-desktop` went with them — nothing styles it and nothing needs it.
+   `sd-nav-mobile` stays on the block as a hook, but is unused here.
+
+   ⚠️ Block Visibility is not installed on **local**, so both navigation blocks
+   render there at every width. That is local being a fixture environment, not a
+   regression — prove the swap on dev. */
+
+/* Mega-menu columns
+   ---------------------------------------------------------------------------
+   `is-style-mega-menu-nav` fixes the list to 13.75rem, which is right for a
+   standalone fold-out and wrong inside a panel column that already has a width.
+   Inside a panel the list fills its column. */
+.sd-mega-panel .is-style-mega-menu-nav .wp-block-navigation__container {
+	width: 100%;
+}

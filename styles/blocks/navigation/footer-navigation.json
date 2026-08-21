@@ -4,24 +4,21 @@
 	"title": "Footer Navigation",
 	"slug": "footer-navigation",
 	"blockTypes": [ "core/navigation" ],
-	"description": "Southern Destinations footer nav: base-coloured links at font-size 300 / medium weight, spacing-20 gap between items, turning brand-500 with no underline on hover. Uses the structured elements.link + :hover form (like core/query-pagination) rather than the css field, since the css field strips :hover.",
+	"description": "The terms nav in the footer colophon — live's `nav#footer-navigation` holding Privacy Policy and Terms & Conditions. Measured on live 2026-08-20: 14px regular type, `#847C73`, brightening to `#DCD6C9`, with a 1px × 14px vertical rule between the two items. Colour follows styles/sections/footer-colophon.json rather than live's literal values, for the contrast reason recorded there: `neutral-400` resting (6.33:1 on the colophon ground, against live's failing 2.54:1) and `neutral-300` on hover, which is live's hover exactly. Type is font-size 200 at regular weight — live's 14px against the credit line's 15px is a one-pixel difference that does not warrant a second token. The dividing rule needs `content: \"\"`, `::after` and `:not(:last-child)`, none of which survive a `css` field, so it lives in assets/styles/core-navigation.css alongside the hover rule that core's `color: inherit` reset forces out of here too. Uses the structured elements.link + :hover form (like core/query-pagination) rather than the css field, since the css field strips :hover. Note that the gap between the items is **not** set here: a variation's `spacing.blockGap` is not emitted as the flex layout gap, so declaring it here silently did nothing and the nav inherited spacing 60 (37px measured). It is set on the block in patterns/footer.php instead, as spacing 30 — live's 20px — and the dividing rule halves the same token.",
 	"styles": {
-		"spacing": {
-			"blockGap": "var:preset|spacing|20"
-		},
 		"elements": {
 			"link": {
 				"color": {
-					"text": "var:preset|color|base"
+					"text": "var:preset|color|neutral-400"
 				},
 				"typography": {
 					"fontSize": "var:preset|font-size|200",
-					"fontWeight": "var:custom|font-weight|medium",
+					"fontWeight": "var:custom|font-weight|regular",
 					"textDecoration": "none"
 				},
 				":hover": {
 					"color": {
-						"text": "var:preset|color|brand-500"
+						"text": "var:preset|color|neutral-300"
 					},
 					"typography": {
 						"textDecoration": "none"
@@ -33,12 +30,12 @@
 			"core/navigation-link": {
 				"typography": {
 					"fontSize": "var:preset|font-size|200",
-					"fontWeight": "var:custom|font-weight|medium",
+					"fontWeight": "var:custom|font-weight|regular",
 					"textDecoration": "none"
 				},
 				":hover": {
 					"color": {
-						"text": "var:preset|color|brand-500"
+						"text": "var:preset|color|neutral-300"
 					},
 					"typography": {
 						"textDecoration": "none"

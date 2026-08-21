@@ -1,0 +1,179 @@
+/* Accordion — the Call Us disclosure
+   ---------------------------------------------------------------------------
+   Attached to `core/accordion` by enqueue_custom_block_styles()' `core-*.css`
+   scan in functions.php, so it loads only on a page with an accordion on it.
+   No module, no explicit registration — the filename is the wiring.
+
+   This file replaced assets/styles/sd-call-us.css, 300 lines against the
+   `sd/call-us` plugin block, when the disclosure moved to WordPress 7.1's
+   `core/accordion` on 2026-08-21. The design is in
+   styles/blocks/accordion/call-us-dropdown.json, and that file's description
+   carries the reasoning. What is here is only what a block style variation's
+   `css` field cannot hold, which is four things:
+
+     1. **`content: ""` is mangled by the `css` field.** The caret and the
+        row-wide hit area are both pseudo-elements.
+     2. **`:hover` and `:focus-within` are stripped from it.** The row tint is a
+        hover flip.
+     3. **Comma-separated selectors are all but one dropped.** The tint needs
+        both `:hover` and `:focus-within`.
+     4. **Adjacent-sibling selectors have no structured equivalent.** The
+        hairlines go between rows, not around them.
+
+   Everything else — the panel's ground, border, radius, shadow and padding, the
+   rows' padding and gap, the label colour, the link's weight and colour, and the
+   `display: none` that takes the closed panel out of the layout — is in the
+   variation JSON. Colour, spacing, radius, shadow, border-width, weight and
+   letter-spacing here are read from presets, so the tokens stay the single
+   source of truth.
+
+   The number deliberately does not underline on row hover: the tint already says
+   the row is live, and both at once makes the list flicker under the pointer.
+   `:focus` still underlines — see the variation's description.
+
+   ## Specificity
+
+   WordPress wraps a block style variation's `css` field in `:root :where(…)`,
+   which lands at (0,1,0) and loses to core's own block styles. The rules below
+   are plain authored CSS at their natural specificity, so they win on their own
+   and need no `!important` — which is why the two rules that *do* fight core
+   (the toggle's `width: 100%` and its block padding) are in the variation's
+   `css` field with `!important`, and not here. */
+
+/* The caret
+   ---------------------------------------------
+   Live's `<span class="caret">`, a CSS triangle, so it inherits colour and
+   needs no asset.
+
+   Core's own indicator is a literal `+` character in
+   `.wp-block-accordion-heading__toggle-icon` that rotates 45° into an `×`. That
+   is right for a FAQ and wrong here: this is a menu opening, not a thing being
+   added. The block sets `showIcon: false` and the caret is drawn here instead.
+
+   Drawn on the toggle rather than on the heading, so it sits inside the button's
+   hit area and follows the button's colour into the utility bar, the expert
+   panel and every hover state. */
+.is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after {
+	content: "";
+	flex: 0 0 auto;
+	width: 0;
+	height: 0;
+	margin-inline-start: 0.5em;
+	border-inline: 0.3em solid transparent;
+	border-block-start: 0.35em solid currentColor;
+	transition: transform 0.2s ease;
+}
+
+/* Rotated off core's `.is-open`, which the Interactivity API sets on the item in
+   step with the panel's `hidden` attribute and the button's `aria-expanded`. So
+   the caret cannot disagree with what a screen reader is announcing. */
+.is-style-call-us-dropdown .wp-block-accordion-item.is-open .wp-block-accordion-heading__toggle::after {
+	transform: rotate(180deg);
+}
+
+/* Rows
+   ---------------------------------------------
+   Each row is a `core/group` in the `dropdown-call-us` template part: a
+   `core/image` flag beside a paragraph carrying the label and the `tel:` link.
+   The template part's own `<div class="wp-block-template-part">` sits between
+   the panel and the rows — the `menu` area's `area_tag` is `div` — so these are
+   descendant selectors, not child ones.
+
+   Hairlines between rows, not around them, so the list reads as one object. */
+.is-style-call-us-dropdown .wp-block-accordion-panel .wp-block-group + .wp-block-group {
+	border-block-start: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-200);
+}
+
+.is-style-call-us-dropdown .wp-block-accordion-panel .wp-block-group {
+	transition: background-color 0.2s ease;
+}
+
+/* The tint, so a four-row list reads as four targets. `:focus-within` as well as
+   `:hover`, so the row a keyboard user is on is the row that lights up — live
+   has neither, which is what makes its four numbers hard to scan.
+
+   `neutral-200`, not `neutral-100`. This was written against `neutral-100` and
+   the hover did nothing at all, because in this palette `neutral-100` *is*
+   `#FFFFFF` — the same value as `base`, which is the panel's own ground. The
+   first tinted step above white is `neutral-200`. Worth remembering before
+   reaching for `neutral-100` as a hover or stripe colour anywhere else in this
+   theme: it is not a tint, it is white. */
+.is-style-call-us-dropdown .wp-block-accordion-panel .wp-block-group:hover,
+.is-style-call-us-dropdown .wp-block-accordion-panel .wp-block-group:focus-within {
+	background-color: var(--wp--preset--color--neutral-200);
+}
+
+/* The whole row is the target, as it is on live — where each row is one `<a>`
+   wrapping the label, a `<br>` and the number.
+
+   It cannot be one `<a>` here: the flag is a `core/image` and the text is a
+   `core/paragraph`, and no core block makes a group into a link. Linking both
+   would put two anchors to the same number in the tab order, which is worse
+   than a narrow hit area. So the paragraph's link is stretched over the row it
+   sits in — the row is the positioning context (set in the variation's `css`
+   field) and this covers it.
+
+   `z-index` is deliberately absent: the flag and the label are not interactive,
+   so there is nothing for the overlay to steal a click from. */
+.is-style-call-us-dropdown .wp-block-accordion-panel .wp-block-group a::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+/* Panel alignment
+   ---------------------------------------------
+   The variation anchors the panel to its inline start, which is the safari
+   expert panel's case — its button sits at the left of a flex row.
+
+   The header's Call Us is the last item but one in a right-aligned utility
+   cluster, so a start-aligned panel there would run past the content edge. This
+   flips it, keyed off the `is-style-header` section style already on the header
+   group rather than a second variation or a placement class. Logical
+   properties, so both flip under RTL for free. */
+.is-style-header .is-style-call-us-dropdown .wp-block-accordion-panel {
+	inset-inline: auto 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after,
+	.is-style-call-us-dropdown .wp-block-accordion-panel .wp-block-group {
+		transition-duration: 1ms;
+	}
+}
+
+/* Narrow viewports
+   ---------------------------------------------
+   Below the point where an anchored pop-out has room to be anchored, the panel
+   stops trying to sit under one end of its button and takes what width it can. */
+@media (max-width: 480px) {
+
+	.is-style-call-us-dropdown .wp-block-accordion-panel,
+	.is-style-header .is-style-call-us-dropdown .wp-block-accordion-panel {
+		inset-inline: auto 0;
+		min-width: min(20rem, calc(100vw - 2 * var(--wp--preset--spacing--20)));
+	}
+}
+
+/* Editor
+   ---------------------------------------------
+   In the editor the panel must not be absolutely positioned, or it floats over
+   the blocks after it and the rows inside it cannot be selected. `.is-open` is
+   not set in the editor either — the panel is simply rendered open — so the
+   caret is pointed down to match what is on screen.
+
+   `.editor-styles-wrapper` only exists inside the editor iframe, so the front
+   end is untouched. */
+.editor-styles-wrapper .is-style-call-us-dropdown {
+	display: block;
+}
+
+.editor-styles-wrapper .is-style-call-us-dropdown .wp-block-accordion-panel {
+	position: static;
+	box-shadow: none;
+}
+
+.editor-styles-wrapper .is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after {
+	transform: rotate(180deg);
+}

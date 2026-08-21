@@ -182,54 +182,6 @@
 }
 
 /**
- * Timeline Milestone — round image with a hover slide-out info panel.
- *
- * The structure (round media crop, layout, typography) lives in the section
- * style styles/sections/cards/timeline-milestone.json so it renders in the
- * editor. The collapse/expand reveal lives here as plain CSS because the
- * block-style-variation compiler drops `:hover`/`:focus-within` from that JSON
- * and wraps it at `:where()` zero specificity (see the theme AGENTS.md
- * "Styling lives in JSON" rule).
- *
- * The panel uses a grid-template-rows 0fr -> 1fr transition so the info slides
- * open from behind the year and pushes nothing else around. The child needs
- * min-height:0 + overflow:hidden for the collapsed row to actually clip it.
- */
-.is-style-timeline-milestone .timeline-milestone__info {
-	display: grid;
-	grid-template-rows: 0fr;
-	transition: grid-template-rows 320ms ease;
-}
-
-.is-style-timeline-milestone .timeline-milestone__info > * {
-	min-height: 0;
-	overflow: hidden;
-}
-
-/* Reveal on hover / keyboard focus within the milestone. */
-.is-style-timeline-milestone:hover .timeline-milestone__info,
-.is-style-timeline-milestone:focus-within .timeline-milestone__info {
-	grid-template-rows: 1fr;
-}
-
-/*
- * Keep the slide-out permanently open inside the editor so the info text can be
- * selected and edited without a hover. `.editor-styles-wrapper` only exists in
- * the editor iframe, so the front end stays collapsed-until-hover. The extra
- * class also out-specifies the resting rule above.
- */
-.editor-styles-wrapper .is-style-timeline-milestone .timeline-milestone__info {
-	grid-template-rows: 1fr;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.is-style-timeline-milestone .timeline-milestone__info {
-		transition-duration: 1ms;
-	}
-}
-
-
-/**
  * Slider Frame — arrow and dot presentation for third-party carousels.
  *
  * The three colours are declared as custom properties by the section style
@@ -331,5 +283,172 @@
 @media (prefers-reduced-motion: reduce) {
 	.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next, .slick-dots li button, .swiper-pagination-bullet) {
 		transition-duration: 1ms;
+	}
+}
+
+/* Header rules removed 2026-08-21
+   ===========================================================================
+   Three blocks went from here, all of them hanging off hooks the header no
+   longer has:
+
+   1. `.sd-header { z-index: 100 }` — moved into the `css` field of
+      styles/sections/header.json, so the header's stacking travels with its
+      section style instead of with a bespoke class. Still load-bearing: the
+      mega-menu panels drop out of the header and have to sit above the page
+      content that follows it.
+
+   2. The `.sd-header__utility` Trustpilot rules, which hid the band word, the
+      TrustScore and the review count. `.sd-header__utility` was the old utility
+      *band*, which no longer exists, so the rules had already stopped matching.
+
+      ✅ Resolved 2026-08-21, and **not** by putting them back. The note here
+      used to suggest re-adding them against `.sd-trustpilot__*`; don't. Those
+      three rules existed because the header was rendering the data-bound badge
+      and then hiding most of it — which meant paying for a live Trustpilot
+      lookup to produce nothing visible.
+
+      patterns/header.php now authors the header badge as two static linked
+      images, because that is all live's header shows: `.tp-wording` and
+      `.tb-score` are `display:none` there, and they are the only two children
+      the API feeds. Nothing to hide, so no rules needed.
+
+      The bound pattern (patterns/trustpilot-score.php) is still used by
+      patterns/safari-expert.php, where `.tb-score` *is* visible on live — so if
+      you need to style the badge's text, scope it to the expert panel, never to
+      the header.
+
+   3. The 991px block that hid Call Us and the enquiry plate and re-centred the
+      badge. Two of its rules were already marked as placeholders for Block
+      Visibility, which is now active on dev — so that half is a per-block
+      setting, not a stylesheet. The other half was scoped to
+      `.sd-header__utility` and matched nothing.
+
+      ⚠️ Nothing replaces this yet on the responsive side. Both actions are also
+      in the mobile menu (parts/mobile-menu.html carries a full-width "Get in
+      touch" and a "Call us today" list), which is why live can drop them at all;
+      set the visibility on the two blocks in the editor when you next have the
+      header open. */
+
+
+/* The footer band below the tablet breakpoint
+   ===========================================================================
+   Live collapses its four footer columns into one centred 290px stack at 767px:
+
+       @media (max-width: 767px) {
+           #footer-widgets .widget-title,
+           #footer-widgets p, #footer-widgets .textwidget, #footer-widgets ul li,
+           #footer-widgets a:not(.btn):not(button)        { text-align: center }
+           #footer-widgets .widget_media_image            { margin-left: auto; margin-right: auto }
+           #footer-widgets .col-md-3:not(:first-child)    { margin-top: 20px; margin-left: auto; margin-right: auto }
+       }
+       @media (max-width: 900px) {
+           #footer-widgets .col-md-3:not(:first-child)    { max-width: 290px }
+       }
+
+   Core already stacks `wp-block-columns` at 781px, so only the centring is
+   reproduced — the 767px breakpoint is live's, and it is deliberately not
+   rounded to core's 781: the stack and the centring are two different decisions
+   on live and the fourteen pixels between them are where the columns are stacked
+   but still left-aligned, which is what live does.
+
+   Live's 290px cap is applied to every column here, not to
+   `:not(:first-child)`. On live the first column is exempt because the brand
+   logo is 254px inside a Bootstrap column that is already narrower; capping it
+   too is what keeps the stack on one axis rather than leaving the logo aligned
+   to a different edge than everything under it.
+
+   Scoped to `.is-style-site-footer` — the band's own block style — not to a
+   `.sd-footer__widgets` hook class, which is gone along with the rest of the
+   footer's bespoke classes. This is here rather than in the style's `css` field
+   for the one reason AGENTS.md accepts: `@media` does not compile in a `css`
+   field. See styles/blocks/search/header-search.json for the measurement.
+
+   One responsive decision about one component, so it stays in one block rather
+   than being split by block type across core-columns.css and core-image.css —
+   the same reasoning as the utility bar above. */
+@media (max-width: 767px) {
+	.is-style-site-footer .wp-block-column {
+		max-width: 290px;
+		margin-inline: auto;
+		text-align: center;
+	}
+
+	/* The brand mark and the trade badge are capped to their own widths on the
+	   blocks, so they need centring explicitly: core lays a `wp-block-image` out
+	   as a block-level figure whose `img` is also block, and there is no inline
+	   box for the column's `text-align` to move. Direct children of the column
+	   only — the Instagram tiles are inside a grid that centres itself below. */
+	.is-style-site-footer .wp-block-column > .wp-block-image img {
+		margin-inline: auto;
+	}
+
+	/* The social rows and the Instagram grid centre as boxes, not as text: both
+	   are flex/grid containers, so `text-align` on the column does not reach
+	   them. */
+	.is-style-site-footer .wp-block-social-links {
+		align-items: center;
+	}
+
+	.is-style-site-footer .wp-block-group.is-layout-grid {
+		justify-content: center;
+	}
+
+	/* The colophon stacks; live leaves both rows left-aligned rather than
+	   centring them, so only the horizontal distribution changes. */
+	.is-style-footer-colophon .wp-block-group.is-layout-flex {
+		justify-content: flex-start;
+	}
+}
+
+
+/* The footer photograph swaps below 600px
+   ===========================================================================
+   Live carries two footer photographs and swaps them at 600px:
+
+       #footer-bg-sd #footer-widgets { background-image: url(../../images/footer-bg.jpg) }
+
+       @media (max-width: 600px) {
+           #footer-bg-sd #footer-widgets { background-image: url(../../images/mobile-footer-bg-img.jpg); min-height: 1400px }
+       }
+
+   The swap is not decoration — the desktop file is 1916×840, and at 390px a
+   `cover` fit of a 2.3:1 landscape crops to a band of water with the sun gone.
+   The mobile file is 750×2752, cut for the column.
+
+   The desktop image is set on the block in patterns/footer.php, where the editor
+   can see and change it. This one cannot be: a media query is not expressible as
+   a block attribute, and it does not compile in a `css` field either. It used to
+   be printed from inc/footer.php purely because the URL had to be resolved out
+   of the media library per environment; the pattern now writes dev's URLs
+   plainly, so this is an ordinary static rule and that module is gone.
+
+   ⚠️ This URL is dev's, and it must be rewritten at go-live along with the ones
+   in patterns/footer.php.
+
+   `!important` is load-bearing here: core's `background` support writes
+   `style="background-image:…"` onto this very element, and no selector outranks
+   an inline style. An `!important` author declaration does — normal inline
+   styles lose to important author declarations regardless of specificity — so
+   one class is enough and the rule needs no doubling.
+
+   ⚠️ `min-height: 1400px` is **not** reproduced. Measured at 390px, live's
+   mobile footer runs ~400px of empty photograph between the Instagram grid and
+   the copyright bar. The band keeps its `cover` fit and its 615px floor and ends
+   where its content ends. Agreed as a deliberate deviation, recorded in style.md.
+
+   Dropping the height forces the background *position* to change with it, which
+   is the second declaration. The mobile file is a tall crop — pale sky for its
+   top ~60%, then the treeline, then dark water — and at 390px `cover` scales it
+   to 1431px tall. Live's 1400px band therefore shows almost the whole frame and
+   its text lands on the sky. A 1077px band bottom-anchored (`50% 100%`, the
+   desktop value) shows the bottom 1077px instead, which slides the dark water up
+   behind the "Follow Us" and "Instagram" columns: measured there, the labels sat
+   at roughly 1.5:1. Anchoring to the top keeps the same relationship live has
+   between the text and the sky, at the shorter height — so trimming the dead
+   space costs no legibility. */
+@media (max-width: 600px) {
+	.is-style-site-footer {
+		background-image: url("https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/08/mobile-footer-bg-img.jpg") !important;
+		background-position: 50% 0% !important;
 	}
 }
