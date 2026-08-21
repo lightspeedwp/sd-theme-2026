@@ -22,13 +22,20 @@
    lands flush on the row's bottom edge and reads as a tab underline rather than a
    rule under the words.
 
-   Two things change, both inside "modernise a little":
+   One thing changes, inside "modernise a little":
 
-   1. **2px, not 5px.** Five pixels under 15px type reads as a plate. Two is the
-      `borderWidth.200` token — the same gesture, drawn thin.
-   2. **It slides in from the centre** rather than appearing all at once, which is
-      also why it is an `::after` and not a border: a border cannot be scaled
-      independently of its box. Reduced motion gets the plain appear-in-place.
+   **It rises up from the bottom edge** rather than appearing all at once — the
+   line grows to its full 5px out of the row's bottom edge, which is also why it
+   is an `::after` and not a border: a border cannot be scaled independently of
+   its box. `scaleY` with `transform-origin: bottom` is what produces the rise;
+   an earlier pass used `scaleX` from `center`, which read as the line unzipping
+   sideways out of the middle of the word. Reduced motion gets the plain
+   appear-in-place.
+
+   The weight is live's own 5px, held as `custom.header.nav-underline-height`
+   rather than a `borderWidth` preset: that scale is 0/1/2/4/8 and 5 does not
+   belong in it. This is a header-nav component dimension, so it sits beside
+   `nav-link-height` in the same token group.
 
    `brand-500` is live's `#cc7f16` exactly, for both the line and the label. The
    `::after` is anchored by the `position: relative` the block style puts on the
@@ -36,21 +43,32 @@
 
    The selectors mirror the block style's — a direct-child combinator from the nav
    to its own `.wp-block-navigation__container` — so they never reach into a
-   mega-menu panel's own nav. The desktop nav sets `overlayMenu:"never"`, so core
-   emits no `.wp-block-navigation__responsive-container` for it; do not
-   reintroduce a hop through one. */
+   mega-menu panel's own nav.
 
-/* The sliding line: hidden by default, scaled from the centre on hover/focus. */
+   ⚠️ These selectors only match while the nav block carries `overlayMenu: "never"`
+   ("Overlay Menu → Off" in the block's Display settings). Leave it at the default
+   and core wraps the list in
+   `.wp-block-navigation__responsive-container > .wp-block-navigation__responsive-close
+   > .wp-block-navigation__responsive-dialog > .wp-block-navigation__responsive-container-content`,
+   the direct-child chain misses, and both this file and the block style variation
+   fall silent — the nav renders at core's defaults. That is the correct fix when
+   it happens: turn the overlay off on the block, do not chase the wrapper with a
+   second selector. This nav is desktop-only (Block Visibility hides it below the
+   large breakpoint, and a separate block carries the mobile menu), so it has no
+   business emitting an overlay at all. Measured on dev 2026-08-21. */
+
+/* The rising line: flat against the bottom edge by default, grown upward on
+   hover/focus. */
 .is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
 .is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content::after {
 	content: "";
 	position: absolute;
 	inset-inline: 0;
 	bottom: 0;
-	height: var(--wp--custom--border-width--200);
+	height: var(--wp--custom--header--nav-underline-height);
 	background-color: var(--wp--preset--color--brand-500);
-	transform: scaleX(0);
-	transform-origin: center;
+	transform: scaleY(0);
+	transform-origin: bottom;
 	transition: transform 0.3s ease-in-out;
 }
 
@@ -61,7 +79,7 @@
 .is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:hover::after,
 .is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible::after,
 .is-style-main-navigation > .wp-block-navigation__container > .wp-block-page-list > .wp-block-navigation-item.current-menu-item > .wp-block-navigation-item__content::after {
-	transform: scaleX(1);
+	transform: scaleY(1);
 }
 
 /* The label takes live's hover colour with it.

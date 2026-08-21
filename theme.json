@@ -322,6 +322,7 @@
 				"logo-width": "310px",
 				"logo-lift": "24px",
 				"nav-link-height": "50px",
+				"nav-underline-height": "5px",
 				"search-panel-width": "600px"
 			},
 			"footer": {
