@@ -32,10 +32,10 @@
    sideways out of the middle of the word. Reduced motion gets the plain
    appear-in-place.
 
-   The weight is live's own 5px, held as `custom.header.nav-underline-height`
-   rather than a `borderWidth` preset: that scale is 0/1/2/4/8 and 5 does not
-   belong in it. This is a header-nav component dimension, so it sits beside
-   `nav-link-height` in the same token group.
+   The weight is live's own 5px, written as a literal. It was briefly a
+   `custom.header.nav-underline-height` token, which was a token too many: one
+   number, used once, in the only rule that draws this line. (It does not fit the
+   `borderWidth` preset scale either — that is 0/1/2/4/8.)
 
    `brand-500` is live's `#cc7f16` exactly, for both the line and the label. The
    `::after` is anchored by the `position: relative` the block style puts on the
@@ -65,7 +65,7 @@
 	position: absolute;
 	inset-inline: 0;
 	bottom: 0;
-	height: var(--wp--custom--header--nav-underline-height);
+	height: 5px;
 	background-color: var(--wp--preset--color--brand-500);
 	transform: scaleY(0);
 	transform-origin: bottom;
@@ -298,58 +298,23 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
 }
 
 
-/* Header navigation swap — desktop vs mobile
-   ---------------------------------------------------------------------------
-   The header carries two navigation blocks: `.sd-nav-desktop`, which renders the
-   mega menus inline, and `.sd-nav-mobile`, whose overlay is filled from
-   parts/mobile-menu.html by Ollie Menu Designer's `mobileMenuSlug`. They cannot
-   be one block — the mega menus and the mobile panel are different structures,
-   not two layouts of the same one.
+/* Header navigation swap — removed 2026-08-21
+   ===========================================================================
+   Two media queries lived here, hiding `.sd-nav-desktop` below 1200px and
+   `.sd-nav-mobile` above it. Both are gone.
 
-   ⚠️ **Placeholder — convert to Block Visibility.** This swap belongs on the two
-   blocks as a per-block visibility control, not in a stylesheet: an editable
-   setting beats a selector buried in CSS, for the same reason the sticky
-   positioning is on the block in patterns/header.php rather than here.
-   kwv-theme-2026 already does it that way (patterns/header-transparent.php). The
-   plugin is not installed on this site *yet* — it is planned — so this media
-   query stands in until it is, and then it comes out. No JavaScript either way.
+   The swap is a **Block Visibility control set** on each nav's wrapper group in
+   patterns/header.php now — a per-block setting, editable with the block
+   selected, instead of a breakpoint buried in a stylesheet. That was always the
+   intent; the media queries were explicitly marked as placeholders until the
+   plugin was installed, and it is active on dev.
 
-   The same applies to the utility bar's 992px rule in
-   assets/styles/core-group.css, which hides the Call Us disclosure and the
-   enquiry plate below tablet.
+   `sd-nav-desktop` went with them — nothing styles it and nothing needs it.
+   `sd-nav-mobile` stays on the block as a hook, but is unused here.
 
-   1200px is the live site's own header breakpoint: below it the live header
-   drops the top bar and stops sticking (sd-lsx-child/assets/js/custom.js:23).
-
-   Both selectors carry `.wp-block-navigation` as well as the hook class. Core
-   prints each block's layout rule — `.wp-block-navigation-is-layout-flex
-   {display:flex}` — *inline in the body*, after this stylesheet, and at the same
-   (0,1,0) specificity, so a bare `.sd-nav-mobile{display:none}` loses on source
-   order and the hamburger stayed visible at every width. Measured on the
-   rendered page 2026-08-20; the doubled class is what makes the swap work. */
-@media (max-width: 1199px) {
-	.wp-block-navigation.sd-nav-desktop {
-		display: none;
-	}
-}
-
-@media (min-width: 1200px) {
-	.wp-block-navigation.sd-nav-mobile {
-		display: none;
-	}
-}
-
-/* Utility bar: the Call Us dropdown
-   ---------------------------------------------------------------------------
-   Nothing here any more. The Call Us dropdown used to be a `core/navigation`
-   submenu, and these rules styled `.wp-block-navigation__submenu-container`
-   inside `.sd-header__call-us`. It is `sd/call-us` now — a real disclosure
-   button with a panel, not a menu — so that container no longer exists and the
-   rules were dead. Its design lives in assets/styles/sd-call-us.css, which is
-   attached to the block itself by inc/call-us.php.
-
-   `.sd-header__call-us` is still on the block in patterns/header.php, kept as a
-   hook for anything header-specific that comes up. */
+   ⚠️ Block Visibility is not installed on **local**, so both navigation blocks
+   render there at every width. That is local being a fixture environment, not a
+   regression — prove the swap on dev. */
 
 /* Mega-menu columns
    ---------------------------------------------------------------------------

@@ -286,93 +286,45 @@
 	}
 }
 
-/* The mega-menu panels drop out of the header row, so the header has to stack
-   above the page content that follows it. The sticky positioning itself is on the
-   block, in patterns/header.php — `core/group` supports `position: sticky`
-   natively, so it needs no CSS. */
-.sd-header {
-	z-index: 100;
-}
-
-/* The Trustpilot badge in the header
+/* Header rules removed 2026-08-21
    ===========================================================================
-   Live shows only the Trustpilot mark and the star tile in its header — the
-   band word is hidden globally (`#tb-horizon-review .tp-wording{display:none}`)
-   and the score line is hidden in the header specifically
-   (`.sd-top-menu-wrapper #tb-horizon-review .tb-score{display:none}`). Measured
-   2026-08-20: the rendered top bar carries a 90x24 logo and a 133x25 star tile,
-   and nothing else.
+   Three blocks went from here, all of them hanging off hooks the header no
+   longer has:
 
-   Scoped to `.sd-header__utility`, so patterns/trustpilot-score.php keeps its
-   full badge — band word, score and review count — everywhere else it is placed.
-   To show the whole badge in the header instead, delete this rule; that is the
-   only change needed. */
-.sd-header__utility .sd-trustpilot__wording,
-.sd-header__utility .sd-trustpilot__score,
-.sd-header__utility .sd-trustpilot__count {
-	display: none;
-}
+   1. `.sd-header { z-index: 100 }` — moved into the `css` field of
+      styles/sections/header.json, so the header's stacking travels with its
+      section style instead of with a bespoke class. Still load-bearing: the
+      mega-menu panels drop out of the header and have to sit above the page
+      content that follows it.
 
-/* The badge is the left-hand end of a right-aligned cluster, so it needs no
-   growth of its own; live keeps it hard against the Call Us button. */
-.sd-header__utility .sd-trustpilot {
-	align-items: center;
-	align-self: center;
-	flex: 0 0 auto;
-	margin-inline-end: var(--wp--preset--spacing--20);
-}
+   2. The `.sd-header__utility` Trustpilot rules, which hid the band word, the
+      TrustScore and the review count. `.sd-header__utility` was the old utility
+      *band*, which no longer exists — the rules had already stopped matching, so
+      the header currently renders the full badge.
 
+      ⚠️ Live shows only the mark and the star tile:
 
-/* The utility bar below the tablet breakpoint
-   ===========================================================================
-   Live drops the whole top menu at 991px and leaves the Trustpilot mark alone,
-   centred:
+          #tb-horizon-review .tp-wording           { display: none }
+          .sd-top-menu-wrapper … .tb-score         { display: none }
 
-       @media (max-width: 991px) {
-           .sd-top-menu-wrapper #top-menu { display: none }
-           .sd-top-menu-wrapper #tb-horizon-review { justify-content: center }
-       }
+      Deleted rather than rescoped, because rescoping them would have *changed*
+      the header's appearance under cover of a clean-up. To match live, add:
 
-   Reproduced, because without it the bar breaks: measured at 390px before this
-   rule, "Call Us Today" wrapped onto three lines and the enquiry plate read
-   "GET IN TOU / CH". Note the breakpoint — live uses **992px** for the utility
-   bar and **1200px** for the nav swap, and they are genuinely two different
-   numbers, not one rounded twice.
+          .is-style-header .sd-trustpilot__wording,
+          .is-style-header .sd-trustpilot__score,
+          .is-style-header .sd-trustpilot__count { display: none }
 
-   Nothing is lost by hiding them, which is the reason live can do it: both
-   actions are already in the mobile menu — `parts/mobile-menu.html` carries a
-   full-width "Get in touch" button and a "Call us today" numbers list — and
-   that is the menu the hamburger opens at these widths.
+   3. The 991px block that hid Call Us and the enquiry plate and re-centred the
+      badge. Two of its rules were already marked as placeholders for Block
+      Visibility, which is now active on dev — so that half is a per-block
+      setting, not a stylesheet. The other half was scoped to
+      `.sd-header__utility` and matched nothing.
 
-   ⚠️ **The two `display: none` rules are placeholders — convert to Block
-   Visibility.** Hiding a block belongs on the block as a visibility control, not
-   in a stylesheet; the plugin is planned for this site but not installed yet. The
-   `justify-content` and `margin-inline-end` rules below are real responsive
-   styling and stay whatever happens. Same note on the nav swap in
-   assets/styles/core-navigation.css.
-
-   All three rules sit together here rather than being split across
-   sd-call-us.css and core-button.css by block: this is one responsive decision
-   about one component, and every one of those stylesheets loads on the header
-   anyway. Splitting it would only make it possible to change half of it.
-
-   `.sd-call-us` is doubled up because assets/styles/sd-call-us.css sets
-   `display: flex` on the same hook class, and relative source order between two
-   lazily-enqueued block stylesheets is not something to rely on. */
-@media (max-width: 991px) {
-	.sd-call-us.sd-header__call-us,
-	.wp-block-buttons.sd-header__cta {
-		display: none;
-	}
-
-	.sd-header__utility > .wp-block-group {
-		justify-content: center;
-	}
-
-	.sd-header__utility .sd-trustpilot {
-		margin-inline-end: 0;
-	}
-}
+      ⚠️ Nothing replaces this yet on the responsive side. Both actions are also
+      in the mobile menu (parts/mobile-menu.html carries a full-width "Get in
+      touch" and a "Call us today" list), which is why live can drop them at all;
+      set the visibility on the two blocks in the editor when you next have the
+      header open. */
 
 
 /* The footer band below the tablet breakpoint
