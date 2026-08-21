@@ -56,6 +56,39 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The header's Trustpilot badge is two static linked images, not the bound badge.** It used to
+  `require patterns/trustpilot-score.php`, which was a misreading of live. Measured on live
+  2026-08-21 — computed styles, not source — the header badge renders **two of its four children**:
+
+  | Child | Live header |
+  |---|---|
+  | `h3.tp-wording` "Excellent" | `display:none` |
+  | `a.tp-review-logo` → `tp-logo.svg` | visible, 100×24 |
+  | `a.tp-review-stars` → `5star.svg` | visible, 143×25 |
+  | `div.tb-score` "TrustScore 5 \| 349 reviews" | `display:none` |
+
+  by `#tb-horizon-review .tp-wording{display:none}` and
+  `.sd-top-menu-wrapper #tb-horizon-review .tb-score{display:none}` — verified against all 18
+  stylesheets and every inline `<style>` on the page, so nothing later in the cascade puts them
+  back. The two hidden children are the *only* things the Trustpilot API supplies, so live's
+  header makes an API call whose entire visible product is `display:none`, and the badge there is
+  two static SVGs. Binding it and then hiding three of five children with CSS would have paid for
+  a live lookup to render nothing.
+
+  Both images link to the review page, as live's do; unlike live's they have accessible names —
+  live's two `<img>`s carry no `alt`, so both its links are nameless (WCAG 2.4.4). ⚠️ The
+  `stars-5.svg` tile and the "5 out of 5" in its `alt` are **authored, not measured**: accurate
+  today (live reports TrustScore 5 from 349 reviews) and silently wrong the day the rating moves.
+  They must change together.
+
+  `patterns/trustpilot-score.php` is unchanged and still used by `patterns/safari-expert.php`,
+  where the opposite is true: `.tb-score` *is* visible on live (142×13, measured on
+  `/accommodation/table-bay-hotel/`), so the score and review count are real output there.
+  ([LS-2014](https://linear.app/lightspeedwp/issue/LS-2014))
+- **The `.sd-header__utility` Trustpilot note in `assets/styles/core-group.css` is corrected.** It
+  had recommended re-adding rules to hide the badge's band word, score and count in the header.
+  Don't: the header no longer renders them, so there is nothing to hide. Badge text styling should
+  be scoped to the expert panel, never to the header.
 - **The header is a faithful port of live's, measured rather than approximated.** Every value
   below was read off the rendered live site at 1440px on 2026-08-20, not inferred from its
   stylesheets — several of live's declarations don't mean what they look like. The layout is

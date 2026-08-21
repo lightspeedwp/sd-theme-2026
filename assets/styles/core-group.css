@@ -299,20 +299,23 @@
 
    2. The `.sd-header__utility` Trustpilot rules, which hid the band word, the
       TrustScore and the review count. `.sd-header__utility` was the old utility
-      *band*, which no longer exists — the rules had already stopped matching, so
-      the header currently renders the full badge.
+      *band*, which no longer exists, so the rules had already stopped matching.
 
-      ⚠️ Live shows only the mark and the star tile:
+      ✅ Resolved 2026-08-21, and **not** by putting them back. The note here
+      used to suggest re-adding them against `.sd-trustpilot__*`; don't. Those
+      three rules existed because the header was rendering the data-bound badge
+      and then hiding most of it — which meant paying for a live Trustpilot
+      lookup to produce nothing visible.
 
-          #tb-horizon-review .tp-wording           { display: none }
-          .sd-top-menu-wrapper … .tb-score         { display: none }
+      patterns/header.php now authors the header badge as two static linked
+      images, because that is all live's header shows: `.tp-wording` and
+      `.tb-score` are `display:none` there, and they are the only two children
+      the API feeds. Nothing to hide, so no rules needed.
 
-      Deleted rather than rescoped, because rescoping them would have *changed*
-      the header's appearance under cover of a clean-up. To match live, add:
-
-          .is-style-header .sd-trustpilot__wording,
-          .is-style-header .sd-trustpilot__score,
-          .is-style-header .sd-trustpilot__count { display: none }
+      The bound pattern (patterns/trustpilot-score.php) is still used by
+      patterns/safari-expert.php, where `.tb-score` *is* visible on live — so if
+      you need to style the badge's text, scope it to the expert panel, never to
+      the header.
 
    3. The 991px block that hid Call Us and the enquiry plate and re-centred the
       badge. Two of its rules were already marked as placeholders for Block

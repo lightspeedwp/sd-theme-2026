@@ -120,25 +120,81 @@
 
 				<?php
 				/*
-				 * The Trustpilot badge — `patterns/trustpilot-score.php`, reading
-				 * the live score through the `sd/trustpilot` binding source.
+				 * The Trustpilot badge — two linked images, and deliberately
+				 * nothing more.
 				 *
-				 * `require`, not `<!-- wp:pattern -->`: a nested pattern reference
-				 * is silently dropped on front-end render (and resolves fine under
-				 * WP-CLI, so a CLI test would not catch it). `require` inlines the
-				 * markup at registration while leaving trustpilot-score.php an
-				 * independently registered, separately insertable pattern.
-				 * → .claude/skills/wp-pattern-runtime-pitfalls
+				 * This used to `require patterns/trustpilot-score.php`, the
+				 * data-bound badge, and that was a misreading of live. Measured
+				 * on live 2026-08-21 (computed styles, not source), the header
+				 * badge renders **two visible children out of four**:
 				 *
-				 * Note: live hides the band word, the score and the review count
-				 * in its header (`#tb-horizon-review .tp-wording{display:none}`
-				 * and `.sd-top-menu-wrapper … .tb-score{display:none}`), showing
-				 * only the mark and the star tile. The full badge renders here.
-				 * If that should match live, it is one rule in
-				 * assets/styles/core-group.css — see the note there.
+				 *     h3.tp-wording  "Excellent"                → display:none
+				 *     a.tp-review-logo  → tp-logo.svg  100×24    → visible
+				 *     a.tp-review-stars → 5star.svg    143×25    → visible
+				 *     div.tb-score  "TrustScore 5 | 349 reviews" → display:none
+				 *
+				 * by `#tb-horizon-review .tp-wording{display:none}` and
+				 * `.sd-top-menu-wrapper #tb-horizon-review .tb-score{display:none}`
+				 * — checked against all 18 stylesheets and every inline
+				 * `<style>` on the page, so nothing later in the cascade puts
+				 * them back.
+				 *
+				 * The two hidden children are the *only* things the Trustpilot
+				 * API supplies. So live's header makes an API call whose entire
+				 * visible product is `display:none`, and the header badge is two
+				 * static SVGs. Binding it, then hiding three of five children
+				 * with CSS, would have paid for a live lookup to render nothing.
+				 *
+				 * The expert panel is the opposite case and keeps the bound
+				 * pattern: there `.tb-score` *is* visible (142×13, measured on
+				 * /accommodation/table-bay-hotel/), so the score and the review
+				 * count are real output. → patterns/safari-expert.php
+				 *
+				 * ## Two links to one destination
+				 *
+				 * Both anchors point at the review page, which is what live
+				 * does. Unlike live they have accessible names — live's two
+				 * `<img>`s carry no `alt`, so both links are nameless (WCAG
+				 * 2.4.4). Named, adjacent links to one target are a *should*
+				 * (technique H2), not a failure, and the structure is what was
+				 * asked for. To collapse them, drop the stars' `linkDestination`
+				 * and give it `alt=""` — the logo keeps the link and the name.
+				 *
+				 * ## The star tile is static, and that is a maintenance cost
+				 *
+				 * `stars-5.svg` and the "5 out of 5" in its `alt` are authored,
+				 * not measured — accurate today (live's API reports TrustScore 5
+				 * from 349 reviews) and silently wrong the day the rating moves.
+				 * Both would have to change together. That is the argument for
+				 * binding this too once the Trustpilot module lands; it is not
+				 * an argument for binding it now, when the only bindable values
+				 * in this placement are the two live hides.
 				 */
-				require __DIR__ . '/trustpilot-score.php';
+				$sd_tp_review_url = 'https://www.trustpilot.com/review/southerndestinations.com';
+				$sd_tp_logo       = get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' );
+				$sd_tp_stars      = get_theme_file_uri( 'assets/images/trustpilot/stars/stars-5.svg' );
 				?>
+				<?php
+				/*
+				 * `padding-right` reproduces live's measured 23px between the
+				 * mark and Call Us: the enclosing cluster runs at `blockGap: 0`
+				 * because live has no gap either — the items' own horizontal
+				 * padding does the spacing.
+				 */
+				?>
+				<!-- wp:group {"metadata":{"name":"Trustpilot"},"className":"sd-trustpilot","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"right":"var:preset|spacing|20"}}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+				<div class="wp-block-group sd-trustpilot" style="padding-right:var(--wp--preset--spacing--20)">
+
+					<!-- wp:image {"width":"100px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
+					<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="<?php echo esc_url( $sd_tp_review_url ); ?>" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_tp_logo ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:100px"/></a></figure>
+					<!-- /wp:image -->
+
+					<!-- wp:image {"width":"143px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__stars"} -->
+					<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><a href="<?php echo esc_url( $sd_tp_review_url ); ?>" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_tp_stars ); ?>" alt="<?php esc_attr_e( 'Rated 5 out of 5 on Trustpilot', 'sd-theme-2026' ); ?>" style="width:143px"/></a></figure>
+					<!-- /wp:image -->
+
+				</div>
+				<!-- /wp:group -->
 
 				<?php
 				/*
