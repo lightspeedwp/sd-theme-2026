@@ -69,7 +69,7 @@
 	background-color: var(--wp--preset--color--brand-500);
 	transform: scaleY(0);
 	transform-origin: bottom;
-	transition: transform 0.3s ease-in-out;
+	transition: transform 0.20s ease-in-out;
 }
 
 .is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover::after,
