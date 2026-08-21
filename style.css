@@ -101,7 +101,7 @@ textarea,
 	padding: .5em 1em;
 	font-size: var(--wp--preset--font-size--300);
 	background-color: var(--wp--preset--color--base);
-	box-shadow: 
+	box-shadow:
 		0 1px 2px rgba(0, 0, 0, 0.02),
 		0 0.5px 1px rgba(0, 0, 0, 0.04);
 }
@@ -205,7 +205,7 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 	background-color: var(--wp--preset--color--neutral-200);
 }
 
-.wp-block-table td, 
+.wp-block-table td,
 .wp-block-table th,
 .wp-block-table thead {
 	border: none;
@@ -218,7 +218,7 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-200) 75%, var(--wp--preset--color--base) 5%);
 }
 
-.wp-block-table td, 
+.wp-block-table td,
 .wp-block-table th {
 	padding: .8em 1em;
 }

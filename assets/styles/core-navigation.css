@@ -186,4 +186,3 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
 .wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item__content:focus-visible {
 	color: var(--wp--preset--color--brand-500);
 }
-

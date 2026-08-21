@@ -66,4 +66,3 @@ $sd_news_url = get_option( 'page_for_posts' )
 <!-- /wp:group --></div>
 <!-- /wp:group --></main>
 <!-- /wp:group -->
-

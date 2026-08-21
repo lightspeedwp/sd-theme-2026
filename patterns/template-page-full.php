@@ -18,4 +18,3 @@
 	<!-- wp:post-content {"align":"full","layout":{"type":"constrained"}} /-->
 </main>
 <!-- /wp:group -->
-
