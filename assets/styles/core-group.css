@@ -357,27 +357,39 @@
    too is what keeps the stack on one axis rather than leaving the logo aligned
    to a different edge than everything under it.
 
-   This is one responsive decision about one component, so it sits in one block
-   rather than being split by block type across core-columns.css,
-   core-social-links.css and core-image.css — the same reasoning as the utility
-   bar above. The images' own `margin-inline` is the exception: it lives with
-   their widths in core-image.css, because a centred image needs to know how wide
-   it is. */
+   Scoped to `.is-style-site-footer` — the band's own block style — not to a
+   `.sd-footer__widgets` hook class, which is gone along with the rest of the
+   footer's bespoke classes. This is here rather than in the style's `css` field
+   for the one reason AGENTS.md accepts: `@media` does not compile in a `css`
+   field. See styles/blocks/search/header-search.json for the measurement.
+
+   One responsive decision about one component, so it stays in one block rather
+   than being split by block type across core-columns.css and core-image.css —
+   the same reasoning as the utility bar above. */
 @media (max-width: 767px) {
-	.sd-footer__widgets .wp-block-column {
+	.is-style-site-footer .wp-block-column {
 		max-width: 290px;
 		margin-inline: auto;
 		text-align: center;
 	}
 
+	/* The brand mark and the trade badge are capped to their own widths on the
+	   blocks, so they need centring explicitly: core lays a `wp-block-image` out
+	   as a block-level figure whose `img` is also block, and there is no inline
+	   box for the column's `text-align` to move. Direct children of the column
+	   only — the Instagram tiles are inside a grid that centres itself below. */
+	.is-style-site-footer .wp-block-column > .wp-block-image img {
+		margin-inline: auto;
+	}
+
 	/* The social rows and the Instagram grid centre as boxes, not as text: both
 	   are flex/grid containers, so `text-align` on the column does not reach
 	   them. */
-	.sd-footer__widgets .sd-footer__social {
+	.is-style-site-footer .wp-block-social-links {
 		align-items: center;
 	}
 
-	.sd-footer__widgets .wp-block-group.is-layout-grid {
+	.is-style-site-footer .wp-block-group.is-layout-grid {
 		justify-content: center;
 	}
 
@@ -385,5 +397,58 @@
 	   centring them, so only the horizontal distribution changes. */
 	.is-style-footer-colophon .wp-block-group.is-layout-flex {
 		justify-content: flex-start;
+	}
+}
+
+
+/* The footer photograph swaps below 600px
+   ===========================================================================
+   Live carries two footer photographs and swaps them at 600px:
+
+       #footer-bg-sd #footer-widgets { background-image: url(../../images/footer-bg.jpg) }
+
+       @media (max-width: 600px) {
+           #footer-bg-sd #footer-widgets { background-image: url(../../images/mobile-footer-bg-img.jpg); min-height: 1400px }
+       }
+
+   The swap is not decoration — the desktop file is 1916×840, and at 390px a
+   `cover` fit of a 2.3:1 landscape crops to a band of water with the sun gone.
+   The mobile file is 750×2752, cut for the column.
+
+   The desktop image is set on the block in patterns/footer.php, where the editor
+   can see and change it. This one cannot be: a media query is not expressible as
+   a block attribute, and it does not compile in a `css` field either. It used to
+   be printed from inc/footer.php purely because the URL had to be resolved out
+   of the media library per environment; the pattern now writes dev's URLs
+   plainly, so this is an ordinary static rule and that module is gone.
+
+   ⚠️ This URL is dev's, and it must be rewritten at go-live along with the ones
+   in patterns/footer.php.
+
+   `!important` is load-bearing here: core's `background` support writes
+   `style="background-image:…"` onto this very element, and no selector outranks
+   an inline style. An `!important` author declaration does — normal inline
+   styles lose to important author declarations regardless of specificity — so
+   one class is enough and the rule needs no doubling.
+
+   ⚠️ `min-height: 1400px` is **not** reproduced. Measured at 390px, live's
+   mobile footer runs ~400px of empty photograph between the Instagram grid and
+   the copyright bar. The band keeps its `cover` fit and its 615px floor and ends
+   where its content ends. Agreed as a deliberate deviation, recorded in style.md.
+
+   Dropping the height forces the background *position* to change with it, which
+   is the second declaration. The mobile file is a tall crop — pale sky for its
+   top ~60%, then the treeline, then dark water — and at 390px `cover` scales it
+   to 1431px tall. Live's 1400px band therefore shows almost the whole frame and
+   its text lands on the sky. A 1077px band bottom-anchored (`50% 100%`, the
+   desktop value) shows the bottom 1077px instead, which slides the dark water up
+   behind the "Follow Us" and "Instagram" columns: measured there, the labels sat
+   at roughly 1.5:1. Anchoring to the top keeps the same relationship live has
+   between the text and the sky, at the shorter height — so trimming the dead
+   space costs no legibility. */
+@media (max-width: 600px) {
+	.is-style-site-footer {
+		background-image: url("https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/08/mobile-footer-bg-img.jpg") !important;
+		background-position: 50% 0% !important;
 	}
 }

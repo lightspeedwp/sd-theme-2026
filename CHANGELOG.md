@@ -37,24 +37,40 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Flag assets** — `assets/images/flags/{us,uk,za,aus}.svg`, ported unchanged from
   `sd-lsx-child/images/`. Live sets them with `content: url(…)` on a `:before`, which cannot be
   sized; they are background images on a sized box here so the row height is the theme's.
-- **`SdTheme2026\attachment_id_by_path()` / `attachment_src_by_path()`** — resolve a
-  media-library file from its uploads-relative path, so patterns can reference an attachment
-  without hardcoding either an ID or a URL (AGENTS.md forbids the latter outright). The
-  media-library counterpart to `asset_version()`. Resolution goes through core's
-  `attachment_url_to_postid()`, i.e. the `_wp_attached_file` column, and the resolved map is
-  held in the object cache under one key with invalidation on
-  `add_attachment` / `attachment_updated` / `delete_attachment`.
 - **`styles/sections/footer-colophon.json`** — the dark bar under the footer photograph,
   live's `footer#colophon`: `primary-600` ground (live's `#41382E`), spacing-20 vertical
   padding (live's 15px), `neutral-400` text brightening to `neutral-300`.
-- **`assets/styles/core-social-links.css`** — the "Follow Us" list. Core treats a labelled
-  social link as an icon with a caption; live's is an icon beside body copy, so the label's
-  size, colour and margins all have to be prised off the icon's font-size.
-- **`inc/footer.php`** — the mobile background swap, the only footer rule that must be
-  generated at runtime: it is a media query (so not expressible as a block attribute) over an
-  attachment URL (so not expressible in a static stylesheet).
+- **The "Follow Us" list's geometry**, in the `css` field of
+  `styles/sections/site-footer.json`. Core treats a labelled social link as an icon with a
+  caption; live's is an icon beside body copy, so the label's size, colour and margins all
+  have to be prised off the icon's font-size.
 
 ### Changed
+
+- **The footer addresses its media by URL and carries no bespoke CSS classes.** Two changes
+  to one pattern, both simplifications.
+
+  Its thirteen assets were resolved per environment through
+  `SdTheme2026\attachment_id_by_path()`, against paths seeded identically on local, dev and
+  live. That cost a lookup per asset, a filter-invalidated object-cache map, a `sizeSlug`-aware
+  URL resolver and a PHP module of its own for the one rule it could not express — and bought
+  nothing the project needs: dev holds the real media, dev is deployed to live wholesale, and
+  local only needs the images to render. `patterns/footer.php` now writes dev's URLs plainly,
+  built from a single `$sd_uploads` string, and local pulls them from dev. `mobile-footer-bg-img.jpg`
+  was missing from dev's library and has been uploaded to the path the rule expects.
+  ⚠️ **These are dev URLs and must be rewritten at go-live** — one string in
+  `patterns/footer.php` and one in `assets/styles/core-group.css`, in the same pass as the
+  database domain search-replace.
+
+  The six `.sd-footer__*` hook classes are gone, and with them every footer rule in
+  `assets/styles/core-image.css` and `core-social-links.css`. What core can express as a block
+  attribute now is one — the brand mark's and badge's `width`, and the Instagram tiles'
+  `width`/`height`/`scale`, which core serialises as `object-fit: cover` — so those sizes are
+  visible in the editor instead of hidden in a stylesheet behind a class. The "Follow Us"
+  list's geometry moved into `styles/sections/site-footer.json`' `css` field, where plain
+  specificity beats core's selectors without `!important`. Only the two `@media` blocks remain
+  in `assets/styles/core-group.css`, scoped to `.is-style-site-footer`, because `@media` does
+  not compile in a `css` field.
 
 - **The header's Trustpilot badge is two static linked images, not the bound badge.** It used to
   `require patterns/trustpilot-score.php`, which was a misreading of live. Measured on live

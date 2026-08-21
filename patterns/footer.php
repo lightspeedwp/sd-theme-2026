@@ -65,32 +65,36 @@
  */
 
 /*
- * Media comes out of the database, addressed by uploads-relative path.
+ * Media is addressed by its URL on dev, and that is a deliberate exception to
+ * AGENTS.md' "never hardcode an uploads URL on an image".
  *
- * AGENTS.md: "Never hardcode … an uploads URL on an image." All thirteen assets
- * below are seeded at the same relative path they hold on live, which makes the
- * path the one identifier that is correct in every environment — see
- * SdTheme2026\attachment_id_by_path() for why the path and not the ID.
+ * The footer's thirteen assets used to be resolved per environment through
+ * `SdTheme2026\attachment_id_by_path()`, so that a path seeded identically on
+ * local, dev and live gave the right attachment ID in each. That machinery cost
+ * a lookup per asset, a filter-flushed object cache, a `sizeSlug`-aware URL
+ * resolver and a PHP module of its own for the one rule it could not express —
+ * and it bought nothing the project needs: dev is the environment that holds the
+ * real media, it is deployed to live wholesale, and local only ever needs the
+ * images to render.
  *
- * Each block gets both the real attachment ID and the resolved URL, so the
- * images carry `wp-image-<id>`, srcset and the editor's media controls exactly
- * as a hand-inserted image would.
+ * So the URLs are dev's, written out plainly. Local pulls them straight from dev
+ * — no seeding step, no per-environment resolution, nothing to keep in sync —
+ * and the editor shows the images to anyone opening the pattern anywhere.
+ *
+ * ⚠️ **These are dev URLs and they must be rewritten at go-live.** They are all
+ * built from `$sd_uploads` below, so the change is one string in one file (plus
+ * the matching one in assets/styles/core-group.css, which carries the mobile
+ * photograph's media query). Do it in the same pass as the domain search-replace
+ * on the database.
  */
-$sd_logo_path  = '2019/07/footer-logo.svg';
-$sd_badge_path = '2024/02/WAA-Tribe-Member-Badge-2024-34-white.png';
-$sd_bg_path    = '2026/08/footer-bg.jpg';
+$sd_uploads = 'https://southerndestinations.lightspeedwp.dev/wp-content/uploads/';
 
-$sd_logo_id  = SdTheme2026\attachment_id_by_path( $sd_logo_path );
-$sd_logo_src = SdTheme2026\attachment_src_by_path( $sd_logo_path );
-
-$sd_badge_id  = SdTheme2026\attachment_id_by_path( $sd_badge_path );
-$sd_badge_src = SdTheme2026\attachment_src_by_path( $sd_badge_path, 'medium' );
-
-$sd_bg_id  = SdTheme2026\attachment_id_by_path( $sd_bg_path );
-$sd_bg_src = SdTheme2026\attachment_src_by_path( $sd_bg_path );
+$sd_logo_src  = $sd_uploads . '2019/07/footer-logo.svg';
+$sd_badge_src = $sd_uploads . '2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png';
+$sd_bg_src    = $sd_uploads . '2026/08/footer-bg.jpg';
 
 /*
- * The nine Instagram tiles, in live's order, keyed by path.
+ * The nine Instagram tiles, in live's order, keyed by filename.
  *
  * Live gives all nine `alt="instagram"` and wraps the whole grid in one link.
  * Both are reproduced differently, and deliberately: nine links cannot share one
@@ -100,56 +104,47 @@ $sd_bg_src = SdTheme2026\attachment_src_by_path( $sd_bg_path );
  * whatever the original Instagram posts said. Worth a client pass.
  */
 $sd_instagram = array(
-	'2019/07/instagram-1.jpg' => __( 'Palm trees silhouetted against an orange sunset over open plains', 'sd-theme-2026' ),
-	'2019/07/instagram-2.jpg' => __( 'A river winding in tight bends through a green floodplain, seen from the air', 'sd-theme-2026' ),
-	'2019/07/instagram-3.jpg' => __( 'Guides poling mokoro dugout canoes along a reed-lined channel', 'sd-theme-2026' ),
-	'2019/07/instagram-4.jpg' => __( 'A lioness grooming her cub', 'sd-theme-2026' ),
-	'2019/07/instagram-5.jpg' => __( 'A hot-air balloon drifting over red desert dunes', 'sd-theme-2026' ),
-	'2019/07/instagram-6.jpg' => __( 'A malachite kingfisher perched on a reed', 'sd-theme-2026' ),
-	'2019/07/instagram-7.jpg' => __( 'Table Mountain and the Cape Town coastline seen from the sea', 'sd-theme-2026' ),
-	'2019/07/instagram-8.jpg' => __( 'A rainbow arching through the spray of Victoria Falls', 'sd-theme-2026' ),
-	'2019/07/instagram-9.jpg' => __( 'An elephant walking across pale desert sand', 'sd-theme-2026' ),
+	'instagram-1.jpg' => __( 'Palm trees silhouetted against an orange sunset over open plains', 'sd-theme-2026' ),
+	'instagram-2.jpg' => __( 'A river winding in tight bends through a green floodplain, seen from the air', 'sd-theme-2026' ),
+	'instagram-3.jpg' => __( 'Guides poling mokoro dugout canoes along a reed-lined channel', 'sd-theme-2026' ),
+	'instagram-4.jpg' => __( 'A lioness grooming her cub', 'sd-theme-2026' ),
+	'instagram-5.jpg' => __( 'A hot-air balloon drifting over red desert dunes', 'sd-theme-2026' ),
+	'instagram-6.jpg' => __( 'A malachite kingfisher perched on a reed', 'sd-theme-2026' ),
+	'instagram-7.jpg' => __( 'Table Mountain and the Cape Town coastline seen from the sea', 'sd-theme-2026' ),
+	'instagram-8.jpg' => __( 'A rainbow arching through the spray of Victoria Falls', 'sd-theme-2026' ),
+	'instagram-9.jpg' => __( 'An elephant walking across pale desert sand', 'sd-theme-2026' ),
 );
 
 $sd_instagram_url = 'https://www.instagram.com/southerndestinations/';
-
-/*
- * The photograph.
- *
- * Only the block attributes are set, and deliberately no matching inline style:
- * `background` is a **server-rendered** block support, so core appends the
- * declarations to the wrapper itself at render time. Writing them into the saved
- * markup as well emitted every one of them twice —
- *
- *     style="background-image:url('…');…;background-image:url('…');…"
- *
- * — measured on the rendered page before this was removed.
- *
- * Everything else about this band — the 615px floor, the padding, the type and
- * link colours — is in styles/sections/site-footer.json, where it belongs. Only
- * the image is here, and only because only PHP can resolve it.
- */
-$sd_bg_style = array(
-	'background' => array(
-		'backgroundImage'    => array(
-			'url'    => $sd_bg_src,
-			'id'     => $sd_bg_id,
-			'source' => 'file',
-		),
-		'backgroundPosition' => '50% 100%',
-		'backgroundRepeat'   => 'no-repeat',
-		'backgroundSize'     => 'cover',
-	),
-);
-
-$sd_bg_attrs = $sd_bg_src ? ',"style":' . wp_json_encode( $sd_bg_style ) : '';
 
 ?>
 <!-- wp:group {"metadata":{"name":"Footer"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull" style="margin-top:0">
 
-	<!-- wp:group {"metadata":{"name":"Footer Widgets","description":"Live's #footer-widgets — four columns over the sunset photograph."},"align":"full","className":"is-style-site-footer sd-footer__widgets"<?php echo $sd_bg_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON block attributes, built by wp_json_encode() from resolved attachment data. ?>,"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignfull is-style-site-footer sd-footer__widgets">
+	<?php
+	/*
+	 * The photograph is set on the block, not in a stylesheet, because
+	 * `background` is a block support: core reads these attributes and appends
+	 * the declarations to the wrapper at render time, and the editor gives the
+	 * image a media control. No matching inline `style` is written into the
+	 * saved markup — doing that as well emitted every declaration twice,
+	 * measured on the rendered page:
+	 *
+	 *     style="background-image:url('…');…;background-image:url('…');…"
+	 *
+	 * `source` and `id` are deliberately absent. Core dropped the `source`
+	 * requirement in 6.6 ("a file/url is the default") and an `id` would be a
+	 * per-install value, which is the one kind of literal that cannot be right
+	 * in two environments at once.
+	 *
+	 * Everything else about this band — the 615px floor, the padding, the type
+	 * and link colours, the "Follow Us" list's geometry — is in
+	 * styles/sections/site-footer.json, where it belongs. Only the image is
+	 * here, and only because only the block can carry it.
+	 */
+	?>
+	<!-- wp:group {"metadata":{"name":"Footer Widgets","description":"Live's #footer-widgets — four columns over the sunset photograph."},"align":"full","className":"is-style-site-footer","style":{"background":{"backgroundImage":{"url":"<?php echo esc_url( $sd_bg_src ); ?>"},"backgroundPosition":"50% 100%","backgroundRepeat":"no-repeat","backgroundSize":"cover"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignfull is-style-site-footer">
 
 		<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
 		<div class="wp-block-columns alignwide">
@@ -158,35 +153,38 @@ $sd_bg_attrs = $sd_bg_src ? ',"style":' . wp_json_encode( $sd_bg_style ) : '';
 			<div class="wp-block-column">
 				<?php
 				/*
-				 * Sizes are set in assets/styles/core-image.css, not on the
-				 * blocks. `core/image`'s `width` attribute is a raw CSS length
-				 * that core drops straight into the `<img>` style — it is not run
-				 * through the preset resolver, so `var:custom|footer|logo-width`
-				 * would serialise literally and invalidate the block. The choice
-				 * is therefore a raw px literal on the block or the token in CSS,
-				 * and AGENTS.md settles that: tokens over hardcoding.
+				 * Widths are on the blocks, as they are on the Trustpilot marks
+				 * in patterns/header.php, so they are visible and adjustable in
+				 * the editor rather than hidden in a stylesheet behind a class.
+				 *
+				 * They are raw px because that is what `core/image`'s `width` is
+				 * — a CSS length core writes straight into the `<img>` style,
+				 * with no preset resolution, so `var:custom|footer|logo-width`
+				 * would serialise literally and invalidate the block. These are
+				 * the images' own render sizes, not design decisions shared with
+				 * anything else, so they were never token material: the three
+				 * `custom.footer.*-width` tokens that used to hold them are gone
+				 * from theme.json with the classes that read them.
+				 *
+				 * Measured on live 2026-08-20 at 1440px: the brand mark renders
+				 * 254px wide, the We Are Africa badge 131px.
 				 */
 				?>
-				<?php if ( $sd_logo_src ) : ?>
-					<!-- wp:image {"id":<?php echo (int) $sd_logo_id; ?>,"sizeSlug":"full","linkDestination":"none","className":"sd-footer__logo"} -->
-					<figure class="wp-block-image size-full sd-footer__logo"><img src="<?php echo esc_url( $sd_logo_src ); ?>" alt="<?php esc_attr_e( 'Southern Destinations — Journeys with Imagination', 'sd-theme-2026' ); ?>" class="wp-image-<?php echo (int) $sd_logo_id; ?>"/></figure>
-					<!-- /wp:image -->
-				<?php endif; ?>
+				<!-- wp:image {"width":"254px","sizeSlug":"full","linkDestination":"none"} -->
+				<figure class="wp-block-image size-full is-resized"><img src="<?php echo esc_url( $sd_logo_src ); ?>" alt="<?php esc_attr_e( 'Southern Destinations — Journeys with Imagination', 'sd-theme-2026' ); ?>" style="width:254px"/></figure>
+				<!-- /wp:image -->
 
 				<?php
 				/*
 				 * The We Are Africa 2024 Tribe Member badge, linking out to the
-				 * trade body. Live renders the `-300x300` size at 131px, which is
-				 * what `sizeSlug: medium` plus the `badge-width` token gives —
-				 * the 2250px original is 35KB and would be a pointless download
-				 * at this size.
+				 * trade body. The `-300x300` intermediate is used rather than the
+				 * original: the full file is 2250px and 35KB, a pointless
+				 * download for a 131px mark.
 				 */
 				?>
-				<?php if ( $sd_badge_src ) : ?>
-					<!-- wp:image {"id":<?php echo (int) $sd_badge_id; ?>,"sizeSlug":"medium","linkDestination":"custom","className":"sd-footer__badge"} -->
-					<figure class="wp-block-image size-medium sd-footer__badge"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_badge_src ); ?>" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" class="wp-image-<?php echo (int) $sd_badge_id; ?>"/></a></figure>
-					<!-- /wp:image -->
-				<?php endif; ?>
+				<!-- wp:image {"width":"131px","sizeSlug":"medium","linkDestination":"custom"} -->
+				<figure class="wp-block-image size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_badge_src ); ?>" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:131px"/></a></figure>
+				<!-- /wp:image -->
 			</div>
 			<!-- /wp:column -->
 
@@ -250,13 +248,20 @@ $sd_bg_attrs = $sd_bg_src ? ',"style":' . wp_json_encode( $sd_bg_style ) : '';
 				 * mark sits bare on the photograph the way live's glyphs do, and
 				 * `iconColor` is live's `#60483B` resolved to `primary-500`.
 				 *
+				 * The list's own geometry — undoing core's assumption that a
+				 * labelled social link is an icon with a caption — is in
+				 * styles/sections/site-footer.json' `css` field, keyed off this
+				 * band's own style class. It used to be a `.sd-footer__social`
+				 * hook class and a block of assets/styles/core-social-links.css;
+				 * nothing here needs a class of its own any more.
+				 *
 				 * `twitter`, not `x`: live links to twitter.com and shows the
 				 * bird, and this is a port. Switching the mark is a client
 				 * decision with a copy change attached.
 				 */
 				?>
-				<!-- wp:social-links {"iconColor":"primary-500","iconColorValue":"var(--wp--preset--color--primary-500)","showLabels":true,"size":"has-small-icon-size","className":"is-style-logos-only sd-footer__social","style":{"spacing":{"blockGap":{"top":"0","left":"0"}}},"layout":{"type":"flex","orientation":"vertical"}} -->
-				<ul class="wp-block-social-links has-small-icon-size has-visible-labels has-icon-color is-style-logos-only sd-footer__social">
+				<!-- wp:social-links {"iconColor":"primary-500","iconColorValue":"var(--wp--preset--color--primary-500)","showLabels":true,"size":"has-small-icon-size","className":"is-style-logos-only","style":{"spacing":{"blockGap":{"top":"0","left":"0"}}},"layout":{"type":"flex","orientation":"vertical"}} -->
+				<ul class="wp-block-social-links has-small-icon-size has-visible-labels has-icon-color is-style-logos-only">
 					<!-- wp:social-link {"url":"https://www.facebook.com/SouthernDestinations/","service":"facebook","label":"Facebook"} /-->
 					<!-- wp:social-link {"url":"https://twitter.com/southerndest","service":"twitter","label":"Twitter"} /-->
 					<!-- wp:social-link {"url":"https://www.instagram.com/southerndestinations/","service":"instagram","label":"Instagram"} /-->
@@ -276,27 +281,33 @@ $sd_bg_attrs = $sd_bg_src ? ',"style":' . wp_json_encode( $sd_bg_style ) : '';
 
 				<?php
 				/*
-				 * Nine tiles, three across, each at its native 83px.
+				 * Nine tiles, three across, each an 83px square.
 				 *
-				 * The source files are 83×82px, so the tile width is a ceiling
-				 * rather than a layout choice — letting a grid cell stretch them
-				 * to the column's third would upscale a 2KB thumbnail by half
-				 * again and it would show. `instagram-tile` is that ceiling.
+				 * The size is on the blocks — `width`, `height` and `scale`, all
+				 * three of them native `core/image` attributes, which core
+				 * serialises as `object-fit: cover; width: 83px; height: 83px` on
+				 * the `<img>`. That replaces a `.sd-footer__tile` class and three
+				 * declarations in assets/styles/core-image.css with block
+				 * settings the editor can show.
+				 *
+				 * 83px is a ceiling rather than a layout choice: the source files
+				 * are 83×82, 81×83 and 83×81 — nominally square, actually three
+				 * different shapes — so letting a grid cell stretch them to the
+				 * column's third would upscale a 2KB thumbnail by half again and
+				 * it would show. Live caps them with `max-width: 83px;
+				 * max-height: 81px`, which squashes whichever axis overshoots and
+				 * distorts the photographs. A free height was measured at 81–85px
+				 * and leaves a 3×3 grid with ragged rows. A fixed square with
+				 * `object-fit: cover` is the only one of the three that is both
+				 * undistorted and aligned: at most two pixels come off one edge
+				 * of six of the nine files.
 				 */
 				?>
 				<!-- wp:group {"metadata":{"name":"Instagram Grid"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"grid","columnCount":3}} -->
 				<div class="wp-block-group">
-					<?php foreach ( $sd_instagram as $sd_tile_path => $sd_tile_alt ) : ?>
-						<?php
-						$sd_tile_id  = SdTheme2026\attachment_id_by_path( $sd_tile_path );
-						$sd_tile_src = SdTheme2026\attachment_src_by_path( $sd_tile_path );
-
-						if ( ! $sd_tile_src ) {
-							continue;
-						}
-						?>
-						<!-- wp:image {"id":<?php echo (int) $sd_tile_id; ?>,"sizeSlug":"full","linkDestination":"custom","className":"sd-footer__tile"} -->
-						<figure class="wp-block-image size-full sd-footer__tile"><a href="<?php echo esc_url( $sd_instagram_url ); ?>" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_tile_src ); ?>" alt="<?php echo esc_attr( $sd_tile_alt ); ?>" class="wp-image-<?php echo (int) $sd_tile_id; ?>"/></a></figure>
+					<?php foreach ( $sd_instagram as $sd_tile_file => $sd_tile_alt ) : ?>
+						<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+						<figure class="wp-block-image size-full is-resized"><a href="<?php echo esc_url( $sd_instagram_url ); ?>" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_uploads . '2019/07/' . $sd_tile_file ); ?>" alt="<?php echo esc_attr( $sd_tile_alt ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 						<!-- /wp:image -->
 					<?php endforeach; ?>
 				</div>
@@ -346,7 +357,7 @@ $sd_bg_attrs = $sd_bg_src ? ',"style":' . wp_json_encode( $sd_bg_style ) : '';
 			 * child-less navigation block would otherwise do.
 			 */
 			?>
-			<!-- wp:navigation {"overlayMenu":"never","className":"is-style-footer-navigation sd-footer__terms","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","justifyContent":"right"}} -->
+			<!-- wp:navigation {"overlayMenu":"never","className":"is-style-footer-navigation","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","justifyContent":"right"}} -->
 				<!-- wp:navigation-link {"label":"<?php echo esc_attr__( 'Privacy Policy', 'sd-theme-2026' ); ?>","url":"<?php echo esc_url( home_url( '/privacy-policy/' ) ); ?>","kind":"custom"} /-->
 				<!-- wp:navigation-link {"label":"<?php echo esc_attr__( 'Terms & Conditions', 'sd-theme-2026' ); ?>","url":"<?php echo esc_url( home_url( '/terms-conditions/' ) ); ?>","kind":"custom"} /-->
 			<!-- /wp:navigation -->

@@ -321,10 +321,7 @@
 				"search-panel-width": "600px"
 			},
 			"footer": {
-				"widgets-min-height": "615px",
-				"logo-width": "254px",
-				"badge-width": "131px",
-				"instagram-tile": "83px"
+				"widgets-min-height": "615px"
 			}
 		},
 		"layout": {
