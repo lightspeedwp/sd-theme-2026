@@ -1,0 +1,55 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Listing Card — Compact",
+	"slug": "listing-card-compact",
+	"blockTypes": [
+		"core/group"
+	],
+	"description": "The related-items card carried by the carousels on every Tour Operator single — \"Tours in Botswana\", \"Accommodation in Botswana\", the destination rail. A landscape image sits above a tinted panel that centres the title and the taxonomy read-outs. Measured from `.single .site-main > .lsx-to-section .lsx-to-widget-item-wrap` on 2026-08-20: panel #ECE9E3 (neutral-200), padding 2.4rem 2rem 4.25rem, centred, title #60483B at 23px, image 360x168 rendered at 204px tall. Live hides the read-more inside the carousel and that is kept — the whole panel is the target. The deep bottom padding is live's, and it is what leaves room for the read-more on the non-carousel placements of the same card.",
+	"styles": {
+		"color": {
+			"background": "var:preset|color|neutral-200"
+		},
+		"spacing": {
+			"blockGap": "0",
+			"padding": {
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|400",
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"lineHeight": "var:custom|line-height|heading",
+					"textTransform": "none"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				},
+				"typography": {
+					"textDecoration": "none"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand-600"
+					},
+					"typography": {
+						"textDecoration": "none"
+					}
+				}
+			}
+		},
+		"css": "& { overflow: hidden; height: 100%; } & > * { margin-block: 0 !important; } & .listing-card-compact__media { margin: 0 !important; } & .listing-card-compact__media figure { margin: 0 !important; line-height: 0; } & .listing-card-compact__body { margin: 0 !important; text-align: center; padding: var(--wp--preset--spacing--40) var(--wp--preset--spacing--30) var(--wp--preset--spacing--60); } & .listing-card-compact__body p { font-size: var(--wp--preset--font-size--200); line-height: var(--wp--custom--line-height--body); } & .listing-card-compact__body strong { font-family: var(--wp--preset--font-family--heading); font-weight: var(--wp--custom--font-weight--semi-bold); }"
+	}
+}

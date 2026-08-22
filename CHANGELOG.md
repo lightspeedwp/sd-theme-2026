@@ -8,6 +8,21 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **Six card styles** — `styles/sections/cards/{listing-card-list,listing-card-compact,post-grid-card,blog-card-wide,category-card,special-card}.json`, completing the card set. The list
+  card is the variant §12.6 recorded as "measured and ready, blocked on open decision 5": that
+  decision resolved the `#F0EBE5` meta strip onto `neutral-200`, and the container stays `base`,
+  so the step between body and strip survives. Tours and accommodation share one style — they
+  share one CSS rule on live and differ only in what the meta strip holds. `blog-card-wide` is
+  the live blog landing row, ported for the first time; it does not replace `blog-card-large`,
+  it competes with it, and the decision is Zared's.
+- **Card Style Reference page** (local, page 65899) — all ten card shapes on one page with
+  static fields, the companion to the Block & Section Style Reference. Every field is hardcoded:
+  the point is to settle proportion, colour and interaction before any binding is wired. Closes
+  with six open decisions, the first being which of the three blog cards is the landing row.
+- **Featured images on the three fixture posts** (local only) — they carried the
+  `lsx-placeholder` meta, so any query loop rendered empty frames. Needed for the `blog-card-large`
+  comparison and useful for every loop review after it.
+
 - **Trustpilot score badge** — `patterns/trustpilot-score.php`, the band word, the Trustpilot
   mark, the star tile and the `TrustScore 4.8 | 349 reviews` line, reading the live score
   through the plugin's `sd/trustpilot` binding source. Replaces `[tp_show_score]`, which live
@@ -48,6 +63,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `styles/sections/site-footer.json`. Core treats a labelled social link as an icon with a
   caption; live's is an icon beside body copy, so the label's size, colour and margins all
   have to be prised off the icon's font-size.
+
+### Fixed
+
+- **Card images never took their intended size.** Core ships `.wp-block-image>figure>a
+  { display: inline-block }` at (0,1,1) and `.wp-block-image img { height: auto }` at (0,1,1),
+  while a block-style `css` field compiles to `:root :where(…)` at (0,1,0). Every `width`,
+  `height` and the block-level anchor set on a card image was therefore discarded — silently,
+  since the rules still appear in the compiled sheet. The shrink-to-fit anchor was the worse
+  half: a row of cards looked correct as long as every photograph was wider than its card, and
+  broke the moment a square one appeared. Card image sizing now lives in
+  `assets/styles/core-group.css` at (0,2,1); structure, spacing and colour stay in the JSON.
+- **`@media` inside a `css` field is unwrapped, not honoured.** The wide blog card's
+  small-breakpoint rule compiled without its query, so the trailing image was hidden at every
+  width instead of below 781px. Moved to `core-group.css`. No `@media` belongs in a `css` field.
+- **Linked card images sat on a text baseline.** The inline `<a>` generated a line box, leaving
+  a strip of card ground below every photograph. Fixed with `line-height: 0` on the figure and a
+  block-level anchor, applied across all eight cards including the two that shipped earlier.
 
 ### Changed
 

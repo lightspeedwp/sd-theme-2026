@@ -1,0 +1,50 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Special Card",
+	"slug": "special-card",
+	"blockTypes": [
+		"core/group"
+	],
+	"description": "The offer panel the live Specials archive renders — one full-width card per special, the property photograph carried as the card's own ground under a heavy scrim, with the offer name in Joe Hand script, the terms as running copy, and an enquiry button. It is the only card on the site whose title is script rather than heading type, and the only one that is full-width rather than gridded. Measured from `.post-type-archive-lsx-to-special #primary .lsx-to-archive-item` on 2026-08-20: title #E6AD10 Joe Hand 36px weight 300, left-aligned, margin-bottom 0; the photograph set as a background-image on the article itself. The scrim is this theme's addition — live sets the title in gold directly over an undimmed photograph, where it measured 1.9:1 against the lighter frames and was unreadable on several live specials. The optional corner badge is live's `.special-tag`: an 80px accent-500 plate on the trailing edge carrying a short uppercase label.",
+	"styles": {
+		"color": {
+			"text": "var:preset|color|base"
+		},
+		"spacing": {
+			"blockGap": "0",
+			"padding": {
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|accent-500"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|accent",
+					"fontSize": "var:preset|font-size|600",
+					"fontWeight": "var:custom|font-weight|extra-light",
+					"lineHeight": "var:custom|line-height|heading",
+					"textTransform": "none",
+					"letterSpacing": "var:custom|letter-spacing|none"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|accent-300"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|base"
+					}
+				}
+			}
+		},
+		"css": "& { position: relative; overflow: hidden; } & > * { margin-block: 0 !important; } & .special-card__media { margin: 0 !important; } & .special-card__media figure { margin: 0 !important; line-height: 0; } & .special-card__body { position: absolute; inset: 0; margin: 0 !important; display: flex; flex-direction: column; justify-content: center; padding: var(--wp--preset--spacing--50); } & .special-card__body p { line-height: var(--wp--custom--line-height--body); } & .special-card__badge { position: absolute; inset-block-start: 0; inset-inline-end: 0; z-index: 2; margin: 0 !important; display: flex; align-items: center; justify-content: center; text-align: center; width: 80px; height: 80px; padding: var(--wp--preset--spacing--10); background-color: var(--wp--preset--color--accent-500); } & .special-card__badge p { margin: 0; color: var(--wp--preset--color--neutral-900); font-family: var(--wp--preset--font-family--heading); font-size: var(--wp--preset--font-size--100); font-weight: var(--wp--custom--font-weight--bold); line-height: var(--wp--custom--line-height--snug); letter-spacing: var(--wp--custom--letter-spacing--heading); text-transform: uppercase; }"
+	}
+}
