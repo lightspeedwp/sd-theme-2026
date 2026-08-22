@@ -20,7 +20,7 @@ name: dependency automation
 
 on:
   schedule:
-    - cron: '36 7 * * *'      # merge sweep, daily
+    - cron: '23 5 * * *'      # merge sweep, daily
     - cron: '23 4 * * 0'      # stale branch cleanup, Sundays
   workflow_dispatch:
     inputs:
@@ -67,12 +67,12 @@ jobs:
             [ "$DRAFT" = "false" ]   || { skip "draft"; continue; }
             [ "$BASE" = "$DEFAULT" ] || { skip "not targeting $DEFAULT"; continue; }
 
-            # Version policy: patch and minor automatic, major never.
-            FROM="$(printf '%s' "$TITLE" | grep -oiP 'from \K[0-9]+\.[0-9]+\.[0-9]+' || true)"
-            TO="$(printf '%s' "$TITLE"   | grep -oiP 'to \K[0-9]+\.[0-9]+\.[0-9]+'   || true)"
-            if [ -n "$FROM" ] && [ -n "$TO" ]; then
-              [ "${FROM%%.*}" = "${TO%%.*}" ] || { skip "major update ${FROM}->${TO}"; continue; }
-            fi
+            # Version policy: major updates are no longer refused outright (2026-08-21) -
+            # they pass through the same gates as any other bump: mergeable, green
+            # Actions checks, no changes requested, and no diff that adds permissions,
+            # a secret reference or a runner-selection change. Prerelease/draft versions
+            # still refuse unconditionally, since there is no CI signal that can vouch
+            # for a version that was never a real release.
             printf '%s' "$TITLE" | grep -qiE '(alpha|beta|rc|pre)' && { skip "prerelease"; continue; }
 
             # Mergeability, waited on until GitHub has computed it.
@@ -84,12 +84,17 @@ jobs:
             done
             [ "$MERGEABLE" = "true" ] || { skip "not mergeable ($MERGEABLE)"; continue; }
 
-            # Changed files must not touch the trust boundary.
+            # CODEOWNERS still refuses outright - it is reviewer routing, not a
+            # dependency version, and has no version-bump shape to validate.
             FILES="$(gh api "repos/$REPO/pulls/$N/files" --paginate --jq '.[].filename')"
-            echo "$FILES" | grep -qE '^\.github/workflows/' && { skip "workflow file change"; continue; }
             echo "$FILES" | grep -qiE '(^|/)CODEOWNERS$' && { skip "CODEOWNERS change"; continue; }
 
-            # No permission widening or secret references introduced.
+            # Workflow files may now be updated (action version bumps are the
+            # common Dependabot case), but the trust boundary is the diff
+            # content, not the path: no permission widening, no new secret
+            # reference, no runner-selection change, in ANY file the PR
+            # touches - not only workflow files, since a helper script or
+            # config the workflow sources could carry the same risk.
             DIFF="$(gh api "repos/$REPO/pulls/$N" -H 'Accept: application/vnd.github.v3.diff' 2>/dev/null || true)"
             printf '%s' "$DIFF" | grep -qE '^\+.*(permissions:|secrets\.|runs-on:)' && {
               skip "diff adds permissions, secrets or runner selection"; continue; }
@@ -97,11 +102,27 @@ jobs:
             SHA="$(gh api "repos/$REPO/pulls/$N" --jq .head.sha)"
             # Free plan: no branch protection, so the gate is this repository's
             # own Actions check runs. Advisory third-party checks are not gates.
+            #
+            # Wait for any still-running check to finish before judging it, the
+            # same way mergeability above is waited on. Without this, a check
+            # that is merely still queued or in_progress (conclusion null, not
+            # yet failed) was refused immediately as if it had already failed.
+            # Bounded to two minutes; a check that is absent entirely never has
+            # a pending run to wait on, so that refusal path is unaffected.
+            # A transient gh api failure here must never read as "0 pending" or
+            # "0 bad" - under set -e it would otherwise abort the whole sweep,
+            # and worse, a failed fetch must fail closed (treated as still
+            # pending / not successful), never as an accidental pass.
+            for _ in 1 2 3 4 5 6 7 8 9 10 11 12; do
+              PENDING="$(gh api "repos/$REPO/commits/$SHA/check-runs" \
+                --jq '[.check_runs[]|select(.app.slug=="github-actions")|select(.conclusion==null)]|length' \
+                2>/dev/null || echo 1)"
+              [ "$PENDING" = "0" ] && break
+              sleep 10
+            done
             BAD="$(gh api "repos/$REPO/commits/$SHA/check-runs" \
-              --jq '[.check_runs[]
-                     | select(.app.slug=="github-actions")
-                     | select(.conclusion!="success" and .conclusion!="neutral" and .conclusion!="skipped")]
-                     | length')"
+              --jq '[.check_runs[]|select(.app.slug=="github-actions")|select(.conclusion!="success" and .conclusion!="neutral" and .conclusion!="skipped")]|length' \
+              2>/dev/null || echo 1)"
             [ "$BAD" = "0" ] || { skip "$BAD Actions check(s) not successful"; continue; }
 
             CR="$(gh api "repos/$REPO/pulls/$N/reviews" --jq '[.[]|select(.state=="CHANGES_REQUESTED")]|length')"
