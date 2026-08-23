@@ -33,6 +33,15 @@ permissions:
   pull-requests: write
   checks: read
   statuses: read
+  # No `workflows` key exists in this block - GitHub's documented list of
+  # permissions: scopes does not include one. The 403 seen on playwright-mcp
+  # #55 ("without `workflows` permission") is GitHub's own GITHUB_TOKEN
+  # hard-refusing to touch .github/workflows/** at all: that specific write
+  # is only ever available to a GitHub App installation with the "Workflows"
+  # App permission, or a PAT with the workflow OAuth scope - never to the
+  # repo's own auto-issued GITHUB_TOKEN, and there is no permissions: line
+  # that changes that. This workflow deliberately uses only GITHUB_TOKEN (see
+  # header), so workflow-file PRs are refused below rather than merged.
 
 concurrency:
   group: dependency-automation
@@ -89,12 +98,19 @@ jobs:
             FILES="$(gh api "repos/$REPO/pulls/$N/files" --paginate --jq '.[].filename')"
             echo "$FILES" | grep -qiE '(^|/)CODEOWNERS$' && { skip "CODEOWNERS change"; continue; }
 
-            # Workflow files may now be updated (action version bumps are the
-            # common Dependabot case), but the trust boundary is the diff
-            # content, not the path: no permission widening, no new secret
-            # reference, no runner-selection change, in ANY file the PR
-            # touches - not only workflow files, since a helper script or
-            # config the workflow sources could carry the same risk.
+            # Workflow files refuse outright (reverted 2026-08-22): GITHUB_TOKEN
+            # can never be granted the App-level "Workflows" permission needed
+            # to update .github/workflows/** via a squash-merge - confirmed on
+            # playwright-mcp #55, which passed every other gate and then failed
+            # at the merge call itself with a 403. No permissions: line fixes
+            # this; it is a hard GitHub restriction on this token type, not a
+            # policy choice. Route workflow-file bumps through a privileged,
+            # App-token-based path instead if that becomes worth building.
+            echo "$FILES" | grep -qE '(^|/)\.github/workflows/' && { skip "workflow file change"; continue; }
+
+            # Diff-content guard: no permission widening, no new secret
+            # reference, no runner-selection change, in any non-workflow file
+            # the PR touches.
             DIFF="$(gh api "repos/$REPO/pulls/$N" -H 'Accept: application/vnd.github.v3.diff' 2>/dev/null || true)"
             printf '%s' "$DIFF" | grep -qE '^\+.*(permissions:|secrets\.|runs-on:)' && {
               skip "diff adds permissions, secrets or runner selection"; continue; }
