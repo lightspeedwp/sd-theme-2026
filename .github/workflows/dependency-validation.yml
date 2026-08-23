@@ -9,6 +9,24 @@ name: dependency validation
 # caused the 2026-08-03 security-mail incident. Anything needing PHP, Composer or
 # npm must bring its own pinned static tooling.
 #
+# GitHub's own Dependabot cannot be routed to our self-hosted runners - a PR
+# IT authored gets this workflow's job queued indefinitely on a self-hosted
+# runner unless the org enables "Dependabot on self-hosted runners" org-wide,
+# which is deliberately off (that setting also hands Dependabot's own
+# internal update job access to self-hosted infra - a materially bigger
+# trust boundary than validating one PR). So a Dependabot-authored PR runs
+# this job on a standard GitHub-hosted runner instead; every other PR still
+# gets the private runner. Routed on github.event.pull_request.user.login,
+# NOT github.actor: actor is whoever triggered this specific push (a human
+# pushing a fix commit onto the PR branch, as this repo's own session did to
+# unblock CI, counts) and would misroute a Dependabot PR back to the private
+# runner the moment anyone else pushes to it; pull_request.user.login is who
+# opened the PR and does not change on a later push, which is the actual
+# question being asked. The choose-runner job is the documented way to make
+# runs-on conditional - it does not support an inline ternary expression,
+# only a single substituted value (a string, or here a needs.*.outputs value
+# parsed with fromJson for an array).
+#
 # Managed centrally by lightspeedwp/dependency-merge-controller.
 
 on:
@@ -23,14 +41,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
-    name: dependency-validation
-    # Dependency pull requests only. Anything else is not this workflow's job.
+  choose-runner:
+    name: choose-runner
     if: |
       startsWith(github.head_ref, 'dependabot/') ||
       startsWith(github.head_ref, 'deps/') ||
       startsWith(github.head_ref, 'renovate/')
-    runs-on: [self-hosted, linux, x64, dependency-ci-ephemeral]
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.pick.outputs.runner }}
+    steps:
+      - id: pick
+        env:
+          # github.actor is whoever triggered THIS push (a human rebasing or
+          # pushing a fix commit onto the branch counts, same as we did
+          # ourselves this session). github.event.pull_request.user.login is
+          # who originally opened the PR and does not change on a later
+          # push - that is the actual trust question this routes on.
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          set -euo pipefail
+          if [ "$PR_AUTHOR" = "dependabot[bot]" ]; then
+            echo 'runner=["ubuntu-latest"]' >> "$GITHUB_OUTPUT"
+          else
+            echo 'runner=["self-hosted","linux","x64","dependency-ci-ephemeral"]' >> "$GITHUB_OUTPUT"
+          fi
+
+  validate:
+    name: dependency-validation
+    needs: choose-runner
+    runs-on: ${{ fromJson(needs.choose-runner.outputs.runner) }}
     timeout-minutes: 20
     env:
       GITLEAKS_VERSION: '8.30.1'
@@ -38,6 +78,14 @@ jobs:
       BASE_REF: ${{ github.base_ref }}
     steps:
       - name: Confirm disposable container
+        # Only meaningful on the self-hosted ephemeral container: a
+        # GitHub-hosted runner genuinely has a docker socket and runs as a
+        # non-root "runner" user by design, so these checks would misfire
+        # there. Gated on the same PR-author check choose-runner used
+        # (github.event.pull_request.user.login, not github.actor - see the
+        # comment on the pick step), to keep one source of truth for "is
+        # this the Dependabot-on-GitHub-hosted path".
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
           set -euo pipefail
           echo "container=$(hostname) user=$(id -un) uid=$(id -u)"
