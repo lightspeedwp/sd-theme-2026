@@ -567,8 +567,21 @@
  * for the wide blog card, and splitting responsive rules across both files
  * would be worse than either choice alone.
  */
+/*
+ * The doubled class is load-bearing, not a typo.
+ *
+ * A section style's `css` field compiles to `:root :where(.is-style-x-N …)`,
+ * which is (0,1,0) — `:root` contributes, `:where()` does not. A single
+ * `.is-style-listing-card-list` here is *also* (0,1,0), so the two tie and
+ * source order decides; global styles are printed after this sheet, so the
+ * base `flex-flow: row nowrap` won and the card never stacked. Repeating the
+ * class makes it (0,2,0) and settles it without `!important`. The descendant
+ * selectors below are already (0,2,0) and need no help — which is why the
+ * media went full-width while the row it sits in stayed `nowrap`, squeezing
+ * the body into a sliver beside it.
+ */
 @media (max-width: 781px) {
-	.is-style-listing-card-list {
+	.is-style-listing-card-list.is-style-listing-card-list {
 		flex-wrap: wrap;
 	}
 
@@ -576,11 +589,19 @@
 		flex-basis: 100%;
 	}
 
+	/* The stretch height below is for the desktop row; once the card wraps,
+	   `height: 100%` resolves against the whole card and overflows its line. */
+	.is-style-listing-card-list .listing-card__media,
+	.is-style-listing-card-list .listing-card__media figure,
+	.is-style-listing-card-list .listing-card__media img {
+		height: auto;
+	}
+
 	.is-style-listing-card-list .listing-card__media img {
 		min-height: 220px;
 	}
 
-	.is-style-listing-card-list .listing-card__wrapper {
+	.is-style-listing-card-list .listing-card__wrapper.listing-card__wrapper {
 		flex-wrap: wrap;
 		min-height: 0;
 	}
@@ -592,10 +613,21 @@
 }
 
 /**
- * Blog Card (wide) — drop the trailing image below the small breakpoint.
+ * Blog Card (list) — stack and centre below the small breakpoint.
  *
- * This is live's own behaviour: the trailing image carries `hidden-xs`, so the
- * row becomes a single centred column on a phone.
+ * Live swaps two copies of the featured image at 768px rather than dropping
+ * one: `.entry-layout > .entry-layout-content .entry-image` is `display: none`
+ * above the breakpoint and the trailing `.entry-image` carries `hidden-xs`
+ * below it, so a phone gets the image full-width above the text and a desktop
+ * gets it as the leading column. One bound image serves both states here, so
+ * the swap is a reorder — `flex-basis: 100%` on the media and the row wrapping
+ * puts it on its own line, which is the same result without the duplicate.
+ *
+ * The centring is live's too, and it is the correction that made this card
+ * wrong the first time: every `text-align: center` on the title, byline,
+ * categories and excerpt sits inside `@media (max-width: 767px)` in
+ * sd-lsx-child/custom.css. Desktop is left-aligned. The section style now
+ * carries `text-align: left` and this query flips it, rather than the reverse.
  *
  * It lives here and not in the section style because **the `css` field
  * silently unwraps `@media`.** A rule written as
@@ -607,15 +639,66 @@
  * so the image was hidden at *every* width rather than below 781px. That is a
  * silent failure, not an error: the rule still appears in the compiled sheet,
  * just without its condition. No `@media` belongs in a `css` field.
+ *
+ * 781px rather than live's 768px: it is WordPress's own small breakpoint and
+ * every other responsive rule in this file already uses it.
  */
 @media (max-width: 781px) {
-	.is-style-blog-card-wide {
+	/* Doubled class for the same specificity tie described above the listing
+	   card — a single class loses to the section style's `flex-flow: row
+	   nowrap` on source order. */
+	.is-style-blog-card-wide.is-style-blog-card-wide {
 		flex-wrap: wrap;
 	}
 
 	.is-style-blog-card-wide .blog-card-wide__media {
-		display: none;
+		flex-basis: 100%;
 	}
+
+	.is-style-blog-card-wide .blog-card-wide__media,
+	.is-style-blog-card-wide .blog-card-wide__media figure,
+	.is-style-blog-card-wide .blog-card-wide__media img {
+		height: auto;
+	}
+
+	.is-style-blog-card-wide .blog-card-wide__body {
+		text-align: center;
+	}
+
+	.is-style-blog-card-wide .blog-card-wide__meta {
+		justify-content: center;
+	}
+}
+
+/**
+ * Blog Card (list) — the `#` on each tag.
+ *
+ * Live sets it with `.post-tags > a:before { content: "#" }`
+ * (lsx-blog-customizer.css), which is why the tag row reads
+ * "#Tanzania Visa Application" and carries no comma between tags — the glyph
+ * is the delimiter, so the pattern sets `core/post-terms`' separator to a
+ * plain space.
+ *
+ * It cannot live in the section style: a `css`-field rule containing
+ * `content: ""` is dropped whole, the same limit that forced the read-more
+ * chevron down here.
+ */
+.is-style-blog-card-wide .blog-card-wide__tags a::before {
+	content: "#";
+	display: inline-block;
+}
+
+/**
+ * Blog Card (list) — the comma after the author.
+ *
+ * Live closes the author span with one — "by Vanessa Ratcliffe, Posted in:
+ * News" — and without it the byline runs two clauses together on a single
+ * space. core/post-author has no suffix attribute, and a `css`-field rule
+ * containing `content: ""` is dropped whole, so it lands here with the tag
+ * glyph above. Scoped to the byline so the block is unchanged everywhere else.
+ */
+.is-style-blog-card-wide .blog-card-wide__meta .wp-block-post-author__name::after {
+	content: ",";
 }
 
 /**

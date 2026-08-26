@@ -23,11 +23,11 @@
 	<div class="wp-block-group post-grid-card__body">
 		<!-- wp:post-title {"textAlign":"center","level":4,"isLink":true} /-->
 
-		<!-- wp:group {"metadata":{"name":"Byline"},"className":"post-grid-card__byline","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
+		<!-- wp:group {"metadata":{"name":"Byline"},"className":"post-grid-card__byline","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
 		<div class="wp-block-group post-grid-card__byline">
 			<!-- wp:post-date {"format":"F j, Y","isLink":false} /-->
 
-			<!-- wp:post-terms {"term":"category","prefix":"Posted in: "} /-->
+			<!-- wp:post-terms {"term":"category","prefix":". Posted in: "} /-->
 		</div>
 		<!-- /wp:group -->
 
