@@ -65,6 +65,8 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   whole scrim, so the tile is the target as live's is. The image *binding* is verified working end
   to end — registering `sd_thumbnail` for `category` in `sd-enhancements` is all that is missing.
 
+### Added
+
 - **Six card styles** — `styles/sections/cards/{listing-card-list,listing-card-compact,post-grid-card,blog-card-wide,category-card,special-card}.json`, completing the card set. The list
   card is the variant §12.6 recorded as "measured and ready, blocked on open decision 5": that
   decision resolved the `#F0EBE5` meta strip onto `neutral-200`, and the container stays `base`,
