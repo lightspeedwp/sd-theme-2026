@@ -1,67 +1,194 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:group {"tagName":"main","metadata":{"name":"Homepage"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|80","padding":{"top":"0","bottom":"var:preset|spacing|90"},"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
-<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:var(--wp--preset--spacing--90)">
+<!-- wp:group {"tagName":"main","metadata":{"name":"Homepage"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
+<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
-	<!-- wp:cover {"dimRatio":40,"overlayColor":"contrast","isUserOverlayColor":true,"minHeight":600,"minHeightUnit":"px","contentPosition":"center center","align":"full","tagName":"section","layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull" style="min-height:600px"><span aria-hidden="true" class="wp-block-cover__background has-contrast-background-color has-background-dim-40 has-background-dim"></span><div class="wp-block-cover__inner-container"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide"><!-- wp:heading {"textAlign":"center","level":1,"textColor":"base","fontSize":"800","fontFamily":"heading"} -->
-	<h1 class="wp-block-heading has-text-align-center has-base-color has-text-color has-heading-font-family has-800-font-size">Tailor-made journeys through Southern Africa</h1>
+	<!-- wp:pattern {"slug":"sd-theme-2026/homepage-hero"} /-->
+
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - How to plan your dream trip"},"align":"full","className":"is-style-light-page-section","layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull is-style-light-page-section"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|80"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide"><!-- wp:image {"id":50292,"width":"300px","sizeSlug":"full","linkDestination":"none","align":"center"} -->
+	<figure class="wp-block-image aligncenter size-full is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/home-intro-logo.svg" alt="" class="wp-image-50292" style="width:300px;height:auto"/></figure>
+	<!-- /wp:image -->
+
+	<!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+	<div class="wp-block-group alignwide"><!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","fontFamily":"accent","anchor":"h-how-to-plan-your-dream-trip-to-africa"} -->
+	<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-accent-font-family" id="h-how-to-plan-your-dream-trip-to-africa">How to plan your dream trip to Africa…</h2>
 	<!-- /wp:heading -->
 
-	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-	<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-fill"} -->
-	<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="/contact/">Start planning</a></div>
-	<!-- /wp:button --></div>
-	<!-- /wp:buttons --></div>
-	<!-- /wp:group --></div></section>
-	<!-- /wp:cover -->
-
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Destinations"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-group alignfull"><!-- wp:group {"metadata":{"name":"Section Header"},"align":"wide","className":"is-style-section-header","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide is-style-section-header"><!-- wp:heading {"align":"wide","fontFamily":"heading"} -->
-	<h2 class="wp-block-heading alignwide has-heading-font-family">Destinations</h2>
-	<!-- /wp:heading --></div>
+	<!-- wp:paragraph {"align":"center","fontSize":"400"} -->
+	<p class="has-text-align-center has-400-font-size"><em>So you want to see Africa? You may have an idea where you want to go and what you want to see. Weaving your ideas into a seriously addictive travel experience is where we shine. Your dreams. Our expertise. Together we can help you plan your ultimate African safari!</em></p>
+	<!-- /wp:paragraph --></div>
 	<!-- /wp:group -->
 
-	<!-- wp:query {"queryId":0,"query":{"perPage":6,"pages":0,"offset":0,"postType":"destination","order":"asc","orderBy":"title","search":"","exclude":[],"sticky":"","inherit":false},"align":"wide","layout":{"type":"default"}} -->
-	<div class="wp-block-query alignwide"><!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3}} -->
-	<!-- wp:group {"metadata":{"name":"Destination Card"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
-	<div class="wp-block-group"><!-- wp:post-featured-image {"isLink":true,"aspectRatio":"4/3","className":"is-style-image-hover-zoom"} /-->
+	<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center","verticalAlignment":"center"}} -->
+	<div class="wp-block-group"><!-- wp:heading {"level":3,"className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-500"}}}},"textColor":"brand-500","fontSize":"600","fontFamily":"accent","anchor":"h-start-here"} -->
+	<h3 id="h-start-here" class="wp-block-heading is-style-script-accent has-brand-500-color has-text-color has-link-color has-accent-font-family has-600-font-size">Start here</h3>
+	<!-- /wp:heading -->
 
-	<!-- wp:post-title {"isLink":true,"fontSize":"300","fontFamily":"heading"} /--></div>
-	<!-- /wp:group -->
-	<!-- /wp:post-template -->
-
-	<!-- wp:query-no-results -->
-	<!-- wp:paragraph -->
-	<p>No destinations found.</p>
-	<!-- /wp:paragraph -->
-	<!-- /wp:query-no-results --></div>
-	<!-- /wp:query --></section>
-	<!-- /wp:group -->
-
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Latest News"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-group alignfull"><!-- wp:group {"metadata":{"name":"Section Header"},"align":"wide","className":"is-style-section-header","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide is-style-section-header"><!-- wp:heading {"align":"wide","fontFamily":"heading"} -->
-	<h2 class="wp-block-heading alignwide has-heading-font-family">Latest News</h2>
-	<!-- /wp:heading --></div>
-	<!-- /wp:group -->
-
-	<!-- wp:group {"align":"wide","className":"is-style-inner-page-section","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide is-style-inner-page-section"><!-- wp:query {"queryId":1,"query":{"perPage":4,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false},"align":"wide","layout":{"type":"default"}} -->
-	<div class="wp-block-query alignwide"><!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":4}} -->
-	<!-- wp:pattern {"slug":"sd-theme-2026/blog-card"} /-->
-	<!-- /wp:post-template -->
-
-	<!-- wp:query-no-results -->
-	<!-- wp:paragraph -->
-	<p>No posts found.</p>
-	<!-- /wp:paragraph -->
-	<!-- /wp:query-no-results --></div>
-	<!-- /wp:query --></div>
+	<!-- wp:outermost/icon-block {"iconName":""} -->
+	<div class="wp-block-outermost-icon-block"><div class="icon-container" style="width:48px;transform:rotate(0deg) scaleX(1) scaleY(1)"><svg xmlns="http://www.w3.org/2000/svg" xmlns-xlink="http://www.w3.org/1999/xlink" width="45" height="31"><defs><path id="sd-bird-shape-1" d="M0 .509h37.65v27.76H0z"></path><path id="sd-bird-shape-2" d="M.166.795H19V11H.166z"></path></defs><g fill="none" fill-rule="evenodd"><g transform="translate(0 -.509)"><mask id="sd-bird-mask-1" fill="#fff"><use xlink:href="#sd-bird-shape-1"></use></mask><path d="M28.316 10.396a89.182 89.182 0 0 1-4.674-3.405c-.268-.21-.468-.426-.569-.691-.37.08-.767-.045-1.12-.381l-.19-.15c-.406-.192-1.167-.48-2.219-.87-.974-.33-1.698-.588-2.179-.84-1.642-.975-3.775-1.716-6.406-2.293C8.694 1.353 6.43.938 4.231.516 2.843.48 1.782.577 1.108.728A2.666 2.666 0 0 1 0 1.278c.092.75.325 1.24.746 1.57.115.09 1.405.174 3.948.31 2.786.143 4.32.232 4.638.296 1.133.208 2.61.683 4.508 1.488 2.073.819 3.56 1.362 4.517 1.556.735.636 2.041 1.41 3.94 2.215.331.445.607.722.828.833l.192.15c.425.085.676.159.791.248l-.043.213c3.152 2.277 5.791 4.895 7.957 7.881 2.374 3.273 3.901 6.683 4.54 10.203.218-.198.53-.203.903.029-.108-.886-.073-1.721.185-2.445-.684-.781-.956-1.302-.806-1.494.3-.381.555-.552.76-.576-.256-.384-.772-1.774-1.61-4.093-.598-1.761-1.4-2.944-2.31-3.592l-.336-.202c.026-.348-.645-1.305-2.043-2.829-1.207-1.373-2.112-2.265-2.686-2.714l-.303.072z" fill="#C9831A" mask="url(#sd-bird-mask-1)"></path></g><g transform="translate(26 19.491)"><mask id="sd-bird-mask-2" fill="#fff"><use xlink:href="#sd-bird-shape-2"></use></mask><path d="M.166 3.408c.58 1.044 1.052 1.85 1.32 2.422.561.607 2.114 1.658 4.655 3.054 2.64 1.44 4.323 2.144 5.002 2.115.631-.028 1.976-2.416 4.587-4.96 2.613-2.546 2.724-2.87 2.701-3.404-.027-.63.968-1.866.386-1.84l-1.677 1.37c-1.11 1.313-1.756 1.308-2.914 2.622-1.81 1.927-3.033 2.904-3.712 2.933-.484.022-1.421-.278-2.761-.9-1.39-.668-2.239-1.166-2.596-1.539-.543-.22-.84-.304-.936-.3l-.243.011c-.05-.047-.503-.367-1.258-.966-.557-.51-.956-.736-1.198-.726-.292.013-.527.17-.709.47-.252-.233-.501-.368-.647-.362" fill="#C9831A" mask="url(#sd-bird-mask-2)"></path></g></g></svg></div></div>
+	<!-- /wp:outermost/icon-block --></div>
+	<!-- /wp:group --></div>
 	<!-- /wp:group --></section>
 	<!-- /wp:group -->
+
+	<!-- wp:pattern {"slug":"sd-theme-2026/homepage-main-content"} /-->
+
+	<!-- wp:pattern {"slug":"sd-theme-2026/homepage-lets-make-it-happen"} /-->
+
+	<!-- wp:pattern {"slug":"sd-theme-2026/homepage-why-choose-sd"} /-->
+
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - Meet our safari gurus"},"align":"full","className":"is-style-light-page-section","layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull is-style-light-page-section"><!-- wp:heading {"textAlign":"center","className":"is-style-section-title","anchor":"h-meet-our-safari-gurus"} -->
+	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-meet-our-safari-gurus">Meet our safari gurus</h2>
+	<!-- /wp:heading -->
+
+	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|0","left":"var:preset|spacing|0"}}}} -->
+	<div class="wp-block-columns alignwide"><!-- wp:column -->
+	<div class="wp-block-column"><!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|0","left":"var:preset|spacing|0"}}}} -->
+	<div class="wp-block-columns"><!-- wp:column -->
+	<div class="wp-block-column"><!-- wp:group {"metadata":{"name":"Team Member Card"},"style":{"spacing":{"blockGap":"var:preset|spacing|0"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group"><!-- wp:group {"metadata":{"name":"Content"},"className":"is-style-team-member-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group is-style-team-member-card"><!-- wp:group {"metadata":{"name":"Media"},"className":"team-member-card__media","style":{"spacing":{"blockGap":"0","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}}} -->
+	<div class="wp-block-group team-member-card__media" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0"><!-- wp:image {"id":58518,"aspectRatio":"1","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+	<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2013/09/liesl-profile2-e1787664767110.jpg" alt="Liesl Matthews" class="wp-image-58518" style="aspect-ratio:1;object-fit:cover"/></figure>
+	<!-- /wp:image -->
+
+	<!-- wp:group {"metadata":{"name":"Overlay"},"className":"team-member-card__overlay","style":{"spacing":{"padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"},"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+	<div class="wp-block-group team-member-card__overlay" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)"><!-- wp:paragraph {"style":{"typography":{"lineHeight":"var:custom|line-height|body"}},"textColor":"base","fontSize":"300"} -->
+	<p class="has-base-color has-text-color has-300-font-size" style="line-height:var(--wp--custom--line-height--body)"><a href="/team/liesl-mathews/">More about me</a></p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:paragraph -->
+	<p><a href="/team/liesl-mathews/#feedback">Read my reviews</a></p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:paragraph -->
+	<p><a href="mailto:liesl@southerndestinations.com">Get in touch</a></p>
+	<!-- /wp:paragraph --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"metadata":{"name":"Caption"},"className":"team-member-card__footer","style":{"spacing":{"blockGap":"var:preset|spacing|5","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"backgroundColor":"base","layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+	<div class="wp-block-group team-member-card__footer has-base-background-color has-background" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)"><!-- wp:heading {"textAlign":"center","level":3,"style":{"typography":{"fontWeight":"100","lineHeight":"var:custom|line-height|heading","textTransform":"none","fontStyle":"normal"}},"textColor":"contrast","anchor":"h-liesl-matthews"} -->
+	<h3 class="wp-block-heading has-text-align-center has-contrast-color has-text-color" id="h-liesl-matthews" style="font-style:normal;font-weight:100;line-height:var(--wp--custom--line-height--heading);text-transform:none">Liesl Matthews</h3>
+	<!-- /wp:heading --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:column -->
+
+	<!-- wp:column -->
+	<div class="wp-block-column"><!-- wp:group {"metadata":{"name":"Team Member Card"},"style":{"spacing":{"blockGap":"var:preset|spacing|0"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group"><!-- wp:group {"metadata":{"name":"Content"},"className":"is-style-team-member-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group is-style-team-member-card"><!-- wp:group {"metadata":{"name":"Media"},"className":"team-member-card__media","style":{"spacing":{"blockGap":"0","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}}} -->
+	<div class="wp-block-group team-member-card__media" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0"><!-- wp:image {"id":56770,"aspectRatio":"1","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+	<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2013/09/Lise-portrait-cropped-e1787664965541.jpg" alt="Lise Kargaard" class="wp-image-56770" style="aspect-ratio:1;object-fit:cover"/></figure>
+	<!-- /wp:image -->
+
+	<!-- wp:group {"metadata":{"name":"Overlay"},"className":"team-member-card__overlay","style":{"spacing":{"padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"},"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+	<div class="wp-block-group team-member-card__overlay" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)"><!-- wp:paragraph {"style":{"typography":{"lineHeight":"var:custom|line-height|body"}},"textColor":"base","fontSize":"300"} -->
+	<p class="has-base-color has-text-color has-300-font-size" style="line-height:var(--wp--custom--line-height--body)"><a href="/team/lise-kargaard/">More about me</a></p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:paragraph -->
+	<p><a href="/team/lise-kargaard/#feedback">Read my reviews</a></p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:paragraph -->
+	<p><a href="mailto:lise@southerndestinations.com">Get in touch</a></p>
+	<!-- /wp:paragraph --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"metadata":{"name":"Caption"},"className":"team-member-card__footer","style":{"spacing":{"blockGap":"var:preset|spacing|5","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"backgroundColor":"base","layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+	<div class="wp-block-group team-member-card__footer has-base-background-color has-background" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)"><!-- wp:heading {"textAlign":"center","level":3,"style":{"typography":{"fontWeight":"100","lineHeight":"var:custom|line-height|heading","textTransform":"none","fontStyle":"normal"}},"textColor":"contrast","anchor":"h-lise-kargaard"} -->
+	<h3 class="wp-block-heading has-text-align-center has-contrast-color has-text-color" id="h-lise-kargaard" style="font-style:normal;font-weight:100;line-height:var(--wp--custom--line-height--heading);text-transform:none">Lise Kargaard</h3>
+	<!-- /wp:heading --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:column --></div>
+	<!-- /wp:columns --></div>
+	<!-- /wp:column -->
+
+	<!-- wp:column -->
+	<div class="wp-block-column"><!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|0","left":"var:preset|spacing|0"}}}} -->
+	<div class="wp-block-columns"><!-- wp:column -->
+	<div class="wp-block-column"><!-- wp:group {"metadata":{"name":"Team Member Card"},"style":{"spacing":{"blockGap":"var:preset|spacing|0"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group"><!-- wp:group {"metadata":{"name":"Content"},"className":"is-style-team-member-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group is-style-team-member-card"><!-- wp:group {"metadata":{"name":"Media"},"className":"team-member-card__media","style":{"spacing":{"blockGap":"0","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}}} -->
+	<div class="wp-block-group team-member-card__media" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0"><!-- wp:image {"id":55373,"aspectRatio":"1","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+	<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2013/09/Camille-profile-1-e1787665028314.jpg" alt="Camille Rowe" class="wp-image-55373" style="aspect-ratio:1;object-fit:cover"/></figure>
+	<!-- /wp:image -->
+
+	<!-- wp:group {"metadata":{"name":"Overlay"},"className":"team-member-card__overlay","style":{"spacing":{"padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"},"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+	<div class="wp-block-group team-member-card__overlay" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)"><!-- wp:paragraph {"style":{"typography":{"lineHeight":"var:custom|line-height|body"}},"textColor":"base","fontSize":"300"} -->
+	<p class="has-base-color has-text-color has-300-font-size" style="line-height:var(--wp--custom--line-height--body)"><a href="/team/camille-rowe/">More about me</a></p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:paragraph -->
+	<p><a href="/team/camille-rowe/#feedback">Read my reviews</a></p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:paragraph -->
+	<p><a href="mailto:camille@southerndestinations.com">Get in touch</a></p>
+	<!-- /wp:paragraph --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"metadata":{"name":"Caption"},"className":"team-member-card__footer","style":{"spacing":{"blockGap":"var:preset|spacing|5","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"backgroundColor":"base","layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+	<div class="wp-block-group team-member-card__footer has-base-background-color has-background" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)"><!-- wp:heading {"textAlign":"center","level":3,"style":{"typography":{"fontWeight":"100","lineHeight":"var:custom|line-height|heading","textTransform":"none","fontStyle":"normal"}},"textColor":"contrast","anchor":"h-camille-rowe"} -->
+	<h3 class="wp-block-heading has-text-align-center has-contrast-color has-text-color" id="h-camille-rowe" style="font-style:normal;font-weight:100;line-height:var(--wp--custom--line-height--heading);text-transform:none">Camille Rowe</h3>
+	<!-- /wp:heading --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:column -->
+
+	<!-- wp:column -->
+	<div class="wp-block-column"><!-- wp:group {"metadata":{"name":"Team Member Card"},"style":{"spacing":{"blockGap":"var:preset|spacing|0"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group"><!-- wp:group {"metadata":{"name":"Content"},"className":"is-style-team-member-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group is-style-team-member-card"><!-- wp:group {"metadata":{"name":"Media"},"className":"team-member-card__media","style":{"spacing":{"blockGap":"0","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}}} -->
+	<div class="wp-block-group team-member-card__media" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0"><!-- wp:image {"id":54554,"aspectRatio":"1","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+	<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2013/09/Ilze-cropped-e1787665064603.jpg" alt="Ilze Fox" class="wp-image-54554" style="aspect-ratio:1;object-fit:cover"/></figure>
+	<!-- /wp:image -->
+
+	<!-- wp:group {"metadata":{"name":"Overlay"},"className":"team-member-card__overlay","style":{"spacing":{"padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"},"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+	<div class="wp-block-group team-member-card__overlay" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)"><!-- wp:paragraph {"style":{"typography":{"lineHeight":"var:custom|line-height|body"}},"textColor":"base","fontSize":"300"} -->
+	<p class="has-base-color has-text-color has-300-font-size" style="line-height:var(--wp--custom--line-height--body)"><a href="/team/ilze-fox/">More about me</a></p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:paragraph -->
+	<p><a href="/team/ilze-fox/#feedback">Read my reviews</a></p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:paragraph -->
+	<p><a href="mailto:ilze@southerndestinations.com">Get in touch</a></p>
+	<!-- /wp:paragraph --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"metadata":{"name":"Caption"},"className":"team-member-card__footer","style":{"spacing":{"blockGap":"var:preset|spacing|5","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"backgroundColor":"base","layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+	<div class="wp-block-group team-member-card__footer has-base-background-color has-background" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)"><!-- wp:heading {"textAlign":"center","level":3,"style":{"typography":{"fontWeight":"100","lineHeight":"var:custom|line-height|heading","textTransform":"none","fontStyle":"normal"}},"textColor":"contrast","anchor":"h-ilze-fox"} -->
+	<h3 class="wp-block-heading has-text-align-center has-contrast-color has-text-color" id="h-ilze-fox" style="font-style:normal;font-weight:100;line-height:var(--wp--custom--line-height--heading);text-transform:none">Ilze Fox</h3>
+	<!-- /wp:heading --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:group --></div>
+	<!-- /wp:column --></div>
+	<!-- /wp:columns --></div>
+	<!-- /wp:column --></div>
+	<!-- /wp:columns --></section>
+	<!-- /wp:group -->
+
+	<!-- wp:pattern {"slug":"sd-theme-2026/homepage-brands"} /-->
+
+	<!-- wp:pattern {"slug":"sd-theme-2026/homepage-sd-difference"} /-->
+
+	<!-- wp:pattern {"slug":"sd-theme-2026/homepage-tales-from-our-trails"} /-->
+
 </main>
 <!-- /wp:group -->
 

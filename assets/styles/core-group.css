@@ -192,33 +192,62 @@
  * `.is-style-slider-frame` class so natural specificity beats the vendor
  * sheets without reaching for !important.
  *
- * Measured on the live site 2026-08-20 (`.slick-arrow`, `.slick-dots button`):
- * arrows #B4A48C, border-radius 50%, 2px solid transparent border;
- * dots #938673, border-radius 50%.
+ * Geometry follows ati-theme-2026 (style.css:23-118) at Zared's direction
+ * 2026-08-26 — arrows lifted clear of the shelf on either side, and a pill dot
+ * rather than a disc. The *colours* stay SD's: measured on the live site
+ * 2026-08-20, arrows #B4A48C and dots #938673, carried as the three custom
+ * properties above. ATI's arrow SVGs are not ported — SD ships no slider arrow
+ * assets, so the vendor glyph is restyled instead of replaced.
  *
- * Slick ships with Tour Operator; Swiper ships with the Carousel Block. Both
- * are covered so a slider styles correctly whichever engine renders it.
+ * ATI also styles `cb/carousel` with `.slick-*` selectors in its theme.json.
+ * That is stale there: Carousel Block 2.1.5 bundles Swiper
+ * (carousel-block/blocks/vendor/swiper/), not Slick, so those rules match
+ * nothing. Both vendors are covered here instead — Slick for Tour Operator's
+ * query-loop slider, Swiper for the Carousel Block.
+ *
+ * !important is unavoidable on the geometry: Slick writes its own positioning
+ * into an inline style block and ships `slick-theme.css` with equal-specificity
+ * rules, which is the case wp-thirdparty-markup-styling calls out. It is kept
+ * to layout only — every colour still resolves through a custom property.
  */
+.is-style-slider-frame {
+	position: relative;
+}
+
+/* Arrows — vertically centred against the shelf, clear of its outer edges. */
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next) {
+	position: absolute !important;
+	top: 50% !important;
+	transform: translateY(-50%) !important;
+	z-index: 2;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	width: 44px;
 	height: 44px;
+	margin: 0 !important;
 	padding: 0;
-	color: var(--sd-slider-nav-color);
-	border: var(--wp--custom--border-width--200) solid transparent;
-	border-radius: var(--wp--preset--border-radius--500);
+	border: 0 !important;
 	background-color: transparent;
+	color: var(--sd-slider-nav-color);
 	font-size: 2rem;
 	line-height: 1;
-	transition: color 0.25s, border-color 0.25s;
+	transition: color 0.25s;
 }
 
-/* Slick and Swiper both draw their glyph in a pseudo-element with their own
+.is-style-slider-frame :is(.slick-prev, .swiper-button-prev) {
+	left: -2rem !important;
+	right: auto !important;
+}
+
+.is-style-slider-frame :is(.slick-next, .swiper-button-next) {
+	right: -2rem !important;
+	left: auto !important;
+}
+
+/* Slick and Swiper both draw their glyph in a pseudo-element with its own
    font-size and absolute positioning. Reset both so the flex centring above
-   actually governs, and the glyph sits on the centre of the 44px target
-   instead of hanging off it. */
+   governs and the glyph sits on the centre of the 44px target. */
 .is-style-slider-frame :is(.slick-prev, .slick-next)::before,
 .is-style-slider-frame :is(.swiper-button-prev, .swiper-button-next)::after {
 	position: static;
@@ -235,41 +264,53 @@
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):hover,
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):focus-visible {
 	color: var(--sd-slider-nav-color-active);
-	border-color: var(--sd-slider-nav-color-active);
 }
 
-/* Slick sizes the <li> itself and leaves it with a text line-height, which
-   pushes the dot row off the arrows' centre line. Normalise the item so the
-   dot is the only thing with height. */
-.is-style-slider-frame .slick-dots {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 10px;
-	margin: 0;
-	padding: 0;
-	list-style: none;
+/* Dots — a static row beneath the shelf, not Slick's absolute overlay. */
+.is-style-slider-frame :is(.slick-dots, .swiper-pagination) {
+	position: static !important;
+	left: auto !important;
+	right: auto !important;
+	transform: none !important;
+	width: max-content !important;
+	max-width: 100% !important;
+	margin: var(--wp--preset--spacing--30) auto 0 !important;
+	padding: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: var(--wp--preset--spacing--20) !important;
+	list-style: none !important;
 }
 
 .is-style-slider-frame .slick-dots li {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	width: auto;
 	height: auto;
-	margin: 0;
+	margin: 0 !important;
+	padding: 0 !important;
+	list-style: none;
+}
+
+.is-style-slider-frame .slick-dots li button::before {
+	content: none !important;
 }
 
 .is-style-slider-frame :is(.slick-dots li button, .swiper-pagination-bullet) {
 	display: block;
-	width: 14px;
-	height: 14px;
-	padding: 0;
-	background-color: var(--sd-slider-dot-color);
-	border: 0;
-	border-radius: var(--wp--preset--border-radius--500);
+	width: 24px !important;
+	height: 8px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 2px !important;
+	background-color: var(--sd-slider-dot-color) !important;
 	font-size: 0;
 	line-height: 0;
 	opacity: 1;
+	cursor: pointer;
 	transition: background-color 0.25s;
 }
 
@@ -277,7 +318,12 @@
    which gives the reader no position cue — this is the one deliberate
    improvement in the slider port, and it is recorded in style.md. */
 .is-style-slider-frame :is(.slick-dots li.slick-active button, .swiper-pagination-bullet-active) {
-	background-color: var(--sd-slider-nav-color-active);
+	background-color: var(--sd-slider-nav-color-active) !important;
+}
+
+.is-style-slider-frame :is(.slick-dots li button, .swiper-pagination-bullet):focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--sd-slider-nav-color-active);
+	outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
