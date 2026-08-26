@@ -1,0 +1,47 @@
+/**
+ * core/paragraph — the archive intro's drop cap.
+ *
+ * Auto-enqueued for `core/paragraph` by `enqueue_custom_block_styles()`'
+ * `core-*` scan; the filename is the wiring. Everything else about the intro
+ * paragraph — the italic, the size, the leading — is structured JSON in
+ * styles/blocks/paragraph/archive-intro.json, where the editor reads it.
+ *
+ * @package sd-theme-2026
+ */
+
+/*
+ * The drop cap, measured on live 2026-08-26 at
+ * `.archive #primary #main .lsx-to-archive-header.row .lsx-to-archive-description:first-letter`
+ * (custom.css:1338): 55px in the heading face, #cc7f16 — brand-500 to the
+ * digit — floated left with a 28px line box, and *upright*, undoing the
+ * paragraph's italic for the one character.
+ *
+ * Two reasons this is not in the block style's `css` field:
+ *
+ *   1. live applies it from 900px up only, and an `@media` block inside a
+ *      `css` field is unwrapped rather than honoured — the cap would render at
+ *      every width, where a 55px letter floated beside a narrow measure leaves
+ *      one or two words per line beside it;
+ *   2. `settings.typography.dropCap` is false theme-wide, so core's own drop
+ *      cap is not available to lean on.
+ *
+ * `::first-letter`, not `:first-letter`: the single-colon form is the CSS 2.1
+ * spelling, kept alive only for back-compatibility, and only the double-colon
+ * form is a pseudo-element in Selectors 4. Live uses the old one.
+ *
+ * `initial-letter` would express the whole of this in two values and is
+ * unusable here: Firefox has never shipped it, so it would silently fall back
+ * to no cap at all in a browser that renders every other part of the page.
+ */
+@media (min-width: 900px) {
+	.is-style-archive-intro::first-letter {
+		float: left;
+		margin-block-start: 0.9rem;
+		margin-inline-end: 0.3rem;
+		color: var(--wp--preset--color--brand-500);
+		font-family: var(--wp--preset--font-family--heading);
+		font-size: 3.4375rem;
+		font-style: normal;
+		line-height: 1.75rem;
+	}
+}
