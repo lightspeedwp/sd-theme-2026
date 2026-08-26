@@ -55,19 +55,16 @@
  * this page touches it.
  */
 
-$sd_tp_business_unit = (string) apply_filters( 'sd_enh_trustpilot_business_unit', '564399480000ff0005856b81' );
-$sd_tp_template_id   = '53aa8912dec7e10d38f59f36';
-$sd_tp_review_url    = 'https://uk.trustpilot.com/review/southerndestinations.com';
 ?>
 <!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - The SD difference"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|40","padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
 	<!-- wp:heading {"textAlign":"center","className":"is-style-section-title","anchor":"h-the-southern-destinations-difference"} -->
-	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-the-southern-destinations-difference"><?php echo esc_html__( 'The Southern Destinations difference', 'sd-theme-2026' ); ?></h2>
+	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-the-southern-destinations-difference"><?php esc_html_e( 'The Southern Destinations difference', 'sd-theme-2026' ); ?></h2>
 	<!-- /wp:heading -->
 
 	<!-- wp:html -->
-	<div class="trustpilot-widget" data-locale="en-GB" data-template-id="<?php echo esc_attr( $sd_tp_template_id ); ?>" data-businessunit-id="<?php echo esc_attr( $sd_tp_business_unit ); ?>" data-style-height="140px" data-style-width="100%" data-theme="light" data-stars="1,2,3,4,5" data-review-languages="en">
-		<a href="<?php echo esc_url( $sd_tp_review_url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html__( 'Read our reviews on Trustpilot', 'sd-theme-2026' ); ?></a>
+	<div class="trustpilot-widget" data-locale="en-GB" data-template-id="53aa8912dec7e10d38f59f36" data-businessunit-id="<?php echo esc_attr( (string) apply_filters( 'sd_enh_trustpilot_business_unit', '564399480000ff0005856b81' ) ); ?>" data-style-height="140px" data-style-width="100%" data-theme="light" data-stars="1,2,3,4,5" data-review-languages="en">
+		<a href="https://uk.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read our reviews on Trustpilot', 'sd-theme-2026' ); ?></a>
 	</div>
 	<!-- /wp:html -->
 </section>

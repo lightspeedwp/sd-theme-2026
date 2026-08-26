@@ -67,7 +67,7 @@
 <!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - Africa's finest"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull is-style-light-page-section">
 	<!-- wp:heading {"textAlign":"center","className":"is-style-section-title","anchor":"h-we-only-work-with-africas-finest"} -->
-	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-we-only-work-with-africas-finest"><?php echo esc_html__( 'We only work with Africa’s finest', 'sd-theme-2026' ); ?></h2>
+	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-we-only-work-with-africas-finest"><?php esc_html_e( 'We only work with Africa’s finest', 'sd-theme-2026' ); ?></h2>
 	<!-- /wp:heading -->
 
 	<!-- wp:terms-query {"termQuery":{"perPage":21,"taxonomy":"accommodation-brand","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider"} -->

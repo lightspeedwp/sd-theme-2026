@@ -9,7 +9,10 @@
  * Block Types: core/post-template
  * Post Types: tour
  * Inserter: true
+ *
+ * @package sd-theme-2026
  */
+
 ?>
 <!-- wp:group {"metadata":{"name":"Tour Card — Compact"},"className":"is-style-listing-card-compact","layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-listing-card-compact">

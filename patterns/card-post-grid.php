@@ -9,7 +9,10 @@
  * Block Types: core/post-template
  * Post Types: post
  * Inserter: true
+ *
+ * @package sd-theme-2026
  */
+
 ?>
 <!-- wp:group {"metadata":{"name":"Post Grid Card"},"className":"is-style-post-grid-card","layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-post-grid-card">

@@ -10,6 +10,8 @@
  * Post Types: wp_template
  * Inserter: false
  * Viewport Width: 1500
+ *
+ * @package sd-theme-2026
  */
 
 ?>

@@ -8,7 +8,10 @@
  * Viewport Width: 400
  * Block Types: core/term-template
  * Inserter: true
+ *
+ * @package sd-theme-2026
  */
+
 ?>
 <!-- wp:group {"metadata":{"name":"Category Tile"},"className":"is-style-category-card","layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-category-card">

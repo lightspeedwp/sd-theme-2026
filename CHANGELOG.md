@@ -6,7 +6,126 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+
+- **All 39 pattern files now follow core's form exactly.** Measured against the 155 pattern
+  files in Twenty Twenty-Four and Twenty Twenty-Five, then brought into line. No design or
+  copy change was intended or made. Verified by re-registering all 39 patterns in WordPress:
+  every one registers with non-empty content and no leftover raw PHP, block delimiters nest
+  and balance in all 39, and the expansions hold their counts — 2 offices ×2 patterns, 3
+  planning steps, 3 value columns, 9 Instagram tiles, 4 panels with 4 scrims and 3 arrows,
+  and 11 `sdRotatingImages` entries that parse as JSON.
+  - **17 `echo esc_html__()` / `echo esc_attr__()` calls → `esc_html_e()` / `esc_attr_e()`.**
+    Core uses the `echo …__()` form zero times.
+  - **41 variables holding literals deleted**, clearing 11 files — copy strings, uploads
+    URLs, inline SVGs, Trustpilot ids, the Instagram tile map, the hero's banner pool. Core's
+    patterns declare no top-level variables. Values are written where they are used.
+  - **All 5 `foreach` loops and the hero's `for` loop expanded** into literal markup: two
+    office blocks (×2 patterns), three planning steps, three value columns, nine Instagram
+    tiles, four homepage panels, and the hero's eleven-image `sdRotatingImages` pool. Core's
+    patterns contain no loops.
+  - **All 4 `phpcs:ignore WordPress.Security.EscapeOutput` suppressions removed** — each one
+    existed only because an SVG or a JSON blob was echoed from a variable. Written literally
+    into the markup, there is nothing to escape. `homepage-dream-trip.php` already showed the
+    correct form.
+  - **Translator context added** where a string is short or its role is not obvious —
+    `esc_html_x()` / `esc_attr_x()` on `US:`, `RSA:`, `T`, `·`, `Excellent`, `TrustScore`,
+    `reviews`, `Start here` and the three team-card hover links. Core uses the `_x` forms
+    heavily; the theme previously used none.
+  - **`@package sd-theme-2026` added to the 23 pattern docblocks that lacked it**, with the
+    blank line WPCS requires. `phpcs --standard=WordPress patterns/` is now silent — it
+    reported 45 errors before.
+  - **Kept, deliberately:** `$sd_team_archive` in `homepage-safari-gurus.php` and
+    `$sd_news_url` in `template-single-post.php`. Both are *guarded* runtime lookups with a
+    fallback, so they need a conditional and cannot be inlined — and `get_permalink( 0 )`
+    would resolve to the current post, so the guard is load-bearing. Unguarded single calls
+    (`get_theme_file_uri()`, `apply_filters()`, `home_url()`) are inlined at the point of use
+    instead, as core inlines `get_template_directory_uri()`.
+  - **Uploads URLs are now written out literally.** The `$sd_uploads` indirection bought
+    nothing — it still held a hardcoded dev host — and the go-live deployment runs a
+    find-and-replace over that host by convention. The one copy that replace will not reach
+    is in `assets/styles/core-group.css`; it is noted in `patterns/footer.php`.
+  - Rule recorded in [AGENTS.md](AGENTS.md), [CONTRIBUTING.md](CONTRIBUTING.md),
+    [PATTERNS.md](PATTERNS.md) and `.claude/agents/theme-architect.md` so it does not
+    regress.
+
 ### Added
+
+- **`patterns/cta-not-sure-where-to-go.php`** — the enquiry band live runs beneath its
+  archives, above the Why Choose band: a script heading over the two office numbers with
+  "Send us an Email" beneath, on the warm-grey ground. LS-2014 item 4.7. Ported from
+  `sd_call_info_section()` (sd-lsx-child/includes/template-tags.php:467), measured off
+  /destinations/ 2026-08-26. Structurally the twin of `homepage-lets-make-it-happen.php`
+  and follows that file's office loop, Phosphor phone and interim `/contact/` action.
+  - **One of four headings on live**, chosen by body class in the old
+    `partials/footer-cta.php`. A block theme selects per template, so that conditional
+    becomes *which pattern each template includes*; this is the variant 4.7 names, and
+    the specials, default and 404 headings are one copy string apart and belong with
+    their own templates.
+  - **Not attached to a template**, deliberately and for the same reason as
+    `why-choose-sd.php`: on live neither band is page content, both are emitted by the
+    child theme beneath the archive, so where they land is open on LS-2033.
+  - ⚠️ **The US number differs from the rest of the theme.** Live hardcodes
+    `+1-844-292-8240` in this one function; everywhere else — including six other places
+    on the same live page — it is `+1 646-906-8113`. Live's string is ported rather than
+    harmonised, because a toll-free number on a high-intent CTA may be deliberate.
+    One line to change if it is not.
+- **[`PATTERNS.md`](PATTERNS.md)** — the pattern library documented for editors. LS-2014
+  item 4.10. What each of the 39 patterns is, where it belongs, which ones fill
+  themselves in from site content, and a symptom table for when one renders empty. Notes
+  the two bands that are defined but deliberately not yet placed, so nobody pastes them
+  into page bodies and gets them twice when LS-2033 lands. Linked from README, AGENTS and
+  CLAUDE.
+- **The homepage** — `templates/front-page.html` reduced to a header, nine pattern
+  references and a footer, with the last two inline sections lifted into files of their
+  own. LS-2014 item 4.9. Measured against live 2026-08-26.
+  - **`patterns/homepage-dream-trip.php`** — the opening invitation: the monogram, the
+    script heading, the italic standfirst and the "Start here" cue with the SD bird.
+    Moved out of the template unchanged; copy wrapped for translation and the uploads
+    host lifted into `$sd_uploads`. No design change.
+  - **`patterns/homepage-safari-gurus.php`** — the consultant row, rebuilt as a Query
+    Loop over the `team` post type. It replaces four hardcoded cards that named Liesl,
+    Lise, Camille and Ilze in the markup, with their attachment ids, `/team/…` links and
+    email addresses written out four times — correct on the day it was authored and
+    stale the first time somebody joins or leaves. Live runs the same row as an LSX Team
+    widget, so the loop is what live does, not a new idea.
+    - **Which four is declared in the plugin**, as the `role` term `safari-guru`, matched
+      off the `sd-safari-gurus-query` class on the `core/post-template`. Not a `taxQuery`
+      here, because a Query Loop stores a taxonomy filter as a **term ID** and local, dev
+      and live do not share them — the same reasoning as the mega menu's tours column.
+      ⚠️ **The term is empty on dev.** Until the four people are tagged the row renders
+      the four most recent team members; ordering (`date`/`asc`) reproduces live's once
+      they are.
+    - **The card is the existing Team Member Card style, used the way live's homepage
+      uses it** — the styled group wraps the media and the hover panel only, and the name
+      sits below it in neutral-700, the palette's nearest to live's `$brown` #60483b.
+      The inline version had put a white `base` block with `contrast` text there, which
+      was neither the archive card nor live. The 70px name strip in
+      `team-member-card.json` is the *archive* treatment and is untouched.
+    - The tagline is not rendered: live stores it in `role` post meta and then hides it
+      on this row (`_cta.scss:453`). It belongs to the team archive, LS-2017.
+    - **Phones get a button through to `/team/`, not the grid**, as live does — split
+      with Block Visibility's screen-size control rather than a CSS media query, per
+      `patterns/header.php`. Live's heading sits inside the desktop container, so the
+      phone view has no section title; that is reproduced.
+- **`styles/blocks/button/link-plain.json`** — a button with no button about it: label
+  only, no fill, border or padding. The homepage team card's hover links are plain text
+  on live, but their URLs are per-post and only `core/button` exposes a bindable `url`,
+  so they have to be buttons; this takes the chrome back off.
+
+### Changed
+
+- **The two Why Choose Southern Destinations patterns are now one.**
+  `patterns/homepage-why-choose-sd.php` is deleted and `patterns/why-choose-sd.php`
+  carries the full band — the darkened photograph, the three value columns, and the
+  Trustpilot score beside the We Are Africa badge. The flat dark version was never a
+  second design, only an unfinished one: its own notes recorded the watermark and the
+  badge as "not here yet" because the assets had not been ported. `Template Types` now
+  covers `front-page` and `page`, and `front-page.html` points at the surviving slug.
+  - Trustpilot is embedded with `require`, not a nested `<!-- wp:pattern /-->`. A nested
+    pattern reference is dropped on front-end render while still resolving under a
+    WP-CLI `do_blocks()` test, so the CLI reports it working. The deleted twin was the
+    only file in the theme that used a reference here.
 
 - **The destinations landing page** — `templates/archive-destination.html` plus
   `patterns/template-archive-destination.php`, the destination post-type archive rebuilt

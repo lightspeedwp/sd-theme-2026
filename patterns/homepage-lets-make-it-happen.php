@@ -51,78 +51,77 @@
  * shortcode with inline colours here.
  */
 
-$sd_steps = array(
-	__( '1. Give us a little detail', 'sd-theme-2026' ),
-	__( '2. Our safari gurus will craft an itinerary just for you within 24 hours', 'sd-theme-2026' ),
-	__( '3. Confirm the details and get ready for the trip of a lifetime!', 'sd-theme-2026' ),
-);
-
-$sd_offices = array(
-	array(
-		'label' => __( 'US:', 'sd-theme-2026' ),
-		'human' => '+1 646-906-8113',
-		'tel'   => 'tel:+16469068113',
-	),
-	array(
-		'label' => __( 'South Africa:', 'sd-theme-2026' ),
-		'human' => '+27 21 671 3090',
-		'tel'   => 'tel:+27216713090',
-	),
-);
-
-/*
- * Phosphor's phone, as used across the theme. A literal constant, echoed
- * unescaped because there is no input to sanitise. `fill="currentColor"` rather
- * than the `#000000` the icon ships with, so `has-primary-600-color` governs.
- */
-$sd_phone_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"></path></svg>';
 ?>
 <!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - Let's make it happen"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull is-style-light-page-section">
 	<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-500"}}}},"textColor":"brand-500","anchor":"h-let-s-make-it-happen"} -->
-	<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-brand-500-color has-text-color has-link-color" id="h-let-s-make-it-happen"><?php echo esc_html__( 'Let’s make it happen!', 'sd-theme-2026' ); ?></h2>
+	<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-brand-500-color has-text-color has-link-color" id="h-let-s-make-it-happen"><?php esc_html_e( 'Let’s make it happen!', 'sd-theme-2026' ); ?></h2>
 	<!-- /wp:heading -->
 
 	<!-- wp:group {"metadata":{"name":"Steps"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group">
-		<?php foreach ( $sd_steps as $sd_step ) : ?>
-			<!-- wp:paragraph {"align":"center","fontSize":"400"} -->
-			<p class="has-text-align-center has-400-font-size"><?php echo esc_html( $sd_step ); ?></p>
-			<!-- /wp:paragraph -->
-		<?php endforeach; ?>
+		<!-- wp:paragraph {"align":"center","fontSize":"400"} -->
+		<p class="has-text-align-center has-400-font-size"><?php esc_html_e( '1. Give us a little detail', 'sd-theme-2026' ); ?></p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:paragraph {"align":"center","fontSize":"400"} -->
+		<p class="has-text-align-center has-400-font-size"><?php esc_html_e( '2. Our safari gurus will craft an itinerary just for you within 24 hours', 'sd-theme-2026' ); ?></p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:paragraph {"align":"center","fontSize":"400"} -->
+		<p class="has-text-align-center has-400-font-size"><?php esc_html_e( '3. Confirm the details and get ready for the trip of a lifetime!', 'sd-theme-2026' ); ?></p>
+		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
 
 	<!-- wp:group {"metadata":{"name":"Offices"},"style":{"spacing":{"blockGap":"var:preset|spacing|60"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
 	<div class="wp-block-group">
-		<?php foreach ( $sd_offices as $sd_office ) : ?>
-			<!-- wp:group {"metadata":{"name":"Office"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+		<!-- wp:group {"metadata":{"name":"Office"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+		<div class="wp-block-group">
+			<!-- wp:paragraph {"align":"center","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}}} -->
+			<p class="has-text-align-center" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php echo esc_html_x( 'US:', 'office phone number label', 'sd-theme-2026' ); ?></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
 			<div class="wp-block-group">
-				<!-- wp:paragraph {"align":"center","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}}} -->
-				<p class="has-text-align-center" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php echo esc_html( $sd_office['label'] ); ?></p>
+				<!-- wp:outermost/icon-block {"iconName":"","iconColor":"primary-600","width":"24px"} -->
+				<div class="wp-block-outermost-icon-block"><div class="icon-container has-icon-color has-primary-600-color" style="width:24px"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"></path></svg></div></div>
+				<!-- /wp:outermost/icon-block -->
+
+				<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|primary-600"}}}},"textColor":"primary-600"} -->
+				<p class="has-primary-600-color has-text-color has-link-color"><a href="tel:+16469068113">+1 646-906-8113</a></p>
 				<!-- /wp:paragraph -->
-
-				<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
-				<div class="wp-block-group">
-					<!-- wp:outermost/icon-block {"iconName":"","iconColor":"primary-600","width":"24px"} -->
-					<div class="wp-block-outermost-icon-block"><div class="icon-container has-icon-color has-primary-600-color" style="width:24px"><?php echo $sd_phone_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Literal SVG constant defined above; no dynamic input. ?></div></div>
-					<!-- /wp:outermost/icon-block -->
-
-					<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|primary-600"}}}},"textColor":"primary-600"} -->
-					<p class="has-primary-600-color has-text-color has-link-color"><a href="<?php echo esc_url( $sd_office['tel'] ); ?>"><?php echo esc_html( $sd_office['human'] ); ?></a></p>
-					<!-- /wp:paragraph -->
-				</div>
-				<!-- /wp:group -->
 			</div>
 			<!-- /wp:group -->
-		<?php endforeach; ?>
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"metadata":{"name":"Office"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+		<div class="wp-block-group">
+			<!-- wp:paragraph {"align":"center","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}}} -->
+			<p class="has-text-align-center" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php echo esc_html_x( 'South Africa:', 'office phone number label', 'sd-theme-2026' ); ?></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+			<div class="wp-block-group">
+				<!-- wp:outermost/icon-block {"iconName":"","iconColor":"primary-600","width":"24px"} -->
+				<div class="wp-block-outermost-icon-block"><div class="icon-container has-icon-color has-primary-600-color" style="width:24px"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"></path></svg></div></div>
+				<!-- /wp:outermost/icon-block -->
+
+				<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|primary-600"}}}},"textColor":"primary-600"} -->
+				<p class="has-primary-600-color has-text-color has-link-color"><a href="tel:+27216713090">+27 21 671 3090</a></p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
 	</div>
 	<!-- /wp:group -->
 
 	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
 	<div class="wp-block-buttons">
 		<!-- wp:button {"className":"is-style-fill"} -->
-		<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php echo esc_html__( 'Send us an email', 'sd-theme-2026' ); ?></a></div>
+		<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php esc_html_e( 'Send us an email', 'sd-theme-2026' ); ?></a></div>
 		<!-- /wp:button -->
 	</div>
 	<!-- /wp:buttons -->

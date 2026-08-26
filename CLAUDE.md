@@ -8,6 +8,7 @@ Key companions:
 
 - **[DESIGN.md](DESIGN.md)** — design sources and the token → `theme.json` pipeline.
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — workflow, git topology, quality bar.
+- **[PATTERNS.md](PATTERNS.md)** — the pattern library, written for editors.
 - **[inc/README.md](inc/README.md)** — what may and may not live in `inc/`.
 
 Four things to internalise before any work:

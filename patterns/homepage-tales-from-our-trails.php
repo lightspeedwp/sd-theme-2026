@@ -57,7 +57,7 @@
 <!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - Tales from our trails"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull is-style-light-page-section">
 	<!-- wp:heading {"textAlign":"center","className":"is-style-section-title","anchor":"h-tales-from-our-trails"} -->
-	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-tales-from-our-trails"><?php echo esc_html__( 'Tales from our trails', 'sd-theme-2026' ); ?></h2>
+	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-tales-from-our-trails"><?php esc_html_e( 'Tales from our trails', 'sd-theme-2026' ); ?></h2>
 	<!-- /wp:heading -->
 
 	<!-- wp:query {"queryId":0,"query":{"perPage":18,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","layout":{"type":"default"}} -->
@@ -68,7 +68,7 @@
 
 		<!-- wp:query-no-results -->
 			<!-- wp:paragraph {"align":"center"} -->
-			<p class="has-text-align-center"><?php echo esc_html__( 'No stories yet — watch this space.', 'sd-theme-2026' ); ?></p>
+			<p class="has-text-align-center"><?php esc_html_e( 'No stories yet — watch this space.', 'sd-theme-2026' ); ?></p>
 			<!-- /wp:paragraph -->
 		<!-- /wp:query-no-results -->
 	</div>
