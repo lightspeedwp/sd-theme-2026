@@ -745,14 +745,39 @@ it should be applied consistently rather than corrected per-component.
 
 ### 12.6 Not ported, and why
 
-- **The blog card.** Its live treatment is a horizontal list row — image left, Optima title,
-  italic meta in orange, an `…../` read-more. That is composition, not a token decision, so
-  it belongs to the blog page-conversion issue. `blog-card.json` and `blog-card-large.json`
-  are untouched and still carry their KWV structure.
+- **The blog card.** ~~Not ported.~~ **Ported 2026-08-22** as `blog-card-wide.json` — the live
+  landing row, body two-thirds on the leading edge with everything centred inside it, image
+  one-third trailing, a rule closing each row. It does **not** replace `blog-card.json` or
+  `blog-card-large.json`: those still carry their KWV structure, and all three now sit side by
+  side on the Card Style Reference page so the choice can be made by looking at it. Live's
+  duplicated featured image — rendered twice, the second hidden with `hidden-xs` — is
+  reproduced as one image only, pending confirmation. **Open: which of the three is the
+  landing row.**
 - **The list-card variant** of the archive card (container `#F6F3F0`, meta strip `#F0EBE5`,
-  read-more `#3E3530` → `#4A4A4A`). Measured and ready, blocked on open decision 5.
+  read-more `#3E3530` → `#4A4A4A`). ~~Measured and ready, blocked on open decision 5.~~
+  **Ported 2026-08-22** as `listing-card-list.json`. Decision 5 resolved the strip onto
+  `neutral-200`; the container stays `base`, matching live's own inline
+  `.lsx-to-archive-container { background-color: #fff }`, so the step between body and strip
+  survives rather than flattening as that note feared. Tours and accommodation share the one
+  style — they share one CSS rule on live and differ only in what the strip holds.
 - **The breadcrumb bar** (`#ECE9E3` ground, italic `#4C5250` links). Breadcrumbs are a Yoast
   filter — plugin behaviour, so the bar lands with `sd-enhancements`, not here.
+
+### 12.6a Two `css`-field traps found porting the cards
+
+Both are silent — the rule appears in the compiled stylesheet and simply does not take effect,
+so neither shows up as an error anywhere. Recorded here because they will recur on every card,
+pattern and section style that carries an image.
+
+| Trap | What happens | Where the rule has to live instead |
+|---|---|---|
+| **`@media` is unwrapped** | The query is stripped and its contents are promoted to unconditional rules. The wide blog card's `hidden-xs` equivalent hid the image at *every* width. | `assets/styles/core-*.css` |
+| **Image sizing loses the cascade** | A `css` field compiles to `:root :where(…)` at (0,1,0). Core's `.wp-block-image img { height:auto; width:auto }` and `.wp-block-image>figure>a { display:inline-block }` are both (0,1,1), so every `width`/`height` on a card image is discarded. | `assets/styles/core-*.css` at (0,2,1) |
+
+The second is the more dangerous of the two, because the shrink-to-fit anchor makes a card grid
+look correct as long as every photograph is *wider* than its card — `max-width: 100%` clamps
+them all to the same width — and break the moment one square image appears. It was caught by a
+350×350 lodge photograph sitting between two 360×168 ones in the compact row.
 
 ### 12.7 Verification
 

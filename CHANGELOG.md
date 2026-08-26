@@ -8,6 +8,80 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **Nine bound card patterns** — `patterns/card-{media-overlay,tour-list,accommodation-list,tour-compact,accommodation-compact,destination-compact,post-grid,post-list,category}.php`.
+  The card *styles* landed earlier against static markup; these are the same shapes wired to
+  real data, so each one drops into a Query Loop (or, for the category tile, a Terms Query) and
+  renders the post in front of it. Deliberately **not** ported: the "Media Overlay Card, with a
+  call to action" variant, and the Specials card, which comes with Specials.
+  - **Where each field comes from.** Titles, images, excerpts, dates and read-mores are core
+    blocks. Taxonomy rows are `core/post-terms`, which hides itself when the post carries no
+    terms. Connections and custom fields are bound paragraphs: `lsx/post-connection` for
+    `destination_to_tour` / `destination_to_accommodation`, `core/post-meta` for the tour
+    tagline, and `sd/post-meta` with the `price-band` format for `price_rating` — that format
+    exists precisely because the stored value offers a literal `none`, which every other source
+    would dutifully print.
+  - **Rows hide themselves.** Each bound paragraph carries Tour Operator 2.2's
+    `lsx-{key}-wrapper` class, so `Query_Loop::maybe_hide_varitaion()` removes the whole row when
+    the field is empty — including `none` on a price band and connections whose posts have been
+    deleted. Without it a missing field renders a bare bold label. No theme PHP is involved; the
+    class is the wiring.
+  - **Bold labels** are Tour Operator's `prefix` / `prefixBold` paragraph attributes, matching
+    `parts/fast-facts-*.html` upstream, rather than markup the binding would have to carry.
+
+### Fixed
+
+- **The blog list card had its composition inverted** — `styles/sections/cards/blog-card-wide.json`,
+  re-measured 2026-08-26 and renamed *Blog Card — List*. Both errors came from reading the live
+  DOM order literally. lsx-blog-customizer sets `flex-direction: row-reverse` on `.entry-layout`
+  above 768px, so the image markup that comes *last* renders *first* — the image leads and the
+  body trails, not the other way round. And every `text-align: center` on the title, byline,
+  categories and excerpt sits inside `@media (max-width: 767px)` in the child theme, so live is
+  **left-aligned on desktop** and centred only on a phone. The first port carried body-leading
+  and centred-everywhere, which is neither state. The byline is now one line — date, author,
+  categories — as live renders it, and the tag row with its rule is ported for the first time.
+- **The listing card's mobile stack never worked**, and the same defect would have hit the blog
+  card. A section style's `css` field compiles to `:root :where(…)`, which is **(0,1,0)** —
+  `:root` contributes, `:where()` does not — so a single-class rule in `core-group.css` *ties*
+  with it and loses on source order, global styles being printed after the block sheet. The
+  card-level `flex-wrap: wrap` was therefore discarded while the descendant rules (already
+  (0,2,0)) applied, so the media went full-width inside a row that stayed `nowrap` and squeezed
+  the body into a ~90px sliver. The two card-level selectors are doubled to (0,2,0), and the
+  stretch `height: 100%` is released to `auto` once the card wraps.
+- **`core/read-more` was centred in the listing row.** The block library ships it as
+  `display: block; width: fit-content`, and a constrained-layout parent's auto inline margins
+  then centre it. Pinned back to the leading edge on the list card only; the compact card wants
+  the centred default.
+- **`.wp-block-post-terms__prefix` was bold in both bylines.** `core-post-terms.css` bolds every
+  prefix at (0,1,0) and the css field ties with it; live's bylines carry no bold at all.
+
+### Changed
+
+- **`styles/sections/cards/category-card.json`** — the tile now carries a `neutral-700` ground
+  and a 100px min-height so it stands up when the term has no image, which is **every category
+  today**: `sd_thumbnail` is registered for `accommodation-brand` only, so `sd/term-meta` returns
+  null for `category` and `core/image` renders nothing at all, collapsing the absolutely-positioned
+  label to zero height. Live has the same absence and papers over it with a grey placeholder
+  JPEG; this is that placeholder without the asset. The label's link is also stretched over the
+  whole scrim, so the tile is the target as live's is. The image *binding* is verified working end
+  to end — registering `sd_thumbnail` for `category` in `sd-enhancements` is all that is missing.
+
+### Added
+
+- **Six card styles** — `styles/sections/cards/{listing-card-list,listing-card-compact,post-grid-card,blog-card-wide,category-card,special-card}.json`, completing the card set. The list
+  card is the variant §12.6 recorded as "measured and ready, blocked on open decision 5": that
+  decision resolved the `#F0EBE5` meta strip onto `neutral-200`, and the container stays `base`,
+  so the step between body and strip survives. Tours and accommodation share one style — they
+  share one CSS rule on live and differ only in what the meta strip holds. `blog-card-wide` is
+  the live blog landing row, ported for the first time; it does not replace `blog-card-large`,
+  it competes with it, and the decision is Zared's.
+- **Card Style Reference page** (local, page 65899) — all ten card shapes on one page with
+  static fields, the companion to the Block & Section Style Reference. Every field is hardcoded:
+  the point is to settle proportion, colour and interaction before any binding is wired. Closes
+  with six open decisions, the first being which of the three blog cards is the landing row.
+- **Featured images on the three fixture posts** (local only) — they carried the
+  `lsx-placeholder` meta, so any query loop rendered empty frames. Needed for the `blog-card-large`
+  comparison and useful for every loop review after it.
+
 - **Trustpilot score badge** — `patterns/trustpilot-score.php`, the band word, the Trustpilot
   mark, the star tile and the `TrustScore 4.8 | 349 reviews` line, reading the live score
   through the plugin's `sd/trustpilot` binding source. Replaces `[tp_show_score]`, which live
@@ -48,6 +122,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `styles/sections/site-footer.json`. Core treats a labelled social link as an icon with a
   caption; live's is an icon beside body copy, so the label's size, colour and margins all
   have to be prised off the icon's font-size.
+
+### Fixed
+
+- **Card images never took their intended size.** Core ships `.wp-block-image>figure>a
+  { display: inline-block }` at (0,1,1) and `.wp-block-image img { height: auto }` at (0,1,1),
+  while a block-style `css` field compiles to `:root :where(…)` at (0,1,0). Every `width`,
+  `height` and the block-level anchor set on a card image was therefore discarded — silently,
+  since the rules still appear in the compiled sheet. The shrink-to-fit anchor was the worse
+  half: a row of cards looked correct as long as every photograph was wider than its card, and
+  broke the moment a square one appeared. Card image sizing now lives in
+  `assets/styles/core-group.css` at (0,2,1); structure, spacing and colour stay in the JSON.
+- **`@media` inside a `css` field is unwrapped, not honoured.** The wide blog card's
+  small-breakpoint rule compiled without its query, so the trailing image was hidden at every
+  width instead of below 781px. Moved to `core-group.css`. No `@media` belongs in a `css` field.
+- **Linked card images sat on a text baseline.** The inline `<a>` generated a line box, leaving
+  a strip of card ground below every photograph. Fixed with `line-height: 0` on the figure and a
+  block-level anchor, applied across all eight cards including the two that shipped earlier.
 
 ### Changed
 

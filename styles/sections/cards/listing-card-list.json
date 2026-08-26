@@ -1,0 +1,55 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Listing Card — List",
+	"slug": "listing-card-list",
+	"blockTypes": [
+		"core/group"
+	],
+	"description": "The horizontal result row every FacetWP search page renders — /search/tours/* and /search/accommodation/* both use it, with identical CSS and only the meta strip's contents differing. A square-cropped image occupies the leading 25%, the body column carries the title, an optional tagline and the excerpt, and a tinted meta strip closes the trailing 33% with the taxonomy read-outs. Measured from `.lsx-to-archive-template-list` on 2026-08-20: thumb 25%, wrapper padding 2.4rem, min-height 200px, meta strip 33% on #F0EBE5 at 2.4rem. This is the variant style.md 12.6 recorded as \"measured and ready, blocked on open decision 5\" — decision 5 resolved the #F0EBE5 strip onto neutral-200, which is what it carries here. The container stays base, matching the live inline rule `.lsx-to-archive-item > .lsx-to-archive-container { background-color: #fff }`, so the step between body and strip survives. Read-more hover and the trailing chevron live in assets/styles/core-group.css — the css field strips :hover and drops any rule containing content:\"\". Taxonomy rows are core/post-terms, which renders a <div> with a `.wp-block-post-terms__prefix` span rather than the <p><strong> the meta rows use, so the strip's type rules are repeated for it — the block hides itself when the post carries no terms, which is worth more than markup symmetry. The read-more is core/read-more, which the block library ships as `display:block; width:fit-content` — inside a constrained-layout body that makes the auto inline margins centre it, so it is pinned back to the leading edge here. The compact card wants the centred default and does not carry this.",
+	"styles": {
+		"color": {
+			"background": "var:preset|color|base"
+		},
+		"spacing": {
+			"blockGap": "0",
+			"padding": {
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|400",
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"lineHeight": "var:custom|line-height|heading",
+					"textTransform": "none"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				},
+				"typography": {
+					"textDecoration": "none"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand-600"
+					},
+					"typography": {
+						"textDecoration": "none"
+					}
+				}
+			}
+		},
+		"css": "& { display: flex; flex-flow: row nowrap; align-items: stretch; overflow: hidden; } & > * { margin-block: 0 !important; } & .listing-card__media { flex: 0 0 25%; align-self: stretch; margin: 0 !important; } & .listing-card__wrapper { display: flex; flex-flow: row nowrap; align-items: flex-start; flex-grow: 1; min-height: 200px; margin: 0 !important; } & .listing-card__body { flex-grow: 1; padding: var(--wp--preset--spacing--40); } & .listing-card__meta { flex: 0 0 33%; align-self: stretch; padding: var(--wp--preset--spacing--40); background-color: var(--wp--preset--color--neutral-200); } & .listing-card__tagline { color: var(--wp--preset--color--brand-500); font-family: var(--wp--preset--font-family--heading); text-transform: uppercase; letter-spacing: var(--wp--custom--letter-spacing--heading); } & .listing-card__meta p { font-size: var(--wp--preset--font-size--200); line-height: var(--wp--custom--line-height--body); } & .listing-card__meta strong { font-family: var(--wp--preset--font-family--heading); font-weight: var(--wp--custom--font-weight--semi-bold); } & .listing-card__media figure { margin: 0 !important; line-height: 0; } & .listing-card__meta .wp-block-post-terms { font-size: var(--wp--preset--font-size--200); line-height: var(--wp--custom--line-height--body); } & .listing-card__meta .wp-block-post-terms__prefix { font-family: var(--wp--preset--font-family--heading); font-weight: var(--wp--custom--font-weight--semi-bold); } & .listing-card__more { margin-inline-start: 0 !important; margin-inline-end: auto !important; }"
+	}
+}

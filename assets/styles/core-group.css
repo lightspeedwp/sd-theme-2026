@@ -452,3 +452,361 @@
 		background-position: 50% 0% !important;
 	}
 }
+
+/**
+ * Category Card — the scrim deepens, and a rule fades up inside the border.
+ *
+ * Structure (100px crop, absolute label, centred type) lives in the section
+ * style styles/sections/cards/category-card.json. Three pieces cannot:
+ *
+ *   1. the resting scrim and the :hover deepen — the block-style compiler
+ *      strips :hover entirely;
+ *   2. the inset border fade, for the same reason;
+ *   3. the prefers-reduced-motion fallback.
+ *
+ * Measured on the live site 2026-08-20: rgba(55, 71, 80, 0.33) resting going
+ * to 0.75 over 400ms, and a 5px transparent border going to
+ * rgba(255, 255, 255, 0.1) over 300ms on a 100ms delay.
+ *
+ * Note the direction, which is the opposite of the Media Overlay Card above.
+ * That card lifts its scrim so the photograph comes forward; this one deepens,
+ * because at 100px tall the label has nowhere to go and lifting the scrim
+ * would lose it against a bright frame.
+ *
+ * :focus-within matches the hover so the tile is reachable by keyboard.
+ */
+.is-style-category-card .category-card__label {
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 33%, transparent);
+	border: 5px solid transparent;
+	transition: background-color 400ms ease-in-out, border-color 300ms ease-in-out 100ms;
+}
+
+.is-style-category-card:hover .category-card__label,
+.is-style-category-card:focus-within .category-card__label {
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 75%, transparent);
+	border-color: color-mix(in srgb, var(--wp--preset--color--base) 10%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.is-style-category-card .category-card__label {
+		transition-duration: 1ms;
+		transition-delay: 0s;
+	}
+}
+
+/**
+ * Special Card — the scrim.
+ *
+ * Live sets the offer title in gold directly over an undimmed photograph. On
+ * the lighter frames that measured 1.9:1 and could not be read at all, so this
+ * theme carries a scrim. It lives here rather than in the section style
+ * because the card's ground is the image itself: a `background-color` in the
+ * JSON would sit *behind* the photograph, not over it.
+ *
+ * Held flat rather than animated — the card is a full-width panel, not a grid
+ * tile, so there is no row of siblings for a hover to differentiate it from.
+ */
+.is-style-special-card .special-card__body {
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 55%, transparent);
+}
+
+/**
+ * Editor: restore the overlay stack.
+ *
+ * Same Gutenberg `position: relative` reset described above the Media Overlay
+ * Card rules — a block-style `css` field compiles to `:root :where(…)` at
+ * (0,1,0) and loses to content.css at (0,2,0), so these absolute children drop
+ * below their image in the editor and the card reads as a stack. These
+ * selectors are (0,3,0) and beat the reset without !important.
+ */
+.editor-styles-wrapper .is-style-category-card .category-card__label,
+.editor-styles-wrapper .is-style-special-card .special-card__body {
+	position: absolute;
+	inset: 0;
+}
+
+.editor-styles-wrapper .is-style-special-card .special-card__badge {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-end: 0;
+	inset-block-end: auto;
+	inset-inline-start: auto;
+}
+
+/**
+ * Listing Card — the read-more chevron.
+ *
+ * The live archive appends a FontAwesome \f105 to every "View more"; this is
+ * the same plain character the Media Overlay Card uses, so the theme carries
+ * no icon-font dependency. It cannot live in the section style because a
+ * css-field rule containing `content: ""` is dropped whole.
+ *
+ * Applies to the read-more of all three listing shapes. The compact card hides
+ * its read-more inside a carousel on live — that is a placement decision, made
+ * where the card is placed, not here.
+ */
+.is-style-listing-card-list .listing-card__more::after,
+.is-style-listing-card-compact .listing-card-compact__more::after,
+.is-style-blog-card-wide .blog-card-wide__more::after {
+	content: "\203A";
+	display: inline-block;
+	margin-inline-start: 0.3em;
+	font-size: 1.15em;
+	font-weight: var(--wp--custom--font-weight--extra-light);
+	line-height: 1;
+	transform: translateY(0.06em);
+}
+
+/**
+ * Listing Card (list) — stack below the small breakpoint.
+ *
+ * The three columns are a desktop composition. Below 781px the image goes
+ * full-width above the body and the meta strip closes the card, which is what
+ * live does at the same breakpoint. Kept here rather than in the section style
+ * only for legibility — the JSON `css` field already carries one media query
+ * for the wide blog card, and splitting responsive rules across both files
+ * would be worse than either choice alone.
+ */
+/*
+ * The doubled class is load-bearing, not a typo.
+ *
+ * A section style's `css` field compiles to `:root :where(.is-style-x-N …)`,
+ * which is (0,1,0) — `:root` contributes, `:where()` does not. A single
+ * `.is-style-listing-card-list` here is *also* (0,1,0), so the two tie and
+ * source order decides; global styles are printed after this sheet, so the
+ * base `flex-flow: row nowrap` won and the card never stacked. Repeating the
+ * class makes it (0,2,0) and settles it without `!important`. The descendant
+ * selectors below are already (0,2,0) and need no help — which is why the
+ * media went full-width while the row it sits in stayed `nowrap`, squeezing
+ * the body into a sliver beside it.
+ */
+@media (max-width: 781px) {
+	.is-style-listing-card-list.is-style-listing-card-list {
+		flex-wrap: wrap;
+	}
+
+	.is-style-listing-card-list .listing-card__media {
+		flex-basis: 100%;
+	}
+
+	/* The stretch height below is for the desktop row; once the card wraps,
+	   `height: 100%` resolves against the whole card and overflows its line. */
+	.is-style-listing-card-list .listing-card__media,
+	.is-style-listing-card-list .listing-card__media figure,
+	.is-style-listing-card-list .listing-card__media img {
+		height: auto;
+	}
+
+	.is-style-listing-card-list .listing-card__media img {
+		min-height: 220px;
+	}
+
+	.is-style-listing-card-list .listing-card__wrapper.listing-card__wrapper {
+		flex-wrap: wrap;
+		min-height: 0;
+	}
+
+	.is-style-listing-card-list .listing-card__body,
+	.is-style-listing-card-list .listing-card__meta {
+		flex-basis: 100%;
+	}
+}
+
+/**
+ * Blog Card (list) — stack and centre below the small breakpoint.
+ *
+ * Live swaps two copies of the featured image at 768px rather than dropping
+ * one: `.entry-layout > .entry-layout-content .entry-image` is `display: none`
+ * above the breakpoint and the trailing `.entry-image` carries `hidden-xs`
+ * below it, so a phone gets the image full-width above the text and a desktop
+ * gets it as the leading column. One bound image serves both states here, so
+ * the swap is a reorder — `flex-basis: 100%` on the media and the row wrapping
+ * puts it on its own line, which is the same result without the duplicate.
+ *
+ * The centring is live's too, and it is the correction that made this card
+ * wrong the first time: every `text-align: center` on the title, byline,
+ * categories and excerpt sits inside `@media (max-width: 767px)` in
+ * sd-lsx-child/custom.css. Desktop is left-aligned. The section style now
+ * carries `text-align: left` and this query flips it, rather than the reverse.
+ *
+ * It lives here and not in the section style because **the `css` field
+ * silently unwraps `@media`.** A rule written as
+ *
+ *     @media (max-width: 781px) { & .blog-card-wide__media { display: none } }
+ *
+ * compiles to a bare `:root :where(… .blog-card-wide__media){display:none}` —
+ * the query is dropped and its contents are promoted to unconditional rules,
+ * so the image was hidden at *every* width rather than below 781px. That is a
+ * silent failure, not an error: the rule still appears in the compiled sheet,
+ * just without its condition. No `@media` belongs in a `css` field.
+ *
+ * 781px rather than live's 768px: it is WordPress's own small breakpoint and
+ * every other responsive rule in this file already uses it.
+ */
+@media (max-width: 781px) {
+	/* Doubled class for the same specificity tie described above the listing
+	   card — a single class loses to the section style's `flex-flow: row
+	   nowrap` on source order. */
+	.is-style-blog-card-wide.is-style-blog-card-wide {
+		flex-wrap: wrap;
+	}
+
+	.is-style-blog-card-wide .blog-card-wide__media {
+		flex-basis: 100%;
+	}
+
+	.is-style-blog-card-wide .blog-card-wide__media,
+	.is-style-blog-card-wide .blog-card-wide__media figure,
+	.is-style-blog-card-wide .blog-card-wide__media img {
+		height: auto;
+	}
+
+	.is-style-blog-card-wide .blog-card-wide__body {
+		text-align: center;
+	}
+
+	.is-style-blog-card-wide .blog-card-wide__meta {
+		justify-content: center;
+	}
+}
+
+/**
+ * Blog Card (list) — the `#` on each tag.
+ *
+ * Live sets it with `.post-tags > a:before { content: "#" }`
+ * (lsx-blog-customizer.css), which is why the tag row reads
+ * "#Tanzania Visa Application" and carries no comma between tags — the glyph
+ * is the delimiter, so the pattern sets `core/post-terms`' separator to a
+ * plain space.
+ *
+ * It cannot live in the section style: a `css`-field rule containing
+ * `content: ""` is dropped whole, the same limit that forced the read-more
+ * chevron down here.
+ */
+.is-style-blog-card-wide .blog-card-wide__tags a::before {
+	content: "#";
+	display: inline-block;
+}
+
+/**
+ * Blog Card (list) — the comma after the author.
+ *
+ * Live closes the author span with one — "by Vanessa Ratcliffe, Posted in:
+ * News" — and without it the byline runs two clauses together on a single
+ * space. core/post-author has no suffix attribute, and a `css`-field rule
+ * containing `content: ""` is dropped whole, so it lands here with the tag
+ * glyph above. Scoped to the byline so the block is unchanged everywhere else.
+ */
+.is-style-blog-card-wide .blog-card-wide__meta .wp-block-post-author__name::after {
+	content: ",";
+}
+
+/**
+ * Card images — the sizing that has to out-specify core.
+ *
+ * Every card crops its photograph to a fixed height or stretches it to the
+ * card. None of that can live in the section-style `css` field, because the
+ * block-library stylesheet ships
+ *
+ *     .wp-block-image img { display:block; height:auto; max-width:100%!important; width:auto }
+ *
+ * at specificity (0,2,0), and a `css`-field rule compiles to `:root :where(…)`
+ * at (0,1,0). So `height` and `width` set in the JSON are silently discarded —
+ * the rule appears in the compiled sheet and simply loses the cascade. The
+ * symptom is subtle: images fall back to their intrinsic aspect ratio, so a
+ * row of cards holding a 360×168 and a 350×350 photograph renders at two
+ * different heights and the grid stops lining up.
+ *
+ * These selectors are (0,3,0) and win without !important. Structure, spacing
+ * and colour stay in the JSON, where they belong and where the editor reads
+ * them; only the sizing that core actively fights is duplicated here.
+ *
+ * Heights are the live crops, measured 2026-08-20:
+ *   grid tile   368px min   accommodation/tour/destination/brand archives
+ *   list row    200px min, stretched to the row
+ *   compact     204px       the carousel card on every single
+ *   post grid   204px       the homepage "Tales from our trails" tile
+ *   wide blog   250px min, stretched to the row
+ *   category    100px       the "Browse By Category" strip
+ *   special     320px min   the full-width offer panel
+ */
+/*
+ * The linked-image anchor has to be a block, or nothing below it can be sized.
+ *
+ * Core ships `.wp-block-image>a, .wp-block-image>figure>a { display: inline-block }`
+ * at (0,1,1). `inline-block` is shrink-to-fit, so the anchor wraps tightly
+ * around the photograph — and a `width: 100%` on the image inside it then
+ * resolves against a shrink-to-fit parent, which is circular, so the browser
+ * falls back to the intrinsic ratio and the image never fills the card.
+ *
+ * The symptom is easy to misread: a row of cards looks fine as long as every
+ * photograph is wider than the card (max-width clamps them all to the same
+ * width), and breaks the moment one square image appears — that one renders at
+ * its own height instead. The compact row caught it with a 350x350 lodge shot
+ * beside two 360x168 ones.
+ *
+ * A `css`-field rule cannot fix this: it compiles to (0,1,0) and loses to
+ * core's (0,1,1). These are (0,2,1).
+ */
+.is-style-media-overlay-card .media-overlay-card__media a,
+.is-style-team-member-card .team-member-card__media a,
+.is-style-listing-card-list .listing-card__media a,
+.is-style-listing-card-compact .listing-card-compact__media a,
+.is-style-post-grid-card .post-grid-card__media a,
+.is-style-blog-card-wide .blog-card-wide__media a,
+.is-style-category-card .category-card__media a,
+.is-style-special-card .special-card__media a {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.is-style-media-overlay-card .media-overlay-card__media img,
+.is-style-team-member-card .team-member-card__media img,
+.is-style-listing-card-list .listing-card__media img,
+.is-style-listing-card-compact .listing-card-compact__media img,
+.is-style-post-grid-card .post-grid-card__media img,
+.is-style-blog-card-wide .blog-card-wide__media img,
+.is-style-category-card .category-card__media img,
+.is-style-special-card .special-card__media img {
+	display: block;
+	width: 100%;
+	object-fit: cover;
+}
+
+.is-style-media-overlay-card .media-overlay-card__media img {
+	min-height: 368px;
+}
+
+.is-style-listing-card-list .listing-card__media img {
+	height: 100%;
+	min-height: 200px;
+}
+
+.is-style-listing-card-compact .listing-card-compact__media img,
+.is-style-post-grid-card .post-grid-card__media img {
+	height: 204px;
+}
+
+.is-style-blog-card-wide .blog-card-wide__media img {
+	height: 100%;
+	min-height: 250px;
+}
+
+.is-style-category-card .category-card__media img {
+	height: 100px;
+}
+
+.is-style-special-card .special-card__media img {
+	min-height: 320px;
+}
+
+/* The media wrapper and its figure have to be full-height too, or the
+   `height: 100%` above resolves against an auto-height parent and collapses
+   back to the intrinsic ratio. Only the two stretch cards need this. */
+.is-style-listing-card-list .listing-card__media,
+.is-style-listing-card-list .listing-card__media figure,
+.is-style-blog-card-wide .blog-card-wide__media,
+.is-style-blog-card-wide .blog-card-wide__media figure {
+	height: 100%;
+}

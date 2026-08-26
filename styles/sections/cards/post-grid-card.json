@@ -1,0 +1,55 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Post Grid Card",
+	"slug": "post-grid-card",
+	"blockTypes": [
+		"core/group"
+	],
+	"description": "The post card the homepage \"Tales from our trails\" carousel renders, and the same card the LSX post-grid block uses wherever it appears. Landscape image above a tinted panel carrying a centred title, an italic byline in brand orange, and the excerpt. Measured from `.home #primary .home-post-carousel.lsx-block-post-carousel` on 2026-08-20: panel #F7F5F2 (neutral-200 exactly), title #60483B at 23px with sentence case, byline 13px italic #CC7F16, image 600x400 rendered at 204px tall. The byline is the only place on the site where brand orange carries running text; it is set on the tinted panel, where brand-500 measures 3.06:1 and cannot hold 13px copy, so it is carried at brand-600 here — the same AA correction style.md 12.5 applied to body copy and the pagination. The byline is a flex row of core/post-date and core/post-terms with a \". Posted in: \" prefix and no block gap, which reproduces live's single line. Its prefix is held at regular weight with !important: assets/styles/core-post-terms.css bolds every `.wp-block-post-terms__prefix` at (0,1,0), a css-field rule compiles to `:root :where(…)` at the same specificity, and live's byline carries no bold at all.",
+	"styles": {
+		"color": {
+			"background": "var:preset|color|neutral-200"
+		},
+		"spacing": {
+			"blockGap": "0",
+			"padding": {
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|400",
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"lineHeight": "var:custom|line-height|heading",
+					"textTransform": "none"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				},
+				"typography": {
+					"textDecoration": "none"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand-600"
+					},
+					"typography": {
+						"textDecoration": "none"
+					}
+				}
+			}
+		},
+		"css": "& { overflow: hidden; height: 100%; } & > * { margin-block: 0 !important; } & .post-grid-card__media { margin: 0 !important; } & .post-grid-card__media figure { margin: 0 !important; line-height: 0; } & .post-grid-card__body { margin: 0 !important; text-align: center; padding: var(--wp--preset--spacing--40) var(--wp--preset--spacing--30); } & .post-grid-card__byline { color: var(--wp--preset--color--brand-600); font-size: var(--wp--preset--font-size--100); font-style: italic; line-height: var(--wp--custom--line-height--body); } & .post-grid-card__body p { font-size: var(--wp--preset--font-size--200); line-height: var(--wp--custom--line-height--body); } & .post-grid-card__byline a { color: var(--wp--preset--color--brand-600); } & .post-grid-card__byline .wp-block-post-terms, & .post-grid-card__byline .wp-block-post-date { font-size: var(--wp--preset--font-size--100); } & .post-grid-card__byline .wp-block-post-terms__prefix { font-weight: var(--wp--custom--font-weight--regular) !important; }"
+	}
+}

@@ -1,0 +1,59 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Blog Card — List",
+	"slug": "blog-card-wide",
+	"blockTypes": [
+		"core/group"
+	],
+	"description": "The post row the live blog landing and every category archive render. A one-third featured image on the LEADING edge and a two-thirds body column trailing it, LEFT-aligned: the title, a single italic byline reading date, author and categories, the excerpt, and a rule above the tags. A rule closes each row.\n\nRe-measured 2026-08-26 from `.blog #primary .post-wrapper .entry-layout`, because the first port had the composition inverted. Two things were read off the DOM order and are wrong there: (1) lsx-blog-customizer sets `flex-direction: row-reverse` on `.entry-layout` at >=768px (lsx-blog-customizer.css, `.lsx-body-list-layout article.post:not(.no-thumb) .entry-layout`), so the image markup that comes LAST renders FIRST — image leading, body trailing; and (2) every `text-align: center` on the title, byline, categories and excerpt sits inside `@media (max-width: 767px)` in sd-lsx-child/custom.css, so live is left-aligned on desktop and centred only on a phone. The first port carried body-leading and centred-everywhere, which is neither state.\n\nMeasurements that stand: image flex-basis 31.5% with min-height 250px (>=768px), title #60483b, byline and categories italic. Live renders the featured image twice — once inside the header, once as the trailing column — and swaps them at the breakpoint: `.entry-layout > entry-layout-content .entry-image` is `display:none` above 768px and the trailing one carries `hidden-xs` below it. One bound image serves both states here, so the swap is a reorder rather than a duplicate. The small-breakpoint stack and the tag rule's `#` glyph live in assets/styles/core-group.css: the css field silently unwraps @media, and drops any rule containing content:\"\". The byline's \"Posted in:\" is held at regular weight with !important: assets/styles/core-post-terms.css bolds every `.wp-block-post-terms__prefix` at (0,1,0) and a css-field rule compiles to `:root :where(…)` at the same specificity, so load order would otherwise decide it. Live's byline is uniformly italic and unbolded; the tag row's \"Tags:\" keeps the bold, which live also has.",
+	"styles": {
+		"spacing": {
+			"blockGap": "0",
+			"padding": {
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0"
+			}
+		},
+		"border": {
+			"bottom": {
+				"color": "var:preset|color|neutral-300",
+				"style": "solid",
+				"width": "1px"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|500",
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"lineHeight": "var:custom|line-height|heading",
+					"textTransform": "none"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|neutral-700"
+				},
+				"typography": {
+					"textDecoration": "none"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand-600"
+					},
+					"typography": {
+						"textDecoration": "none"
+					}
+				}
+			}
+		},
+		"css": "& { display: flex; flex-flow: row nowrap; align-items: flex-start; gap: var(--wp--preset--spacing--40); padding-bottom: var(--wp--preset--spacing--50); } & > * { margin-block: 0 !important; } & .blog-card-wide__media { flex: 0 0 31.5%; align-self: stretch; margin: 0 !important; } & .blog-card-wide__media figure { margin: 0 !important; line-height: 0; } & .blog-card-wide__body { flex: 1 1 67%; text-align: left; } & .blog-card-wide__body p { line-height: var(--wp--custom--line-height--body); } & .blog-card-wide__meta { color: var(--wp--preset--color--brand-600); font-size: var(--wp--preset--font-size--200); font-style: italic; line-height: var(--wp--custom--line-height--body); } & .blog-card-wide__meta a { color: var(--wp--preset--color--brand-600); } & .blog-card-wide__meta .wp-block-post-terms__prefix { font-style: italic; font-weight: var(--wp--custom--font-weight--regular) !important; } & .blog-card-wide__tags { margin-top: var(--wp--preset--spacing--30) !important; padding-top: var(--wp--preset--spacing--20); border-top: var(--wp--custom--border-width--200) solid var(--wp--preset--color--neutral-300); color: var(--wp--preset--color--brand-600); font-size: var(--wp--preset--font-size--200); font-style: italic; } & .blog-card-wide__tags a { color: var(--wp--preset--color--brand-600); } & .blog-card-wide__meta .wp-block-post-author__content { display: flex; flex-flow: row nowrap; gap: 0.3em; } & .blog-card-wide__meta .wp-block-post-author p { margin: 0; } & .blog-card-wide__meta .wp-block-post-author__byline { font-size: inherit; }"
+	}
+}

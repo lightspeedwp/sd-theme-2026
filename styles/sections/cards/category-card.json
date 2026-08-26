@@ -1,0 +1,57 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Category Card",
+	"slug": "category-card",
+	"blockTypes": [
+		"core/group"
+	],
+	"description": "The short \"Browse By Category\" tile that runs as a slider above the live blog landing and every category archive. A 100px band of photograph under a scrim, with the category name centred in uppercase heading type. The interaction is the inverse of the archive card's: this scrim *deepens* on hover — 33% to 75% — and an inset rule fades up inside the border, because the tile is small enough that lifting the scrim would lose the label. Measured from `#categories-slider .item` on 2026-08-20: 100px tall, rgba(55,71,80,0.33) resting and 0.75 on hover over 400ms, a 5px transparent border going to rgba(255,255,255,0.1) over 300ms with a 100ms delay, label Belleza 18px 600 uppercase. The live scrim is the site's one cool-grey; it is carried on neutral-900 here so the tile sits in the warm ramp with every other card. Live serves a placeholder JPEG for all nine tiles — the images are unset in the database, not chosen — so a real image per category is a content task, not a styling one. Scrim depth, border fade and reduced motion live in assets/styles/core-group.css. The label's link is stretched over the whole scrim so the tile is the target, as live's `.item > a` is — core/term-name only wraps the text itself. The tile carries a neutral-700 ground and a 100px min-height so it stands up when the term has no image — which is every category today: `sd_thumbnail` is registered for `accommodation-brand` only, so `sd/term-meta` returns null for `category` and core/image falls back to nothing at all. Without the ground the absolutely-positioned label collapses the card to zero height. Live has the same absence and papers over it with a grey placeholder JPEG; this is that placeholder without the asset.",
+	"styles": {
+		"color": {
+			"text": "var:preset|color|base",
+			"background": "var:preset|color|neutral-700"
+		},
+		"spacing": {
+			"blockGap": "0",
+			"padding": {
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|base"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|300",
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"lineHeight": "var:custom|line-height|heading",
+					"letterSpacing": "var:custom|letter-spacing|heading",
+					"textTransform": "uppercase"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|base"
+				},
+				"typography": {
+					"textDecoration": "none"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|base"
+					},
+					"typography": {
+						"textDecoration": "none"
+					}
+				}
+			}
+		},
+		"css": "& { position: relative; overflow: hidden; min-height: 100px; } & > * { margin-block: 0 !important; } & .category-card__media { margin: 0 !important; } & .category-card__media figure { margin: 0 !important; line-height: 0; } & .category-card__label { position: absolute; inset: 0; margin: 0 !important; display: flex; align-items: center; justify-content: center; text-align: center; padding: var(--wp--preset--spacing--20); } & .category-card__label a { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: var(--wp--preset--spacing--20); }"
+	}
+}
