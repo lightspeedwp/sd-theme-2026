@@ -81,20 +81,15 @@
  * — no seeding step, no per-environment resolution, nothing to keep in sync —
  * and the editor shows the images to anyone opening the pattern anywhere.
  *
- * ⚠️ **These are dev URLs and they must be rewritten at go-live.** They are all
- * built from `$sd_uploads` below, so the change is one string in one file (plus
- * the matching one in assets/styles/core-group.css, which carries the mobile
- * photograph's media query). Do it in the same pass as the domain search-replace
- * on the database.
+ * They are written literally, as core writes asset URLs, and the go-live
+ * deployment runs a find-and-replace over the dev host by convention — so they
+ * need no code change and no indirection here. The one copy that replace will
+ * not reach is in assets/styles/core-group.css, which carries the mobile
+ * photograph's media query; check that file in the same pass.
  */
-$sd_uploads = 'https://southerndestinations.lightspeedwp.dev/wp-content/uploads/';
-
-$sd_logo_src  = $sd_uploads . '2019/07/footer-logo.svg';
-$sd_badge_src = $sd_uploads . '2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png';
-$sd_bg_src    = $sd_uploads . '2026/08/footer-bg.jpg';
 
 /*
- * The nine Instagram tiles, in live's order, keyed by filename.
+ * The nine Instagram tiles, written out in live's order.
  *
  * Live gives all nine `alt="instagram"` and wraps the whole grid in one link.
  * Both are reproduced differently, and deliberately: nine links cannot share one
@@ -103,20 +98,6 @@ $sd_bg_src    = $sd_uploads . '2026/08/footer-bg.jpg';
  * recorded what they show — so they are accurate but unverified against
  * whatever the original Instagram posts said. Worth a client pass.
  */
-$sd_instagram = array(
-	'instagram-1.jpg' => __( 'Palm trees silhouetted against an orange sunset over open plains', 'sd-theme-2026' ),
-	'instagram-2.jpg' => __( 'A river winding in tight bends through a green floodplain, seen from the air', 'sd-theme-2026' ),
-	'instagram-3.jpg' => __( 'Guides poling mokoro dugout canoes along a reed-lined channel', 'sd-theme-2026' ),
-	'instagram-4.jpg' => __( 'A lioness grooming her cub', 'sd-theme-2026' ),
-	'instagram-5.jpg' => __( 'A hot-air balloon drifting over red desert dunes', 'sd-theme-2026' ),
-	'instagram-6.jpg' => __( 'A malachite kingfisher perched on a reed', 'sd-theme-2026' ),
-	'instagram-7.jpg' => __( 'Table Mountain and the Cape Town coastline seen from the sea', 'sd-theme-2026' ),
-	'instagram-8.jpg' => __( 'A rainbow arching through the spray of Victoria Falls', 'sd-theme-2026' ),
-	'instagram-9.jpg' => __( 'An elephant walking across pale desert sand', 'sd-theme-2026' ),
-);
-
-$sd_instagram_url = 'https://www.instagram.com/southerndestinations/';
-
 ?>
 <!-- wp:group {"metadata":{"name":"Footer"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull" style="margin-top:0">
@@ -143,7 +124,7 @@ $sd_instagram_url = 'https://www.instagram.com/southerndestinations/';
 	 * here, and only because only the block can carry it.
 	 */
 	?>
-	<!-- wp:group {"metadata":{"name":"Footer Widgets","description":"Live's #footer-widgets — four columns over the sunset photograph."},"align":"full","className":"is-style-site-footer","style":{"background":{"backgroundImage":{"url":"<?php echo esc_url( $sd_bg_src ); ?>"},"backgroundPosition":"50% 100%","backgroundRepeat":"no-repeat","backgroundSize":"cover"}},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"metadata":{"name":"Footer Widgets","description":"Live's #footer-widgets — four columns over the sunset photograph."},"align":"full","className":"is-style-site-footer","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/08/footer-bg.jpg"},"backgroundPosition":"50% 100%","backgroundRepeat":"no-repeat","backgroundSize":"cover"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignfull is-style-site-footer">
 
 		<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
@@ -171,7 +152,7 @@ $sd_instagram_url = 'https://www.instagram.com/southerndestinations/';
 				 */
 				?>
 				<!-- wp:image {"width":"254px","sizeSlug":"full","linkDestination":"none"} -->
-				<figure class="wp-block-image size-full is-resized"><img src="<?php echo esc_url( $sd_logo_src ); ?>" alt="<?php esc_attr_e( 'Southern Destinations — Journeys with Imagination', 'sd-theme-2026' ); ?>" style="width:254px"/></figure>
+				<figure class="wp-block-image size-full is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/footer-logo.svg" alt="<?php esc_attr_e( 'Southern Destinations — Journeys with Imagination', 'sd-theme-2026' ); ?>" style="width:254px"/></figure>
 				<!-- /wp:image -->
 
 				<?php
@@ -183,7 +164,7 @@ $sd_instagram_url = 'https://www.instagram.com/southerndestinations/';
 				 */
 				?>
 				<!-- wp:image {"width":"131px","sizeSlug":"medium","linkDestination":"custom"} -->
-				<figure class="wp-block-image size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_badge_src ); ?>" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:131px"/></a></figure>
+				<figure class="wp-block-image size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:131px"/></a></figure>
 				<!-- /wp:image -->
 			</div>
 			<!-- /wp:column -->
@@ -218,7 +199,7 @@ $sd_instagram_url = 'https://www.instagram.com/southerndestinations/';
 				 */
 				?>
 				<!-- wp:paragraph -->
-				<p><?php esc_html_e( 'RSA:', 'sd-theme-2026' ); ?> <a href="tel:+27216713090">+27 21 671 3090</a><br><?php esc_html_e( 'US:', 'sd-theme-2026' ); ?> <a href="tel:+16469068113">+1 646-906-8113</a></p>
+				<p><?php echo esc_html_x( 'RSA:', 'office phone number label', 'sd-theme-2026' ); ?> <a href="tel:+27216713090">+27 21 671 3090</a><br><?php echo esc_html_x( 'US:', 'office phone number label', 'sd-theme-2026' ); ?> <a href="tel:+16469068113">+1 646-906-8113</a></p>
 				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph -->
@@ -226,7 +207,7 @@ $sd_instagram_url = 'https://www.instagram.com/southerndestinations/';
 				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph -->
-				<p><?php esc_html_e( 'T', 'sd-theme-2026' ); ?> <a href="tel:+27216713090">+27 (0) 21 671 3090</a><br><a href="mailto:info@southerndestinations.com">info@southerndestinations.com</a></p>
+				<p><?php echo esc_html_x( 'T', 'abbreviation for telephone, precedes a phone number', 'sd-theme-2026' ); ?> <a href="tel:+27216713090">+27 (0) 21 671 3090</a><br><a href="mailto:info@southerndestinations.com">info@southerndestinations.com</a></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:column -->
@@ -305,11 +286,33 @@ $sd_instagram_url = 'https://www.instagram.com/southerndestinations/';
 				?>
 				<!-- wp:group {"metadata":{"name":"Instagram Grid"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"grid","columnCount":3}} -->
 				<div class="wp-block-group">
-					<?php foreach ( $sd_instagram as $sd_tile_file => $sd_tile_alt ) : ?>
-						<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-						<figure class="wp-block-image size-full is-resized"><a href="<?php echo esc_url( $sd_instagram_url ); ?>" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_uploads . '2019/07/' . $sd_tile_file ); ?>" alt="<?php echo esc_attr( $sd_tile_alt ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
-						<!-- /wp:image -->
-					<?php endforeach; ?>
+					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-1.jpg" alt="<?php esc_attr_e( 'Palm trees silhouetted against an orange sunset over open plains', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- /wp:image -->
+					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-2.jpg" alt="<?php esc_attr_e( 'A river winding in tight bends through a green floodplain, seen from the air', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- /wp:image -->
+					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-3.jpg" alt="<?php esc_attr_e( 'Guides poling mokoro dugout canoes along a reed-lined channel', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- /wp:image -->
+					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-4.jpg" alt="<?php esc_attr_e( 'A lioness grooming her cub', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- /wp:image -->
+					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-5.jpg" alt="<?php esc_attr_e( 'A hot-air balloon drifting over red desert dunes', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- /wp:image -->
+					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-6.jpg" alt="<?php esc_attr_e( 'A malachite kingfisher perched on a reed', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- /wp:image -->
+					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-7.jpg" alt="<?php esc_attr_e( 'Table Mountain and the Cape Town coastline seen from the sea', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- /wp:image -->
+					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-8.jpg" alt="<?php esc_attr_e( 'A rainbow arching through the spray of Victoria Falls', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- /wp:image -->
+					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-9.jpg" alt="<?php esc_attr_e( 'An elephant walking across pale desert sand', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- /wp:image -->
 				</div>
 				<!-- /wp:group -->
 			</div>
@@ -358,8 +361,8 @@ $sd_instagram_url = 'https://www.instagram.com/southerndestinations/';
 			 */
 			?>
 			<!-- wp:navigation {"overlayMenu":"never","className":"is-style-footer-navigation","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","justifyContent":"right"}} -->
-				<!-- wp:navigation-link {"label":"<?php echo esc_attr__( 'Privacy Policy', 'sd-theme-2026' ); ?>","url":"<?php echo esc_url( home_url( '/privacy-policy/' ) ); ?>","kind":"custom"} /-->
-				<!-- wp:navigation-link {"label":"<?php echo esc_attr__( 'Terms & Conditions', 'sd-theme-2026' ); ?>","url":"<?php echo esc_url( home_url( '/terms-conditions/' ) ); ?>","kind":"custom"} /-->
+				<!-- wp:navigation-link {"label":"<?php esc_attr_e( 'Privacy Policy', 'sd-theme-2026' ); ?>","url":"<?php echo esc_url( home_url( '/privacy-policy/' ) ); ?>","kind":"custom"} /-->
+				<!-- wp:navigation-link {"label":"<?php esc_attr_e( 'Terms & Conditions', 'sd-theme-2026' ); ?>","url":"<?php echo esc_url( home_url( '/terms-conditions/' ) ); ?>","kind":"custom"} /-->
 			<!-- /wp:navigation -->
 		</div>
 		<!-- /wp:group -->

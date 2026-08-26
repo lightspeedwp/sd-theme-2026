@@ -112,6 +112,10 @@ Priority order: **security → accessibility → correctness → maintainability
 
 - Escape all PHP output with the text domain `sd-theme-2026`; semantic `tagName`s; correct
   heading hierarchy.
+- **Patterns match core's form exactly** — inline `esc_html_e()` / `esc_html_x()`, never
+  `echo esc_html__()`, no top-level variables holding literals, no loops, no computed markup,
+  no `phpcs:ignore`. Measured against Twenty Twenty-Four and Twenty Twenty-Five; the full
+  rule is in [AGENTS.md](AGENTS.md) under "PHP".
 - **Exactly one `<main>` landmark per template.**
 - **Keyboard support and focus traps on every modal and overlay** — a modal you can't escape
   by keyboard is a defect.

@@ -69,26 +69,10 @@
  * per-environment attachment-ID resolver buys nothing and costs a lookup per
  * asset.
  *
- * ⚠️ **This is a dev URL and it must be rewritten at go-live**, in the same pass
- * as the domain search-replace on the database.
+ * The URLs are written literally, as core writes asset URLs. The go-live
+ * deployment runs a find-and-replace over the dev host by convention, so they
+ * need no code change and no indirection here.
  */
-$sd_uploads    = 'https://southerndestinations.lightspeedwp.dev/wp-content/uploads/';
-$sd_banner_src = $sd_uploads . '2019/08/destination-banner.jpg';
-
-/*
- * The archive description.
- *
- * On live this string is a Tour Operator *setting*, not post content — there is
- * no block for it, in TO 2.2 or anywhere else, so it is authored here. That is
- * the one piece of copy this file carries, and it is carried verbatim: content
- * is migrated, not rewritten.
- *
- * It is a candidate for a block binding the moment `sd-enhancements` exposes
- * the TO archive-description setting as a source — at which point this becomes
- * the fallback rather than the value. Until then, editing it means editing the
- * template.
- */
-$sd_intro = __( 'From the thick bushveld of the Kruger in South Africa to the grassy plains of the Masai Mara in East Africa and beyond, Africa is a place of startling contrasts and stupendous beauty. Let us share our favourite destinations and travel insights with you as you prepare to explore and experience this amazing continent.', 'sd-theme-2026' );
 ?>
 
 <!-- wp:group {"tagName":"main","metadata":{"name":"Destinations Archive"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"var:preset|spacing|90"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
@@ -116,8 +100,8 @@ $sd_intro = __( 'From the thick bushveld of the Kruger in South Africa to the gr
 	 * environments at once. → AGENTS.md, "never hardcode … an uploads URL"
 	 */
 	?>
-	<!-- wp:cover {"url":"<?php echo esc_url( $sd_banner_src ); ?>","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"center center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull is-style-hero-banner" style="min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( $sd_banner_src ); ?>" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"center center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull is-style-hero-banner" style="min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<?php
 		/*
@@ -210,10 +194,22 @@ $sd_intro = __( 'From the thick bushveld of the Kruger in South Africa to the gr
 				 * assets/styles/core-paragraph.css, because live gates it on a
 				 * breakpoint and a `css`-field `@media` is unwrapped rather
 				 * than honoured.
+				 *
+				 * On live the copy is a Tour Operator *setting*, not post
+				 * content — there is no block for it, in TO 2.2 or anywhere
+				 * else, so it is authored here. It is the one piece of copy
+				 * this file carries, and it is carried verbatim: content is
+				 * migrated, not rewritten.
+				 *
+				 * It is a candidate for a block binding the moment
+				 * `sd-enhancements` exposes the TO archive-description setting
+				 * as a source — at which point this becomes the fallback rather
+				 * than the value. Until then, editing it means editing the
+				 * template.
 				 */
 				?>
 				<!-- wp:paragraph {"className":"is-style-archive-intro"} -->
-				<p class="is-style-archive-intro"><?php echo esc_html( $sd_intro ); ?></p>
+				<p class="is-style-archive-intro"><?php esc_html_e( 'From the thick bushveld of the Kruger in South Africa to the grassy plains of the Masai Mara in East Africa and beyond, Africa is a place of startling contrasts and stupendous beauty. Let us share our favourite destinations and travel insights with you as you prepare to explore and experience this amazing continent.', 'sd-theme-2026' ); ?></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:column -->

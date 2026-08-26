@@ -62,26 +62,23 @@
  * the live one the moment the cache fills.
  */
 
-$sd_review_url = 'https://www.trustpilot.com/review/southerndestinations.com';
-$sd_logo       = get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' );
-$sd_stars_0    = get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg' );
 ?>
 <!-- wp:group {"metadata":{"name":"Trustpilot Score"},"className":"sd-trustpilot","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"}} -->
 <div class="wp-block-group sd-trustpilot">
 
 	<?php /* The band word — Trustpilot's own vocabulary for the rating, so the plugin owns the bands. */ ?>
 	<!-- wp:paragraph {"metadata":{"name":"Rating word","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"wording"}}}},"className":"sd-trustpilot__wording","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"100"} -->
-	<p class="sd-trustpilot__wording has-100-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php esc_html_e( 'Excellent', 'sd-theme-2026' ); ?></p>
+	<p class="sd-trustpilot__wording has-100-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php echo esc_html_x( 'Excellent', 'Trustpilot rating band', 'sd-theme-2026' ); ?></p>
 	<!-- /wp:paragraph -->
 
 	<?php /* The Trustpilot mark. Static — the file is a theme asset and the review URL is a constant — and the one link in the badge. */ ?>
 	<!-- wp:image {"width":"90px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
-	<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="<?php echo esc_url( $sd_review_url ); ?>" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_logo ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:90px"/></a></figure>
+	<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:90px"/></a></figure>
 	<!-- /wp:image -->
 
 	<?php /* The star tile. Bound on `url`; decorative, because the rating is in the text on both sides. */ ?>
 	<!-- wp:image {"width":"100px","sizeSlug":"full","className":"sd-trustpilot__stars","metadata":{"name":"Star rating","bindings":{"url":{"source":"sd/trustpilot","args":{"key":"stars_image"}}}}} -->
-	<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><img src="<?php echo esc_url( $sd_stars_0 ); ?>" alt="" style="width:100px"/></figure>
+	<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg' ) ); ?>" alt="" style="width:100px"/></figure>
 	<!-- /wp:image -->
 
 	<?php
@@ -93,11 +90,11 @@ $sd_stars_0    = get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg
 	 * cannot drop the one thing holding the words apart.
 	 */
 	?>
-	<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php esc_attr_e( 'TrustScore', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","fontSize":"100"} -->
+	<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","fontSize":"100"} -->
 	<p class="sd-trustpilot__score has-100-font-size"></p>
 	<!-- /wp:paragraph -->
 
-	<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php esc_attr_e( 'reviews', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","fontSize":"100"} -->
+	<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","fontSize":"100"} -->
 	<p class="sd-trustpilot__count has-100-font-size"></p>
 	<!-- /wp:paragraph -->
 

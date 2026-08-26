@@ -7,9 +7,12 @@
  * Keywords: blog, posts, query, loop
  * Viewport Width: 1280
  * Block Types: core/query
- * Post Types: 
+ * Post Types:
  * Inserter: false
+ *
+ * @package sd-theme-2026
  */
+
 ?>
 <!-- wp:query {"queryId":1,"query":{"perPage":"6","pages":"0","offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"exclude","inherit":false},"align":"full"} -->
 	<div class="wp-block-query alignfull">
@@ -25,7 +28,7 @@
 						<div class="wp-block-group has-neutral-700-color has-text-color has-link-color has-100-font-size" style="margin-top:1.5rem">
 						<!-- wp:post-author {"showAvatar":false} /-->
 						<!-- wp:paragraph -->
-							<p><?php esc_html_e( '·', 'sd-theme-2026' ); ?></p>
+							<p><?php echo esc_html_x( '·', 'separator between a post date and its categories', 'sd-theme-2026' ); ?></p>
 						<!-- /wp:paragraph -->
 						<!-- wp:post-date /-->
 						</div>

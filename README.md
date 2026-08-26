@@ -108,6 +108,7 @@ discovered at startup, so start a fresh session after pulling changes to them.
 | [AGENTS.md](AGENTS.md) | Orchestration guide — boundary, scope, conventions, environment |
 | [DESIGN.md](DESIGN.md) | Design sources, token state, the extractor pipeline, pattern library |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Workflow, git, quality bar |
+| [PATTERNS.md](PATTERNS.md) | The pattern library, written for editors |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 | [inc/README.md](inc/README.md) | What may and may not live in `inc/` |
 

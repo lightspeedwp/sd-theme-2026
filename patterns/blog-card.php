@@ -9,7 +9,10 @@
  * Block Types: core/post-template
  * Post Types: post
  * Inserter: true
+ *
+ * @package sd-theme-2026
  */
+
 ?>
 <!-- wp:group {"metadata":{"name":"Blog Card"},"className":"is-style-blog-card","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
 <div class="wp-block-group is-style-blog-card">

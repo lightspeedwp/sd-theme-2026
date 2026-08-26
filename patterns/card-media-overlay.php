@@ -9,7 +9,10 @@
  * Block Types: core/post-template
  * Post Types: tour, accommodation, destination
  * Inserter: true
+ *
+ * @package sd-theme-2026
  */
+
 ?>
 <!-- wp:group {"metadata":{"name":"Media Overlay Card"},"className":"is-style-media-overlay-card","layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-media-overlay-card">

@@ -170,9 +170,6 @@
 				 * an argument for binding it now, when the only bindable values
 				 * in this placement are the two live hides.
 				 */
-				$sd_tp_review_url = 'https://www.trustpilot.com/review/southerndestinations.com';
-				$sd_tp_logo       = get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' );
-				$sd_tp_stars      = get_theme_file_uri( 'assets/images/trustpilot/stars/stars-5.svg' );
 				?>
 				<?php
 				/*
@@ -186,11 +183,11 @@
 				<div class="wp-block-group sd-trustpilot" style="padding-right:var(--wp--preset--spacing--20)">
 
 					<!-- wp:image {"width":"100px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
-					<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="<?php echo esc_url( $sd_tp_review_url ); ?>" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_tp_logo ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:100px"/></a></figure>
+					<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:100px"/></a></figure>
 					<!-- /wp:image -->
 
 					<!-- wp:image {"width":"143px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__stars"} -->
-					<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><a href="<?php echo esc_url( $sd_tp_review_url ); ?>" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( $sd_tp_stars ); ?>" alt="<?php esc_attr_e( 'Rated 5 out of 5 on Trustpilot', 'sd-theme-2026' ); ?>" style="width:143px"/></a></figure>
+					<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-5.svg' ) ); ?>" alt="<?php esc_attr_e( 'Rated 5 out of 5 on Trustpilot', 'sd-theme-2026' ); ?>" style="width:143px"/></a></figure>
 					<!-- /wp:image -->
 
 				</div>

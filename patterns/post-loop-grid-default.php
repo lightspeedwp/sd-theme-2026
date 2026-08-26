@@ -7,9 +7,12 @@
  * Keywords: blog, posts, query, loop
  * Viewport Width: 1280
  * Block Types: core/query
- * Post Types: 
+ * Post Types:
  * Inserter: false
+ *
+ * @package sd-theme-2026
  */
+
 ?>
 <!-- wp:query {"query":{"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[]},"align":"full","layout":{"type":"default"}} -->
 	<div class="wp-block-query alignfull">
