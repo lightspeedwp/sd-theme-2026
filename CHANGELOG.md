@@ -8,6 +8,38 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The destinations landing page** — `templates/archive-destination.html` plus
+  `patterns/template-archive-destination.php`, the destination post-type archive rebuilt
+  against live (measured 2026-08-26). Three regions: the LSX Banners `page-banner` as a
+  `core/cover` on `is-style-hero-banner`, with the Joe Hand script title left on the wide rail
+  and the strapline under it; the `#f7f5f2` intro band as `is-style-tinted-page-section`,
+  pairing the archive description with `patterns/safari-expert.php` on live's 7/5 split; and
+  the tile grid running the shared `card-media-overlay` tile, unmodified. The scaffold this
+  replaces was Ollie's — a `query-title` over a 3-up of image-and-excerpt cards, with no
+  banner, no intro band and no expert panel.
+  - Live renders the archive `<h1>` and description **twice** and hides the first copy with
+    `.lsx-to-archive-header-tour + .lsx-to-archive-header { display: none }`. Only the visible
+    copy is ported; reproducing the duplicate would put a second `<h1>` on the page.
+  - The archive description is authored in the pattern because there is no block for it —
+    on live it is a Tour Operator *setting*, and TO 2.2 ships no archive-description block. It
+    is carried verbatim (content is migrated, not rewritten) and is the first thing to become a
+    binding when `sd-enhancements` exposes that setting.
+  - **Live's per-archive tile crop is not carried.** Live crops this archive flatter than the
+    others — `min-height: 240px; max-height: 240px` at `custom.css:1461`, which against its
+    ~360px column is 3:2 where tours and accommodation run near-square. Decision 2026-08-26:
+    one tile shape across every archive, which is what `media-overlay-card.json` already
+    describes. The Media Overlay Card is used exactly as-is, with no archive-scoped override.
+  - **The breadcrumb bar is not built.** Live draws Yoast's trail in a 58px strip under the
+    banner; breadcrumb output is a filter over a third-party plugin, so by the deactivation
+    test it is `sd-enhancements` work.
+- **`styles/blocks/paragraph/archive-intro.json`** — the italic standfirst that opens every
+  Tour Operator archive, live's `.lsx-to-archive-description`. Size, italic and leading only;
+  the brand-500 drop cap it opens with is in `assets/styles/core-paragraph.css`, because live
+  gates the cap at 900px and up and an `@media` block inside a `css` field is unwrapped rather
+  than honoured.
+- **`assets/styles/core-paragraph.css`** — that drop cap, and nothing else. Auto-attached to
+  `core/paragraph` by `enqueue_custom_block_styles()`' `core-*` scan.
+
 - **Nine bound card patterns** — `patterns/card-{media-overlay,tour-list,accommodation-list,tour-compact,accommodation-compact,destination-compact,post-grid,post-list,category}.php`.
   The card *styles* landed earlier against static markup; these are the same shapes wired to
   real data, so each one drops into a Query Loop (or, for the category tile, a Terms Query) and

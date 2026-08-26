@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Archive Intro",
+	"slug": "archive-intro",
+	"blockTypes": [ "core/paragraph" ],
+	"description": "The italic standfirst that opens every Tour Operator archive — live's `.lsx-to-archive-description`, 18px italic inside the warm intro band. It opens with a brand-500 drop cap in the heading face, which is the one place on the site that device appears and the reason this is a style rather than two attributes on a paragraph. The drop cap itself lives in assets/styles/core-paragraph.css: live gates it at 900px and up, and an `@media` block inside a `css` field is unwrapped rather than honoured, so the query would apply the cap at every width. Colour comes from the band around it.",
+	"styles": {
+		"typography": {
+			"fontSize": "var:preset|font-size|300",
+			"fontStyle": "italic",
+			"lineHeight": "var:custom|line-height|body"
+		},
+		"spacing": {
+			"margin": {
+				"top": "0"
+			}
+		}
+	}
+}
