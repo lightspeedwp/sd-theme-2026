@@ -2,9 +2,9 @@
 /**
  * Title: Card — Post (Grid)
  * Slug: sd-theme-2026/card-post-grid
- * Description: The post tile the homepage "Tales from our trails" carousel renders, and the shape the blog landing would use if it ever went to a grid. A landscape featured image above a tinted panel carrying a centred title, an italic date-and-categories byline in brand orange, and the excerpt.
+ * Description: The post tile the homepage "Tales from our trails" carousel renders, and the shape the blog landing would use if it ever went to a grid. A landscape featured image above a tinted panel carrying a centred title, a date-and-categories byline, the excerpt, and a ruled tag footer that disappears when the post carries no tags.
  * Categories: sd-theme-2026/card, sd-theme-2026/posts
- * Keywords: card, grid, tile, post, blog, news, carousel, byline
+ * Keywords: card, grid, tile, post, blog, news, carousel, byline, tags
  * Viewport Width: 480
  * Block Types: core/post-template
  * Post Types: post
@@ -13,24 +13,69 @@
  * @package sd-theme-2026
  */
 
+/*
+ * Finalised from the composition signed off on the dev homepage (2026-08-27),
+ * captured back out of the DB front-page override into this file so the pattern
+ * is the source of truth again. Everything here — the 3/2 image, the rounded
+ * neutral-100 panel with shadow-200, the centred title, the date/category
+ * byline, the "/.." excerpt more-text and the ruled tag footer — is that
+ * composition unchanged. The whole card is clickable via `sdLinkTo: "post"`
+ * (sd-enhancements' group-link module), so nothing inside needs its own link
+ * except the blocks that already carry one.
+ *
+ * ## The tag footer hides itself when the post has no tags
+ *
+ * `core/post-terms` returns an empty string when the post has no terms in the
+ * taxonomy — wp-includes/blocks/post-terms.php:57. The block vanishes; its
+ * wrapper does not. Left alone, an untagged post renders this footer as a bare
+ * primary-300 rule with padding under the excerpt: a divider dividing nothing.
+ *
+ * The rule that hides it lives in the card's style partial,
+ * styles/sections/cards/post-grid-card.json, and reads "any group inside this
+ * card that rendered no element children is hidden" — keyed off core's own
+ * `.wp-block-group`, with no hand-rolled helper class added here. That is the
+ * AGENTS.md rule ("never off a hand-written helper class"), and it means this
+ * markup is byte-identical to the signed-off dev composition: the fix is
+ * entirely in the style JSON, so the dev front-page DB override needs no edit.
+ * It generalises correctly too — a post with no featured image empties the
+ * Media group, and an empty box is no more wanted there than an empty rule.
+ *
+ * Two reasons it is CSS and not a visibility control: the condition is per-post
+ * inside a Query Loop, which Block Visibility cannot express — its conditions
+ * are request-level (role, date, screen size, query string), not per-item; and
+ * the emptiness is only knowable after `core/post-terms` has rendered, so there
+ * is nothing to branch on at block level. Keeping the group in the markup also
+ * keeps it selectable and labelled in the editor, where an author can still see
+ * and edit the footer that a tagless post will hide.
+ */
 ?>
-<!-- wp:group {"metadata":{"name":"Post Grid Card"},"className":"is-style-post-grid-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
-<div class="wp-block-group is-style-post-grid-card">
-	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
+<!-- wp:group {"metadata":{"name":"Card — Post (Grid)"},"className":"is-style-post-grid-card","style":{"shadow":"var:preset|shadow|200","border":{"radius":{"topLeft":"var:preset|border-radius|100","topRight":"var:preset|border-radius|100","bottomLeft":"var:preset|border-radius|100","bottomRight":"var:preset|border-radius|100"}},"spacing":{"blockGap":"var:preset|spacing|0"}},"backgroundColor":"neutral-100","layout":{"type":"default"},"sdLinkTo":"post"} -->
+<div class="wp-block-group is-style-post-grid-card has-neutral-100-background-color has-background" style="border-top-left-radius:var(--wp--preset--border-radius--100);border-top-right-radius:var(--wp--preset--border-radius--100);border-bottom-left-radius:var(--wp--preset--border-radius--100);border-bottom-right-radius:var(--wp--preset--border-radius--100);box-shadow:var(--wp--preset--shadow--200)">
+	<!-- wp:group {"metadata":{"name":"Media"},"className":"post-grid-card__media","layout":{"type":"default"}} -->
+	<div class="wp-block-group post-grid-card__media">
+		<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"3/2"} /-->
+	</div>
+	<!-- /wp:group -->
 
-	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|30","bottom":"var:preset|spacing|40","left":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--30)">
+	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--20)">
 		<!-- wp:post-title {"level":3,"isLink":true,"style":{"typography":{"textAlign":"center"}}} /-->
 
-		<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"0"},"typography":{"fontStyle":"italic","lineHeight":"var:custom|line-height|body"},"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"100","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
-		<div class="wp-block-group has-brand-600-color has-text-color has-link-color has-100-font-size" style="font-style:italic;line-height:var(--wp--custom--line-height--body)">
-			<!-- wp:post-date {"format":"F j, Y","isLink":false} /-->
+		<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group">
+			<!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}},"style":{"typography":{"textAlign":"center"}},"fontSize":"100"} /-->
 
-			<!-- wp:post-terms {"term":"category","prefix":". Posted in: "} /-->
+			<!-- wp:post-terms {"term":"category","prefix":"Posted in: ","style":{"typography":{"textAlign":"center"}},"fontSize":"100"} /-->
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":30,"style":{"typography":{"textAlign":"center","lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} /-->
+		<!-- wp:post-excerpt {"moreText":"/..","showMoreOnNewLine":false,"excerptLength":30,"style":{"typography":{"textAlign":"center"}}} /-->
+
+		<!-- wp:group {"metadata":{"name":"Tags"},"style":{"border":{"top":{"color":"var:preset|color|primary-300","width":"1px"}},"spacing":{"padding":{"top":"var:preset|spacing|20"}}},"layout":{"type":"constrained","justifyContent":"left"}} -->
+		<div class="wp-block-group" style="border-top-color:var(--wp--preset--color--primary-300);border-top-width:1px;padding-top:var(--wp--preset--spacing--20)">
+			<!-- wp:post-terms {"term":"post_tag","prefix":"Tags: ","style":{"typography":{"textAlign":"center"}},"fontSize":"200"} /-->
+		</div>
+		<!-- /wp:group -->
 	</div>
 	<!-- /wp:group -->
 </div>
