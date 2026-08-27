@@ -8,6 +8,106 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **The mega menus took as long as the slowest asset on the page to become usable, and were
+  squashed until then.** Ollie Menu Designer positions its panels from JavaScript, and
+  `callbacks.initMenuLayout` in `build/blocks/mega-menu/view.js` defers that work to
+  `window.load`:
+
+  ```js
+  "complete" === document.readyState
+      ? adjustMegaMenu()
+      : window.addEventListener("load", () => adjustMegaMenu(), {once:true})
+  ```
+
+  `adjustMegaMenu()` is what writes the panel's `top`, `left` and `width`. Until it runs the
+  panel keeps the plugin stylesheet's resting values — `top: 0; left: 0` at content width — so
+  it opened *over* the nav row at 433px instead of 1440px, with its three columns crammed into
+  it. Measured on dev at 1440×900, 2026-08-27:
+
+  | | |
+  |---|---|
+  | `window.load` fired at | 7 802 ms (18 441 ms on a second run) |
+  | panel first got its inline `top` | 7 870 ms — **+68 ms, every run** |
+
+  `window.load` waits for every image, iframe and third-party script, and dev carries GTM,
+  Facebook, LinkedIn Insight, Salesforce, DoubleClick, Trustpilot's widget and Popup Maker.
+  Blocking every third-party host still left `window.load` at 5 738 ms, so this was not one
+  vendor's fault and could not be tuned away.
+
+  The panels are placed in CSS now — `assets/styles/ollie-mega-menu.css` — and the JavaScript
+  is left to lose. Three of the four computed values are static once the containing block is
+  right: `inset-block-start: 100%` for `top`, and `0`/`0` for the inline edges. Core's
+  navigation stylesheet puts `position: relative` on the nav, its container and every item
+  (confirmed via `CSS.getMatchedStylesForNode`); taking those three to `static` hands the
+  containing block up to the sticky header group. Safe for this nav specifically — it carries
+  `overlayMenu: "never"` and has no core submenus, only four `ollie/mega-menu` dropdowns and one
+  plain link.
+
+  Verified on local: the panel opened **before `window.load` had fired**, at exactly
+  `width = clientWidth, left = 0, top = header bottom`, with the plugin's inline styles still
+  empty. Placement is correct at 1200/1280/1366/1440/1600 with a panel open, and the author's
+  `menu-width` setting is still honoured — `full` spans the header, `wide`/`content`/`custom`
+  keep the plugin's width and are centred on it.
+
+  Two things came off the maintenance list with it. The `topSpacing` attribute no longer
+  matters (`top: 100%` is the header's own height), which had silently drifted — dev said 50,
+  local 40, and 40 put the panel 10px *over* the nav. And `adjustMegaMenu()` set
+  `width: window.innerWidth`, which includes the scrollbar: 1440 against a clientWidth of
+  1427, measured as 13px of horizontal overflow at 1280, 1366 and 1440 on dev and local both.
+  `inset-inline: 0` resolves against the header's padding box, so that is gone.
+
+- **The Call Us dropdown grew the header from 110px to 355px when opened.** A specificity bug,
+  not an accordion problem. WordPress compiles a block style variation's `css` field into
+  `:root :where(<selector>)`, which lands at **(0,1,0)** — `:root` contributes all of it and
+  `:where()` contributes nothing. That is low enough to lose a *tie on source order*, and the
+  panel's `position: absolute` was losing it: `position` computed as `relative`, so the panel
+  stayed in flow. The utility row went to 295px, the enquiry button stretched to match, the logo
+  and Trustpilot mark centred themselves in a 295px band, and the nav was pushed down onto the
+  hero. And because `inset-block-start: calc(100% + 8px)` is a *relative offset* once `position`
+  is `relative`, the panel was displaced 303px below its own flow position and hung over the
+  navigation.
+
+  It only happened for logged-in users, which is what made it read as environment-specific
+  rather than as a specificity bug — dev serves logged-in requests uncached and with the admin
+  bar's stylesheet stack on top, and that is enough to flip which side of the tie loses.
+  Anonymous requests to the same URL measured 110px at every width tested, across six
+  scenarios (scrolled, pre-`window.load`, post-resize, mega menu open first, 1512px, 1680px),
+  which is why it took the reported screenshots to locate.
+
+  Confirmed by injecting one rule — `.wp-block-accordion-panel{position:relative}` — into an
+  otherwise untouched dev page: header 355px, row 295px, enquiry button 295px, matching the
+  reported screenshots pixel for pixel.
+
+  The five load-bearing declarations are marked `!important` now — `position`,
+  `inset-block-start`, `inset-inline-start` and `z-index` on the panel, plus `position: relative`
+  on the accordion, which is the positioning context they resolve against and was equally
+  exposed. Same reasoning and same remedy as `styles/blocks/navigation/main-navigation.json`,
+  which already carries `!important` throughout for this exact reason. Verified against four
+  override attempts that each previously flipped it, including one at (0,3,0) with a type
+  selector: header stays 110px, panel stays `absolute`, accordion stays 26px.
+
+- **The Call Us Today label wrapped at narrow widths.** Separate from the above, and about the
+  *closed* trigger: the label broke onto two lines below ~1024px, taking the button from 25px to
+  49px, the row from 48px to 71px and the header from 108px to 180px. `white-space: nowrap` on
+  the toggle. The trigger's `fontSize: "300"` is unchanged and approved — shrinking the type
+  would only move the failure width down, and any longer label or larger user font size would
+  bring it back. Verified: trigger 23–26px tall from 768px to 1600px, and opening it no longer
+  changes the header's height at any width.
+
+- **The desktop navigation was shown 200px before it fits.** Block Visibility's `large`
+  breakpoint was at its 992px default, so the nav/mobile-menu swap happened at 992px — but the
+  five-item uppercase nav needs ~1250px, and between 992px and 1200px it wrapped to two rows
+  and added ~50px to the header. This is what made dev's header 157px at 1200px against local's
+  107px. `block_visibility_settings → visibility_controls.screen_size.breakpoints.large` is
+  `1200px` now, which is the breakpoint `assets/styles/ollie-mega-menu.css` already assumed
+  (`@media (max-width: 1199px)`). Verified: nav shown at 1200px, mobile menu at 1199px, header
+  106–110px unbroken from 1024px to 1600px.
+
+  ⚠️ **This is a database option, not a theme file** — it does not travel with a theme deploy
+  and has to be set on dev as well. The only other Block Visibility usage in the theme
+  (`patterns/homepage-safari-gurus.php`) is unaffected: its blocks key off `small` and off
+  `large`+`medium` together, both of which resolve the same way either side of the change.
+
 - **The Call Us dropdown opened itself on every hard refresh, then closed a second later.**
   The panel is closed by an attribute the server never writes. Core renders it as
   `<div data-wp-bind--hidden="state.isHidden" role="region" class="wp-block-accordion-panel">`
