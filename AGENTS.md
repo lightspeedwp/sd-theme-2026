@@ -208,6 +208,43 @@ link back to this rule. The `wp-blockstyle-css-field` skill has the full matrix.
 > global styles on the front end but *before* them in the editor. Don't write authored CSS
 > that depends on either winning.
 
+> ⚠️ **`spacing.margin` belongs to page-section styles only — top and bottom, and only
+> where it is genuinely necessary.** Never declare a margin on a block that sits inside a
+> parent carrying a `blockGap`. Core's layout contract is *the parent owns the spacing and
+> its children have zero margins*; a child margin is fighting that contract, and it wins in
+> the editor while losing on the front end. Measured on dev, WP 7.1, 2026-08-27:
+>
+> - An explicit `blockGap` compiles to `.wp-container-‹hash› > * { margin-block: 0 }` in
+>   **`core-block-supports-inline-css`**, and a variation's margin compiles to
+>   `:root :where(.wp-block-heading.is-style-X--N)`. Both sit at **(0,1,0)** — `:root`
+>   contributes (0,1,0), `:where()` contributes nothing — so **source order alone decides
+>   the winner, and WordPress inverts it between the two environments**:
+>
+>   | | Container rule | Variation rule | Winner | Child `margin-bottom` |
+>   |---|---|---|---|---|
+>   | Front end | **55** | 50 | container | `0px` |
+>   | Editor | 125 | **142** | variation | `16.814px` |
+>
+> - So the child's margin **survives in the editor and collapses** with the next sibling's
+>   `margin-block-start`. The visible gap becomes `max(gap, childMargin)` instead of `gap`:
+>   every gap at or below the child's margin renders identically, and the control appears
+>   dead. With `margin-bottom: spacing|20` on a heading, `None`/`XXS`/`XS`/`S` all render at
+>   16.8px in the canvas and only `M` upwards begins to move — while the front end is exact.
+>   Where the parent's gap is *smaller* than the child's margin (e.g. `spacing|10` in
+>   `parts/mega-menu-tours.html`) the gap is swallowed whole and the control does nothing at
+>   all.
+> - The margin is **already inert on the front end** wherever the parent sets a `blockGap` —
+>   `core-block-supports` zeroes it. So these declarations buy nothing on the front end and
+>   cost correctness in the editor.
+> - `margin: 0` is the same hazard pointing the other way: it *kills* a parent's gap in the
+>   editor rather than flooring it. The theme's six `top: 0` section styles only escape
+>   because every parent that holds them sets `blockGap: 0`, so both environments agree.
+>   Give any of those parents a real gap and it will die in the canvas.
+>
+> **The rule:** express spacing as `blockGap` on the parent. Reach for `spacing.margin` only
+> on a page-section style, only `top`/`bottom`, and only where no parent gap can express it —
+> and say in the style's `description` why.
+
 > ⚠️ **Structure belongs in markup, not in a `css` field.** A section style's `css` field is
 > for what blocks genuinely cannot express — absolute overlays, `::before`/`::after` content,
 > `overflow`, `!important` overrides of core block CSS. It is **not** the place for layout.

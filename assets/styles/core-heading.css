@@ -11,8 +11,15 @@ Measured on the live site 2026-08-20 (`.lsx-title:after`):
 width 80px, height 2px, background #E6AD10 (accent-500),
 `margin: 8px auto 4.25rem` centred / `margin: 8px 0 4.25rem` left-aligned.
 
-The 4.25rem bottom margin is why Section Title itself only carries a small
-bottom margin — the rule supplies the gap to the section body. */
+The 4.25rem bottom margin is the gap to the section body, and it is the *only*
+spacing under a section title. The variations themselves carry no margin: a
+child margin survives in the editor and is zeroed on the front end, so it made
+the parent's blockGap control disagree between the two. See AGENTS.md,
+"`spacing.margin` belongs to page-section styles only".
+
+⚠️ Note this margin dominates any parent `blockGap` below `spacing|70` — in
+both environments — so the gap control under a section title is inert up to
+XXXL. Measured 2026-08-27. */
 
 .wp-block-heading.is-style-section-title::after,
 .wp-block-heading.is-style-section-title-left::after {

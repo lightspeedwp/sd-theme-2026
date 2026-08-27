@@ -16,11 +16,6 @@
 			"lineHeight": "var:custom|line-height|heading",
 			"textTransform": "uppercase",
 			"letterSpacing": "var:custom|letter-spacing|none"
-		},
-		"spacing": {
-			"margin": {
-				"bottom": "var:preset|spacing|20"
-			}
 		}
 	}
 }
