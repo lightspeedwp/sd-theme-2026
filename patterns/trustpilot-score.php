@@ -72,13 +72,13 @@
 	<!-- /wp:paragraph -->
 
 	<?php /* The Trustpilot mark. Static — the file is a theme asset and the review URL is a constant — and the one link in the badge. */ ?>
-	<!-- wp:image {"width":"90px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
-	<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:90px"/></a></figure>
+	<!-- wp:image {"width":"105px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
+	<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:105px"/></a></figure>
 	<!-- /wp:image -->
 
 	<?php /* The star tile. Bound on `url`; decorative, because the rating is in the text on both sides. */ ?>
-	<!-- wp:image {"width":"100px","sizeSlug":"full","className":"sd-trustpilot__stars","metadata":{"name":"Star rating","bindings":{"url":{"source":"sd/trustpilot","args":{"key":"stars_image"}}}}} -->
-	<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg' ) ); ?>" alt="" style="width:100px"/></figure>
+	<!-- wp:image {"width":"118px","sizeSlug":"full","className":"sd-trustpilot__stars","metadata":{"name":"Star rating","bindings":{"url":{"source":"sd/trustpilot","args":{"key":"stars_image"}}}}} -->
+	<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg' ) ); ?>" alt="" style="width:118px"/></figure>
 	<!-- /wp:image -->
 
 	<?php

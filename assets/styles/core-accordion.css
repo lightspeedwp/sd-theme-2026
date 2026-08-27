@@ -4,6 +4,24 @@
    scan in functions.php, so it loads only on a page with an accordion on it.
    No module, no explicit registration — the filename is the wiring.
 
+   ⚠️ **The header no longer uses any of this.** On 2026-08-27 the header's Call
+   Us became an `ollie/mega-menu` inside a `core/navigation` carrying
+   `is-style-call-us-navigation` — hover-open, with the pop-out built by the
+   plugin rather than argued out of the flow here. Everything below now serves
+   exactly one placement: the **safari expert panel**, patterns/safari-expert.php.
+
+   That panel keeps the accordion deliberately. `ollie/mega-menu` declares
+   `"parent": ["core/navigation"]`, so using it there would put a navigation
+   landmark inside a per-post content panel — wrong for an in-flow disclosure
+   with no menu semantics, and it would make a `wp_navigation` post a dependency
+   of a template that renders per post. → styles/blocks/navigation/call-us-navigation.json
+
+   Four rules went with the header: the label's `white-space: nowrap`, the
+   `is-style-header` hover colour, the `is-style-header` panel-alignment flip,
+   and that same selector in the narrow-viewport block. Do not reintroduce an
+   `is-style-header` selector here — there is nothing left in the header for it
+   to match.
+
    This file replaced assets/styles/sd-call-us.css, 300 lines against the
    `sd/call-us` plugin block, when the disclosure moved to WordPress 7.1's
    `core/accordion` on 2026-08-21. The design is in
@@ -75,33 +93,12 @@
 	overflow: visible;
 }
 
-/* The label must never wrap.
-   ---------------------------------------------------------------------------
-   The trigger sits in the header's utility cluster, which is a flex row with
-   `flexWrap: nowrap`. The *row* cannot wrap, but the words inside this button
-   can — and when "Call Us Today" broke onto two lines the button went from 25px
-   to 49px tall, took the row from 48px to 71px with it, and the header from
-   108px to 180px. Measured on dev at 1024px and 992px, 2026-08-27.
-
-   The size is **not** the lever here. `fontSize: "300"` on the header instance
-   is approved — Zared's decision, 2026-08-27 — so the fix is to forbid the wrap
-   rather than to shrink the type until it happens to fit. That is also the more
-   durable of the two: a smaller label only moves the failure width down, and any
-   longer label, larger user font size or narrower cluster brings it back.
-
-   Do not read this rule as a substitute for the header growing to 355px with the
-   panel open — that was a specificity bug in the variation's `css` field, fixed
-   separately and written up in
-   styles/blocks/accordion/call-us-dropdown.json. This rule is only about the
-   *closed* trigger's two-line wrap at narrow widths.
-
-   On the button rather than the title span, so the chevron `::after` stays on
-   the same line as the words. The button is a flex container, so this does not
-   affect how the chevron is laid out beside the label — only whether the label
-   itself may break. */
-.is-style-call-us-dropdown .wp-block-accordion-heading__toggle {
-	white-space: nowrap;
-}
+/* The label's `white-space: nowrap` was removed with the header, 2026-08-27.
+   It existed because "Call Us Today" wrapped to two lines inside the header's
+   `flexWrap: nowrap` utility cluster at 1024px and below, taking the header
+   from 108px to 180px. The safari expert panel's row is `flexWrap: wrap` and
+   its label is the shorter "Call Us", so the rule had nothing to prevent here
+   — Zared's call: leave it out until it is an issue. */
 
 .is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after {
 	content: "";
@@ -132,11 +129,12 @@
    hovers brand-500 to **brand-600** over `0.25s ease-in-out`, so the trigger
    darkens on the same token and the same curve, and the underline comes off.
 
-   Two rules because the two placements rest on different colours. The header's
-   trigger is brand-500, so it darkens to brand-600 and reads as a pair with the
-   button; the safari expert panel's inherits neutral, so it darkens to
-   neutral-900 — the same value the variation already gives its number links on
-   hover. Keyed off `is-style-header`, as the panel alignment below is.
+   One rule now, not two. The header's trigger was brand-500 darkening to
+   brand-600; that pair moved to `.is-style-call-us-navigation` in
+   assets/styles/ollie-mega-menu.css with the rest of the header widget on
+   2026-08-27. What is left is the safari expert panel's, which inherits neutral
+   and darkens to neutral-900 — the same value the variation already gives its
+   number links on hover.
 
    `:focus-visible` gets it too, so a keyboard user sees the same state change,
    on top of core's own focus outline (core suppresses the outline only for
@@ -158,11 +156,6 @@
 .is-style-call-us-dropdown .wp-block-accordion-heading__toggle:hover,
 .is-style-call-us-dropdown .wp-block-accordion-heading__toggle:focus-visible {
 	color: var(--wp--preset--color--neutral-900);
-}
-
-.is-style-header .is-style-call-us-dropdown .wp-block-accordion-heading__toggle:hover,
-.is-style-header .is-style-call-us-dropdown .wp-block-accordion-heading__toggle:focus-visible {
-	color: var(--wp--preset--color--brand-600);
 }
 
 /* Rows
@@ -217,17 +210,15 @@
 
 /* Panel alignment
    ---------------------------------------------
-   The variation anchors the panel to its inline start, which is the safari
-   expert panel's case — its button sits at the left of a flex row.
+   The variation anchors the panel to its inline start, and that is now the only
+   case: the safari expert panel's button sits at the left of a flex row.
 
-   The header's Call Us is the last item but one in a right-aligned utility
-   cluster, so a start-aligned panel there would run past the content edge. This
-   flips it, keyed off the `is-style-header` section style already on the header
-   group rather than a second variation or a placement class. Logical
-   properties, so both flip under RTL for free. */
-.is-style-header .is-style-call-us-dropdown .wp-block-accordion-panel {
-	inset-inline: auto 0;
-}
+   The `is-style-header` flip that used to live here — `inset-inline: auto 0`,
+   because the header's Call Us sat in a right-aligned cluster where a
+   start-aligned panel ran past the content edge — went with the header on
+   2026-08-27. Its replacement is `inset-inline: auto 0 !important` in
+   styles/blocks/navigation/call-us-navigation.json, which has to be marked
+   because it is contesting Ollie's own `.menu-justified-right` at (0,3,0). */
 
 /* Before hydration
    ---------------------------------------------
@@ -341,8 +332,7 @@
    stops trying to sit under one end of its button and takes what width it can. */
 @media (max-width: 480px) {
 
-	.is-style-call-us-dropdown .wp-block-accordion-panel,
-	.is-style-header .is-style-call-us-dropdown .wp-block-accordion-panel {
+	.is-style-call-us-dropdown .wp-block-accordion-panel {
 		inset-inline: auto 0;
 		min-width: min(20rem, calc(100vw - 2 * var(--wp--preset--spacing--20)));
 	}

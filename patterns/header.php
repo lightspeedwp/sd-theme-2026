@@ -50,10 +50,18 @@
  *
  *   65876  SD Main Navigation         4 mega menus + Specials
  *   65877  SD Mobile Navigation       the tiered mobile tree
+ *   65909  SD Call Us Dropdown        one `ollie/mega-menu`, the numbers panel
  *
- * Local carries 65876 but not 65877, so the desktop row renders from the real
- * menu there and the mobile nav falls back to core's page list — fine, because
- * local is a fixture environment. Prove menu *content* on dev.
+ * Local carries 65876 but neither 65877 nor 65909, so the desktop row renders
+ * from the real menu there and those two fall back to core's page list — fine,
+ * because local is a fixture environment. Prove menu *content* on dev.
+ *
+ * 65909 could not be given local's matching ID: the two databases' ID spaces
+ * have diverged past 65879, and local's 65909 is the Zimbabwe destination. A
+ * `ref` and inline inner blocks cannot be combined as a belt-and-braces either
+ * — `WP_Block_Type_Navigation::get_inner_blocks()` *overwrites* the authored
+ * inner blocks with the referenced post's, then falls back to the page list if
+ * that comes back empty, so the inline copy would never render.
  */
 
 /*
@@ -96,17 +104,56 @@
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 
-<!-- wp:accordion {"showIcon":false,"className":"is-style-call-us-dropdown","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"},"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"textColor":"brand-500","fontSize":"300"} -->
-<div role="group" class="wp-block-accordion is-style-call-us-dropdown has-brand-500-color has-text-color has-300-font-size" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);font-weight:var(--wp--custom--font-weight--bold)"><!-- wp:accordion-item -->
-<div class="wp-block-accordion-item"><!-- wp:accordion-heading {"level":3,"showIcon":false} -->
-<h3 class="wp-block-accordion-heading"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">Call Us Today</span></button></h3>
-<!-- /wp:accordion-heading -->
+<?php
+/*
+ * Call Us — an Ollie dropdown, not the accordion it was until 2026-08-27.
+ *
+ * Zared's call, taken from ATI Holidays where the same widget is built this
+ * way: it opens on hover, and the pop-out is the plugin's own construction
+ * rather than an in-flow accordion panel argued out of the flow with
+ * `!important`. Four shipped bugs went with the swap — the block-gap-into-inset
+ * displacement, the `hidden="until-found"` white bar, the pre-hydration flash,
+ * and a hand-drawn caret that had to be kept in step with `aria-expanded`.
+ * styles/blocks/navigation/call-us-navigation.json has the full account.
+ *
+ * The panel is the `dropdown-call-us` template part, reached through the
+ * block's `menuSlug` — the same one file the footer and the safari expert
+ * panel read, so the four numbers cannot drift the way live's two copies did.
+ *
+ * `ariaLabel` is not optional here: `core/navigation` renders a `<nav>`, and
+ * this is the header's second one. Without it a screen-reader user gets two
+ * unlabelled navigation landmarks in one banner.
+ *
+ * "Call us", **not** "Contact numbers" — parts/mobile-menu.html already labels
+ * its own copy of the numbers (`ref` 65865) that way, and both are in the DOM
+ * at once. Where two landmarks share a label WordPress disambiguates them by
+ * appending a number, so the pair rendered as "Contact numbers" and "Contact
+ * numbers 2" — technically distinguishable, useless to read out. Measured on
+ * local, 2026-08-27.
+ *
+ * `overlayMenu: "never"`, as on the main nav — with the overlay on, core wraps
+ * the list in four more elements and the variation's selectors miss.
+ *
+ * The icon is a sibling of the navigation, as it is on ATI, rather than part
+ * of the trigger: `label` is a block attribute and `render.php` escapes it, so
+ * no markup can go inside the button. The cost is that the icon is not part of
+ * the button's hover or click target — 20px of dead zone beside a live label.
+ * Drawing it as a `::before` on the toggle would fix that and lose the
+ * editor-visible block; the block was preferred.
+ *
+ * ⚠️ Phosphor's phone glyph, the same path used in homepage-dream-trip.php,
+ * homepage-lets-make-it-happen.php and cta-not-sure-where-to-go.php. Written
+ * out rather than echoed from a variable, as core's patterns do; if it changes
+ * it changes in all four.
+ */
+?>
+<!-- wp:group {"metadata":{"name":"Call Us"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","iconColor":"brand-500","width":"20px"} -->
+<div class="wp-block-outermost-icon-block"><div class="icon-container has-icon-color has-brand-500-color" style="width:20px"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"></path></svg></div></div>
+<!-- /wp:outermost/icon-block -->
 
-<!-- wp:accordion-panel {"style":{"spacing":{"blockGap":"0"}}} -->
-<div role="region" class="wp-block-accordion-panel"><!-- wp:template-part {"slug":"dropdown-call-us","theme":"sd-theme-2026","area":"menu"} /--></div>
-<!-- /wp:accordion-panel --></div>
-<!-- /wp:accordion-item --></div>
-<!-- /wp:accordion -->
+<!-- wp:navigation {"ref":65909,"overlayMenu":"never","ariaLabel":"<?php esc_attr_e( 'Call us', 'sd-theme-2026' ); ?>","className":"is-style-call-us-navigation","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"},"spacing":{"blockGap":"0"}},"textColor":"brand-500","fontSize":"300"} /--></div>
+<!-- /wp:group -->
 
 <!-- wp:buttons {"className":"sd-header__cta","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"stretch"}} -->
 <div class="wp-block-buttons sd-header__cta"><!-- wp:button {"className":"is-style-fill","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->

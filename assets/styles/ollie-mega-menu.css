@@ -263,3 +263,124 @@
 		padding-inline-start: 0;
 	}
 }
+
+/* ===========================================================================
+   Call Us — the header's contact-number disclosure
+   ===========================================================================
+   A second `ollie/mega-menu`, in its own `core/navigation` carrying
+   `is-style-call-us-navigation`, whose panel is the `dropdown-call-us`
+   template part. It replaced a `core/accordion` on 2026-08-27; the full
+   rationale, the positioning and the panel's own ground, border, radius and
+   shadow are in styles/blocks/navigation/call-us-navigation.json.
+
+   What is here is only what a block style's `css` field cannot express — it
+   strips `:hover` and `:focus-within`, mangles `content: ""`, drops all but
+   one of a comma-separated selector list, and unwraps at-rules into
+   unconditional declarations. Every selector below trips at least one of those.
+
+   Scoped to the variation throughout, so none of it reaches
+   `is-style-main-navigation`, which sits in the same header and uses the same
+   Ollie class names. */
+
+/* The trigger
+   ---------------------------------------------------------------------------
+   Zared asked for the treatment the enquiry button beside it uses rather than
+   core's underline: `styles.elements.button` hovers brand-500 to **brand-600**
+   over `0.25s ease-in-out`, so the trigger darkens on the same token and the
+   same curve as the button it sits next to. The transition itself is in the
+   variation JSON; only the two states need to be here.
+
+   `:focus-visible` gets it too, so a keyboard user sees the same change on top
+   of the focus outline.
+
+   The chevron is Ollie's own and is drawn with `stroke: currentColor`, so it
+   darkens with the label for free — as the accordion's hand-drawn caret did. */
+.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:hover,
+.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:focus-visible {
+	color: var(--wp--preset--color--brand-600);
+}
+
+/* Rows
+   ---------------------------------------------------------------------------
+   Each row is a `core/group` in the `dropdown-call-us` template part: a
+   `core/image` flag beside a paragraph carrying the label and the `tel:` link.
+   The part's own `<div class="wp-block-template-part">` sits between the panel
+   and the rows — the `menu` area's `area_tag` is `div` — so these are
+   descendant selectors, not child ones.
+
+   Hairlines between rows, not around them, so the list reads as one object. */
+.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container .wp-block-group + .wp-block-group {
+	border-block-start: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-200);
+}
+
+/* The tint, so a four-row list reads as four targets. `:focus-within` as well
+   as `:hover`, so the row a keyboard user is on is the row that lights up —
+   live has neither, which is what makes its four numbers hard to scan.
+
+   `neutral-200`, not `neutral-100`. In this palette `neutral-100` *is*
+   `#FFFFFF` — the same value as `base`, which is the panel's own ground — so a
+   hover set against it does nothing at all. The first tinted step above white
+   is `neutral-200`. Worth remembering before reaching for `neutral-100` as a
+   hover or stripe colour anywhere else in this theme. */
+.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container .wp-block-group:hover,
+.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container .wp-block-group:focus-within {
+	background-color: var(--wp--preset--color--neutral-200);
+}
+
+/* The whole row is the target, as it is on live — where each row is one `<a>`
+   wrapping the label, a `<br>` and the number.
+
+   It cannot be one `<a>` here: the flag is a `core/image` and the text is a
+   `core/paragraph`, and no core block makes a group into a link. Linking both
+   would put two anchors to the same number in the tab order, which is worse
+   than a narrow hit area. So the paragraph's link is stretched over the row it
+   sits in — the row is the positioning context (set in the variation's `css`
+   field) and this covers it.
+
+   `z-index` is deliberately absent: the flag and the label are not
+   interactive, so there is nothing for the overlay to steal a click from. */
+.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container .wp-block-group a::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+/* The number does not underline on row hover — the tint already says the row is
+   live, and underlining on top of it makes a four-row list flicker as the
+   pointer crosses it. `:focus` still underlines, because a keyboard user gets
+   the tint from `:focus-within` on the row and needs the link itself
+   identified as well. */
+.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container a:hover {
+	color: var(--wp--preset--color--neutral-900);
+	text-decoration: none;
+}
+
+.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container a:focus {
+	text-decoration: underline;
+}
+
+/* Narrow viewports
+   ---------------------------------------------------------------------------
+   Below the point where an anchored pop-out has room to be anchored, the panel
+   stops trying to sit under one end of its trigger and takes what width it can.
+
+   Ollie's own `isDesktop` cuts over at 600px — below it hover-open is off and
+   the panel opens on click, which is the right behaviour on touch and needs
+   nothing from here. `overlayMenu: "never"` means core emits no responsive
+   container, so the plugin's `.is-menu-open` full-screen rules never apply. */
+@media (max-width: 480px) {
+
+	.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container {
+		min-width: min(20rem, calc(100vw - 2 * var(--wp--preset--spacing--20))) !important;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle,
+	.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle-icon svg,
+	.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container,
+	.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container .wp-block-group {
+		transition-duration: 1ms;
+	}
+}

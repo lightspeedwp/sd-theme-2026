@@ -6,6 +6,62 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+
+- **The header's Call Us disclosure is an Ollie dropdown, not a `core/accordion`.** Zared's
+  call, taken from ATI Holidays where the same widget is built this way: it opens on hover,
+  and the pop-out is the plugin's own construction rather than an in-flow accordion panel
+  argued out of the flow with `!important`. `patterns/header.php` now carries a
+  `core/navigation` (`ref` 65909, `overlayMenu: "never"`, `ariaLabel: "Call us"`) holding one
+  `ollie/mega-menu` whose `menuSlug` is the `dropdown-call-us` template part — the same one
+  file the footer and the safari expert panel read, so the four numbers still cannot drift.
+
+  Four shipped bugs went with the swap, each written up in
+  `styles/blocks/navigation/call-us-navigation.json`:
+
+  | Was | Why it happened | Now |
+  |---|---|---|
+  | Panel hung ~50px low | theme.json's global block gap reached the panel as `:root :where(.is-layout-flow) > *{margin-block-start:…}`, and a margin on an absolutely positioned box is added to its inset | The panel is the plugin's container, not a flow child |
+  | White bar under the closed trigger | Core closes with `hidden="until-found"`, which is `content-visibility`, not `display` | Ollie closes with `opacity`/`visibility` in its own stylesheet |
+  | Dropdown opened by itself on hard refresh | `accordion-item.php` registers only `isOpen`; `isHidden` is derived in JS, so the server leaves the attribute off and the panel ships **open** until hydration (~1s on dev) | The resting state is CSS — shut on first paint, no JavaScript involved |
+  | Caret had to be kept in step with `aria-expanded` by hand | It was a rotated square drawn in `core-accordion.css` | Ollie's toggle ships a chevron that rotates off `aria-expanded` itself |
+
+  A phone icon was added beside the label — Phosphor's glyph, the same path already used in
+  three patterns, as an `outermost/icon-block` sibling of the navigation exactly as ATI does
+  it. It is not part of the button's hover or click target; drawing it as a `::before` on the
+  toggle would fix that and lose the editor-visible block, and the block was preferred.
+
+- **New block style: `styles/blocks/navigation/call-us-navigation.json`.** Scopes the Ollie
+  class names so nothing reaches `is-style-main-navigation`, which sits in the same header and
+  uses the same markup. Positioning is CSS, not the plugin's JavaScript, for the reason
+  `assets/styles/ollie-mega-menu.css` already documents for the mega-menu panels:
+  `adjustMegaMenu()` does not run until `window.load`, measured at 7.8s on dev. `width` is
+  `"custom"` rather than `"content"` because `menu-width-content` carries a plugin rule forcing
+  the full content column — `menu-width-custom` has no stylesheet rule at all, so the CSS is
+  uncontested.
+
+- **`ariaLabel` is `"Call us"`, not `"Contact numbers"`.** `parts/mobile-menu.html` already
+  labels its own copy of the numbers that way and both are in the DOM at once; where two
+  landmarks share a label WordPress appends a number, so the pair rendered as "Contact numbers"
+  and "Contact numbers 2". Measured on local, 2026-08-27.
+
+### Removed
+
+- **Four header-only rules from `assets/styles/core-accordion.css`** — the label's
+  `white-space: nowrap`, the `is-style-header` hover colour, the `is-style-header` panel
+  alignment flip, and that same selector in the narrow-viewport block. The file now serves
+  exactly one placement, the safari expert panel.
+
+  That panel keeps the accordion deliberately: `ollie/mega-menu` declares
+  `"parent": ["core/navigation"]`, so using it there would put a navigation landmark inside a
+  per-post content panel and make a `wp_navigation` post a dependency of a template that
+  renders per post.
+
+  `nowrap` is gone rather than moved — Zared's call, leave it out until it is an issue. It
+  existed because "Call Us Today" wrapped inside the header's `flexWrap: nowrap` cluster at
+  1024px and below; the expert panel's row is `flexWrap: wrap` and its label is the shorter
+  "Call Us".
+
 ### Fixed
 
 - **`blockGap` set in the editor disagreed with the front end, and the gap control under a
@@ -204,7 +260,48 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   emits `hidden`; that is behaviour, so it belongs in `sd-enhancements`, and it is really a
   core gap. → LS-2033
 
+- **The blog card's tag footer drew a rule under posts that have no tags.**
+  `core/post-terms` returns an empty string when the post has no terms in the taxonomy
+  (`wp-includes/blocks/post-terms.php:57`) — the block disappears, its wrapper group does
+  not, so an untagged post rendered a bare `primary-300` rule with `spacing|20` of padding
+  beneath the excerpt: a divider dividing nothing. One rule added to
+  `styles/sections/cards/post-grid-card.json`:
+  `& .wp-block-group:not(:has(> *)) { display: none; }`.
+
+  `:not(:has(> *))` and **not** `:empty` — the pattern indents its markup, so the group
+  always holds whitespace text nodes and `:empty` never matches. Measured on the rendered
+  page: the untagged group's contents are `'\n\t\t\t\n\t\t'`.
+
+  Keyed off core's own `.wp-block-group` rather than a hand-rolled `__`-suffixed hook, per
+  AGENTS.md. Two things follow from that: the card's **markup is unchanged**, so the fix
+  reaches the dev front-page DB override with no edit to the database; and it generalises —
+  a post with no featured image empties the Media group, and an empty box is no more wanted
+  there than an empty rule.
+
+  It is CSS rather than a visibility control because neither alternative exists: the
+  condition is per-post inside a Query Loop, which Block Visibility cannot express (its
+  conditions are request-level — role, date, screen size, query string), and the emptiness is
+  only knowable *after* `core/post-terms` has rendered, so there is nothing to branch on at
+  block level.
+
+  `:has()` and `:not()` both survive css-field sanitisation — measured on the local homepage
+  2026-08-27, compiling to
+  `:root :where(.wp-block-group.is-style-post-grid-card--N .wp-block-group:not(:has(> *)))`.
+  So this stayed in JSON instead of dropping to an enqueued sheet, and since nothing else
+  sets `display` on those groups, (0,1,0) is enough — no `!important`. Verified in-browser
+  across four fixture posts, one tagged: computed `display` `block` at 42px on the tagged
+  card, `none` at 0px on the other three.
+
 ### Changed
+
+- **The Trustpilot badge's mark and star tile are slightly larger.** In
+  `patterns/trustpilot-score.php` the Trustpilot logo goes 90px → 105px and the star tile
+  100px → 118px (both ~+17%, so the two keep their relative weight). Requested for the
+  homepage, where the badge arrives through `patterns/why-choose-sd.php`; because this is one
+  shared pattern with no colour or size variants, the same bump also applies to the safari
+  expert panel on the destination archives (`patterns/safari-expert.php`,
+  `patterns/template-archive-destination.php`). The header's Trustpilot badge is separate
+  static markup in `patterns/header.php` (100px / 143px) and is untouched.
 
 - **The panel renders closed in the editor now, by decision.** `.is-open` is an Interactivity
   API class and the module does not run on the canvas, so the rule above closes the panel there

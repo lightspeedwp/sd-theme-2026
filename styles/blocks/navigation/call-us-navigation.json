@@ -1,0 +1,49 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Call Us Navigation",
+	"slug": "call-us-navigation",
+	"blockTypes": [
+		"core/navigation"
+	],
+	"description": "The header's contact-number disclosure — live's `li.call-cta.dropdown` in the Top Menu Right nav. A `core/navigation` carrying one `ollie/mega-menu` whose `menuSlug` is the `dropdown-call-us` template part, so the four numbers stay in the one file the footer and the safari expert panel also read.\n\n## Why this is a navigation and not the accordion\n\nIt was a `core/accordion` carrying `is-style-call-us-dropdown` until 2026-08-27. Zared's call, taken from ATI Holidays where the same widget is an Ollie dropdown: hover-open, and far less CSS to make it overlay.\n\nThe accordion could not open on hover — `core/accordion`'s Interactivity module binds click and nothing else — and everything that made it *look* like a menu had to be authored against markup that was still, underneath, an in-flow disclosure. Four of those costs are gone outright here, and they are worth naming because each was a bug that shipped:\n\n- **The pop-out is the plugin's own construction.** `ollie/mega-menu` renders its panel in a `__menu-container` that its stylesheet already sets `position: absolute` on. The accordion's panel was a flow child of the accordion item, so theme.json's global block gap reached it as `:root :where(.is-layout-flow) > * { margin-block-start: … }`, and a margin on an absolutely positioned box is added to its inset — the panel hung ~50px low, detached from its trigger.\n- **No `hidden=\"until-found\"`.** Core closes an accordion panel with a value that means `content-visibility`, not `display`, so the closed panel's ground, border, radius and shadow went on rendering as a white bar under the trigger. Ollie closes with `opacity` and `visibility` in its own stylesheet, so there is nothing to correct.\n- **No pre-hydration flash.** `core/accordion` ships its panel *open* — `accordion-item.php` registers only `isOpen`, `isHidden` is derived in JS, so the server-side directive processor leaves the attribute off and the panel closes when the module hydrates (about a second on dev). Ollie's resting state is CSS, so the panel is shut on first paint with no JavaScript at all.\n- **No hand-drawn caret.** Ollie's toggle ships a chevron that rotates off `aria-expanded`, which is the same state a screen reader is announcing. `is-style-main-navigation` hides it, because live's primary nav has no chevrons; live's Call Us *does* have one, so it is kept here.\n\nWhat it costs: the trigger's label is a block *attribute* (`label`), so it cannot carry an `esc_html_e()` call the way the accordion's inner text could — it is written inline in `patterns/header.php` as an escaped attribute instead. And the disclosure is now a second `<nav>` landmark in the header, which is why the block sets `ariaLabel`.\n\nThe safari expert panel keeps the accordion. `ollie/mega-menu` declares `\"parent\": [\"core/navigation\"]`, so using it there would put a navigation landmark inside a per-post content panel — wrong for an in-flow disclosure that has no menu semantics. → styles/blocks/accordion/call-us-dropdown.json\n\n## Positioning is CSS here, as it is for the mega menus\n\nOllie positions its panels from JavaScript, and it does so at `window.load` — measured at 7.8s on dev. assets/styles/ollie-mega-menu.css already documents that at length for the mega-menu panels and overrides it; the same reasoning applies here, and the same remedy. `adjustMegaMenu()` still runs and still writes inline `top`/`left`/`width`/`max-width`; an `!important` author declaration outranks a normal inline style, so those writes land and have no effect.\n\nThat is why `position`, the insets, `width` and `max-width` are marked. It is also why the block sets `width: \"custom\"` rather than `\"content\"`: `menu-width-content` carries a plugin rule forcing `width: var(--wp--style--global--content-size)`, which is the whole content column for a panel holding four phone numbers. `menu-width-custom` has no plugin stylesheet rule at all — the width is JS-only — so the CSS below is uncontested and `customWidth` exists purely as the editor-visible intent.\n\n`inset-inline: auto 0` anchors the panel to its trigger's inline end, because Call Us sits in a right-aligned utility cluster where a start-aligned panel would run past the content edge. Logical properties, so it flips under RTL for free. The containing block is the item's own `<li>` — core's navigation stylesheet puts `position: relative` on it, and unlike the mega-menu panels this one *wants* that, so none of the `position: static` unpicking in ollie-mega-menu.css applies here.\n\n`topSpacing: 8` matches the 8px in `inset-block-start`. The attribute no longer places anything, but Ollie still reads it for its hover-out grace period (`dynamicHoverDelay` in view.js), so the pointer gets time to cross the gap.\n\n## Scoping\n\nEvery selector is scoped to this variation so nothing reaches `is-style-main-navigation`, which shares both the header and the `ollie/mega-menu` class names. Note that an *uncontrolled* navigation — inner blocks in the pattern, no `ref` — puts the variation class on the `<ul>` as well as the `<nav>`, so `.wp-block-navigation.is-style-call-us-navigation` matches twice. Every rule here is idempotent, so that is harmless, but do not write a rule whose effect compounds.\n\n`!important` throughout the `css` field, for the reason main-navigation.json records: WordPress wraps a block style's `css` in `:root :where()` at specificity (0,1,0), which loses to core's own navigation rules — including an always-on `color: inherit` reset — and to Ollie's `.wp-block-navigation .wp-block-ollie-mega-menu__menu-container.menu-justified-*` at (0,3,0).\n\n## Not here\n\nHover and focus colour, the row hairlines and their tint, the stretched row link, reduced motion and the narrow-viewport fallback are all in assets/styles/ollie-mega-menu.css. The `css` field cannot hold any of them: it strips `:hover` and `:focus-within`, mangles `content: \"\"`, drops all but one of a comma-separated selector list, and silently unwraps at-rules into unconditional declarations.\n\nThe trigger's colour, size and weight are not here either. They travel on the `core/navigation` block in `patterns/header.php`, where they are visible in the editor — Ollie's stylesheet sets `color: currentColor`, `font-size: inherit` and `font-weight: inherit` on its toggle, so the block's own attributes reach the button without help. That is the same inheritance the accordion needed a JSON declaration to restore, working correctly by default.",
+	"styles": {
+		"blocks": {
+			"core/group": {
+				"spacing": {
+					"padding": {
+						"top": "var(--wp--preset--spacing--10)",
+						"right": "var(--wp--preset--spacing--20)",
+						"bottom": "var(--wp--preset--spacing--10)",
+						"left": "var(--wp--preset--spacing--20)"
+					}
+				}
+			},
+			"core/image": {
+				"spacing": {
+					"margin": {
+						"top": "0",
+						"right": "0",
+						"bottom": "0",
+						"left": "0"
+					}
+				}
+			},
+			"core/paragraph": {
+				"color": {
+					"text": "var(--wp--preset--color--neutral-600)"
+				},
+				"spacing": {
+					"margin": {
+						"top": "0",
+						"bottom": "0"
+					}
+				},
+				"typography": {
+					"letterSpacing": "var(--wp--custom--letter-spacing--narrow)"
+				}
+			}
+		},
+		"css": "& .wp-block-ollie-mega-menu__menu-container{position:absolute !important;inset-block-start:calc(100% + 8px) !important;inset-inline:auto 0 !important;width:auto !important;max-width:none !important;min-width:max(20rem, 100%) !important;overflow:visible !important;background-color:var(--wp--preset--color--base) !important;color:var(--wp--preset--color--neutral-800) !important;border:var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-300) !important;border-radius:var(--wp--preset--border-radius--200) !important;box-shadow:var(--wp--preset--shadow--300) !important;padding-block:var(--wp--preset--spacing--10) !important;text-align:start !important;} & .wp-block-ollie-mega-menu__menu-container > .wp-block-template-part{display:flex !important;flex-direction:column !important;} & .wp-block-ollie-mega-menu__menu-container .wp-block-group{position:relative !important;transition:background-color 0.2s ease;} & .wp-block-ollie-mega-menu__menu-container a{color:var(--wp--preset--color--neutral-800) !important;font-weight:var(--wp--custom--font-weight--semi-bold) !important;letter-spacing:var(--wp--custom--letter-spacing--none) !important;text-decoration:none !important;} & .wp-block-ollie-mega-menu__toggle{transition:color 0.25s ease-in-out;}"
+	}
+}
