@@ -75,6 +75,37 @@
 	overflow: visible;
 }
 
+/* The label must never wrap.
+   ---------------------------------------------------------------------------
+   The trigger sits in the header's utility cluster, which is a flex row with
+   `flexWrap: nowrap`. The *row* cannot wrap, but the words inside this button
+   can — and when "Call Us Today" broke onto two lines the button went from 25px
+   to 49px tall, took the row from 48px to 71px with it, and the header jumped
+   from 108px to 180px. That is the "the Call Us Today dropdown breaks the
+   header" report. Measured on dev at 1024px and 992px, 2026-08-27.
+
+   Two things caused it, and both are fixed:
+
+     1. **The trigger was rendering at font-size 300, not 200.** The variation's
+        own description settled on 200 — "live's header label is 18px bold, which
+        this token scale reaches at 200 (16px) rather than 300 (19.2px, fluid to
+        24px)" — but patterns/header.php still carried `fontSize: "300"`, so the
+        decision was written down and never applied. The label was 123px wide at
+        1440 where it should have been ~102px. Now `fontSize: "200"`.
+
+     2. **Nothing forbade the wrap.** Fixing the size moves the failure width
+        down rather than removing it: any longer label, a larger user font size,
+        or a narrower cluster brings it back. `nowrap` removes the failure mode
+        instead of the current instance of it.
+
+   On the button rather than the title span, so the chevron `::after` stays on
+   the same line as the words. The button is a flex container, so this does not
+   affect how the chevron is laid out beside the label — only whether the label
+   itself may break. */
+.is-style-call-us-dropdown .wp-block-accordion-heading__toggle {
+	white-space: nowrap;
+}
+
 .is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after {
 	content: "";
 	flex: 0 0 auto;

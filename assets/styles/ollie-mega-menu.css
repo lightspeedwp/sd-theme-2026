@@ -13,6 +13,156 @@
  * Tokens only — every value is a theme.json preset.
  */
 
+/* Panel placement — CSS, not JavaScript
+   ---------------------------------------------------------------------------
+   The plugin positions its panels from JavaScript, and it does so *late*. In
+   build/blocks/mega-menu/view.js:
+
+       initMenuLayout() {
+           "complete" === document.readyState
+               ? adjustMegaMenu()
+               : window.addEventListener("load", () => adjustMegaMenu(), {once:true})
+       }
+
+   `adjustMegaMenu()` is what sets the panel's `top`, `left` and `width` as
+   inline styles. Until it runs, the panel keeps the plugin stylesheet's resting
+   values — `top: 0; left: 0` with a content-width box — so it opens *over* the
+   nav row at roughly a third of its intended width, with its three columns
+   crammed into it.
+
+   And it does not run until `window.load`. Measured on dev, 2026-08-27, at 1440
+   × 900:
+
+       window.load fired at                    7 802 ms   (18 441 ms on a second run)
+       panel first got its inline `top` at     7 870 ms   ( +68 ms, every time)
+
+   `window.load` waits for every image, iframe and third-party script on the
+   page, and dev carries a lot of both — GTM, Facebook, LinkedIn Insight,
+   Salesforce, DoubleClick, Trustpilot's widget, Popup Maker. Blocking every
+   third-party host still left `window.load` at 5 738 ms, so this is not one
+   vendor's fault and cannot be tuned away: the panels are unusable for as long
+   as the slowest asset on the page takes, whatever that happens to be.
+
+   That is three reported symptoms from one cause — the menus "take forever to
+   open", they are "squashed for a while on load", and the page carries
+   horizontal overflow (227px before `adjustMegaMenu()` runs; see below for the
+   13px that was left afterwards).
+
+   So the panel is positioned here instead, and the JavaScript is left to lose.
+
+   ## How it lands
+
+   Three of the four values the plugin computes are static once you pick the
+   right containing block:
+
+       plugin (measured, per panel)          here
+       ------------------------------------  --------------------------------
+       top:   50px  (the topSpacing attr)    inset-block-start: 100%
+       left:  -587.5px … -1228.59px          inset-inline-start: 0
+       width: 1440px  (window.innerWidth)    inset-inline-end: 0
+
+   …for the `menu-width-full` panels, which is what dev carries. The narrower
+   width settings keep the plugin stylesheet's own width and are only placed,
+   so the author's choice in the Menu Designer still decides how wide a panel is.
+
+   `100%` of the containing block, and `0` on both inline edges, need no
+   measurement at all — which is why they can be CSS and why they are right from
+   first paint.
+
+   ## Why the ancestors go `position: static`
+
+   The panel's containing block is currently its own `<li>`, so `inset-inline: 0`
+   would span one nav item. Core's navigation stylesheet puts `position: relative`
+   on the nav, on its container and on every item — confirmed against the
+   rendered page via CSS.getMatchedStylesForNode, all from `.wp-block-navigation`
+   and `.wp-block-navigation .wp-block-navigation-item`, both at low specificity.
+   Taking those three back to `static` hands the containing block up to the
+   header group, which is `position: sticky` and therefore already a containing
+   block for absolute descendants.
+
+   That is safe *for this nav specifically*: `is-style-main-navigation` carries
+   `overlayMenu: "never"` and has no core submenus in it — its five top-level
+   items are four `ollie/mega-menu` dropdowns and one plain link (measured on
+   dev) — so there is no core submenu whose positioning could depend on the
+   `relative` we are removing. Scoping every selector to `.is-style-header
+   .is-style-main-navigation` keeps the mobile nav, the mega panels' own nested
+   navs and every other nav on the site untouched.
+
+   ## Why `inset-inline: 0` and not the plugin's width
+
+   Percentage and zero insets resolve against the containing block's *padding
+   box*, and the header is `alignfull` with zero border — so `inset-inline: 0`
+   is exactly the viewport's content width. The plugin used
+   `window.innerWidth`, which *includes* the scrollbar: 1440 against a
+   documentElement clientWidth of 1427. That 13px was measured as horizontal
+   overflow at 1280, 1366 and 1440 on both dev and local, and it goes away here
+   for free.
+
+   `inset-block-start: 100%` is the header's own height, so the panel meets the
+   header's bottom edge at every breakpoint with no height token to keep in sync
+   — and because the panel now shares the sticky header's containing block, it
+   stays put while the header is stuck.
+
+   ## Why `!important`
+
+   `adjustMegaMenu()` still runs at `window.load` and still writes inline
+   `top`/`left`/`width`/`max-width`. An `!important` author declaration outranks
+   a normal inline style, so those writes land and have no effect — the panel
+   never moves, and there is no second reflow when they arrive. Nothing here
+   stops the plugin's JavaScript: opening, closing, hover intent, focus
+   handling, `Escape` and the close button are all still its own.
+
+   `menu-width-*` and `menu-justified-*` keep being emitted and keep being
+   overridden; the plugin's own `.menu-justified-center` rule sits at (0,3,0),
+   which is why the insets are marked rather than merely out-specified.
+
+   The plugin's mobile-overlay rules (`.is-menu-open …`) are also `!important`
+   at (0,3,0) and would tie with these on source order — moot, because a nav
+   with `overlayMenu: "never"` never emits a responsive container. If a future
+   overlay is ever wanted on *this* nav, that tie is the thing to re-check. */
+.is-style-header .wp-block-group:has(> .is-style-main-navigation),
+.is-style-header .is-style-main-navigation,
+.is-style-header .is-style-main-navigation > .wp-block-navigation__container,
+.is-style-header .is-style-main-navigation > .wp-block-navigation__container > .wp-block-navigation-item {
+	position: static;
+}
+
+.is-style-header .is-style-main-navigation .wp-block-ollie-mega-menu__menu-container {
+	position: absolute !important;
+	inset-block-start: 100% !important;
+}
+
+/* `menu-width-full` — the setting all four panels carry on dev — spans the
+   header, and therefore the viewport's content width. */
+.is-style-header .is-style-main-navigation .wp-block-ollie-mega-menu__menu-container.menu-width-full {
+	inset-inline: 0 !important;
+	width: auto !important;
+	max-width: none !important;
+}
+
+/* Any other width setting keeps the width the plugin's own stylesheet gives it
+   — `content`, `wide`, or the custom pixel value — and is only placed here.
+   Centred is the case that matters (all four panels are `menu-justified-center`);
+   left and right anchor to the header's edges. Local's menu fixture still says
+   `wide`, so this branch is live there, and the two coincide at exactly 1440px
+   because `wideSize` is 1440px — which is why forcing full-bleed looked
+   harmless at that one viewport and wrong at 1600. */
+.is-style-header .is-style-main-navigation .wp-block-ollie-mega-menu__menu-container.menu-justified-center:not(.menu-width-full) {
+	inset-inline-start: 50% !important;
+	inset-inline-end: auto !important;
+	transform: translateX(-50%);
+}
+
+.is-style-header .is-style-main-navigation .wp-block-ollie-mega-menu__menu-container.menu-justified-left:not(.menu-width-full) {
+	inset-inline-start: 0 !important;
+	inset-inline-end: auto !important;
+}
+
+.is-style-header .is-style-main-navigation .wp-block-ollie-mega-menu__menu-container.menu-justified-right:not(.menu-width-full) {
+	inset-inline-start: auto !important;
+	inset-inline-end: 0 !important;
+}
+
 /* The panel
    ---------------------------------------------------------------------------
    Live shows three equal columns with hairline rules between them, and columns
