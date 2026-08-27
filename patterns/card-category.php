@@ -13,7 +13,7 @@
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Category Tile"},"className":"is-style-category-card","layout":{"type":"default"}} -->
+<!-- wp:group {"metadata":{"name":"Category Tile"},"className":"is-style-category-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-category-card">
 	<!-- wp:group {"metadata":{"name":"Media"},"className":"category-card__media","layout":{"type":"default"}} -->
 	<div class="wp-block-group category-card__media">

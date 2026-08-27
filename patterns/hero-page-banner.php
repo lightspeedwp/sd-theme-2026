@@ -57,7 +57,7 @@
  */
 
 ?>
-<!-- wp:cover {"useFeaturedImage":true,"dimRatio":50,"minHeight":454,"minHeightUnit":"px","metadata":{"name":"Page Hero Banner"},"align":"full","className":"is-style-hero-banner","layout":{"type":"constrained"}} -->
+<!-- wp:cover {"useFeaturedImage":true,"dimRatio":50,"minHeight":454,"minHeightUnit":"px","metadata":{"name":"Page Hero Banner"},"align":"full","className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-cover alignfull is-style-hero-banner" style="min-height:454px">
 	<span aria-hidden="true" class="wp-block-cover__background has-background-dim"></span>
 	<div class="wp-block-cover__inner-container">

@@ -110,7 +110,7 @@
 			<h4 class="wp-block-accordion-heading"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title"><?php esc_html_e( 'Call Us', 'sd-theme-2026' ); ?></span></button></h4>
 			<!-- /wp:accordion-heading -->
 
-			<!-- wp:accordion-panel -->
+			<!-- wp:accordion-panel {"style":{"spacing":{"blockGap":"0"}}} -->
 			<div role="region" class="wp-block-accordion-panel"><!-- wp:template-part {"slug":"dropdown-call-us","area":"menu"} /--></div>
 			<!-- /wp:accordion-panel --></div>
 			<!-- /wp:accordion-item --></div>

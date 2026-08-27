@@ -17,13 +17,13 @@
 ?>
 
 <!-- wp:group {"tagName":"main","metadata":{"name":"News"},"align":"full","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"blockGap":"0"}},"layout":{"type":"constrained"},"anchor":"content"} -->
-<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0"><!-- wp:group {"tagName":"section","metadata":{"name":"Archive Hero"},"align":"full","className":"is-style-dark-page-section","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"backgroundColor":"contrast","textColor":"base","layout":{"type":"constrained"}} -->
+<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0"><!-- wp:group {"tagName":"section","metadata":{"name":"Archive Hero"},"align":"full","className":"is-style-dark-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40","padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"backgroundColor":"contrast","textColor":"base","layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull is-style-dark-page-section has-base-color has-contrast-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)"><!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignwide"><!-- wp:query-title {"type":"archive","showPrefix":false,"level":1,"align":"wide","textColor":"base","fontSize":"800","style":{"typography":{"fontStyle":"normal","fontWeight":"var:custom|font-weight|semi-bold","letterSpacing":"0.03em"}}} /--></div>
 <!-- /wp:group --></section>
 <!-- /wp:group -->
 
-<!-- wp:group {"align":"full","className":"is-style-light-page-section","layout":{"type":"constrained"}} -->
+<!-- wp:group {"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull is-style-light-page-section"><!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|80"}}}} -->
 <div class="wp-block-columns alignwide"><!-- wp:column {"width":"90%"} -->
 <div class="wp-block-column" style="flex-basis:90%"><!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[]},"layout":{"type":"default"}} -->

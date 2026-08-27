@@ -22,7 +22,6 @@
 				},
 				"shadow": "var(--wp--preset--shadow--300)",
 				"spacing": {
-					"blockGap": "0",
 					"padding": {
 						"top": "var(--wp--preset--spacing--10)",
 						"right": "0",
@@ -39,7 +38,6 @@
 			},
 			"core/group": {
 				"spacing": {
-					"blockGap": "var(--wp--preset--spacing--10)",
 					"padding": {
 						"top": "var(--wp--preset--spacing--10)",
 						"right": "var(--wp--preset--spacing--20)",

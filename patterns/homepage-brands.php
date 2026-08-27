@@ -70,7 +70,7 @@
 	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-we-only-work-with-africas-finest"><?php esc_html_e( 'We only work with Africa’s finest', 'sd-theme-2026' ); ?></h2>
 	<!-- /wp:heading -->
 
-	<!-- wp:terms-query {"termQuery":{"perPage":21,"taxonomy":"accommodation-brand","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider"} -->
+	<!-- wp:terms-query {"termQuery":{"perPage":21,"taxonomy":"accommodation-brand","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
 	<div class="wp-block-terms-query alignwide is-style-slider-frame lsx-to-slider">
 		<!-- wp:term-template {"className":"columns-5","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":5}} -->
 			<!-- wp:group {"metadata":{"name":"Brand Logo"},"style":{"spacing":{"blockGap":"0","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center","verticalAlignment":"center"}} -->

@@ -10,7 +10,6 @@
 			"text": "var:preset|color|base"
 		},
 		"spacing": {
-			"blockGap": "var:preset|spacing|10",
 			"padding": {
 				"top": "var:preset|spacing|90",
 				"right": "var:preset|spacing|20",

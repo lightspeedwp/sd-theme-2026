@@ -124,7 +124,7 @@
 	 * here, and only because only the block can carry it.
 	 */
 	?>
-	<!-- wp:group {"metadata":{"name":"Footer Widgets","description":"Live's #footer-widgets — four columns over the sunset photograph."},"align":"full","className":"is-style-site-footer","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/08/footer-bg.jpg"},"backgroundPosition":"50% 100%","backgroundRepeat":"no-repeat","backgroundSize":"cover"}},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"metadata":{"name":"Footer Widgets","description":"Live's #footer-widgets — four columns over the sunset photograph."},"align":"full","className":"is-style-site-footer","style":{"spacing":{"blockGap":"var:preset|spacing|50"},"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/08/footer-bg.jpg"},"backgroundPosition":"50% 100%","backgroundRepeat":"no-repeat","backgroundSize":"cover"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignfull is-style-site-footer">
 
 		<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
@@ -330,7 +330,7 @@
 	 * note at the top of the file.
 	 */
 	?>
-	<!-- wp:group {"metadata":{"name":"Colophon","description":"Live's footer#colophon — copyright left, terms links right."},"align":"full","className":"is-style-footer-colophon","layout":{"type":"constrained"}} -->
+	<!-- wp:group {"metadata":{"name":"Colophon","description":"Live's footer#colophon — copyright left, terms links right."},"align":"full","className":"is-style-footer-colophon","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignfull is-style-footer-colophon">
 
 		<!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->

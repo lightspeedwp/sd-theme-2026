@@ -60,7 +60,7 @@
 	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-tales-from-our-trails"><?php esc_html_e( 'Tales from our trails', 'sd-theme-2026' ); ?></h2>
 	<!-- /wp:heading -->
 
-	<!-- wp:query {"queryId":0,"query":{"perPage":18,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","layout":{"type":"default"}} -->
+	<!-- wp:query {"queryId":0,"query":{"perPage":18,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
 	<div class="wp-block-query alignwide is-style-slider-frame lsx-to-slider">
 		<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3}} -->
 			<!-- wp:pattern {"slug":"sd-theme-2026/card-post-grid"} /-->

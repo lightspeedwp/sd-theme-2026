@@ -120,7 +120,7 @@ if ( ! is_string( $sd_team_archive ) || '' === $sd_team_archive ) {
 	$sd_team_archive = home_url( '/team/' );
 }
 ?>
-<!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - Meet our safari gurus"},"align":"full","className":"is-style-light-page-section","layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - Meet our safari gurus"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull is-style-light-page-section">
 
 	<!-- wp:group {"metadata":{"name":"Gurus Grid"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|50"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->

@@ -186,6 +186,28 @@ What goes where:
 When you must put something in a `.css` file, add a comment saying which limit forced it, and
 link back to this rule. The `wp-blockstyle-css-field` skill has the full matrix.
 
+> ⚠️ **`blockGap` is the exception: it never goes in a variation JSON.** Put it on the block
+> markup — `"style":{"spacing":{"blockGap":"var:preset|spacing|40"}}` in the pattern, part or
+> template. Measured on WP 7.1, 2026-08-27:
+>
+> - **`styles.spacing.blockGap` on the variation's own wrapper is emitted nowhere** — not in
+>   the editor and not on the front end. Core's variation stylesheet generator skips it, and
+>   the element gets no `wp-container-*` class, so the declaration is inert. Eighteen of this
+>   theme's nineteen variations carried one; all eighteen were dead.
+> - **`styles.blocks.<block>.spacing.blockGap` (a nested block) is emitted on the front end
+>   only.** The front end writes the full layout set — `…-is-layout-flex{gap}`,
+>   `…-is-layout-flow > *{margin-block-start}`, `> :first-child`, `> :last-child`,
+>   `…-is-layout-grid{gap}`. The editor writes **none of it** (`grep -c 'is-layout-'` over the
+>   editor's variation CSS returns 0), so the canvas silently falls back to theme.json's
+>   `:root :where(.is-layout-flex){gap:var(--wp--preset--spacing--60)}`. That is what made
+>   editor spacing disagree with the front end.
+>
+> Two related asymmetries to know about, both inherent to core and neither worth working
+> around: the variation selector is `.is-style-X--N` (0,2,0) on the front end but
+> `.wp-block-group.is-style-X-‹uuid›` (0,3,0) in the editor, and `style.css` sits *after*
+> global styles on the front end but *before* them in the editor. Don't write authored CSS
+> that depends on either winning.
+
 ### PHP (`functions.php`, `inc/`, `patterns/*.php`)
 
 - Escape **all** output (`esc_html`, `esc_attr`, `esc_url`, `wp_kses_post`) and include the

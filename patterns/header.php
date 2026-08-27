@@ -242,7 +242,7 @@
 				<h3 class="wp-block-accordion-heading"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title"><?php esc_html_e( 'Call Us Today', 'sd-theme-2026' ); ?></span></button></h3>
 				<!-- /wp:accordion-heading -->
 
-				<!-- wp:accordion-panel -->
+				<!-- wp:accordion-panel {"style":{"spacing":{"blockGap":"0"}}} -->
 				<div role="region" class="wp-block-accordion-panel"><!-- wp:template-part {"slug":"dropdown-call-us","area":"menu"} /--></div>
 				<!-- /wp:accordion-panel --></div>
 				<!-- /wp:accordion-item --></div>
@@ -339,7 +339,7 @@
 				?>
 				<!-- wp:group {"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true}}}}]}} -->
 				<div class="wp-block-group">
-					<!-- wp:navigation {"ref":65877,"overlayMenu":"always","icon":"menu","mobileMenuSlug":"mobile-menu","className":"is-style-mobile-navigation","ariaLabel":"<?php esc_attr_e( 'Main navigation', 'sd-theme-2026' ); ?>","layout":{"type":"flex","justifyContent":"right"}} /-->
+					<!-- wp:navigation {"ref":65877,"overlayMenu":"always","icon":"menu","mobileMenuSlug":"mobile-menu","className":"is-style-mobile-navigation","ariaLabel":"<?php esc_attr_e( 'Main navigation', 'sd-theme-2026' ); ?>","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","justifyContent":"right"}} /-->
 				</div>
 				<!-- /wp:group -->
 

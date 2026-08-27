@@ -10,7 +10,6 @@
 			"minHeight": "var:custom|footer|widgets-min-height"
 		},
 		"spacing": {
-			"blockGap": "var:preset|spacing|50",
 			"margin": {
 				"top": "0"
 			},

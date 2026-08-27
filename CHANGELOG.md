@@ -6,6 +6,52 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Fixed
+
+- **Spacing set in the editor now renders in the editor.** `blockGap` moved out of the block
+  style variation JSONs and onto the block markup — 29 delimiters across 21 files, 20
+  `blockGap` declarations removed from 19 `styles/**` partials. Measured on WP 7.1 against the
+  `index` template and the homepage.
+
+  The cause: core generates variation CSS differently in the two environments. On the front
+  end each variation gets its full layout set — `…-is-layout-flex{gap}`,
+  `…-is-layout-flow > *{margin-block-start}`, `> :first-child`, `> :last-child`,
+  `…-is-layout-grid{gap}`. **The editor generates none of it** — 86 rules / 34.5 KB of
+  variation CSS on the front end against 59 rules / 23.0 KB in the editor, with
+  `grep -c 'is-layout-'` returning 0 for the editor. So the canvas fell through to
+  theme.json's `:root :where(.is-layout-flex){gap:var(--wp--preset--spacing--60)}`. The four
+  Call Us dropdown rows computed **8px on the front end and 37.008px in the editor**; they
+  now compute 8px in both, each row carrying its own `wp-container-*` class.
+
+  Worse underneath it: **`spacing.blockGap` on a variation's *own* wrapper is emitted
+  nowhere**, front end or editor. Eighteen of the nineteen variations declared one and all
+  eighteen were inert — `.is-style-site-footer`, `.is-style-footer-colophon` and
+  `.is-style-section-header` carried no `wp-container-*` class at all. Those elements now
+  carry one. The intended values are preserved on the markup:
+
+  | Variation | blockGap | Now set on |
+  |---|---|---|
+  | `dark-page-section` | `spacing\|40` | `template-index-news.php`, `template-category.php` |
+  | `light-page-section` | `spacing\|40` | `template-index-news.php`, `template-category.php`, `homepage-dream-trip.php`, `homepage-safari-gurus.php` |
+  | `tinted-page-section` | `spacing\|40` | `template-archive-destination.php` |
+  | `site-footer` | `spacing\|50` | `footer.php` |
+  | `footer-colophon` | `spacing\|20` | `footer.php` |
+  | `hero-banner` | `spacing\|10` | `hero-page-banner.php`, `template-archive-destination.php` |
+  | `slider-frame` | `spacing\|30` | `homepage-brands.php`, `homepage-tales-from-our-trails.php` |
+  | `call-us-dropdown` | `spacing\|10` / `0` | `parts/dropdown-call-us.html` ×4, panel in `header.php` + `safari-expert.php` |
+  | seven card variations | `0` | their nine `card-*.php` patterns |
+  | `mobile-navigation` | `0` | `header.php` (`parts/mobile-menu.html` already had it) |
+
+  Sites that already declared their own `blockGap` on the markup keep it — an explicit local
+  choice outranks a variation default. `brand-page-section`, `section-header` and
+  `special-card` are registered but used in no pattern, so their gaps (`spacing|30`,
+  `spacing|10`, `0`) have no consumer and are recorded here rather than on markup.
+
+  Verified: front-end computed spacing is **unchanged** across all 203 block elements on the
+  homepage (0 differences before vs after); all `styles/**` JSON parses; `php -l` clean across
+  `patterns/`; all 723 block delimiters in `patterns/`, `parts/` and `templates/` parse as
+  JSON.
+
 ### Changed
 
 - **All 39 pattern files now follow core's form exactly.** Measured against the 155 pattern

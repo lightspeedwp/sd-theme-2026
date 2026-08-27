@@ -14,7 +14,7 @@
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Accommodation Card — List"},"className":"is-style-listing-card-list","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"layout":{"type":"default"}} -->
+<!-- wp:group {"metadata":{"name":"Accommodation Card — List"},"className":"is-style-listing-card-list","style":{"spacing":{"blockGap":"0","margin":{"bottom":"var:preset|spacing|30"}}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-listing-card-list" style="margin-bottom:var(--wp--preset--spacing--30)">
 	<!-- wp:group {"metadata":{"name":"Media"},"className":"listing-card__media","layout":{"type":"default"}} -->
 	<div class="wp-block-group listing-card__media">

@@ -14,7 +14,7 @@
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Destination Card — Compact"},"className":"is-style-listing-card-compact","layout":{"type":"default"}} -->
+<!-- wp:group {"metadata":{"name":"Destination Card — Compact"},"className":"is-style-listing-card-compact","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-listing-card-compact">
 	<!-- wp:group {"metadata":{"name":"Media"},"className":"listing-card-compact__media","layout":{"type":"default"}} -->
 	<div class="wp-block-group listing-card-compact__media">

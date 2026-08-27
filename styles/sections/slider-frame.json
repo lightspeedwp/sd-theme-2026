@@ -12,9 +12,6 @@
 	],
 	"description": "The wrapper for a carousel, supplying the arrow and dot presentation the live site uses on its homepage and single-page sliders. The nav itself is drawn by whichever carousel is inside — Slick under Tour Operator, Swiper under the Carousel Block — so neither set of markup is ours to put in a block-style JSON. It applies to core/group and to the two query blocks Tour Operator's \"Enable Slider\" checkbox extends (core/query, core/terms-query), because Slick appends its arrows and dots to the *parent* of the template element — custom.js:479-480 — which is the query block itself. This style declares the three values as custom properties on that element and assets/styles/core-group.css binds them to both vendors' hooks, which is the pattern in wp-thirdparty-markup-styling: scope to the is-style class so natural specificity wins without !important. Measured on the live site 2026-08-20: arrows #B4A48C on a 50% radius with a 2px transparent border; dots #938673, also fully round.",
 	"styles": {
-		"spacing": {
-			"blockGap": "var:preset|spacing|30"
-		},
 		"css": "& { --sd-slider-nav-color: var(--wp--preset--color--neutral-400); --sd-slider-nav-color-active: var(--wp--preset--color--brand-500); --sd-slider-dot-color: var(--wp--preset--color--neutral-500); position: relative; }"
 	}
 }

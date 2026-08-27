@@ -14,7 +14,7 @@
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Post Grid Card"},"className":"is-style-post-grid-card","layout":{"type":"default"}} -->
+<!-- wp:group {"metadata":{"name":"Post Grid Card"},"className":"is-style-post-grid-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-post-grid-card">
 	<!-- wp:group {"metadata":{"name":"Media"},"className":"post-grid-card__media","layout":{"type":"default"}} -->
 	<div class="wp-block-group post-grid-card__media">

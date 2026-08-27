@@ -11,7 +11,6 @@
 			"text": "var:preset|color|neutral-400"
 		},
 		"spacing": {
-			"blockGap": "var:preset|spacing|20",
 			"margin": {
 				"top": "0"
 			},

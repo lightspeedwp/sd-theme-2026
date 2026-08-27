@@ -14,7 +14,7 @@
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Media Overlay Card"},"className":"is-style-media-overlay-card","layout":{"type":"default"}} -->
+<!-- wp:group {"metadata":{"name":"Media Overlay Card"},"className":"is-style-media-overlay-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-media-overlay-card">
 	<!-- wp:group {"metadata":{"name":"Media"},"className":"media-overlay-card__media","layout":{"type":"default"}} -->
 	<div class="wp-block-group media-overlay-card__media">

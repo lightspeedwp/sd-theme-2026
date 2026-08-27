@@ -14,7 +14,7 @@
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Post Card — List"},"className":"is-style-blog-card-wide","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|50"}}},"layout":{"type":"default"}} -->
+<!-- wp:group {"metadata":{"name":"Post Card — List"},"className":"is-style-blog-card-wide","style":{"spacing":{"blockGap":"0","margin":{"bottom":"var:preset|spacing|50"}}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-blog-card-wide" style="margin-bottom:var(--wp--preset--spacing--50)">
 	<!-- wp:group {"metadata":{"name":"Media"},"className":"blog-card-wide__media","layout":{"type":"default"}} -->
 	<div class="wp-block-group blog-card-wide__media">

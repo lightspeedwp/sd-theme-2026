@@ -36,7 +36,7 @@
  */
 
 ?>
-<!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - How to plan your dream trip"},"align":"full","className":"is-style-light-page-section","layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - How to plan your dream trip"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull is-style-light-page-section"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|80"}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignwide"><!-- wp:image {"id":50292,"width":"300px","sizeSlug":"full","linkDestination":"none","align":"center"} -->
 <figure class="wp-block-image aligncenter size-full is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/home-intro-logo.svg" alt="" class="wp-image-50292" style="width:300px;height:auto"/></figure>
