@@ -8,6 +8,54 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **The Call Us dropdown opened itself on every hard refresh, then closed a second later.**
+  The panel is closed by an attribute the server never writes. Core renders it as
+  `<div data-wp-bind--hidden="state.isHidden" role="region" class="wp-block-accordion-panel">`
+  — the directive, with no resolved value — because `accordion-item.php` registers only
+  `isOpen` through `wp_interactivity_state()` while `isHidden` is derived in the JS store
+  (@wordpress/block-library/accordion/view). The server-side directive processor has nothing
+  to resolve `state.isHidden` against, so it leaves the attribute off and the panel ships
+  **open**, closing only when the Interactivity module hydrates. Confirmed in the shipped HTML
+  of local and dev both; imperceptible on local, about a second on dev, which is why it read as
+  environment-specific.
+
+  The closed state now keys off the item's `.is-open` class as well as the panel's `[hidden]`
+  — `.is-style-call-us-dropdown .wp-block-accordion-item:not(.is-open) .wp-block-accordion-panel`
+  — because `.is-open` is absent in exactly the two states that matter: before hydration and
+  after a close. It is set by `data-wp-class--is-open` in step with `hidden` and
+  `aria-expanded`, so it cannot disagree with what a screen reader announces, and the chevron
+  rotation was already keyed off it.
+
+  Verified under CDP throttling (300ms latency, 400KB/s) so the hydration window was wide:
+  **284 sampled frames, 0 of them painted the panel open**, with `hidden` arriving at
+  dt=5098ms. Click-to-open still lands 8px under the trigger with right edges flush, and the
+  close still animates — `display: block` at opacity 0.24 mid-transition, then `none`.
+
+  Cost: with JavaScript off the panel stays shut and the toggle is inert. It was already inert
+  — `core/accordion` is a JS component — so this trades "four numbers permanently overlapping
+  the nav" for "four numbers not shown", and every one of them appears elsewhere on the page.
+  Fixing it at the source would mean registering the derived `isHidden` in PHP so the server
+  emits `hidden`; that is behaviour, so it belongs in `sd-enhancements`, and it is really a
+  core gap. → LS-2033
+
+### Changed
+
+- **The panel renders closed in the editor now, by decision.** `.is-open` is an Interactivity
+  API class and the module does not run on the canvas, so the rule above closes the panel there
+  too. Zared's call: the numbers are edited in the `dropdown-call-us` template part, not
+  through the header. Three rules that existed only to render it open on the canvas came out
+  with it — `display: block` on the accordion, `position: static; box-shadow: none` on the
+  panel, and a chevron pointed up to match, which was actively wrong once the panel was closed.
+
+  Recorded so the next attempt does not waste the hour: an editor exemption **cannot** be
+  written from `core-accordion.css`. The variation's `css` field compiles into the editor's
+  variation stylesheet as
+  `:root :where(:root :where(.wp-block-accordion.is-style-call-us-dropdown-<uuid>) .wp-block-accordion-panel[hidden])`
+  carrying `display: none !important`. Measured in the canvas iframe: an exemption at (0,4,0)
+  whose `.editor-styles-wrapper` ancestor *does* match still lost to it. Editor state after
+  the change: panel `display: none`, chevron in its closed position, panel still carrying
+  `data-block` so it stays reachable in List View.
+
 - **The chevron's right-hand corner was clipped by core's `overflow: hidden`.** The toggle
   carries `overflow: hidden` from `wp-includes/blocks/accordion-heading/style.css` — core's own
   `+`/`×` indicator rotates inside a fixed box and has no reason to spill. A rotated square

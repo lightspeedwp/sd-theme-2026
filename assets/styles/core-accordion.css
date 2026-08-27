@@ -201,6 +201,46 @@
 	inset-inline: auto 0;
 }
 
+/* Before hydration
+   ---------------------------------------------
+   The panel has to be closed by CSS, not only by the `hidden` attribute, because
+   on first paint that attribute is not there yet.
+
+   Core renders the panel with the *directive* and no resolved value:
+
+       <div data-wp-bind--hidden="state.isHidden" role="region"
+            class="wp-block-accordion-panel ...">
+
+   `accordion-item.php` registers only `isOpen` through `wp_interactivity_state()`;
+   `isHidden` is derived in the JS store
+   (@wordpress/block-library/accordion/view), so the server-side directive
+   processor has nothing to resolve `state.isHidden` against and leaves the
+   attribute off. The panel therefore ships **open** and closes when the
+   Interactivity module hydrates — imperceptible on local, about a second on dev,
+   where it reads as the dropdown opening by itself on every hard refresh.
+   Measured in the shipped HTML of both hosts, 2026-08-27.
+
+   `.is-open` is the fix because it is absent in exactly the two states that
+   matter: before hydration, and after a close. It is set by
+   `data-wp-class--is-open="state.isOpen"` on the item, in step with the panel's
+   `hidden` and the button's `aria-expanded`, so nothing here can disagree with
+   what a screen reader is announcing — the same reason the chevron rotation is
+   keyed off it.
+
+   Cost, and why it is acceptable: with JavaScript off the panel now stays shut
+   and the toggle is inert. It was already inert — `core/accordion` is a JS
+   component, its button does nothing without the module — so the change is from
+   "four numbers permanently overlapping the nav" to "four numbers not shown", and
+   every one of them appears elsewhere on the page (the footer and the safari
+   expert panel both carry `tel:` links).
+
+   Fixing it upstream instead would mean registering the derived `isHidden` in PHP
+   so the server emits `hidden`. That is behaviour, not design, so it would belong
+   in `sd-enhancements` rather than here — and it is really a core gap. → LS-2033 */
+.is-style-call-us-dropdown .wp-block-accordion-item:not(.is-open) .wp-block-accordion-panel {
+	display: none;
+}
+
 /* Opening and closing
    ---------------------------------------------
    The panel fades and drops 6px into place. Fifth thing the variation JSON
@@ -238,7 +278,8 @@
 		display 0.18s allow-discrete;
 }
 
-.is-style-call-us-dropdown .wp-block-accordion-panel[hidden] {
+.is-style-call-us-dropdown .wp-block-accordion-panel[hidden],
+.is-style-call-us-dropdown .wp-block-accordion-item:not(.is-open) .wp-block-accordion-panel {
 	opacity: 0;
 	transform: translateY(-0.375rem);
 }
@@ -281,25 +322,22 @@
 
 /* Editor
    ---------------------------------------------
-   In the editor the panel must not be absolutely positioned, or it floats over
-   the blocks after it and the rows inside it cannot be selected. `.is-open` is
-   not set in the editor either — the panel is simply rendered open — so the
-   caret is pointed down to match what is on screen.
+   The panel renders **closed** in the editor, and that is deliberate as of
+   2026-08-27. `.is-open` is never set on the canvas — it is an Interactivity API
+   class and the module does not run there — so the pre-hydration rule above
+   closes the panel here too. The numbers are edited where they live, in the
+   `dropdown-call-us` template part, not through the header.
 
-   The motion above is inert here for the same reason: the panel is neither
-   `[hidden]` nor entering from `display: none`, so it simply renders at rest.
+   This replaced three rules that existed only to render the panel open on the
+   canvas: `display: block` on the accordion, `position: static; box-shadow: none`
+   on the panel, and a chevron pointed up to match. All three are moot with the
+   panel closed, and the chevron one was actively wrong — closed wants the base
+   down-chevron.
 
-   `.editor-styles-wrapper` only exists inside the editor iframe, so the front
-   end is untouched. */
-.editor-styles-wrapper .is-style-call-us-dropdown {
-	display: block;
-}
-
-.editor-styles-wrapper .is-style-call-us-dropdown .wp-block-accordion-panel {
-	position: static;
-	box-shadow: none;
-}
-
-.editor-styles-wrapper .is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after {
-	transform: translateY(0.1em) rotate(-135deg);
-}
+   Worth recording for the next attempt at an editor exemption: it cannot be done
+   from this file. The variation's `css` field compiles into the editor's
+   variation stylesheet as
+   `:root :where(:root :where(.wp-block-accordion.is-style-call-us-dropdown-<uuid>) .wp-block-accordion-panel[hidden])`
+   carrying `display: none !important`, so no authored rule without `!important`
+   can reopen it. Measured in the canvas iframe, where `.editor-styles-wrapper`
+   *does* match and the rule still lost. */
