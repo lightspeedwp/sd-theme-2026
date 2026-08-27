@@ -77,7 +77,7 @@
 	<!-- /wp:image -->
 
 	<?php /* The star tile. Bound on `url`; decorative, because the rating is in the text on both sides. */ ?>
-	<!-- wp:image {"width":"118px","sizeSlug":"full","className":"sd-trustpilot__stars","metadata":{"name":"Star rating","bindings":{"url":{"source":"sd/trustpilot","args":{"key":"stars_image"}}}}} -->
+	<!-- wp:image {"width":"160px","sizeSlug":"full","className":"sd-trustpilot__stars","metadata":{"name":"Star rating","bindings":{"url":{"source":"sd/trustpilot","args":{"key":"stars_image"}}}}} -->
 	<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg' ) ); ?>" alt="" style="width: 160px; height: auto;"/></figure>
 	<!-- /wp:image -->
 
