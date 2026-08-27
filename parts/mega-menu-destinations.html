@@ -1,33 +1,29 @@
-<!-- wp:group {"metadata":{"name":"Mega Menu — Destinations"},"align":"wide","className":"sd-mega-panel","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignwide sd-mega-panel"><!-- wp:columns {"className":"sd-mega-panel__columns"} -->
-<div class="wp-block-columns sd-mega-panel__columns"><!-- wp:column {"width":"260px","className":"sd-mega-panel__column"} -->
-<div class="wp-block-column sd-mega-panel__column" style="flex-basis:260px"><!-- wp:heading {"level":2,"className":"sd-mega-panel__heading","fontSize":"100"} -->
-<h2 class="wp-block-heading sd-mega-panel__heading has-100-font-size">Countries</h2>
+<!-- wp:group {"metadata":{"name":"Mega Menu — Destinations"},"align":"wide","className":"sd-mega-panel","backgroundColor":"base","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignwide sd-mega-panel has-base-background-color has-background"><!-- wp:columns {"align":"wide","className":"sd-mega-panel__columns","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|70"}}}} -->
+<div class="wp-block-columns alignwide sd-mega-panel__columns"><!-- wp:column {"width":"30%","className":"sd-mega-panel__column"} -->
+<div class="wp-block-column sd-mega-panel__column" style="flex-basis:30%"><!-- wp:heading {"className":"sd-mega-panel__heading is-style-section-title-left","fontSize":"400","anchor":"h-countries"} -->
+<h2 id="h-countries" class="wp-block-heading sd-mega-panel__heading is-style-section-title-left has-400-font-size">Countries</h2>
 <!-- /wp:heading -->
 
-<!-- wp:navigation {"ref":65872,"overlayMenu":"never","className":"is-style-mega-menu-nav","ariaLabel":"Countries","layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} /--></div>
+<!-- wp:navigation {"ref":65872,"overlayMenu":"never","className":"is-style-mega-menu-nav","layout":{"type":"flex","orientation":"vertical","justifyContent":"left"},"ariaLabel":"Countries"} /--></div>
 <!-- /wp:column -->
 
-<!-- wp:column {"className":"sd-mega-panel__column"} -->
-<div class="wp-block-column sd-mega-panel__column"><!-- wp:heading {"level":2,"className":"sd-mega-panel__heading","fontSize":"100"} -->
-<h2 class="wp-block-heading sd-mega-panel__heading has-100-font-size">Popular Destinations</h2>
+<!-- wp:column {"width":"30%","className":"sd-mega-panel__column"} -->
+<div class="wp-block-column sd-mega-panel__column" style="flex-basis:30%"><!-- wp:heading {"className":"sd-mega-panel__heading is-style-section-title-left","fontSize":"400","anchor":"h-popular-destinations"} -->
+<h2 id="h-popular-destinations" class="wp-block-heading sd-mega-panel__heading is-style-section-title-left has-400-font-size">Popular Destinations</h2>
 <!-- /wp:heading -->
 
-<!-- wp:navigation {"ref":65878,"overlayMenu":"never","className":"is-style-mega-menu-nav","ariaLabel":"Popular destinations","layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} /--></div>
+<!-- wp:navigation {"ref":65878,"overlayMenu":"never","className":"is-style-mega-menu-nav","layout":{"type":"flex","orientation":"vertical","justifyContent":"left"},"ariaLabel":"Popular destinations"} /--></div>
 <!-- /wp:column -->
 
-<!-- wp:column {"width":"360px","className":"sd-mega-panel__column sd-mega-panel__featured"} -->
-<div class="wp-block-column sd-mega-panel__column sd-mega-panel__featured" style="flex-basis:360px"><!-- wp:heading {"level":2,"className":"sd-mega-panel__heading","fontSize":"100"} -->
-<h2 class="wp-block-heading sd-mega-panel__heading has-100-font-size">Featured</h2>
+<!-- wp:column {"width":"","className":"sd-mega-panel__column sd-mega-panel__featured"} -->
+<div class="wp-block-column sd-mega-panel__column sd-mega-panel__featured"><!-- wp:heading {"className":"sd-mega-panel__heading is-style-section-title-left","fontSize":"400","anchor":"h-featured"} -->
+<h2 id="h-featured" class="wp-block-heading sd-mega-panel__heading is-style-section-title-left has-400-font-size">Featured</h2>
 <!-- /wp:heading -->
 
-<!-- wp:query {"queryId":0,"query":{"perPage":1,"pages":1,"offset":0,"postType":"destination","order":"desc","orderBy":"date","inherit":false,"parents":[]},"className":"sd-mega-card"} -->
-<div class="wp-block-query sd-mega-card"><!-- wp:post-template -->
-<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"4/3","style":{"border":{"radius":"var:preset|border-radius|200"}}} /-->
-
-<!-- wp:post-title {"level":3,"isLink":true,"fontSize":"300"} /-->
-
-<!-- wp:post-excerpt {"excerptLength":18,"className":"is-style-excerpt-truncate-3","fontSize":"200"} /-->
+<!-- wp:query {"queryId":0,"query":{"perPage":1,"pages":1,"offset":0,"postType":"destination","order":"desc","orderBy":"date","inherit":false,"parents":[],"excludeCurrent":null}} -->
+<div class="wp-block-query"><!-- wp:post-template -->
+<!-- wp:block {"ref":65890} /-->
 <!-- /wp:post-template --></div>
 <!-- /wp:query --></div>
 <!-- /wp:column --></div>
