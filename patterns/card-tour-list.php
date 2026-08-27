@@ -9,7 +9,10 @@
  * Block Types: core/post-template
  * Post Types: tour
  * Inserter: true
+ *
+ * @package sd-theme-2026
  */
+
 ?>
 <!-- wp:group {"metadata":{"name":"Tour Card — List"},"className":"is-style-listing-card-list","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-listing-card-list" style="margin-bottom:var(--wp--preset--spacing--30)">

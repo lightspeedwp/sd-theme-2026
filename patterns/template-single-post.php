@@ -8,6 +8,8 @@
  * Keywords: post, single, blog, news, article
  * Viewport Width: 1500
  * Inserter: true
+ *
+ * @package sd-theme-2026
  */
 
 $sd_news_url = get_option( 'page_for_posts' )

@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Plain Link",
+	"slug": "link-plain",
+	"blockTypes": [ "core/button" ],
+	"description": "A button with no button about it — label only, no fill, no border, no padding. For the places live draws a stacked list of plain links that a block theme can only build as buttons, because the URL has to come from a block binding and only core/button exposes a bindable `url`. The homepage team card's hover panel is the case it was written for: three white links over a scrim, turning accent on hover, measured from `.lsx-to-single-link a` (sd-lsx-child/assets/css/partials/_cta.scss:466). Inherits nothing from the button element it can avoid — the element's padding, border radius and uppercase transform are all reset here, deliberately, so the variation reads as body text and not as a de-chromed button.",
+	"styles": {
+		"color": {
+			"background": "transparent",
+			"text": "var:preset|color|base"
+		},
+		"border": {
+			"radius": "var:preset|border-radius|0",
+			"width": "0",
+			"style": "none"
+		},
+		"spacing": {
+			"padding": {
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0"
+			}
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|heading",
+			"fontSize": "var:preset|font-size|300",
+			"fontWeight": "var:custom|font-weight|semi-bold",
+			"lineHeight": "var:custom|line-height|button",
+			"textTransform": "none",
+			"letterSpacing": "normal",
+			"textDecoration": "none"
+		},
+		":hover": {
+			"color": {
+				"background": "transparent",
+				"text": "var:preset|color|accent-500"
+			}
+		},
+		":focus": {
+			"color": {
+				"background": "transparent",
+				"text": "var:preset|color|accent-500"
+			}
+		}
+	}
+}

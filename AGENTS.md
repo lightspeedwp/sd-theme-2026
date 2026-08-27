@@ -2,7 +2,8 @@
 
 > Orchestration guide for AI agents and developers working in this theme. **Read this first.**
 > Companions in this repo: [DESIGN.md](DESIGN.md) (tokens and the design pipeline),
-> [CONTRIBUTING.md](CONTRIBUTING.md) (workflow, git, quality bar).
+> [CONTRIBUTING.md](CONTRIBUTING.md) (workflow, git, quality bar),
+> [PATTERNS.md](PATTERNS.md) (the pattern library, for editors).
 >
 > This repo is a **portable copy** of the project's operating guidance so the theme can be
 > worked on standalone. The workspace originals live one level up at
@@ -150,9 +151,15 @@ sd-theme-2026/
   styles).
 - **Every template must have exactly one `<main>` landmark.** The sibling ATI theme shipped
   without one on its Tour Operator templates and had to retrofit it — don't repeat that.
-- **Never hardcode a `ref` ID on a `wp:navigation` block**, an uploads URL on an image, or a
-  Gravity Forms `formId` with inline colours. Those are per-install values; they were the
-  single largest source of breakage inherited from the KWV base.
+- **Never hardcode a `ref` ID on a `wp:navigation` block** or a Gravity Forms `formId` with
+  inline colours. Those are per-install values that no deploy step can fix; they were the
+  single largest source of breakage inherited from the KWV base. **Attachment IDs are the
+  same** — `"id":52466` and `wp-image-52466` survive only because dev is deployed to live
+  wholesale.
+- **Uploads URLs are the exception to that**, and they are written out literally as core
+  writes asset URLs. The go-live deployment runs a find-and-replace over the dev host by
+  convention, so a `$sd_uploads`-style variable buys nothing — it was still a hardcoded dev
+  host, one indirection away.
 
 ### Styling lives in JSON (block & section styles)
 
@@ -183,6 +190,28 @@ link back to this rule. The `wp-blockstyle-css-field` skill has the full matrix.
 
 - Escape **all** output (`esc_html`, `esc_attr`, `esc_url`, `wp_kses_post`) and include the
   text domain `sd-theme-2026` in every translation call.
+- **Patterns follow core's form exactly.** Twenty Twenty-Four and Twenty Twenty-Five were
+  measured for this (155 pattern files); match them, not a house style:
+  - Wrap every literal copy string, inline at the point of use — `esc_html_e()`,
+    `esc_attr_e()`, and `esc_html_x()` / `esc_attr_x()` when the string is short or its role
+    is not obvious to a translator. Core uses the `_x` forms heavily; in TT4 they outnumber
+    plain `esc_html_e()` 110 to 31.
+  - **Never `echo esc_html__()`.** Core does this zero times; the `_e` form is the whole
+    reason it exists.
+  - **No top-level variables holding literals** — copy, URLs, SVGs, config strings. Core's
+    patterns declare none. Write the value where it is used.
+  - **No loops and no computed markup.** Core's patterns contain not one `foreach`. Write the
+    repetitions out; a pattern is block markup that happens to live in a `.php` file. If the
+    markup genuinely must be built per request, it is not a pattern — it is a Query Loop, a
+    block binding, or plugin work.
+  - **No `phpcs:ignore`.** An escaping suppression means the value should have been a literal
+    in the markup instead. Inline SVGs are written out, not echoed from a variable, even when
+    that means repeating them — add a ⚠️ comment when copies must stay in step.
+  - A **guarded** runtime lookup with a fallback is the one thing that may hold a variable,
+    because it needs a conditional: `get_post_type_archive_link()`, `get_option()`. An
+    *unguarded* single call is inlined like core inlines `get_template_directory_uri()`.
+  - Include `@package sd-theme-2026` in the header docblock, then exactly one blank line.
+  - `phpcs --standard=WordPress patterns/` must be silent.
 - Keep `functions.php`/`inc/` minimal — no plugin-like features in the theme.
 - Block styles are registered in `functions.php`; per-block CSS in
   `assets/styles/core-<block>.css` is auto-enqueued only when the block is used — **don't

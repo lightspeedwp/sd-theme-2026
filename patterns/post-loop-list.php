@@ -9,7 +9,10 @@
  * Block Types: core/query
  * Post Types:
  * Inserter: true
+ *
+ * @package sd-theme-2026
  */
+
 ?>
 <!-- wp:query {"query":{"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":false},"layout":{"type":"default"}} -->
 	<div class="wp-block-query">
@@ -26,7 +29,7 @@
 						<div class="wp-block-group has-neutral-700-color has-text-color has-300-font-size" style="font-style:normal;font-weight:500">
 						<!-- wp:post-author {"showBio":false} /-->
 						<!-- wp:paragraph {"textColor":"neutral-700"} -->
-							<p class="has-neutral-700-color has-text-color"><?php esc_html_e( '·', 'sd-theme-2026' ); ?></p>
+							<p class="has-neutral-700-color has-text-color"><?php echo esc_html_x( '·', 'separator between a post date and its categories', 'sd-theme-2026' ); ?></p>
 						<!-- /wp:paragraph -->
 						<!-- wp:post-date /-->
 						</div>
