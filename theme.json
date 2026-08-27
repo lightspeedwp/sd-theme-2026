@@ -313,9 +313,6 @@
 				"300": "4px",
 				"400": "8px"
 			},
-			"layout": {
-				"fullWidth": "1920px"
-			},
 			"header": {
 				"nav-link-height": "50px",
 				"search-panel-width": "600px"
@@ -326,7 +323,7 @@
 		},
 		"layout": {
 			"contentSize": "900px",
-			"wideSize": "1520px"
+			"wideSize": "1440px"
 		},
 		"shadow": {
 			"defaultPresets": false,
