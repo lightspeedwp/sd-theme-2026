@@ -11,15 +11,16 @@ Measured on the live site 2026-08-20 (`.lsx-title:after`):
 width 80px, height 2px, background #E6AD10 (accent-500),
 `margin: 8px auto 4.25rem` centred / `margin: 8px 0 4.25rem` left-aligned.
 
-The 4.25rem bottom margin is the gap to the section body, and it is the *only*
-spacing under a section title. The variations themselves carry no margin: a
-child margin survives in the editor and is zeroed on the front end, so it made
-the parent's blockGap control disagree between the two. See AGENTS.md,
-"`spacing.margin` belongs to page-section styles only".
+Only the 8px **top** margin is kept — the space between the title text and the
+rule, which belongs to the device itself. Live's 4.25rem **bottom** margin is
+deliberately dropped: it is the gap to the section body, and that gap is the
+parent section's `blockGap`, not a margin on a pseudo-element. Measured
+2026-08-27, it dominated any parent gap below `spacing|70` in both the editor
+and the front end, so the section's own gap control did nothing up to XXXL.
 
-⚠️ Note this margin dominates any parent `blockGap` below `spacing|70` — in
-both environments — so the gap control under a section title is inert up to
-XXXL. Measured 2026-08-27. */
+The variations themselves carry no margin either, for the related reason that a
+child margin survives in the editor and is zeroed on the front end. See
+AGENTS.md, "`spacing.margin` belongs to page-section styles only". */
 
 .wp-block-heading.is-style-section-title::after,
 .wp-block-heading.is-style-section-title-left::after {
@@ -31,11 +32,11 @@ XXXL. Measured 2026-08-27. */
 }
 
 .wp-block-heading.is-style-section-title::after {
-	margin: var(--wp--preset--spacing--10) auto var(--wp--preset--spacing--70);
+	margin: var(--wp--preset--spacing--10) auto 0;
 }
 
 .wp-block-heading.is-style-section-title-left::after {
-	margin: var(--wp--preset--spacing--10) 0 var(--wp--preset--spacing--70);
+	margin: var(--wp--preset--spacing--10) 0 0;
 }
 
 /* On a dark or brand-filled section the title text inverts to base. The gold

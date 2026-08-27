@@ -8,6 +8,72 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **`blockGap` set in the editor disagreed with the front end, and the gap control under a
+  section title did nothing at all.** Two separate causes, both now removed. Measured on
+  WP 7.1, canvas 905px against viewport 1200px, 2026-08-27.
+
+  **1. Child margins inverted between the two environments.** `script-accent`, `section-title`
+  and `section-title-left` each declared `spacing.margin.bottom: var:preset|spacing|20`, and
+  `archive-intro` declared `margin.top: 0`. An explicit `blockGap` compiles to
+  `.wp-container-‹hash› > * { margin-block: 0 }` in `core-block-supports-inline-css`; a
+  variation margin compiles to `:root :where(.wp-block-heading.is-style-X--N)`. Both are
+  **(0,1,0)** — `:root` contributes (0,1,0), `:where()` contributes nothing — so source order
+  alone picks the winner, and WordPress reverses it:
+
+  | | Container rule | Variation rule | Winner | Child `margin-bottom` |
+  |---|---|---|---|---|
+  | Front end | **55** | 50 | container | `0px` |
+  | Editor | 125 | **142** | variation | `16.814px` |
+
+  In the editor the surviving margin **collapses** with the next sibling's
+  `margin-block-start`, so the rendered gap is `max(gap, childMargin)` rather than `gap`. Every
+  gap at or below the child's margin rendered identically and the control looked dead: with a
+  `spacing|20` margin, `None`/`XXS`/`XS`/`S` all rendered at 16.8px and only `M` upwards moved.
+  Where the parent's gap was *smaller* than the margin — `spacing|10` in
+  `parts/mega-menu-tours.html` — it was swallowed whole.
+
+  **2. The gold rule's bottom margin outweighed every gap.** The `::after` accent rule under
+  `section-title` / `section-title-left` carried `margin-bottom: var(--wp--preset--spacing--70)`
+  (55–61px) in `assets/styles/core-heading.css`, reproducing live's `margin: 8px auto 4.25rem`.
+  Because it sits inside the heading box it collapsed through the heading's bottom edge and
+  dominated any parent gap below `spacing|70` — in **both** environments, so it was not a
+  divergence, but it made the section's own gap control inert up to `XXXL`. A gap of
+  `spacing|10` and a gap of `spacing|40` rendered identically at 61.25px. Only the 8px **top**
+  margin is kept, which is the space between the title text and the rule and belongs to the
+  device; the gap to the section body is the parent section's `blockGap` now.
+
+  Verified across eight parent shapes, front end and editor, before and after:
+
+  | Shape | FE before | FE after | Editor before | Editor after |
+  |---|---|---|---|---|
+  | `section-title`, gap `spacing\|10` | 61.25 | **9.37** | 55.13 | **8.93** |
+  | `section-title`, gap `spacing\|40` | 61.25 | **35.63** | 55.13 | **32.56** |
+  | `section-title`, no parent gap | 61.25 | **52.81** | 55.13 | **47.78** |
+  | `section-title-left`, column gap `spacing\|10` | 61.25 | **9.37** | 55.13 | **8.93** |
+  | flex parent, gap `spacing\|10` | 9.37 | 9.37 | 8.93 | 8.93 |
+  | `script-accent`, no parent gap | 52.81 | 52.81 | 47.78 | 47.78 |
+  | **`script-accent`, gap `spacing\|10`** | 9.37 | 9.37 | **16.81** | **8.93** |
+  | plain heading, gap `spacing\|10` (control) | 9.37 | 9.37 | 8.93 | 8.93 |
+
+  The editor now tracks the front end in every shape, and the gap control is live under a
+  section title for the first time. Cause 1 was a **front-end no-op** to remove — the margin
+  was always dominated, by `core-block-supports` where the parent set a gap and by the root
+  `spacing|60` flow gap where it did not. `archive-intro` was inert in both shapes it occurs
+  in: it is a first child, which `> :first-child` already zeroes. **Cause 2 does move the front
+  end** — the four `section-title` shapes above lose the 61.25px and fall back to their
+  parent's gap, so the sections that hold one need their `blockGap` set to restore the
+  intended rhythm.
+
+  The rule this establishes is in [AGENTS.md](AGENTS.md): `spacing.margin` belongs to
+  page-section styles only, top and bottom, only where genuinely necessary, and **never** on a
+  block sitting inside a parent that carries a `blockGap`.
+
+  Still latent, recorded rather than changed: **six section styles declare `margin.top: 0`**
+  (`dark-`/`light-`/`tinted-page-section`, `site-footer`, `footer-colophon`, `section-header`).
+  `margin: 0` is the same hazard pointing the other way — it *kills* a parent's gap in the
+  editor rather than flooring it — but every parent that currently holds one sets
+  `blockGap: 0`, so both environments agree today.
+
 - **The mega menus took as long as the slowest asset on the page to become usable, and were
   squashed until then.** Ollie Menu Designer positions its panels from JavaScript, and
   `callbacks.initMenuLayout` in `build/blocks/mega-menu/view.js` defers that work to

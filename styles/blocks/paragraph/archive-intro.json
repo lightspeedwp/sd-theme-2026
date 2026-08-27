@@ -10,11 +10,6 @@
 			"fontSize": "var:preset|font-size|300",
 			"fontStyle": "italic",
 			"lineHeight": "var:custom|line-height|body"
-		},
-		"spacing": {
-			"margin": {
-				"top": "0"
-			}
 		}
 	}
 }
