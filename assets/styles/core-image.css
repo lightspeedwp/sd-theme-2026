@@ -26,7 +26,3 @@ html .is-layout-flex .wp-block-image {
 .wp-block-image .is-style-rounded img {
 	border-radius: 10px;
 }
-
-.sd-avatar-row > figure:not(:first-child) {
-	margin-left: -10px !important;
-}

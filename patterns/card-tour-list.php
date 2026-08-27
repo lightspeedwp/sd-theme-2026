@@ -2,7 +2,7 @@
 /**
  * Title: Card — Tour (List)
  * Slug: sd-theme-2026/card-tour-list
- * Description: The horizontal tour result row the FacetWP tour search renders. A square-cropped featured image on the leading quarter, the title, the tour's tagline and its excerpt in the body, and a tinted meta strip closing the trailing third with the connected destinations and the travel styles. Drop it into a Query Loop's post template.
+ * Description: The horizontal tour result row the FacetWP tour search renders — featured image, title, tagline, excerpt and a read-more beside a tinted meta strip carrying the connected destination and travel style. Drop it into a Query Loop's post template.
  * Categories: sd-theme-2026/card, sd-theme-2026/tour-operator
  * Keywords: card, list, row, tour, search, archive, facetwp
  * Viewport Width: 1280
@@ -14,40 +14,36 @@
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Tour Card — List"},"className":"is-style-listing-card-list","style":{"spacing":{"blockGap":"0","margin":{"bottom":"var:preset|spacing|30"}}},"layout":{"type":"default"}} -->
-<div class="wp-block-group is-style-listing-card-list" style="margin-bottom:var(--wp--preset--spacing--30)">
-	<!-- wp:group {"metadata":{"name":"Media"},"className":"listing-card__media","layout":{"type":"default"}} -->
-	<div class="wp-block-group listing-card__media">
-		<!-- wp:post-featured-image {"isLink":true} /-->
+<!-- wp:columns {"metadata":{"name":"Tour Card — List"},"className":"is-style-listing-card-list","style":{"spacing":{"blockGap":"0","margin":{"bottom":"var:preset|spacing|30"}}}} -->
+<div class="wp-block-columns is-style-listing-card-list" style="margin-bottom:var(--wp--preset--spacing--30)">
+	<!-- wp:column {"width":"25%"} -->
+	<div class="wp-block-column" style="flex-basis:25%">
+		<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"4/3"} /-->
 	</div>
-	<!-- /wp:group -->
+	<!-- /wp:column -->
 
-	<!-- wp:group {"metadata":{"name":"Wrapper"},"className":"listing-card__wrapper","layout":{"type":"default"}} -->
-	<div class="wp-block-group listing-card__wrapper">
-		<!-- wp:group {"metadata":{"name":"Body"},"className":"listing-card__body","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
-		<div class="wp-block-group listing-card__body">
-			<!-- wp:post-title {"level":3,"isLink":true} /-->
+	<!-- wp:column {"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
+	<div class="wp-block-column" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+		<!-- wp:post-title {"level":3,"isLink":true} /-->
 
-			<!-- wp:paragraph {"metadata":{"name":"Tagline","bindings":{"content":{"source":"core/post-meta","args":{"key":"tagline"}}}},"className":"listing-card__tagline lsx-tagline-wrapper","fontSize":"200"} -->
-			<p class="listing-card__tagline lsx-tagline-wrapper has-200-font-size"></p>
-			<!-- /wp:paragraph -->
+		<!-- wp:paragraph {"metadata":{"name":"Tagline","bindings":{"content":{"source":"core/post-meta","args":{"key":"tagline"}}}},"className":"lsx-tagline-wrapper","textColor":"brand-500","fontSize":"200","fontFamily":"heading","style":{"typography":{"textTransform":"uppercase","letterSpacing":"var:custom|letter-spacing|heading"}}} -->
+		<p class="lsx-tagline-wrapper has-brand-500-color has-text-color has-200-font-size has-heading-font-family" style="letter-spacing:var(--wp--custom--letter-spacing--heading);text-transform:uppercase"></p>
+		<!-- /wp:paragraph -->
 
-			<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":40,"fontSize":"200"} /-->
+		<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":40,"fontSize":"200"} /-->
 
-			<!-- wp:read-more {"content":"View more","className":"listing-card__more","fontSize":"200"} /-->
-		</div>
-		<!-- /wp:group -->
-
-		<!-- wp:group {"metadata":{"name":"Meta"},"className":"listing-card__meta","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
-		<div class="wp-block-group listing-card__meta">
-			<!-- wp:paragraph {"metadata":{"name":"Location","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour"}}}},"className":"lsx-destination-to-tour-wrapper","prefix":"Location:","prefixBold":true} -->
-			<p class="lsx-destination-to-tour-wrapper"></p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Style: "} /-->
-		</div>
-		<!-- /wp:group -->
+		<!-- wp:read-more {"content":"View more","fontSize":"200"} /-->
 	</div>
-	<!-- /wp:group -->
+	<!-- /wp:column -->
+
+	<!-- wp:column {"width":"25%","backgroundColor":"neutral-200","style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
+	<div class="wp-block-column has-neutral-200-background-color has-background has-200-font-size" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);line-height:var(--wp--custom--line-height--body);flex-basis:25%">
+		<!-- wp:paragraph {"metadata":{"name":"Location","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour"}}}},"className":"lsx-destination-to-tour-wrapper","prefix":"Location:","prefixBold":true} -->
+		<p class="lsx-destination-to-tour-wrapper"></p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Style: ","fontSize":"200","style":{"typography":{"lineHeight":"var:custom|line-height|body"}}} /-->
+	</div>
+	<!-- /wp:column -->
 </div>
-<!-- /wp:group -->
+<!-- /wp:columns -->

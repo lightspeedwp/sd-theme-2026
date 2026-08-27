@@ -3,7 +3,9 @@
 	"version": 3,
 	"title": "Blog Card",
 	"slug": "blog-card",
-	"blockTypes": [ "core/group" ],
+	"blockTypes": [
+		"core/group"
+	],
 	"styles": {
 		"elements": {
 			"link": {
@@ -44,6 +46,6 @@
 				"css": "& a{transition:color 0.25s ease}"
 			}
 		},
-		"css": "& {position:relative;transition:all 0.25s ease}& .blog-card__media{position:relative;overflow:hidden}& .blog-card__media img{display:block;width:100%;object-fit:cover}"
+		"css": "& { position: relative; transition: all 0.25s ease; }"
 	}
 }

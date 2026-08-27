@@ -2,9 +2,9 @@
 /**
  * Title: Card — Destination (Compact)
  * Slug: sd-theme-2026/card-destination-compact
- * Description: The destination rail's card, carried by the carousels on every Tour Operator single. The same compact shape as the tour and accommodation cards, but with an excerpt in place of the meta read-outs — destinations have neither a price band nor a duration to show — and a read-more, which is the non-carousel state.
+ * Description: The compact destination tile the destination rails carry on every Tour Operator single — a landscape featured image above a tinted panel centring the title, the excerpt and a read-more.
  * Categories: sd-theme-2026/card, sd-theme-2026/tour-operator
- * Keywords: card, compact, tile, carousel, related, destination, country, region
+ * Keywords: card, compact, tile, destination, related, carousel
  * Viewport Width: 480
  * Block Types: core/post-template
  * Post Types: destination
@@ -16,19 +16,15 @@
 ?>
 <!-- wp:group {"metadata":{"name":"Destination Card — Compact"},"className":"is-style-listing-card-compact","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-listing-card-compact">
-	<!-- wp:group {"metadata":{"name":"Media"},"className":"listing-card-compact__media","layout":{"type":"default"}} -->
-	<div class="wp-block-group listing-card-compact__media">
-		<!-- wp:post-featured-image {"isLink":true} /-->
-	</div>
-	<!-- /wp:group -->
+	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
 
-	<!-- wp:group {"metadata":{"name":"Body"},"className":"listing-card-compact__body","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group listing-card-compact__body">
-		<!-- wp:post-title {"textAlign":"center","level":4,"isLink":true} /-->
+	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|30","bottom":"var:preset|spacing|60","left":"var:preset|spacing|30"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group has-200-font-size" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
+		<!-- wp:post-title {"level":4,"isLink":true,"style":{"typography":{"textAlign":"center"}}} /-->
 
-		<!-- wp:post-excerpt {"textAlign":"center","moreText":"","showMoreOnNewLine":false,"excerptLength":30} /-->
+		<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":30,"style":{"typography":{"textAlign":"center"}}} /-->
 
-		<!-- wp:read-more {"content":"View more","className":"listing-card-compact__more"} /-->
+		<!-- wp:read-more {"content":"View more"} /-->
 	</div>
 	<!-- /wp:group -->
 </div>

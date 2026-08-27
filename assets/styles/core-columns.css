@@ -1,16 +1,6 @@
 /* Column
 --------------------------------------------- */
 
-/* Helper class to swap order on mobile */
-@media (max-width: 781px) {
-	.sd-swap-order {
-		flex-direction: column-reverse;
-	}
-	.sd-row-reverse {
-		flex-direction: row-reverse;
-	}
-}
-
 /* Columns stack on mobile */
 @media (max-width: 1024px) {
 	.wp-block-columns {
@@ -20,20 +10,5 @@
 	.wp-block-columns>.wp-block-column {
 		flex-basis: 100%;
 		width: 100%;
-	}
-}
-
-/* Contact directory — vertical rules between columns (Contact Info pattern).
-   Block JSON has no per-side border on columns, so the divider lives here. */
-.sd-contact-directory.wp-block-columns > .wp-block-column + .wp-block-column {
-	border-left: 1px solid var(--wp--preset--color--neutral-300);
-	padding-left: var(--wp--preset--spacing--40);
-}
-
-/* Columns stack on mobile — drop the rule so it reads as a top divider instead. */
-@media (max-width: 781px) {
-	.sd-contact-directory.wp-block-columns > .wp-block-column + .wp-block-column {
-		border-left: 0;
-		padding-left: 0;
 	}
 }

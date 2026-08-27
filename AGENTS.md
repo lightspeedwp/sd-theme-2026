@@ -208,6 +208,30 @@ link back to this rule. The `wp-blockstyle-css-field` skill has the full matrix.
 > global styles on the front end but *before* them in the editor. Don't write authored CSS
 > that depends on either winning.
 
+> ⚠️ **Structure belongs in markup, not in a `css` field.** A section style's `css` field is
+> for what blocks genuinely cannot express — absolute overlays, `::before`/`::after` content,
+> `overflow`, `!important` overrides of core block CSS. It is **not** the place for layout.
+> If you find yourself writing a hand-rolled `__`-suffixed class in a pattern so a `css` rule
+> can target it, the rule almost certainly has a block attribute. Measured 2026-08-27:
+>
+> - **Image crops are `aspectRatio`, never CSS.** `core/post-featured-image` and `core/image`
+>   serialise `aspectRatio`, `height` and `scale` as *inline* styles on the `<img>`
+>   (`wp-includes/blocks/post-featured-image.php:46-65`). A `css`-field `height` compiles to
+>   `:root :where(…)` at (0,1,0) and **loses** to the block library's
+>   `.wp-block-image img{height:auto;width:auto}` at (0,2,0) — which is why this theme once
+>   carried ~100 lines of (0,3,0) selectors to win a fight it never needed to have.
+> - **A fixed-ratio row is `core/columns`.** `core/column`'s `width` attribute compiles to
+>   `flex-basis`, so column percentages are markup. Core stacks columns below 782px by
+>   itself — don't hand-write the media query.
+> - **`core/group` has no `typography.textAlign` support.** Set alignment on each child
+>   block; the post-`*` blocks all support it. Padding, gap, colour, font size, font style,
+>   line height and borders are all block attributes.
+> - **`@media` is silently unwrapped in a `css` field** — the query is dropped and its rules
+>   are promoted to unconditional ones. A rule containing `content:` is dropped whole.
+>   Responsive and pseudo-element rules therefore live in `assets/styles/`, keyed off core's
+>   own classes (`.wp-block-read-more`, `.wp-block-post-terms.taxonomy-post_tag`), never off
+>   a hand-written helper class.
+
 ### PHP (`functions.php`, `inc/`, `patterns/*.php`)
 
 - Escape **all** output (`esc_html`, `esc_attr`, `esc_url`, `wp_kses_post`) and include the

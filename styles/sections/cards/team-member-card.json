@@ -43,6 +43,6 @@
 				}
 			}
 		},
-		"css": "& { position: relative; overflow: hidden; } & > * { margin-block-start: 0 !important; margin-block-end: 0 !important; } & .team-member-card__media { margin: 0 !important; } & .team-member-card__media figure { margin: 0 !important; line-height: 0; } & .team-member-card__name { position: absolute; inset-inline: 0; bottom: 0; margin: 0 !important; min-height: 70px; display: flex; align-items: center; justify-content: center; text-align: center; padding: var(--wp--preset--spacing--20); background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 70%, transparent); } & .team-member-card__overlay { position: absolute; inset: 0; margin: 0 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: var(--wp--preset--spacing--40); background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 80%, transparent); }"
+		"css": "& { position: relative; overflow: hidden; } & .team-member-card__overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 80%, transparent); }"
 	}
 }

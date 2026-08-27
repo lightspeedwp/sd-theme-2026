@@ -368,57 +368,57 @@
 			"spacingSizes": [
 				{
 					"name": "XXS",
-					"size": "clamp(0.25rem, calc(0.227rem + 0.006vw), 0.313rem)",
+					"size": "clamp(0.25rem, 0.25rem + ((1vw - 0.2rem) * 0.079), 0.3125rem)",
 					"slug": "5"
 				},
 				{
 					"name": "XS",
-					"size": "clamp(0.5rem, calc(0.454rem + 0.012vw), 0.625rem)",
+					"size": "clamp(0.5rem, 0.5rem + ((1vw - 0.2rem) * 0.156), 0.625rem)",
 					"slug": "10"
 				},
 				{
 					"name": "S",
-					"size": "clamp(0.875rem, calc(0.736rem + 0.036vw), 1.25rem)",
+					"size": "clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.469), 1.25rem)",
 					"slug": "20"
 				},
 				{
 					"name": "M",
-					"size": "clamp(1.25rem, calc(1.018rem + 0.06vw), 1.875rem)",
+					"size": "clamp(1.25rem, 1.25rem + ((1vw - 0.2rem) * 0.781), 1.875rem)",
 					"slug": "30"
 				},
 				{
 					"name": "L",
-					"size": "clamp(1.625rem, calc(1.3rem + 0.083vw), 2.5rem)",
+					"size": "clamp(1.625rem, 1.625rem + ((1vw - 0.2rem) * 1.094), 2.5rem)",
 					"slug": "40"
 				},
 				{
 					"name": "XL",
-					"size": "clamp(2.063rem, calc(1.668rem + 0.101vw), 3.125rem)",
+					"size": "clamp(2.063rem, 2.063rem + ((1vw - 0.2rem) * 1.327), 3.125rem)",
 					"slug": "50"
 				},
 				{
 					"name": "XXL",
-					"size": "clamp(2.313rem, calc(1.779rem + 0.137vw), 3.75rem)",
+					"size": "clamp(2.313rem, 2.313rem + ((1vw - 0.2rem) * 1.796), 3.75rem)",
 					"slug": "60"
 				},
 				{
 					"name": "XXXL",
-					"size": "clamp(2.625rem, calc(1.975rem + 0.167vw), 4.375rem)",
+					"size": "clamp(2.625rem, 2.625rem + ((1vw - 0.2rem) * 2.188), 4.375rem)",
 					"slug": "70"
 				},
 				{
 					"name": "XXXXL",
-					"size": "clamp(3rem, calc(2.257rem + 0.19vw), 5rem)",
+					"size": "clamp(3rem, 3rem + ((1vw - 0.2rem) * 2.5), 5rem)",
 					"slug": "80"
 				},
 				{
 					"name": "Gigantic",
-					"size": "clamp(3.5rem, calc(2.711rem + 0.202vw), 5.625rem)",
+					"size": "clamp(3.5rem, 3.5rem + ((1vw - 0.2rem) * 2.656), 5.625rem)",
 					"slug": "90"
 				},
 				{
 					"name": "Colossal",
-					"size": "clamp(4rem, calc(3.164rem + 0.214vw), 6.25rem)",
+					"size": "clamp(4rem, 4rem + ((1vw - 0.2rem) * 2.812), 6.25rem)",
 					"slug": "100"
 				}
 			],

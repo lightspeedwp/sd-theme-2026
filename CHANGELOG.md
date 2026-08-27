@@ -8,6 +8,68 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **The fluid spacing scale was never fluid.** Every `spacingSizes` clamp had a broken
+  interpolation term, so all eleven presets pinned to their minimum at every viewport.
+  `spacing|80` was authored `clamp(3rem, calc(2.257rem + 0.19vw), 5rem)` — at 1520px the
+  middle term evaluates to ~39px against a 48px floor, so it always resolved to 48px and the
+  80px maximum was unreachable. The `vw` coefficient was ~13x too small across the whole
+  scale and the intercept was wrong with it.
+
+  Regenerated in core's own fluid form, `clamp(MIN, MIN + ((1vw - 0.2rem) * F), MAX)` with
+  `F = 100 * (max - min) / 80rem` over the 320-1600px range the `fontSizes` already use
+  (`wp-includes/block-supports/typography.php:530-536`), so the two scales now interpolate
+  identically. Verified in-browser at three widths: mobile is effectively unchanged
+  (360px: 4.03 / 8.05 / 14.19 / 20.30 / 26.44 / 33.53 / 37.72 / 42.88 / 49.00 / 57.05 /
+  65.12px, within 2% of the old pinned values), and above 1600px every preset now resolves to
+  its intended round maximum — 5 / 10 / 20 / 30 / 40 / 50 / 60 / 70 / 80 / 90 / 100px, the
+  slug numbers themselves. **Desktop spacing grows accordingly**: at 1520px `spacing|40` goes
+  26 to 39px and `spacing|80` goes 48 to 78px. `spacing|5`'s maximum corrected 0.313rem to
+  0.3125rem so it lands on exactly 5px.
+
+### Changed
+
+- **Card structure moved out of CSS and into block markup.** Every hand-written `__` helper
+  class on the card patterns is gone, along with the CSS that keyed off it. Card `css` fields
+  total 8,290 to 2,089 chars; `core-group.css` 858 to 629 lines, `core-columns.css` 39 to 14,
+  `core-image.css` 32 to 28.
+
+  - **Image crops are `aspectRatio` attributes now.** ~100 lines of `(0,3,0)` selectors in
+    `core-group.css` existed only because `height`/`width` in a section style's `css` field
+    compile to `:root :where(...)` at `(0,1,0)` and lose to the block library's
+    `.wp-block-image img{height:auto;width:auto}` at `(0,2,0)`. `core/post-featured-image`
+    and `core/image` serialise `aspectRatio`/`height`/`scale` as **inline styles on the
+    `<img>`** (`wp-includes/blocks/post-featured-image.php:46-65`), which no stylesheet rule
+    can lose to and which the editor exposes as a control. Crops chosen from core's stock
+    ratios: `16/9` for post-grid, compact and category; `3/4` for media-overlay; `4/3` for
+    the two list cards. `blog-card` (`4/5`), `blog-card-large` and `team-member-card` (`1`)
+    already carried theirs.
+  - **The two wide cards are `core/columns`.** `card-post-list` and `card-tour-list` /
+    `card-accommodation-list` were flex rows whose column widths lived in CSS as
+    `flex: 0 0 25%` / `31.5%`. `core/column`'s `width` attribute compiles to `flex-basis`, so
+    the percentages are markup and the `__media` / `__wrapper` / `__body` / `__meta` classes
+    and their flex CSS are gone. The list card's nested wrapper collapsed into a plain
+    three-column row. Measured at 900px: **225 / 450 / 225**, matching the old
+    25% / 50% / 25%, all columns stretching to equal height, meta panel and padding intact.
+    `blog-card-wide` measures 284 (31.5%) / 577 with the `spacing|40` gap. Both variations
+    gained `core/columns` in `blockTypes`. Core stacks columns below 782px on its own, so the
+    hand-written responsive stacking blocks went with them.
+  - **Padding, gap, colour and type are block attributes.** `text-align`, `padding`,
+    `font-size`, `font-style`, `line-height`, `color`, `background-color`, `border-top` and
+    the tag row's rule are all set on the blocks. `core/group` has no `typography.textAlign`
+    support, so alignment is set per child, not on the wrapper.
+  - **Kept in CSS, because blocks cannot express it:** the three absolute overlays
+    (`media-overlay-card__scrim`, `category-card__label`, `team-member-card__overlay`),
+    `overflow`/`height:100%` on card roots, `::after`/`::before` content (the read-more
+    chevron, the tag `#`, the author comma — a `css` field drops any rule containing
+    `content`), and the `!important` weight overrides on `.wp-block-post-terms__prefix`.
+    Rules that survived were rekeyed off core's own classes rather than helper classes.
+  - Removed 11 dead helper classes referenced by no markup: `.sd-row-stack`,
+    `.sd-flex-start`, `.sd-justify-start`, `.sd-no-shrink`, `.sd-sticky-top`,
+    `.sd-swap-order`, `.sd-row-reverse`, `.sd-avatar-row`, `.sd-contact-directory`,
+    `.sd-footer__widgets` and the dead `.team-member-card__name` scrim strip.
+  - Fixed an orphaned token reference in `homepage-safari-gurus.php`:
+    `var:preset|spacing|0` is not a slug in this theme's scale (it starts at 5).
+
 - **Spacing set in the editor now renders in the editor.** `blockGap` moved out of the block
   style variation JSONs and onto the block markup — 29 delimiters across 21 files, 20
   `blockGap` declarations removed from 19 `styles/**` partials. Measured on WP 7.1 against the
