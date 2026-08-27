@@ -8,6 +8,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The Why Choose band's Trustpilot badge is its own component, no longer shared with
+  `patterns/trustpilot-score.php`.** `patterns/why-choose-sd.php` used to `require` the shared
+  badge on the premise — written into that file at length — that the mark takes `currentColor`,
+  so live's three `[tp_show_score color="…"]` variants collapse into one pattern. Measured
+  against live on 2026-08-27, they do not:
+
+  | Shared badge (`trustpilot-score.php`) | This band, on live |
+  |---|---|
+  | `trustpilot-logo.svg`, `#191919` | `tp-logo-white-green.svg` — a **different file**: white wordmark, green star |
+  | One row: word, mark, stars, score | Mark over stars over the score line |
+  | Rating word rendered | `.tp-wording` is `display:none` sitewide (`sd-lsx-child/assets/css/partials/_cta.scss:731`) |
+
+  Neither SVG is `currentColor`, so no inherited colour could ever have fixed the first row —
+  the dark mark read as a hole in the photograph. The badge is now written out inside
+  why-choose-sd.php as a vertical `core/group`: the white-green mark at 90px, the bound star
+  tile at 100px, and the `TrustScore | reviews` pair in a centred flex row beneath. All four
+  `sd/trustpilot` bindings and their null-fallback behaviour are carried over unchanged.
+  `trustpilot-score.php` is untouched and still serves `patterns/safari-expert.php`.
+
+- **New asset: `assets/images/trustpilot/trustpilot-logo-white-green.svg`**, copied from
+  `sd-lsx-child/assets/imgs/`, byte-identical to the file live and dev serve. The theme's
+  existing `trustpilot-logo-white.svg` is the *all*-white mark, star included, and is not what
+  this band uses; both are kept.
+
+- **The We Are Africa badge is 185px, was 131px** — live's and dev's measured width.
+
 - **The header's Call Us disclosure is an Ollie dropdown, not a `core/accordion`.** Zared's
   call, taken from ATI Holidays where the same widget is built this way: it opens on hover,
   and the pop-out is the plugin's own construction rather than an in-flow accordion panel
