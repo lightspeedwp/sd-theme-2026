@@ -65,12 +65,22 @@
    Drawn on the toggle rather than on the heading, so it sits inside the button's
    hit area and follows the button's colour into the utility bar, the expert
    panel and every hover state. */
+/* Core sets `overflow: hidden` on the toggle (its own `+`/`×` icon rotates inside
+   a fixed box, so it has no reason to spill). A rotated square does spill: at
+   0.4em the chevron's layout box is 6.4px but its painted box is 6.4 × √2 ≈
+   9.05px, so 1.3px of each corner sits outside the box and the right-hand one
+   was being cut off — measured as `scrollWidth - clientWidth` = 2px at 1440 and
+   1600, 1px from 1280 down. (0,2,0) against core's (0,1,0), so no `!important`. */
+.is-style-call-us-dropdown .wp-block-accordion-heading__toggle {
+	overflow: visible;
+}
+
 .is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after {
 	content: "";
 	flex: 0 0 auto;
 	box-sizing: border-box;
-	width: 0.4em;
-	height: 0.4em;
+	width: 0.5rem;
+	height: 0.5rem;
 	margin-inline-start: 0.5em;
 	border-inline-end: var(--wp--custom--border-width--200) solid currentColor;
 	border-block-end: var(--wp--custom--border-width--200) solid currentColor;
@@ -83,6 +93,48 @@
    the caret cannot disagree with what a screen reader is announcing. */
 .is-style-call-us-dropdown .wp-block-accordion-item.is-open .wp-block-accordion-heading__toggle::after {
 	transform: translateY(0.1em) rotate(-135deg);
+}
+
+/* Hover and focus
+   ---------------------------------------------
+   Core underlines the label on hover
+   (`.wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__toggle-title`
+   in wp-includes/blocks/accordion-heading/style.css). Zared asked for the
+   treatment the enquiry button beside it uses instead: `styles.elements.button`
+   hovers brand-500 to **brand-600** over `0.25s ease-in-out`, so the trigger
+   darkens on the same token and the same curve, and the underline comes off.
+
+   Two rules because the two placements rest on different colours. The header's
+   trigger is brand-500, so it darkens to brand-600 and reads as a pair with the
+   button; the safari expert panel's inherits neutral, so it darkens to
+   neutral-900 — the same value the variation already gives its number links on
+   hover. Keyed off `is-style-header`, as the panel alignment below is.
+
+   `:focus-visible` gets it too, so a keyboard user sees the same state change,
+   on top of core's own focus outline (core suppresses the outline only for
+   `:not(:focus-visible)`).
+
+   Here rather than in the variation JSON for two reasons: the `css` field strips
+   `:hover`, and theme.json allows pseudo-state keys on *elements*, not on nested
+   blocks — `styles.blocks.core/accordion-heading[":hover"]` is not a thing.
+
+   The chevron is `currentColor`, so it darkens with the label for free. */
+.is-style-call-us-dropdown .wp-block-accordion-heading__toggle {
+	transition: color 0.25s ease-in-out;
+}
+
+.is-style-call-us-dropdown .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__toggle-title {
+	text-decoration: none;
+}
+
+.is-style-call-us-dropdown .wp-block-accordion-heading__toggle:hover,
+.is-style-call-us-dropdown .wp-block-accordion-heading__toggle:focus-visible {
+	color: var(--wp--preset--color--neutral-900);
+}
+
+.is-style-header .is-style-call-us-dropdown .wp-block-accordion-heading__toggle:hover,
+.is-style-header .is-style-call-us-dropdown .wp-block-accordion-heading__toggle:focus-visible {
+	color: var(--wp--preset--color--brand-600);
 }
 
 /* Rows
@@ -201,6 +253,7 @@
 
 @media (prefers-reduced-motion: reduce) {
 
+	.is-style-call-us-dropdown .wp-block-accordion-heading__toggle,
 	.is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after,
 	.is-style-call-us-dropdown .wp-block-accordion-panel,
 	.is-style-call-us-dropdown .wp-block-accordion-panel .wp-block-group {

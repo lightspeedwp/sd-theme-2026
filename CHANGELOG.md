@@ -8,6 +8,30 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **The chevron's right-hand corner was clipped by core's `overflow: hidden`.** The toggle
+  carries `overflow: hidden` from `wp-includes/blocks/accordion-heading/style.css` — core's own
+  `+`/`×` indicator rotates inside a fixed box and has no reason to spill. A rotated square
+  does: at 0.4em the chevron's layout box is 6.4px but its painted box is 6.4 × √2 ≈ 9.05px, so
+  1.3px of each corner falls outside, and the right one was cut. Measured as
+  `scrollWidth - clientWidth`: 2px at 1600 and 1440, 1px from 1280 down, at every desktop
+  width. `overflow: visible` on the toggle in `assets/styles/core-accordion.css`, at (0,2,0)
+  against core's (0,1,0). Verified by crop: both corners paint, closed and open.
+
+- **The Call Us trigger underlined on hover instead of darkening.** Core's
+  `.wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__toggle-title` sets
+  `text-decoration: underline`; nothing of ours asked for it. It now takes the treatment the
+  enquiry button beside it uses — `styles.elements.button` hovers brand-500 to **brand-600**
+  over `0.25s ease-in-out`, so the trigger darkens on the same token and the same curve, and
+  the chevron follows because it is `currentColor`. Measured brand-500 `rgb(204,127,22)` to
+  brand-600 `rgb(150,98,21)`, underline `none`.
+
+  Two rules, because the placements rest on different colours: the header's is brand-500 and
+  darkens to brand-600, the safari expert panel's inherits neutral and darkens to neutral-900,
+  which is what the variation already gives its number links. `:focus-visible` takes the same
+  change, over core's focus outline. In the stylesheet rather than the variation JSON because
+  the `css` field strips `:hover` and theme.json allows pseudo-state keys on elements, not on
+  nested blocks — `styles.blocks.core/accordion-heading[":hover"]` does not exist.
+
 - **The Call Us dropdown opened 50px away from its trigger.** theme.json's global block gap
   reaches the panel as
   `:root :where(.is-layout-flow) > *{margin-block-start:var(--wp--preset--spacing--60)}` — it

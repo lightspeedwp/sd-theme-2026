@@ -246,8 +246,8 @@
 				 * 3 rather than 2 so it does not compete with a page's own h2s.
 				 */
 				?>
-				<!-- wp:accordion {"showIcon":false,"headingLevel":3,"className":"is-style-call-us-dropdown","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"},"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"textColor":"brand-500","fontSize":"200"} -->
-				<div role="group" class="wp-block-accordion is-style-call-us-dropdown has-brand-500-color has-text-color has-200-font-size" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);font-weight:var(--wp--custom--font-weight--bold)"><!-- wp:accordion-item -->
+				<!-- wp:accordion {"showIcon":false,"headingLevel":3,"className":"is-style-call-us-dropdown","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"},"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"textColor":"brand-500","fontSize":"300"} -->
+				<div role="group" class="wp-block-accordion is-style-call-us-dropdown has-brand-500-color has-text-color has-300-font-size" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);font-weight:var(--wp--custom--font-weight--bold)"><!-- wp:accordion-item -->
 				<div class="wp-block-accordion-item"><!-- wp:accordion-heading {"title":"<?php esc_attr_e( 'Call Us Today', 'sd-theme-2026' ); ?>","level":3,"showIcon":false} -->
 				<h3 class="wp-block-accordion-heading"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title"><?php esc_html_e( 'Call Us Today', 'sd-theme-2026' ); ?></span></button></h3>
 				<!-- /wp:accordion-heading -->
