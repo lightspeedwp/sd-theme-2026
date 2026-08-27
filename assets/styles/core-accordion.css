@@ -9,7 +9,7 @@
    `core/accordion` on 2026-08-21. The design is in
    styles/blocks/accordion/call-us-dropdown.json, and that file's description
    carries the reasoning. What is here is only what a block style variation's
-   `css` field cannot hold, which is four things:
+   `css` field cannot hold, which is five things:
 
      1. **`content: ""` is mangled by the `css` field.** The caret and the
         row-wide hit area are both pseudo-elements.
@@ -19,6 +19,8 @@
         both `:hover` and `:focus-within`.
      4. **Adjacent-sibling selectors have no structured equivalent.** The
         hairlines go between rows, not around them.
+     5. **At-rules are unwrapped by it.** The open/close motion needs
+        `@starting-style`, and the reduced-motion guard needs `@media`.
 
    Everything else — the panel's ground, border, radius, shadow and padding, the
    rows' padding and gap, the label colour, the link's weight and colour, and the
@@ -40,10 +42,20 @@
    (the toggle's `width: 100%` and its block padding) are in the variation's
    `css` field with `!important`, and not here. */
 
-/* The caret
+/* The chevron
    ---------------------------------------------
-   Live's `<span class="caret">`, a CSS triangle, so it inherits colour and
-   needs no asset.
+   Two strokes on a rotated square, so it inherits colour and needs no asset.
+
+   It was a solid CSS triangle until 2026-08-27 — live's `<span class="caret">`,
+   which is Bootstrap 3's filled caret. Zared asked for an actual chevron: a
+   filled triangle reads as a select control, a chevron reads as a disclosure,
+   and it is the lighter mark of the two beside a 16px label. Drawn from the
+   `border-width` token so the stroke matches the panel's hairlines.
+
+   The `translateY` on each state is optical centring, not decoration: a rotated
+   square's visual mass sits below the box centre when it points down and above
+   it when it points up, so the tip would appear to hop by ~2px on toggle
+   without it.
 
    Core's own indicator is a literal `+` character in
    `.wp-block-accordion-heading__toggle-icon` that rotates 45° into an `×`. That
@@ -56,11 +68,13 @@
 .is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after {
 	content: "";
 	flex: 0 0 auto;
-	width: 0;
-	height: 0;
+	box-sizing: border-box;
+	width: 0.4em;
+	height: 0.4em;
 	margin-inline-start: 0.5em;
-	border-inline: 0.3em solid transparent;
-	border-block-start: 0.35em solid currentColor;
+	border-inline-end: var(--wp--custom--border-width--200) solid currentColor;
+	border-block-end: var(--wp--custom--border-width--200) solid currentColor;
+	transform: translateY(-0.1em) rotate(45deg);
 	transition: transform 0.2s ease;
 }
 
@@ -68,7 +82,7 @@
    step with the panel's `hidden` attribute and the button's `aria-expanded`. So
    the caret cannot disagree with what a screen reader is announcing. */
 .is-style-call-us-dropdown .wp-block-accordion-item.is-open .wp-block-accordion-heading__toggle::after {
-	transform: rotate(180deg);
+	transform: translateY(0.1em) rotate(-135deg);
 }
 
 /* Rows
@@ -135,11 +149,67 @@
 	inset-inline: auto 0;
 }
 
+/* Opening and closing
+   ---------------------------------------------
+   The panel fades and drops 6px into place. Fifth thing the variation JSON
+   cannot hold: `@starting-style` is an at-rule, and the `css` field silently
+   unwraps at-rules and promotes their contents to unconditional declarations.
+
+   The panel is `display: none` when closed — the variation's `[hidden]` rule,
+   which exists because `hidden="until-found"` is `content-visibility`, not
+   `display` → styles/blocks/accordion/call-us-dropdown.json. `display` is a
+   discrete property, so a plain transition on it would flip at the halfway
+   point and there would be nothing to animate out of. Two things make it work:
+
+     1. `transition-behavior: allow-discrete` on `display`, which holds the
+        computed `none` back until the rest of the transition has finished, so
+        the close animates instead of vanishing.
+     2. `@starting-style`, which supplies the from-state for the open — an
+        element entering from `display: none` has no previous computed style to
+        interpolate from, so without it the open would be instant.
+
+   Core's own accordion does not animate: `view.js` toggles `hidden` and
+   `.is-open` and nothing else, and there is no inline height to fight. That is
+   what makes this six declarations rather than a JS module — it is CSS, so it
+   stays in the theme and needs nothing from `sd-enhancements`.
+
+   No height animation. The panel is absolutely positioned and its height is
+   content-driven, so `height`/`max-height` would need a magic number and would
+   animate a value nothing else in this theme animates. Fade-and-lift is what a
+   menu opening reads as. */
+.is-style-call-us-dropdown .wp-block-accordion-panel {
+	opacity: 1;
+	transform: translateY(0);
+	transition:
+		opacity 0.18s ease,
+		transform 0.18s ease,
+		display 0.18s allow-discrete;
+}
+
+.is-style-call-us-dropdown .wp-block-accordion-panel[hidden] {
+	opacity: 0;
+	transform: translateY(-0.375rem);
+}
+
+@starting-style {
+
+	.is-style-call-us-dropdown .wp-block-accordion-item.is-open .wp-block-accordion-panel {
+		opacity: 0;
+		transform: translateY(-0.375rem);
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 
 	.is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after,
+	.is-style-call-us-dropdown .wp-block-accordion-panel,
 	.is-style-call-us-dropdown .wp-block-accordion-panel .wp-block-group {
 		transition-duration: 1ms;
+	}
+
+	.is-style-call-us-dropdown .wp-block-accordion-panel,
+	.is-style-call-us-dropdown .wp-block-accordion-panel[hidden] {
+		transform: none;
 	}
 }
 
@@ -163,6 +233,9 @@
    not set in the editor either — the panel is simply rendered open — so the
    caret is pointed down to match what is on screen.
 
+   The motion above is inert here for the same reason: the panel is neither
+   `[hidden]` nor entering from `display: none`, so it simply renders at rest.
+
    `.editor-styles-wrapper` only exists inside the editor iframe, so the front
    end is untouched. */
 .editor-styles-wrapper .is-style-call-us-dropdown {
@@ -175,5 +248,5 @@
 }
 
 .editor-styles-wrapper .is-style-call-us-dropdown .wp-block-accordion-heading__toggle::after {
-	transform: rotate(180deg);
+	transform: translateY(0.1em) rotate(-135deg);
 }

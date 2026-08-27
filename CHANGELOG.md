@@ -8,6 +8,68 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **The Call Us dropdown opened 50px away from its trigger.** theme.json's global block gap
+  reaches the panel as
+  `:root :where(.is-layout-flow) > *{margin-block-start:var(--wp--preset--spacing--60)}` — it
+  is a flow child of the accordion item — and a margin on an absolutely positioned box adds to
+  its inset, so `inset-block-start: calc(100% + 8px)` resolved to ~58px and the panel floated
+  below the header over the page content instead of hanging off the bar. The panel now carries
+  `spacing.margin: 0` in `styles/blocks/accordion/call-us-dropdown.json`. Measured open at 8px
+  under the trigger with right edges flush, at 1440 and 1024, in the header and the safari
+  expert panel both.
+
+- **The Call Us trigger was sized by its heading level, not by its own attributes.** Core's
+  `.wp-block-accordion-heading__toggle` is `font-size: inherit`, and what it inherits from is
+  `<h3 class="wp-block-accordion-heading">` — which this theme styles through
+  `styles.elements.h3` (font-size 400, semi-bold). So the header's label rendered at **24px
+  semi-bold** while the block asked for 300 bold, and the expert panel's `<h4>` copy rendered
+  at 19.2px medium while it asked for 200 semi-bold: both at a size nobody had chosen. Below
+  about 1100px that 24px label wrapped inside the utility cluster's `flexWrap: nowrap` row and
+  collided with the Trustpilot mark; at 1024 it took the bar from 128 to 146px and wrapped the
+  enquiry button with it.
+
+  The variation now sets `core/accordion-heading` to `font-size: inherit` /
+  `font-weight: inherit` so the instance attributes decide, and the header's own attribute
+  drops 300 to **200**. Live's label is 18px bold; this token scale reaches that at 200 (16px)
+  rather than 300 (19.2px, fluid to 24px), and 200 matches the enquiry button beside it. Both
+  instances measured at their authored type afterwards — header 16px/700 brand-500, expert
+  panel 16px/600 neutral — and the 1024 bar is back to one line.
+
+  **Worth generalising:** on any block whose wrapper is a heading, an `elements.h*` style
+  outranks the block's own font-size attribute. `inherit` hands control back to the instance.
+
+### Changed
+
+- **The Call Us caret is an actual chevron.** It was a solid CSS triangle, ported from live's
+  Bootstrap `<span class="caret">`. Two strokes on a rotated square now: a filled triangle
+  reads as a select control, a chevron reads as a disclosure, and it is the lighter mark
+  beside a 16px label. Stroke width comes from `custom.borderWidth.200`, so it matches the
+  panel's hairlines, and each state carries a `translateY` for optical centring — a rotated
+  square's visual mass sits low pointing down and high pointing up, so the tip would appear to
+  hop ~2px on toggle without it. `assets/styles/core-accordion.css`, editor open-state rule
+  updated with it.
+
+### Added
+
+- **The Call Us panel fades and lifts on open and close** — 0.18s, in
+  `assets/styles/core-accordion.css`. CSS only: no JS, and nothing needed from
+  `sd-enhancements`. Core's accordion toggles `hidden` and `.is-open` and animates nothing
+  itself, and this panel is `display: none` when closed, so two modern pieces do the work —
+  `transition-behavior: allow-discrete` on `display` holds the computed `none` back until the
+  fade finishes, and `@starting-style` supplies the from-state that an element entering from
+  `display: none` otherwise has no way to interpolate from. Both directions verified by
+  sampling computed style mid-transition: closing holds `display: block` at opacity 0.36
+  before flipping to `none`; opening enters at opacity 0 / `translateY(-6px)` and lands at
+  1 / `translateY(0)`.
+
+  No height animation — the panel is absolutely positioned with a content-driven height, so
+  `max-height` would need a magic number and would animate a property nothing else here
+  animates. Guarded by `prefers-reduced-motion`. This is the fifth entry on the list of things
+  the variation JSON's `css` field cannot hold: it unwraps at-rules, so `@starting-style` and
+  the reduced-motion guard have to live in the stylesheet.
+
+### Fixed
+
 - **The fluid spacing scale was never fluid.** Every `spacingSizes` clamp had a broken
   interpolation term, so all eleven presets pinned to their minimum at every viewport.
   `spacing|80` was authored `clamp(3rem, calc(2.257rem + 0.19vw), 5rem)` — at 1520px the

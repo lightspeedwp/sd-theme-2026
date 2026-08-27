@@ -225,6 +225,16 @@
 				 * why live's 700 used to be applied from a class in a stylesheet.
 				 * `core/accordion` serialises it properly.
 				 *
+				 * Font size 200, not live's 300. At 300 the label rendered at 24px
+				 * — because `styles.elements.h3` (font-size 400, semi-bold) reaches
+				 * the `<h3 class="wp-block-accordion-heading">` and core's toggle is
+				 * `font-size: inherit`, so the heading level was setting the type and
+				 * the block attribute was inert. Below about 1100px that 24px label
+				 * wrapped inside a `flexWrap: nowrap` cluster and collided with the
+				 * Trustpilot mark. The variation now sets the heading block to
+				 * `inherit` so this attribute is what decides, and 200 matches the
+				 * enquiry button beside it. → styles/blocks/accordion/call-us-dropdown.json
+				 *
 				 * `showIcon: false` because core's indicator is a `+` that rotates
 				 * into an `×`. Live's caret is drawn in
 				 * assets/styles/core-accordion.css instead.
@@ -236,8 +246,8 @@
 				 * 3 rather than 2 so it does not compete with a page's own h2s.
 				 */
 				?>
-				<!-- wp:accordion {"showIcon":false,"headingLevel":3,"className":"is-style-call-us-dropdown","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"},"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"textColor":"brand-500","fontSize":"300"} -->
-				<div role="group" class="wp-block-accordion is-style-call-us-dropdown has-brand-500-color has-text-color has-300-font-size" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);font-weight:var(--wp--custom--font-weight--bold)"><!-- wp:accordion-item -->
+				<!-- wp:accordion {"showIcon":false,"headingLevel":3,"className":"is-style-call-us-dropdown","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"},"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"textColor":"brand-500","fontSize":"200"} -->
+				<div role="group" class="wp-block-accordion is-style-call-us-dropdown has-brand-500-color has-text-color has-200-font-size" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);font-weight:var(--wp--custom--font-weight--bold)"><!-- wp:accordion-item -->
 				<div class="wp-block-accordion-item"><!-- wp:accordion-heading {"title":"<?php esc_attr_e( 'Call Us Today', 'sd-theme-2026' ); ?>","level":3,"showIcon":false} -->
 				<h3 class="wp-block-accordion-heading"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title"><?php esc_html_e( 'Call Us Today', 'sd-theme-2026' ); ?></span></button></h3>
 				<!-- /wp:accordion-heading -->
