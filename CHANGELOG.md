@@ -56,19 +56,42 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   1427, measured as 13px of horizontal overflow at 1280, 1366 and 1440 on dev and local both.
   `inset-inline: 0` resolves against the header's padding box, so that is gone.
 
-- **The Call Us Today trigger wrapped and took the header with it.** The label broke onto two
-  lines, the button went 25px → 49px, the utility row 48px → 71px, and the header 108px →
-  180px. Measured on dev at 1024px and 992px, 2026-08-27. Two causes, both fixed:
+- **The Call Us dropdown grew the header from 110px to 355px when opened.** A specificity bug,
+  not an accordion problem. WordPress compiles a block style variation's `css` field into
+  `:root :where(<selector>)`, which lands at **(0,1,0)** — `:root` contributes all of it and
+  `:where()` contributes nothing. That is low enough to lose a *tie on source order*, and the
+  panel's `position: absolute` was losing it: `position` computed as `relative`, so the panel
+  stayed in flow. The utility row went to 295px, the enquiry button stretched to match, the logo
+  and Trustpilot mark centred themselves in a 295px band, and the nav was pushed down onto the
+  hero. And because `inset-block-start: calc(100% + 8px)` is a *relative offset* once `position`
+  is `relative`, the panel was displaced 303px below its own flow position and hung over the
+  navigation.
 
-  1. **It was rendering at font-size 300, not 200.** `styles/blocks/accordion/call-us-dropdown.json`
-     had already settled on 200 — "live's header label is 18px bold, which this token scale
-     reaches at 200 (16px) rather than 300 (19.2px, fluid to 24px)" — but `patterns/header.php`
-     still carried `fontSize: "300"`, so the decision was recorded and never applied. The label
-     was 123px wide at 1440 where it should have been ~102px.
-  2. **Nothing forbade the wrap.** Fixing the size only moves the failure width down, so the
-     toggle is `white-space: nowrap` as well — on the button, so the chevron stays on the line.
+  It only happened for logged-in users, which is what made it read as environment-specific
+  rather than as a specificity bug — dev serves logged-in requests uncached and with the admin
+  bar's stylesheet stack on top, and that is enough to flip which side of the tie loses.
+  Anonymous requests to the same URL measured 110px at every width tested, across six
+  scenarios (scrolled, pre-`window.load`, post-resize, mega menu open first, 1512px, 1680px),
+  which is why it took the reported screenshots to locate.
 
-  Verified: trigger 16px and 21–22px tall from 768px to 1600px, and opening it no longer
+  Confirmed by injecting one rule — `.wp-block-accordion-panel{position:relative}` — into an
+  otherwise untouched dev page: header 355px, row 295px, enquiry button 295px, matching the
+  reported screenshots pixel for pixel.
+
+  The five load-bearing declarations are marked `!important` now — `position`,
+  `inset-block-start`, `inset-inline-start` and `z-index` on the panel, plus `position: relative`
+  on the accordion, which is the positioning context they resolve against and was equally
+  exposed. Same reasoning and same remedy as `styles/blocks/navigation/main-navigation.json`,
+  which already carries `!important` throughout for this exact reason. Verified against four
+  override attempts that each previously flipped it, including one at (0,3,0) with a type
+  selector: header stays 110px, panel stays `absolute`, accordion stays 26px.
+
+- **The Call Us Today label wrapped at narrow widths.** Separate from the above, and about the
+  *closed* trigger: the label broke onto two lines below ~1024px, taking the button from 25px to
+  49px, the row from 48px to 71px and the header from 108px to 180px. `white-space: nowrap` on
+  the toggle. The trigger's `fontSize: "300"` is unchanged and approved — shrinking the type
+  would only move the failure width down, and any longer label or larger user font size would
+  bring it back. Verified: trigger 23–26px tall from 768px to 1600px, and opening it no longer
   changes the header's height at any width.
 
 - **The desktop navigation was shown 200px before it fits.** Block Visibility's `large`
