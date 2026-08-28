@@ -36,11 +36,16 @@
 				"color": {
 					"text": "var:preset|color|base"
 				},
+				"typography": {
+					"textDecoration": "none"
+				},
 				":hover": {
 					"color": {
 						"text": "var:preset|color|base"
 					},
-					"textDecoration": "none"
+					"typography": {
+						"textDecoration": "none"
+					}
 				}
 			}
 		},

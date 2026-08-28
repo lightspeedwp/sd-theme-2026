@@ -32,7 +32,7 @@
  * :focus-within matches the hover so the card is reachable by keyboard.
  */
 .is-style-media-overlay-card .media-overlay-card__scrim {
-	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 45%, transparent);
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 55%, transparent);
 	transition: background-color 0.5s ease;
 }
 
@@ -51,7 +51,7 @@
 	display: inline-block;
 	margin-inline-start: 0.3em;
 	font-size: 1.15em;
-	font-weight: var(--wp--custom--font-weight--extra-light);
+	font-weight: var(--wp--custom--font-weight--regular);
 	line-height: 1;
 	transform: translateY(0.06em);
 }
