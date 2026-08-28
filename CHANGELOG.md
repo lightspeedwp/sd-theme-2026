@@ -6,7 +6,123 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **The tour archive is built.** `templates/archive-tour.html` was a stub Query Loop over
+  the `tour` post type; it now references `patterns/template-archive-tour.php`, which
+  reproduces the live tours landing page — the photographic banner, the tinted intro band
+  pairing the archive description with the safari expert panel, the tile grid, and the
+  Why Choose and enquiry bands beneath it. Measured from `/tours/` on 2026-08-28.
+  *(LS-2019, item 9)*
+
+  **The grid lists travel styles, not tours.** Live's tours archive is ten tiles reading
+  "Safari Honeymoons", "Family Safaris", "Gorilla Trekking" and so on, each clicking
+  through to that term's archive; the tours themselves live a level down. So this is a
+  `core/terms-query` over `travel-style`, not a Query Loop, and it carries
+  `sd-featured-terms-query` so `sd-enhancements` restricts it to the terms flagged
+  `featured` — which on dev are exactly live's ten. Without that flag the grid would also
+  render "Top 10 Safari Tours", the mega-menu curation term, whose thumbnail is the same
+  attachment as Luxury Big Five Safaris.
+
+  Banner image, title, tagline and description are the `tour` block of `_lsx-to_settings`
+  read on dev, so they are the values live renders rather than a transcription of the
+  page. The tagline is stored upper case and is set in sentence case here, matching the
+  destinations banner.
+
+  **Three columns, where live runs two** — decided 2026-08-28, so every Tour Operator
+  archive shares one grid and one tile shape. Ten tiles at three columns leave a row of
+  one; that is the accepted trade.
+
+- **`patterns/card-media-overlay-term.php`** — the term twin of
+  `patterns/card-media-overlay.php`, for a `core/term-template`. Same
+  `is-style-media-overlay-card` styling, so the two archives stay one design;
+  `core/term-name` replaces `core/post-title` and the whole tile links to the term
+  through `sdLinkTo: "term"`.
+
+  The image is `core/post-featured-image`, which looks wrong and is not: Tour Operator
+  filters that block and, given a `termId` in context, swaps in the term's `thumbnail`
+  meta wrapped in `get_term_link()` with the term name as `alt`, emitting the same
+  `<figure style="aspect-ratio:…">` core does. That branch is reachable only because
+  `SD\Enhancements\Compat::declare_term_context_on_featured_image()` adds the context
+  keys TO reads but never declared — the same shim the homepage brands shelf depends on.
+  `sd/term-image` does not fit: its `metaKey` allow-list covers `sd_thumbnail` /
+  `sd_thumbnail_color`, and travel styles carry TO's `thumbnail`.
+
+- **The tour single is built.** `templates/single-tour.html` was a verbatim copy of Tour
+  Operator 2.2's default template; it now references
+  `patterns/template-single-tour.php`, which reproduces the live tour page section for
+  section — banner, the summary band, tour highlights, the gallery, the WETU map, the
+  connected review carousel, the "Tell us your trip ideas" band, "Other tours you might
+  like", and Why Choose with the Trustpilot score. Measured from
+  `/tour/botswana-victoria-falls-safari/` and `/tour/best-of-southern-africa/` on
+  2026-08-28 against `sd-lsx-child/includes/layout.php` and
+  `.github/reports/live-site-audit-2026-08-12.md` §3.3. *(LS-2019, items 9.2 and 9.3)*
+
+  Four things the TO default carries are deliberately **not** here. The **sticky section
+  menu** is markup live emits and then switches off (`.single .lsx-to-navigation {
+  display: none !important }`) — porting it would be adding a component, not preserving
+  one. The **breadcrumb bar** is a filter over a third-party plugin's trail and belongs
+  to `sd-enhancements`, the same call `patterns/template-archive-destination.php`
+  already recorded. The **price includes/excludes panel** is Tour Operator's composition,
+  not SD's — live's tour single has none and no SD tour populates the fields. The
+  **accommodation modals** belong with the accommodation single.
+
+  Every optional band carries an `lsx-<field>-wrapper` class, so Tour Operator removes it
+  — heading included — when the field, gallery, itinerary or connected query behind it is
+  empty. No conditional logic entered the theme. Verified on this install: a tour with no
+  reviews and no related tours renders neither section; adding a `review_to_tour` and a
+  `tour_to_tour` connection brings both back.
+
+- **`patterns/itinerary-stay.php`** — one row of the summary's numbered itinerary spine,
+  and the unit Tour Operator's `lsx/tour-itinerary` binding repeats. The number is a CSS
+  counter rather than a bound value, because `render_itinerary_block()` passes a row index
+  into `build_itinerary_field()` and never uses it; a counter also renumbers correctly
+  when a row is hidden. Marker, number and dashed spine are in
+  `assets/styles/core-group.css` — all three need `content:`, which a block-style `css`
+  field drops.
+
+  ⚠️ It renders **"Day 1"**, not live's **"2 Nights"**. Live merges consecutive days that
+  share a lodge and labels the merged row with its night count;
+  `SD\Enhancements\Itinerary::collapse()` already implements that and is waiting on the
+  upstream `lsx_to_itinerary_items` filter (tour-operator#1293, LS-2531). Nothing in the
+  theme changes when it lands — the plugin rewrites the same field. Live's
+  `.itinerary-country` line has no equivalent in TO 2.2 either and is not reproduced;
+  it came from `lsx_to_itinerary_country()`, a Tour Operator tag the child theme
+  redefined (port-inventory M-09). *(LS-2019, item 9.4)*
+
+- **`patterns/card-review-quote.php`** and `styles/sections/cards/review-quote-card.json`
+  — the full-bleed review slide the carousels on every Tour Operator single carry. Live
+  sets white type straight onto the photograph with no overlay, which holds only while
+  every connected review happens to carry a dark image; this uses the same neutral-900
+  scrim as `styles/sections/hero-banner.json`. Live's two links to the same place — an
+  inline `…/` and a `.moretag` whose label exists only as a CSS pseudo-element, i.e. a
+  link with no accessible text — become one labelled `core/read-more`. *(LS-2019)*
+
+- **`patterns/cta-tell-us-your-trip-ideas.php`** — the default heading of live's
+  `sd_call_info_section()`, and the second of the four variants LS-2014 item 4.6 names.
+  It is `patterns/cta-not-sure-where-to-go.php` with one string changed, which is what
+  the old five-branch body-class conditional becomes in a block theme. ⚠️ The two must
+  stay in step; only the heading may differ. *(LS-2019)*
+
+- **`styles/sections/highlights-list.json`** — the tour highlights list. The field is a
+  WYSIWYG arriving through a block binding as raw `<ul>` markup, so every rule is a
+  descendant selector. Note the shape this forces: a `<ul>` inside a `<p>` is not
+  parseable HTML, so the browser closes the paragraph first and the list ends up a
+  *sibling* of the bound block. The wrapping group is the only stable hook, which is why
+  the style is registered against `core/group`. The gold check marker and the two-column
+  run are in `assets/styles/core-group.css` — a `css` field drops `content:` rules
+  outright and unwraps `@media` into unconditional ones. *(LS-2019)*
+
 ### Changed
+
+- **`is-style-script-accent` now applies to `core/post-title` as well as `core/heading`.**
+  Live gives every non-home banner title the Joe Hand script face
+  (`body:not(.home) #lsx-banner .container .page-title`), and on a single that title has
+  to stay dynamic — the destinations archive can author it as a heading, the tour single
+  cannot. Core only emits a variation's numbered class for the block types it is
+  registered against, so before this the class rode along on the markup and resolved to
+  nothing: the banner title computed as `Optima` at weight 700 instead of `Joe Hand` at
+  200. Confirmed in the browser before and after. *(LS-2019)*
 
 - **The post grid card lifts on hover.** `.is-style-post-grid-card` now rises 4px and steps
   one place up the shadow scale — `shadow|200` → `shadow|300` (`0 2px 4px` → `0 4px 8px`) —

@@ -1,6 +1,6 @@
 # The pattern library
 
-A guide to the 39 block patterns in **Southern Destinations 2026**, written for the
+A guide to the 43 block patterns in **Southern Destinations 2026**, written for the
 people who build pages in the editor rather than for developers. It says what each
 pattern is, where it belongs, and which ones fill themselves in from the site's content.
 
@@ -56,10 +56,11 @@ the fix is in the content or the settings, not in the page.
 the inserter* is part of a page template and appears automatically. You will not find
 it in the Patterns tab, and you should not need to.
 
-**3. Two bands are deliberately not wired up yet.** **Why Choose Southern Destinations**
-and **CTA — Not Sure Where To Go** appear beneath the archives on the current site,
-where the old theme printed them automatically. In the rebuild they are defined but not
-yet attached to a template — that decision is open on
+**3. Two bands are only partly wired up.** **Why Choose Southern Destinations** and the
+**CTA** band appear beneath the archives on the current site, where the old theme
+printed them automatically. The **tour** template now places both, because live places
+both there and in that order. Everywhere else they are defined but not yet attached —
+that decision is still open on
 [LS-2033](https://linear.app/lightspeedwp/issue/LS-2033). Please don't paste them into
 individual page bodies in the meantime: when they are attached, every page you pasted
 them into will show them twice.
@@ -106,6 +107,7 @@ Drop these into any page body.
 | **Page Hero Banner** | The standard page banner — a full-width photograph carrying the page title. | — |
 | **Safari Expert Panel** | "Chat to your Safari Expert" — a brand-coloured card holding the consultant's portrait and name, a Call Us dropdown carrying the four office numbers, and an email action, with the Trustpilot badge beneath the card. Picks the right consultant for the page it is on. | Team · Trustpilot |
 | **CTA — Not Sure Where To Go** | The enquiry band: a script heading over the two office numbers, with "Send us an Email" beneath. | — |
+| **CTA — Tell Us Your Trip Ideas** | The same enquiry band with the heading every tour, lodge and destination page uses. Placed by the tour template; place it by hand only on a page that needs it. | — |
 | **Why Choose Southern Destinations** | See above. | Trustpilot score |
 | **Trustpilot Score** | The rating badge on its own — the word, the mark, the stars and the TrustScore line. Already included inside the two patterns above; place it separately only where you want the badge alone. | Trustpilot |
 
@@ -121,9 +123,10 @@ the mobile menu and this panel together.
 
 **Three headings exist for the CTA band on the current site** — "Not sure where to go?"
 on the destination and brand archives, "Like what you see? Let's start planning!" on
-specials, and "Tell us your trip ideas and we'll send you ours!" everywhere else. Only
-the first is built. The other two are one line of copy apart and will be added with the
-templates that need them.
+specials, and "Tell us your trip ideas and we'll send you ours!" everywhere else. The
+first two of those three are built; the specials one is one line of copy apart and will
+be added with the template that needs it. Pick the variant that matches the page — they
+are otherwise identical, and a change to the numbers or the action belongs in both.
 
 **"Send us an Email" is a link to `/contact/` for now.** The pop-up enquiry form is
 being built separately ([LS-2530](https://linear.app/lightspeedwp/issue/LS-2530)) and
@@ -147,6 +150,7 @@ only when you want a single tile as a feature.
 | **Card — Post (Grid)** · **Card — Post (List)** | Blog post tiles |
 | **Card — Category** | Category tile |
 | **Blog Card** · **Blog Card Large** | Post tiles for the news landing page |
+| **Card — Review (Quote)** | The review slide the carousels on Tour Operator singles carry — a gold quote mark over the reviewer's photograph |
 
 All of the Tour Operator cards read their content from the post they are showing, so
 they always match the tour, lodge or destination they sit on.
@@ -194,6 +198,8 @@ recognise the name if you meet it in the Site Editor.
 | **Template: Page** | The standard page |
 | **Template: Page (Full Width, No Title)** | Full-bleed pages |
 | **Template: Page (With Sidebar)** | Pages with the sidebar |
+| **Template: Single Tour** | The tour page |
+| **Itinerary Stay** | One row of the tour page's itinerary list. Repeated once per stay by the Tour Operator plugin — you never place it. |
 
 ---
 

@@ -701,3 +701,120 @@
  * can lose to, and which the editor renders and exposes as a control. Each card
  * now carries its crop as an `aspectRatio` attribute in its pattern instead.
  */
+
+
+/* Tour itinerary — the numbered spine
+--------------------------------------------- */
+
+/*
+ * Live's `#single-tour-summary .itinerary-data` (custom.css:2334-2394): a
+ * filled circle carrying the stay's index, a dashed rule joining it to the one
+ * below, and the last row's rule suppressed.
+ *
+ * All of it is here rather than in a block-style JSON because every rule needs
+ * a pseudo-element with `content:`, and a `css` field drops any rule containing
+ * `content:` outright. → AGENTS.md, "Styling lives in JSON"
+ *
+ * The number is a CSS counter, not a bound value. Tour Operator's
+ * `render_itinerary_block()` passes a row index into `build_itinerary_field()`
+ * and never uses it, so there is no field to bind — and a counter has the
+ * better behaviour anyway: it renumbers on its own when a row is dropped.
+ *
+ * Every colour and measure is live's, through the nearest token. The circle is
+ * `brand-500`: live paints it `#BF5C17`, which style.md §2 records as dropped
+ * from the palette, with `brand-600` taking over its *hover* role — this is a
+ * resting fill, so it takes the resting brand orange. The dashed rule is
+ * `#B4A48C` → `neutral-400`, the mapping style.md made on 2026-08-20.
+ */
+.sd-itinerary {
+	counter-reset: sd-itinerary;
+}
+
+.sd-itinerary__stay {
+	counter-increment: sd-itinerary;
+	position: relative;
+}
+
+/* The marker. 33px on live; `min-width` as well as `width` so a two-digit
+   count cannot stretch it into an ellipse. */
+.sd-itinerary__stay::before {
+	content: counter(sd-itinerary);
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 33px;
+	min-width: 33px;
+	height: 33px;
+	border-radius: var(--wp--preset--border-radius--500);
+	background-color: var(--wp--preset--color--brand-500);
+	color: var(--wp--preset--color--base);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--300);
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+	line-height: 1;
+}
+
+/* The rule joining one marker to the next. Live starts it 34px down — just
+   below the circle — and runs it the height of the row, so the gap between
+   rows is spanned by the *next* row's own offset. `left: 16px` puts it on the
+   circle's centre line. */
+.sd-itinerary__stay::after {
+	content: "";
+	position: absolute;
+	top: 34px;
+	bottom: calc(var(--wp--preset--spacing--20) * -1);
+	left: 16px;
+	border-left: 1px dashed var(--wp--preset--color--neutral-400);
+}
+
+.sd-itinerary__stay:last-child::after {
+	content: none;
+}
+
+
+/* Tour highlights — the check marker and the two-column run
+--------------------------------------------- */
+
+/*
+ * The rest of this band is in styles/sections/highlights-list.json. These two
+ * rules cannot join it: the first needs `content:`, which a `css` field drops,
+ * and the second is an `@media` query, which a `css` field does not merely
+ * fail to honour — it concatenates the query text into the selector and emits
+ * the inner rules unconditionally. → AGENTS.md, "Styling lives in JSON"
+ *
+ * Live hangs FontAwesome's `\f058` (check-circle) in the gutter in `#e6ad10`
+ * (tour-operator/assets/css/style.css:1221, recoloured by custom.css:2418).
+ * This theme does not load FontAwesome, so the same mark is Phosphor's
+ * CheckCircle as a mask — a mask rather than a background image so the colour
+ * is the accent-500 token and not baked into the asset.
+ */
+.is-style-highlights-list ul li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.15em;
+	width: 1em;
+	height: 1em;
+	background-color: var(--wp--preset--color--accent-500);
+	-webkit-mask-image: var(--sd-check-circle);
+	mask-image: var(--sd-check-circle);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+
+.is-style-highlights-list {
+	--sd-check-circle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
+}
+
+/* Live runs the list in two columns from 768px up (custom.css:2412). The
+   `break-inside: avoid` that keeps an item whole across the column break is in
+   the section style, where it belongs — only the query has to be here. */
+@media (min-width: 768px) {
+	.is-style-highlights-list ul {
+		columns: 2;
+		column-gap: var(--wp--preset--spacing--50);
+	}
+}

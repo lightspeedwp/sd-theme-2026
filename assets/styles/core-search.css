@@ -224,6 +224,100 @@
 	outline-offset: 1px;
 }
 
+/* The panel below the header's stacking breakpoint
+   ===========================================================================
+   Above 781px the panel unrolls out of flow, leftwards over the header row,
+   and there is room for it: measured on local at 768px it opens to its full
+   600px and its left edge lands at x=51, clear of the gutter.
+
+   Below 781px there is not, and the out-of-flow version had no way to know.
+   Its width is `min(600px, 100vw - spacing-80)`, which is a guess at how much
+   room sits to the *left of the icon* expressed as a fraction of the whole
+   viewport — but the icon is not at the viewport's edge. Everything between it
+   and the edge (the trigger itself, the block gap, the mobile menu toggle and
+   the root gutter) is roughly 110px that the formula never subtracts, so the
+   panel overhangs the left edge by about that much at every width where the
+   600px cap is not already doing the clamping. Measured on local, 2026-08-28:
+   at 390px the open panel's left edge sat at **-61px**, at 600px at -59px.
+   Nothing scrolled — `overflow: hidden` on the closed wrapper meant the
+   overhang was simply cut off, so the placeholder and the first characters
+   typed were off-screen rather than obviously broken.
+
+   ## What changes: the panel comes back into flow
+
+   The fix is not a better formula — any formula has to hard-code the width of
+   the furniture to the icon's right, and would go wrong again the next time
+   that furniture changes. Instead the form is allowed to grow across the row
+   (`flex: 1 1 auto`) and the panel returns to normal flow inside it, with the
+   trigger held at the end by `justify-content: flex-end`. The panel then
+   *cannot* overhang: it is a flex item, so it stops where its flex line does,
+   which is the row's own content edge — the root gutter, exactly. No magic
+   number, and it keeps working if the toggle, the gap or the gutter change.
+
+   The reason it could not be done this way above 781px is the one the
+   out-of-flow model exists for (see "Why this overrides core"): in flow the
+   growing panel shoves the trigger leftwards and reflows the row. Here it
+   doesn't, because the form has been given the whole row's free space to grow
+   into and the trigger is pinned to the far end of it — the panel eats slack,
+   not the trigger's position.
+
+   781px is core's own column-stacking breakpoint, not a new one: at that width
+   `wp-block-columns` drops the logo onto its own line and the utility column
+   goes full-width, which is what leaves the row with slack for the form to
+   take. The two changes are the same event.
+
+   ## The animation moves from `width` to `flex-basis`
+
+   In flow the open width is `auto` — resolved by the flex line, unknowable up
+   front, and not a transitionable value from `0`. `flex-basis` is: 0% closed,
+   100% open, with `flex-shrink: 1` pulling the overshoot back to whatever the
+   row actually leaves. That is also the axis core animates natively, so this is
+   agreeing with core rather than fighting it. `max-width` keeps the 600px token
+   as a ceiling for the wide end of this range, where the row has more slack
+   than the design wants the panel to use.
+
+   `transform: none` is not tidying: `translateY(-50%)` in the base rule applies
+   to a statically positioned box too, and without this the panel rides half its
+   own height above the trigger. `position: static` alone does not undo it. */
+@media (max-width: 781px) {
+
+	/* The form takes the row's free space, so the panel has somewhere to grow
+	   that isn't the trigger's position. */
+	.wp-block-search.is-style-header-search {
+		flex: 1 1 auto;
+	}
+
+	/* …and the trigger stays at the end of it, where it was before the form
+	   grew. Without this the icon slides to the left of the row the moment the
+	   form starts filling it. */
+	.wp-block-search.is-style-header-search .wp-block-search__inside-wrapper {
+		justify-content: flex-end;
+	}
+
+	/* The panel, closed — in flow, at zero basis. */
+	.wp-block-search.is-style-header-search .wp-block-search__input {
+		position: static;
+		transform: none;
+		width: auto;
+		flex: 0 1 0%;
+		max-width: var(--wp--custom--header--search-panel-width);
+		transition:
+			flex-basis 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0.2s ease-in-out,
+			padding 0.2s ease-in-out;
+	}
+
+	/* The panel, open. `width: auto` is load-bearing — the desktop open rule
+	   above has the same specificity and sets `width: min(600px, …)`, so this
+	   has to say otherwise or the flex sizing never gets a look in. It wins on
+	   source order, which is why this block sits after that rule. */
+	.wp-block-search.is-style-header-search:not(.wp-block-search__searchfield-hidden) .wp-block-search__input {
+		width: auto;
+		flex-basis: 100%;
+	}
+}
+
+
 @media (prefers-reduced-motion: reduce) {
 	.wp-block-search.is-style-header-search .wp-block-search__input {
 		transition: none;
