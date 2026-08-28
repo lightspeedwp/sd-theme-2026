@@ -3,8 +3,8 @@
 	"version": 3,
 	"title": "Script Accent",
 	"slug": "script-accent",
-	"blockTypes": [ "core/heading" ],
-	"description": "The live `.sd-title` — the handwritten Joe Hand line the site uses for warmth above or beside a section title (\"How to plan your dream trip to Africa…\", \"We are Trusted\"). Accent font family at extra-light, sentence case, never uppercase. It inherits its colour from the section it sits in, so it reads brand-500 on light surfaces and accent-500 on the dark section; set the colour on the heading where a section does not already supply it.",
+	"blockTypes": [ "core/heading", "core/post-title" ],
+	"description": "The live `.sd-title` — the handwritten Joe Hand line the site uses for warmth above or beside a section title (\"How to plan your dream trip to Africa…\", \"We are Trusted\"). Accent font family at extra-light, sentence case, never uppercase. It inherits its colour from the section it sits in, so it reads brand-500 on light surfaces and accent-500 on the dark section; set the colour on the heading where a section does not already supply it. `core/post-title` is in scope as well as `core/heading`, because live gives every non-home banner title the same treatment (`body:not(.home) #lsx-banner .container .page-title`) and on a single that title has to stay dynamic — the destinations archive can author it as a heading, the tour single cannot. Core only emits a variation's numbered class for the block types it is registered against, so without `core/post-title` here the class rides along on the markup and resolves to nothing.",
 	"styles": {
 		"typography": {
 			"fontFamily": "var:preset|font-family|accent",
