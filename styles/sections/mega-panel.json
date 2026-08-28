@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Mega Menu Panel",
+	"slug": "mega-panel",
+	"blockTypes": [ "core/group" ],
+	"description": "The fold-out panel behind a header mega menu — the group at the root of parts/mega-menu-*.html. Carries the panel's own frame: its vertical padding and the size of its column headings. Everything else about a panel lives in one of three other places, deliberately. The row contract is in styles/blocks/{navigation/mega-menu-nav,query/mega-menu-list}.json. The column hairlines, the featured card and the hover flips are in assets/styles/ollie-mega-menu.css, keyed off the sd-mega-panel class, because a sibling border, a pseudo-state and a media query are the three things a css field cannot hold. And every blockGap stays on the block markup, per AGENTS.md — a variation's own blockGap is emitted nowhere, and a nested one is emitted on the front end only, so the editor and the front end would disagree.",
+	"styles": {
+		"spacing": {
+			"padding": {
+				"top": "var:preset|spacing|20",
+				"bottom": "var:preset|spacing|20"
+			}
+		},
+		"blocks": {
+			"core/paragraph": {
+				"typography": {
+					"textTransform": "none"
+				}
+			}
+		},
+		"css": "& .wp-block-heading{font-size:var(--wp--preset--font-size--300) !important;}"
+	}
+}

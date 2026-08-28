@@ -341,7 +341,11 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
    main-navigation.json's. Same shape as the footer nav rule above.
 
    Not scoped to `.sd-mega-panel`, so the same treatment follows this variation
-   into the dropdown parts that also carry it. */
+   into the dropdown parts that also carry it.
+
+   The query-driven half of the same panel row is in
+   assets/styles/ollie-mega-menu.css, keyed off `is-style-mega-menu-list`.
+   Change one, change the other. */
 .wp-block-navigation.is-style-mega-menu-nav .wp-block-navigation-item__content:hover,
 .wp-block-navigation.is-style-mega-menu-nav .wp-block-navigation-item__content:focus-visible {
 	color: var(--wp--preset--color--brand-600);

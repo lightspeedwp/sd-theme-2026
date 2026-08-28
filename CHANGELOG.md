@@ -8,6 +8,60 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The mega panels have a section style.** `styles/sections/mega-panel.json`
+  (`is-style-mega-panel`, `core/group`) carries the panel frame that was authored as
+  markup on all four parts: the `spacing|20` vertical padding, the column headings'
+  `font-size|300`, and `text-transform: none` on panel paragraphs. Set once instead of
+  thirteen times, and — unlike `assets/styles/ollie-mega-menu.css` — it renders in the
+  Site Editor.
+
+  The heading size is marked `!important` against a named opponent: the same headings
+  carry `is-style-section-title-left`, which sets `font-size|500`. Measured on local, the
+  two compile to (0,1,0) and (0,1,0) at offsets 86814 and 86942 — the section style is
+  emitted *first*, so unmarked it would lose.
+
+  ⚠️ **Every `blockGap` deliberately stays on the block markup** — the column gaps of
+  `spacing|10`/`20`/`30` and the columns' own `spacing|70`. Per AGENTS.md a variation's own
+  `blockGap` is emitted nowhere, and a nested one is emitted on the front end only, so
+  moving them here would make the editor and the front end disagree. They are markup on
+  purpose, not an oversight.
+
+- **The mega panels' query rows are a block style variation, so the Site Editor shows them.**
+  `styles/blocks/query/mega-menu-list.json` (`is-style-mega-menu-list`, `core/query`) now
+  carries the resting row contract for the tour and special lists — flush rows, the
+  hairline between them, and body type at the navigation row's weight and rhythm. It
+  replaces the `sd-mega-list` utility class and the block of rules that sat in
+  `assets/styles/ollie-mega-menu.css`.
+
+  ⚠️ **The reason is editor parity, not tidiness.** `wp_enqueue_block_style()` hooks
+  `render_block` and `wp_enqueue_scripts` (`wp-includes/script-loader.php`), and the theme
+  calls `add_editor_style()` on `style.css` alone — so *every* `assets/styles/*.css` sheet
+  is front-end only and the editor canvas never sees one. The six-way nav-row/query-row
+  mismatch fixed on 2026-08-28 was therefore still live in the canvas: `elements.h3` in
+  `theme.json` gives a post title `semi-bold`, `letter-spacing|heading` and
+  `line-height|button`, and `elements.heading` gives it the heading face. The navigation
+  columns never had the problem, because they were always a variation.
+
+  Four declarations are marked `!important`, each against a named opponent rather than
+  defensively: `font-family`, `font-weight`, `letter-spacing` and `line-height` against
+  `theme.json`'s `elements.h3` / `elements.heading`, and `color`, `display` and
+  `padding-block` on the link against `elements.link` and the block library's
+  `.wp-block-post-title :where(a)`. `font-size` is set nowhere — both blocks carry
+  `fontSize: "200"` and core emits `.has-200-font-size` with `!important`.
+
+  Only `:hover` / `:focus-visible` stay in `assets/styles/ollie-mega-menu.css`, because a
+  `css` field strips them. That half and the navigation half in
+  `assets/styles/core-navigation.css` still describe the same row on different markup and
+  still have to be changed together; each file now names the other.
+
+- **The mega panels' column gap is the block's again.** All four parts authored
+  `blockGap: spacing|70` and rendered at 50: core emits the authored gap as
+  `.wp-container-core-columns-is-layout-bd159393{gap:spacing-60 spacing-70}` at (0,1,0)
+  and `.sd-mega-panel .sd-mega-panel__columns` sat at (0,2,0), so the stylesheet won on
+  both axes and the Site Editor's gap control did nothing. The `gap` declaration is gone
+  and the panels widen to the authored 70; the hairline's `padding-inline-start` moves
+  from 50 to 70 with it, since a border on the column cannot read its parent's gap.
+
 - **The safari expert panel is live's widget again — a brand card, not a neutral one.**
   `patterns/safari-expert.php` had drifted to a `neutral-100` card that live never shipped.
   Rebuilt against live's own measurements (`sd-lsx-child/assets/css/custom.css:3791`,
@@ -196,6 +250,33 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **`.sd-mega-panel__heading` was six dead declarations.** Measured on local 2026-08-28.
+  Its colour, font-family, font-weight, letter-spacing and text-transform all lost to
+  `is-style-section-title-left`, which the same headings also carry: both compile to
+  (0,1,0), and the variation is emitted with the global styles at offset 86607 while
+  `assets/styles/ollie-mega-menu.css` is linked at 25792. Its `margin-block-end` lost to
+  core's layout contract — each column sets a `blockGap`, which emits
+  `.wp-container-core-column-is-layout-‹hash› > * { margin-block-end: 0 }` late in the
+  document — and it never reached the editor at all, because no stylesheet in that
+  directory does. Rule and class both removed.
+
+- **`.sd-mega-panel { padding-block: spacing|40 }` was already overridden.** The parts had
+  begun setting `spacing|20` as an inline style, which outranks any stylesheet rule. The
+  value moves to `is-style-mega-panel` and the dead rule is gone.
+
+- **Two dead classes in the mega-menu parts.** `parts/mega-menu-about.html` put
+  `is-style-mega-menu-nav` on a `core/paragraph`; the variation declares
+  `blockTypes: ["core/navigation"]`, so WordPress compiles it as
+  `.wp-block-navigation.is-style-mega-menu-nav` and it matched nothing — the same bug
+  class as the `sd-mega-list` one fixed on 2026-08-28. `parts/mega-menu-tours.html`
+  carried `sd-mega-menu-tours-query` on its post-template, which nothing in the theme
+  styles. Both removed.
+
+- **`mega-menu-nav.json` transitioned `all`.** Core stamps a variation's class on both the
+  `<nav>` and its `<ul>` (measured on dev), so `transition: all 0.25s ease` was applied
+  twice over a flex container that animates nothing but colour on hover. Narrowed to
+  `transition: color`.
 
 - **`blockGap` set in the editor disagreed with the front end, and the gap control under a
   section title did nothing at all.** Two separate causes, both now removed. Measured on

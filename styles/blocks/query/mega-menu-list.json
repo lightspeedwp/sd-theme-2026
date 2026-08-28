@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Mega Menu List",
+	"slug": "mega-menu-list",
+	"blockTypes": [
+		"core/query"
+	],
+	"description": "The query-driven link column inside a mega-menu panel — the tour and special lists that sit beside the navigation columns. Carries the resting row contract: flush rows, a hairline between them, and body type at the navigation row's weight and rhythm, so a query row and a navigation row read as one list. This is the counterpart to styles/blocks/navigation/mega-menu-nav.json; the two describe the same row on different markup and have to be changed together. Hover and :focus-visible cannot live in this file's css field — WordPress strips :hover out of it entirely — so they sit in assets/styles/ollie-mega-menu.css alongside the navigation half.",
+	"styles": {
+		"css": "& .wp-block-post-template{display:flex;flex-direction:column;gap:0;list-style:none;margin:0;padding:0;} & .wp-block-post-template > li{border-bottom:1px solid var(--wp--preset--color--neutral-300);margin-block:0;} & .wp-block-post-title{font-family:var(--wp--preset--font-family--body) !important;font-weight:var(--wp--custom--font-weight--regular) !important;letter-spacing:0 !important;line-height:var(--wp--custom--line-height--snug) !important;margin:0;text-transform:none;} & .wp-block-post-title a{color:inherit !important;display:block !important;padding-block:var(--wp--preset--spacing--20) !important;text-decoration:none;}"
+	}
+}
