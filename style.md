@@ -111,12 +111,14 @@ Built by mirroring `brand`'s construction — same relative chroma profile, hue 
 | `brand-200` | `#F8D597` | `#EEE0CE` | — |
 | `brand-300` | `#F2BC63` | `#E3C396` | — |
 | `brand-400` | `#EBA030` | `#EBA647` | — |
-| `brand-600` | `#966215` | `#9B6111` | — |
+| `brand-600` | `#966215` | `#BC5B18` | `#BF5C17` (hover) |
 | `brand-700` | `#624411` | `#6A420B` | — |
 | `brand-800` | `#32240B` | `#3D2607` | — |
 | `brand-900` | `#040301` | `#180F03` | — |
 
 The brand ramp agrees only at `500`. Recommendation: adopt Figma's ramp — it agrees at the anchor and no other step appears on the live site, so nothing visible changes.
+
+> ✅ **Adopted.** The `theme.json` column above is the pre-adoption state and is kept as history — every brand step now carries Figma's value, with one deliberate exception. **`brand-600` is `#BC5B18`**, not Figma's `#966215`: live's hover orange, corrected to clear AA. See §2.5 and the audit's divergence D2. *(2026-08-28)*
 
 ### 2.5 🔴 Accessibility constraint on the brand orange
 
@@ -128,15 +130,19 @@ Where the ramp steps sit, for reference when styling:
 
 | Use | Ratio | Reach for |
 |---|---|---|
-| Brand text on a light background | 3.17 ❌ | **`brand-600 #966215`** (5.18, AA) — adjacent step, reads the same |
+| Brand text on a light background | 3.17 ❌ | **`brand-600 #BC5B18`** (4.52, AA) — adjacent step, reads the same |
 | White on a brand fill | 3.17 🟠 | Fine at **large text** (≥18.66px bold / ≥24px), which live buttons broadly already are |
-| Link hover | 5.18 ✅ | **`brand-600`** — already what the theme uses |
+| Link hover | 4.52 ✅ | **`brand-600`** — already what the theme uses, and now live's own hover orange |
 | Brand as a large-display or decorative fill | ✅ | `brand-500` as-is |
 | Gold text on a light background | 2.03 ❌ | **`accent-700 #705413`** (7.08 AAA) |
 | Gold on a dark surface | 8.75 ✅ | **`accent-500 #E6AD10`** — its natural home |
 | System `warning-foreground #F59E0B` | 2.15 ❌ | Inherited from the KWV base, not an SD colour — needs a darker value if system messaging is built |
 
 These are **role-mapping** rules — which ramp step a role points at. Changing `brand-500` itself would be a Change-Control Register entry. Full contrast table: audit report §5.
+
+> 🔄 **`brand-600` revised 2026-08-28: `#966215` → `#BC5B18`.** Live leans on its orange hard, hovers especially, and the token exists to give the theme the same colour to reach for. `#966215` was a desaturated brown stepping toward `brand-700`, so every hover authored against it drifted browner than the page it reproduced.
+>
+> The audit had dropped live's orange (divergence D2): as sampled, `#BF5C17`/`#BF5C18` measures **4.41** — AA Large only, missing AA by 0.09 — and `brand-600` is the theme's AA anchor for brand text on a light ground. `#BC5B18` is that same hue and saturation 0.6% darker in lightness: visually the same colour, measuring **4.52**. Live's orange is adopted rather than dropped, and the anchor holds. For the record: `#966215` 5.18, `brand-500 #CC7F16` 3.17.
 
 ---
 
