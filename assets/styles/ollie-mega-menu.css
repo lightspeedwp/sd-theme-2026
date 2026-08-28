@@ -277,10 +277,19 @@
 
    Colour only, with no outline: core suppresses its focus ring for
    `:not(:focus-visible)` only, so a keyboard user still gets the UA outline on
-   top of this. */
+   top of this.
+
+   ⚠️ **`color` is marked, and has to be.** The variation's resting rule is
+   `color: inherit !important` — it needs the mark to beat theme.json's
+   `elements.link`, which sits at the same (0,1,0). An important author
+   declaration outranks a *normal* one whatever its specificity, so this rule
+   was inert from 2026-08-28 until it was marked too: the rows simply did not
+   change colour on hover. With both marked, important-vs-important falls back
+   to specificity, and (0,4,0) here beats the variation's (0,1,0). Remove the
+   mark from either one and the pair has to be re-reasoned. */
 .sd-mega-panel .is-style-mega-menu-list .wp-block-post-title a:hover,
 .sd-mega-panel .is-style-mega-menu-list .wp-block-post-title a:focus-visible {
-	color: var(--wp--preset--color--brand-600);
+	color: var(--wp--preset--color--brand-600) !important;
 	text-decoration: none;
 }
 

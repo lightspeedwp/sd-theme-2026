@@ -8,6 +8,18 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Mega-menu rows are tighter, and their height is one token.**
+  `settings.custom.mega-menu.row-padding` in `theme.json` now holds the row's vertical
+  padding, and both `styles/blocks/navigation/mega-menu-nav.json` and
+  `styles/blocks/query/mega-menu-list.json` read it. The two lists sit side by side in the
+  same panel and have to share a rhythm, so the value is one place instead of three
+  declarations across two files that had to agree.
+
+  Set to `spacing|10` (8–10px), down from `spacing|20` (14–20px): a row goes from ~46–58px
+  to ~34–38px, and the ten-item "Top 10 Safaris" column from ~460–580px to ~340–380px,
+  which brings it back inside a sensible panel height. 38px stays a comfortable pointer
+  target. Follows the existing `settings.custom.header` convention for component tokens.
+
 - **The mega panels have a section style.** `styles/sections/mega-panel.json`
   (`is-style-mega-panel`, `core/group`) carries the panel frame that was authored as
   markup on all four parts: the `spacing|20` vertical padding, the column headings'
@@ -250,6 +262,22 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **Mega-panel query rows stopped hovering.** A regression from moving the row contract
+  into a variation: the resting rule needs `color: inherit !important` to beat theme.json's
+  `elements.link` at the same (0,1,0), and an important author declaration outranks a
+  *normal* one whatever its specificity — so the hover rule in
+  `assets/styles/ollie-mega-menu.css`, at (0,4,0) but unmarked, was inert. Marked, so
+  important-vs-important falls back to specificity and the hover wins. The navigation rows
+  were never affected; their resting colour is unmarked.
+
+- **The query columns' rows didn't span their column.** The query block carries a vertical
+  flex layout, which core compiles to
+  `.wp-container-core-query-is-layout-bfed8e9f{flex-direction:column;align-items:flex-start}`
+  — so the post-template, and therefore every row and its hairline, was only as wide as the
+  longest title. `width: 100%` on the post-template in the variation. Both query columns
+  were affected; Accommodation's Featured Specials showed it because the special titles are
+  short.
 
 - **`.sd-mega-panel__heading` was six dead declarations.** Measured on local 2026-08-28.
   Its colour, font-family, font-weight, letter-spacing and text-transform all lost to

@@ -306,6 +306,9 @@
 					"padding-horizontal": "2rem"
 				}
 			},
+			"mega-menu": {
+				"row-padding": "var(--wp--preset--spacing--10)"
+			},
 			"borderWidth": {
 				"0": "0",
 				"100": "1px",
