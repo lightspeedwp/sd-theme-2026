@@ -8,6 +8,25 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Mega-menu link rows take a `brand-600` hover.** Neither list type had one that worked.
+  The navigation columns had no hover rule at all — `styles/blocks/navigation/mega-menu-nav.json`
+  records that a block style's `css` field has `:hover` stripped out of it, and the rule it
+  points at in `assets/styles/core-navigation.css` was never written. It is there now, at
+  `.wp-block-navigation.is-style-mega-menu-nav .wp-block-navigation-item__content:hover`,
+  which is (0,4,0) and so clears core's always-on `color: inherit` reset at (0,3,0) without
+  `!important`. `brand-600` rather than the header row's `brand-500`, because the panels sit
+  on a `base` ground.
+
+- **Fixed: the query-driven mega-menu columns were unstyled.** `parts/mega-menu-tours.html`
+  ("Top 10 Safaris") and `parts/mega-menu-accommodation.html` ("Featured Specials") put
+  `is-style-mega-menu-nav` on their `core/query` blocks. That variation declares
+  `blockTypes: ["core/navigation"]`, so WordPress compiles its selector as
+  `.wp-block-navigation.is-style-mega-menu-nav` and the class matched nothing — while the
+  whole "Link lists" section of `assets/styles/ollie-mega-menu.css`, written against
+  `sd-mega-list`, matched nothing either. Both blocks carry `sd-mega-list` now: the shared
+  list type, the flush rows and the hover are live, and the two columns read as one list with
+  the navigation columns beside them. Their hover moves `brand-500` → `brand-600` to match.
+
 - **The Why Choose band's Trustpilot badge is its own component, no longer shared with
   `patterns/trustpilot-score.php`.** `patterns/why-choose-sd.php` used to `require` the shared
   badge on the premise — written into that file at length — that the mark takes `currentColor`,

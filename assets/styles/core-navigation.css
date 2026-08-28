@@ -324,3 +324,25 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
 .sd-mega-panel .is-style-mega-menu-nav .wp-block-navigation__container {
 	width: 100%;
 }
+
+/* Hover and focus on a panel's link rows.
+   ---------------------------------------------------------------------------
+   This cannot live in the variation: WordPress strips `:hover` out of a block
+   style's `css` field entirely, which is why
+   styles/blocks/navigation/mega-menu-nav.json points its hover rules here.
+
+   `brand-600` rather than the header row's `brand-500` — the panels sit on a
+   `base` ground where the darker step is the one that reads.
+
+   Three classes and a pseudo-class, so (0,4,0). That clears core's always-on
+   `.wp-block-navigation .wp-block-navigation-item__content.wp-block-navigation-item__content
+   { color: inherit }` reset at (0,3,0) on specificity alone, with no
+   `!important` needed — the resting colour in the variation is unmarked, unlike
+   main-navigation.json's. Same shape as the footer nav rule above.
+
+   Not scoped to `.sd-mega-panel`, so the same treatment follows this variation
+   into the dropdown parts that also carry it. */
+.wp-block-navigation.is-style-mega-menu-nav .wp-block-navigation-item__content:hover,
+.wp-block-navigation.is-style-mega-menu-nav .wp-block-navigation-item__content:focus-visible {
+	color: var(--wp--preset--color--brand-600);
+}

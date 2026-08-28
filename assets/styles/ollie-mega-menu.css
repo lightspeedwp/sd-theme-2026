@@ -203,7 +203,15 @@
    The panels' link columns are navigation blocks carrying
    `is-style-mega-menu-nav`; the query-driven columns are post-templates. Both
    read as the same list, so the type styling is shared here rather than
-   duplicated per block. */
+   duplicated per block.
+
+   ⚠️ The query columns are keyed off `sd-mega-list`, a plain utility class, and
+   not off `is-style-mega-menu-nav`. That variation is registered for
+   `core/navigation` only (styles/blocks/navigation/mega-menu-nav.json), so
+   WordPress compiles its selector as `.wp-block-navigation.is-style-mega-menu-nav`
+   and putting the class on a `core/query` matches nothing at all. Both parts
+   carried it that way until 2026-08-28, which left every rule in this section
+   dead and the tour and special lists rendering at core's defaults. */
 .sd-mega-panel .sd-mega-list .wp-block-post-template {
 	display: flex;
 	flex-direction: column;
@@ -223,9 +231,17 @@
 	text-decoration: none;
 }
 
+/* Hover and focus, matching the navigation-block columns exactly — the two list
+   types sit side by side in the same panel and have to behave as one list. The
+   navigation half is in assets/styles/core-navigation.css, keyed off
+   `is-style-mega-menu-nav`; it cannot be written here because these blocks are
+   queries, not navigations, and cannot be written there because that file's
+   selectors are scoped to the variation. Change one, change the other.
+
+   `brand-600` was `brand-500` until 2026-08-28. */
 .sd-mega-panel .sd-mega-list .wp-block-post-title a:hover,
 .sd-mega-panel .sd-mega-list .wp-block-post-title a:focus-visible {
-	color: var(--wp--preset--color--brand-500);
+	color: var(--wp--preset--color--brand-600);
 	text-decoration: underline;
 }
 
