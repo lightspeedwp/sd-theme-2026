@@ -147,6 +147,22 @@ sd-theme-2026/
   `var:custom|line-height|…`.
 - **No** raw `#hex` / `rgb()` / font-family / raw font-weight literals. In raw `css` strings
   use `var(--wp--preset--…)` / `var(--wp--custom--…)`.
+- ⚠️ **On a *dynamic* block, `var:custom|…` is silently dropped — write
+  `var(--wp--custom--…)` instead.** A static block's `style` object is resolved by the editor
+  at save time, so the shorthand becomes an inline style in the saved markup. A dynamic block
+  (`core/post-title`, `core/term-name`, `core/query-title`, `core/post-excerpt`,
+  `core/post-terms`, `core/post-author-name`, `core/navigation`) has no saved markup: the
+  server-side style engine resolves it, and that only expands `var:preset|…`, and only for
+  properties declaring `css_vars` — `fontWeight`, `lineHeight`, `fontStyle`, `textTransform`
+  and `letterSpacing` declare none
+  (`wp-includes/style-engine/class-wp-style-engine.php:292-370`). Measured on local
+  2026-08-28: `wp_style_engine_get_styles()` given `fontWeight: var:custom|font-weight|semi-bold`,
+  `lineHeight: var:custom|line-height|heading` and `fontSize: var:preset|font-size|500`
+  returns **only** `font-size:var(--wp--preset--font-size--500);`. No notice, no fallback —
+  the declaration is simply absent and the block inherits. `var:preset|color|…` and
+  `var:preset|font-size|…` are safe on dynamic blocks; those two do declare `css_vars`.
+  The `var(--wp--custom--…)` form is still a token reference, so the rule above holds.
+  → `patterns/card-media-overlay-term.php`, `patterns/safari-expert.php`
 - Semantic HTML `tagName`s; correct heading hierarchy; keep templates/parts lean (no inline
   styles).
 - **Every template must have exactly one `<main>` landmark.** The sibling ATI theme shipped

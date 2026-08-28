@@ -60,10 +60,20 @@
  * `stars-0.svg`, the grey no-rating tile, rather than a five-star one. The band
  * word falls back to "Excellent", which is SD's actual band and is replaced by
  * the live one the moment the cache fills.
+ *
+ * ## The row is centred
+ *
+ * `justifyContent: center` since 2026-08-28, imported from Zared's
+ * `archive-destination` edit. patterns/safari-expert.php is this file's only
+ * consumer — patterns/why-choose-sd.php writes its own stacked copy of the badge
+ * and records why — so the centring is the badge's own arrangement rather than
+ * something one placement imposes. It centres under the expert card at every
+ * width, and it is what makes the wrapped second line sit under the first
+ * instead of ragging left.
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Trustpilot Score"},"className":"sd-trustpilot","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"}} -->
+<!-- wp:group {"metadata":{"name":"Trustpilot Score"},"className":"sd-trustpilot","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center","justifyContent":"center"}} -->
 <div class="wp-block-group sd-trustpilot">
 
 	<?php /* The band word — Trustpilot's own vocabulary for the rating, so the plugin owns the bands. */ ?>

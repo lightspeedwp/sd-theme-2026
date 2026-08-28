@@ -2,7 +2,7 @@
 /**
  * Title: Template: Destinations Archive
  * Slug: sd-theme-2026/template-archive-destination
- * Description: The destinations landing page — the photographic banner, the warm intro band pairing the archive description with the safari expert panel, and the grid of destination tiles beneath it.
+ * Description: The destinations landing page — the photographic banner, the warm intro band pairing the archive description with the safari expert panel, the grid of square destination tiles, and the value and contact bands that close the page.
  * Categories: hidden
  * Keywords: destinations, archive, landing, tour operator, grid, banner
  * Block Types: core/query
@@ -26,6 +26,16 @@
  *      archive description on the left and `#safari-expert-box` on the right.
  *   3. `.lsx-to-archive-items.lsx-to-archive-template-grid` — the 3-up tile
  *      grid, each tile a photograph under a scrim that lifts on hover.
+ *
+ * Two bands close the page beneath that grid — the "Why choose Southern
+ * Destinations" value band and the "Not sure where to go" contact CTA — added
+ * 2026-08-28. They are not on live's destinations archive; they are the pair
+ * patterns/template-archive-tour.php already closes with, and the page now ends
+ * the way its sibling archive does. Both are `require`d from their own patterns.
+ *
+ * The banner's type sits on the floor of the photograph rather than centred in
+ * it, and the tiles are square rather than 3/4 portrait — both Zared's, both
+ * 2026-08-28. Each is noted at the block it applies to.
  *
  * Live renders the archive description and the archive `<h1>` **twice** — once
  * in `.archive-header-wrapper` above `#primary` and again inside the intro
@@ -75,8 +85,8 @@
  */
 ?>
 
-<!-- wp:group {"tagName":"main","metadata":{"name":"Destinations Archive"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"var:preset|spacing|90"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
-<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:var(--wp--preset--spacing--90)">
+<!-- wp:group {"tagName":"main","metadata":{"name":"Destinations Archive"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
+<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
 	<?php
 	/*
@@ -100,8 +110,8 @@
 	 * environments at once. → AGENTS.md, "never hardcode … an uploads URL"
 	 */
 	?>
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"center center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull is-style-hero-banner" style="min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<?php
 		/*
@@ -152,8 +162,8 @@
 			 * it heads nothing.
 			 */
 			?>
-			<!-- wp:paragraph {"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontFamily":"heading"} -->
-			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php esc_html_e( 'Your African adventure starts here!', 'sd-theme-2026' ); ?></p>
+			<!-- wp:paragraph {"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
+			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--medium)"><?php esc_html_e( 'Your African adventure starts here!', 'sd-theme-2026' ); ?></p>
 			<!-- /wp:paragraph -->
 
 		</div>
@@ -172,11 +182,18 @@
 	 * spacing-70; close enough that adding a fourth padding scale to match it
 	 * exactly would cost more than it buys.
 	 *
-	 * The two columns are live's `col-md-7` / `col-md-5`. The vertical
-	 * alignment is split the way live splits it: the row is `align-items:
-	 * center`, and the description overrides itself back to the top with
-	 * `align-self: baseline` (custom.css:1330). So the columns align top and
-	 * the expert column re-centres.
+	 * The columns were live's `col-md-7` / `col-md-5` — 58.33% and 41.67%. They
+	 * are **55% and auto** as of 2026-08-28, Zared's split: only the
+	 * description is pinned, and the expert column takes what is left. The
+	 * restructured panel has a two-up action row inside it now (see
+	 * patterns/safari-expert.php) and a fixed 41.67% was cramping it; letting
+	 * the column size itself lets `flex-basis: 0%` grow into the remainder
+	 * instead.
+	 *
+	 * The vertical alignment is split the way live splits it: the row is
+	 * `align-items: center`, and the description overrides itself back to the
+	 * top with `align-self: baseline` (custom.css:1330). So the columns align
+	 * top and the expert column re-centres.
 	 */
 	?>
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Archive Intro"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
@@ -185,8 +202,8 @@
 		<!-- wp:columns {"verticalAlignment":"top","align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
 		<div class="wp-block-columns alignwide are-vertically-aligned-top">
 
-			<!-- wp:column {"verticalAlignment":"top","width":"58.33%"} -->
-			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:58.33%">
+			<!-- wp:column {"verticalAlignment":"top","width":"55%"} -->
+			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:55%">
 				<?php
 				/*
 				 * The description. `is-style-archive-intro` carries the italic
@@ -214,8 +231,8 @@
 			</div>
 			<!-- /wp:column -->
 
-			<!-- wp:column {"verticalAlignment":"center","width":"41.67%"} -->
-			<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:41.67%">
+			<!-- wp:column {"verticalAlignment":"center"} -->
+			<div class="wp-block-column is-vertically-aligned-center">
 				<?php
 				/*
 				 * The safari expert panel — portrait, name, Call Us, email
@@ -254,22 +271,39 @@
 	 * TO's, and hardcoding `orderBy` here would override it rather than
 	 * reproduce it.
 	 *
-	 * The tiles are `patterns/card-media-overlay.php` — the shared grid tile
-	 * every Tour Operator archive uses, taken unmodified. Live crops this one
-	 * archive flatter than the others (`min-height: 240px; max-height: 240px`
-	 * at custom.css:1461, against ~360px columns, so 3:2 where tours and
-	 * accommodation run near-square); that difference is **not** carried, by
-	 * decision 2026-08-26. One tile shape across every archive beats
-	 * reproducing a per-archive override, and it is what
-	 * media-overlay-card.json already describes.
+	 * The tiles are `patterns/card-media-overlay.php`, taken unmodified. **They
+	 * are square as of 2026-08-28** — `aspectRatio: "1"` on the featured image,
+	 * Zared's change, replacing the 3/4 portrait crop the tile had carried.
+	 *
+	 * That supersedes the decision recorded here on 2026-08-26, which was to
+	 * keep one tile shape across every archive rather than reproduce live's
+	 * per-archive flattening (`min-height: 240px; max-height: 240px` at
+	 * custom.css:1461, against ~360px columns — 3:2 where tours and
+	 * accommodation run near-square). The shape is still uniform, it is simply
+	 * a different shape: the term twin `patterns/card-media-overlay-term.php`
+	 * that the tour archive uses went square in the same pass, so the two
+	 * archives still share one tile design.
+	 *
+	 * The crop is a block attribute and not CSS, deliberately: `aspectRatio`
+	 * serialises as an inline style on the `<img>`, where a `css`-field height
+	 * would sit at (0,1,0) and lose to the block library's
+	 * `.wp-block-image img{height:auto}`. → AGENTS.md, "Image crops are
+	 * `aspectRatio`, never CSS"
+	 *
+	 * ⚠️ **No pagination and no `query-no-results`.** Both were removed on
+	 * 2026-08-28, carried over from Zared's edit. The grid is a bare loop: with
+	 * ten destinations and Tour Operator's per-page setting inherited nothing
+	 * paginates today, but an archive that returned zero rows would now render
+	 * an empty band rather than a message. Restoring the fallback is four lines
+	 * and no visual change at any non-empty count.
 	 *
 	 * `require`, not a nested `wp:pattern` reference — a pattern referencing
 	 * another pattern resolves under WP-CLI and is silently dropped on
 	 * front-end render. → .claude/skills/wp-pattern-runtime-pitfalls
 	 */
 	?>
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Destinations"},"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--80)">
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Destinations"},"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
 
 		<!-- wp:query {"queryId":0,"query":{"perPage":12,"pages":0,"offset":0,"postType":"destination","order":"asc","orderBy":"title","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[]},"align":"wide","layout":{"type":"default"}} -->
 		<div class="wp-block-query alignwide">
@@ -278,23 +312,37 @@
 				<?php require __DIR__ . '/card-media-overlay.php'; ?>
 			<!-- /wp:post-template -->
 
-			<!-- wp:query-pagination {"align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|70"}}},"layout":{"type":"flex","justifyContent":"center"}} -->
-				<!-- wp:query-pagination-previous /-->
-				<!-- wp:query-pagination-numbers /-->
-				<!-- wp:query-pagination-next /-->
-			<!-- /wp:query-pagination -->
-
-			<!-- wp:query-no-results -->
-				<!-- wp:paragraph {"textColor":"neutral-700","fontSize":"300"} -->
-				<p class="has-neutral-700-color has-text-color has-300-font-size"><?php esc_html_e( 'No destinations found.', 'sd-theme-2026' ); ?></p>
-				<!-- /wp:paragraph -->
-			<!-- /wp:query-no-results -->
-
 		</div>
 		<!-- /wp:query -->
 
 	</section>
 	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The two closing bands, added 2026-08-28 — the same pair, in the same
+	 * order, that patterns/template-archive-tour.php closes with. The value
+	 * band over its photograph, then the contact CTA on the tinted ground. That
+	 * is why `<main>` above carries no bottom padding: the CTA band brings its
+	 * own, and a padding on the wrapper would show as a strip of page ground
+	 * under a full-bleed section.
+	 *
+	 * `require`, not nested `wp:pattern` references — a pattern referencing
+	 * another pattern resolves under WP-CLI and is silently dropped on
+	 * front-end render. → .claude/skills/wp-pattern-runtime-pitfalls
+	 *
+	 * ⚠️ The `archive-destination` override these came from held an **inline
+	 * expansion** of the CTA, not a reference, and that expansion was stale: it
+	 * carried `+1 646-906-8113` (the New York desk) where the pattern carries
+	 * `+1-844-292-8240` (the toll-free line the pattern's own note explains),
+	 * laid the two offices out as `core/columns` rather than a centred flex row,
+	 * and coloured the glyph and number primary-600 rather than neutral-700.
+	 * The maintained pattern is required here instead, so this page shows the
+	 * same CTA as every other page that uses it. Do not re-inline it.
+	 */
+	require __DIR__ . '/why-choose-sd.php';
+	require __DIR__ . '/cta-not-sure-where-to-go.php';
+	?>
 
 </main>
 <!-- /wp:group -->

@@ -1,0 +1,76 @@
+/* Post Featured Image
+--------------------------------------------- */
+
+/*
+ * Tour Operator's term-image <figure>, and the two core rules it never gets.
+ *
+ * When `core/post-featured-image` has a `termId` in context, Tour Operator
+ * filters `render_block_core/post-featured-image` and renders the term's
+ * `thumbnail` meta instead
+ * (tour-operator/includes/classes/frontend/class-taxonomy-images.php:176-266).
+ * It builds its wrapper with `get_block_wrapper_attributes()` — called from a
+ * filter rather than from inside a block render, so the classes it returns are
+ * the *enclosing* block's, not the featured image's. Inside a term template
+ * that emits, measured on dev 2026-08-28:
+ *
+ *   <figure style="aspect-ratio:1" class="wp-block-term-template">
+ *     <a><img style="width:100%;height:100%;"></a>
+ *   </figure>
+ *
+ * No `wp-block-post-featured-image`, so *none* of
+ * wp-includes/blocks/post-featured-image/style.css reaches it. Two of its rules
+ * are load-bearing here, and their absence is visible:
+ *
+ *   1. `a { display: block; height: 100% }`. Without it the link stays inline,
+ *      so the image sits in a line box and the strut's descender adds space
+ *      under it that the `aspect-ratio` box does not account for. Measured on
+ *      the tours archive: a tile 359.16px wide rendered **365.94px tall** —
+ *      6.78px of card below the photograph, which the media-overlay card's
+ *      `inset: 0` scrim covered. That is the overlay hanging past the bottom
+ *      of the tile.
+ *
+ *   2. the `<img>` reset. Core does not carry `object-fit` there — it comes
+ *      from the block's `scale` attribute, serialised inline. `scale` defaults
+ *      to `"cover"`, so it is absent from saved block markup, and Tour Operator
+ *      reads the parsed attributes rather than the defaults-merged set:
+ *      `if ( ! empty( $attributes['scale'] ) )` is false and no `object-fit` is
+ *      emitted. The image keeps `width:100%;height:100%` with the initial
+ *      `object-fit: fill` and is stretched to the crop — a 554×368 photograph
+ *      squashed into a 359×359 tile.
+ *
+ * Authoring `"scale":"cover"` in the pattern is not the fix. It renders, but the
+ * editor drops attributes equal to their default on save: `patterns/safari-expert.php`
+ * carries `"scale":"cover"` and the copy of it in dev's `single-tour` template
+ * has lost it. A stylesheet rule cannot be edited away.
+ *
+ * `figure.wp-block-term-template` is the leak itself as a selector — core never
+ * puts a term template's class on a figure. If Tour Operator starts emitting the
+ * right wrapper class these rules simply stop matching, and core's own take over.
+ * Upstream this is two lines in `render_term_featured_image()`: default `$scale`
+ * to `'cover'`, and pass the block's own class into the wrapper.
+ *
+ * ## Why this is a .css file and not a JSON `css` field
+ *
+ * AGENTS.md, "Styling lives in JSON", asks for the limit that forced it. The
+ * limit is that there is no variation to hang the rule on: the figure carries
+ * the enclosing block's classes, so `is-style-media-overlay-card` is not on it
+ * or on any ancestor of it that the leak is scoped by, and the same leak has to
+ * be answered wherever a term image renders — not only inside that one card.
+ * This is the third-party-markup case that sheet exists for, keyed off core's
+ * own class rather than a hand-written helper, and it follows the filename →
+ * block-name convention so it is enqueued only when the block renders.
+ *
+ * It is *not* the "image crops are aspectRatio, never CSS" case that rule warns
+ * about. The crop is still the block's `aspectRatio` attribute, authored in
+ * `patterns/card-media-overlay-term.php`. What is here is `object-fit` and the
+ * link's box, neither of which any block attribute can reach on this markup.
+ */
+figure.wp-block-term-template > a {
+	display: block;
+	height: 100%;
+}
+
+figure.wp-block-term-template img {
+	object-fit: cover;
+	vertical-align: bottom;
+}

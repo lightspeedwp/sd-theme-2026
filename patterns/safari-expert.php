@@ -24,6 +24,10 @@
  * meta → the post's `team_to_{post_type}` connection → a random member of the
  * `expert-*` pool. Nothing renders if none resolves.
  *
+ * This file is required by three templates — patterns/template-archive-destination.php,
+ * patterns/template-archive-tour.php and patterns/template-single-tour.php. It is
+ * one component in three places by design; a change here lands in all three.
+ *
  * ## The card — what is carried from live, and what is not
  *
  * Rebuilt 2026-08-28 against live's own measurements, at Zared's request: the
@@ -34,20 +38,15 @@
  *     --------------------------------------  ---------------------------------
  *     background-color: #cc7f16               brand-600 — see the contrast note
  *     padding: 15px                           spacing 20
- *     border-radius: 1px                      border-radius 200 (8px)
+ *     border-radius: 1px                      border-radius 0
  *     display: flex; align-items: center      flex, wrap, centred
- *     thumb 116 × 116, object-fit: cover      116px, radius 500, base ring
- *     .travel-expert-title  white, uppercase  base, uppercase, wide tracking
+ *     thumb 116 × 116, object-fit: cover      126px, square, radius 500
+ *     .travel-expert-title  white, uppercase  base, uppercase, semi-bold
  *     .lsx-to-contact-name  white             base, title case, font-size 400
  *     .lsx-to-meta-data     1px #fff, radius 2px, white text
- *                                             is-style-outline-light's clothing
- *     .lsx-to-enquire-form  the amber CTA     is-style-accent-cta
- *     .trust-pilot-box beneath the card       beneath the card
- *
- * The facelift is four things and nothing else: the 1px corner becomes an 8px
- * one, the portrait gains a 2px `base` ring so it separates from the ground,
- * the two actions take the theme's own button clothing rather than live's
- * hand-rolled boxes, and the ground moves one token deeper (below).
+ *                                             a bordered box, full-width half
+ *     .lsx-to-enquire-form  the amber CTA     is-style-accent-cta, full-width half
+ *     .trust-pilot-box beneath the card       beneath the card, centred
  *
  * ### ⚠️ The ground is brand-600, not live's brand-500
  *
@@ -82,22 +81,109 @@
  * accessible token is what is authored; the decision is recorded here rather
  * than taken quietly.
  *
+ * ## The identity block is authored twice, and exactly one is ever exposed
+ *
+ * Restructured in the Site Editor by Zared on 2026-08-28 and imported from the
+ * `archive-destination` override; the arrangement below is his, not a
+ * derivation of it.
+ *
+ * The eyebrow and the name move between two places depending on viewport:
+ *
+ *   - **Below 992px** they sit beside the portrait, inside "Expert Identity" —
+ *     a nowrap flex row, so a narrow card reads as a portrait with a name next
+ *     to it rather than a portrait above a stack of actions.
+ *   - **At 992px and up** they sit at the top of "Expert Detail", above the
+ *     actions, and the row beside the portrait collapses to the portrait alone.
+ *
+ * Both copies are in the markup and Block Visibility's screen-size control
+ * decides which renders — `hideOnScreenSize.large` on the compact copy,
+ * `hideOnScreenSize.medium` + `.small` on the wide one. The two sets are
+ * mutually exclusive and cover every width, so exactly one pair exists at any
+ * viewport and never zero.
+ *
+ * **This is why the duplicate headings are not an accessibility fault.** The
+ * plugin hides with `display: none !important` inside a `@media` block
+ * (measured in `block-visibility-screen-size-styles-inline-css` on dev,
+ * 2026-08-28: large ≥ 992px, medium 768–991.98px, small ≤ 767.98px), and
+ * `display: none` removes a subtree from the accessibility tree — so a screen
+ * reader is offered one eyebrow and one name, not two. The same mechanism
+ * carries the header's desktop/mobile split, so this is the theme's established
+ * way of doing it rather than a new one. → AGENTS.md, and note that a
+ * media-query hide written in CSS would *not* be equivalent here: it would be
+ * invisible to the editor.
+ *
+ * The two copies differ only in the eyebrow's font size — 400 in the compact
+ * row, 300 in the wide column. Keep them otherwise in step; they are one piece
+ * of content in two positions, and a divergence in the copy is a bug.
+ *
  * ## Heading levels
  *
- * Live uses `<h5 class="travel-expert-title">` for the eyebrow and
- * `<h3 class="lsx-to-contact-name">` for the name — an h5 above an h3, which is
- * a skipped level in the wrong direction. Here the eyebrow is a plain paragraph
- * (it labels the panel, it does not head a section) and the name is the h2 the
- * panel actually needs. Adjust the name's level if you drop this into a page
- * whose outline already uses h2.
+ * The eyebrow is an `h2` and the name is the `core/post-title`'s own `h2`.
+ * Live uses `<h5 class="travel-expert-title">` above `<h3 class="lsx-to-contact-name">`
+ * — an h5 above an h3, a skipped level in the wrong direction — so the levels
+ * are the theme's, not live's. Adjust the eyebrow's `level` if you drop this
+ * into a page whose outline needs it deeper; on the three templates that
+ * require it today the panel sits under the page `h1` and two sibling `h2`s are
+ * correct.
  *
- * The name carries `textTransform: none` and `letterSpacing: none` inline
- * because `styles.elements.h2` in theme.json sets uppercase and heading
- * tracking, and an element style outranks a block attribute on the very
- * element it targets — `core/post-title`'s wrapper *is* the `<h2>`. Live's name
- * is title case ("Liesl Matthews"), so it is title case here. The font-size is
- * left as the `has-400-font-size` class, which measurably wins against
- * `elements.h2`'s 500 on this theme's stylesheet order.
+ * The name carries `textTransform: none` inline because `styles.elements.h2` in
+ * theme.json sets uppercase, and an element style outranks a block attribute on
+ * the very element it targets — `core/post-title`'s wrapper *is* the `<h2>`.
+ * Live's name is title case ("Liesl Matthews"), so it is title case here. The
+ * font-size is left as the `has-400-font-size` class, which measurably wins
+ * against `elements.h2`'s 500 on this theme's stylesheet order.
+ *
+ * ⚠️ **The name is no longer a link.** It was `isLink: true` until 2026-08-28.
+ * The consultant's single is still reachable from the panel — the portrait
+ * keeps its link — so this is one link to that page rather than two adjacent
+ * ones. Restore `"isLink":true` on both `core/post-title` blocks if it should
+ * come back.
+ *
+ * ⚠️ **The portrait has no ring.** It carried a 2px `base` ring until
+ * 2026-08-28 so it separated from the ground; the import keeps the corner
+ * (radius 500 — a circle) and drops the ring, which is what the restructure
+ * rendered on dev. The dead `border-width` the editor left behind with no
+ * `border-style` beside it is *not* carried, because it draws nothing. To put
+ * the ring back, add `"style":{"border":{"width":"var:custom|border-width|200","style":"solid","color":"var:preset|color|base"}}`
+ * to the featured image.
+ *
+ * `selfStretch: fixedNoShrink` is gone with it: the portrait is a `width`
+ * plus an `aspectRatio` inside a nowrap row now, and core emits
+ * `object-fit: cover` for the ratio on its own — verified on the rendered dev
+ * page, 2026-08-28. Image crops are `aspectRatio`, never CSS. → AGENTS.md
+ *
+ * ## ⚠️ Four blocks here are dynamic, so their custom tokens use `var(--wp--custom--…)`
+ *
+ * `core/post-title` (×2), `core/navigation` and `ollie/mega-menu` have no saved
+ * markup — the server-side style engine builds their inline styles, and it does
+ * not expand the `var:custom|…` shorthand for `fontWeight`, `letterSpacing`,
+ * `fontStyle`, `textTransform` or `lineHeight`. Measured on local 2026-08-28
+ * with `wp_style_engine_get_styles()`:
+ *
+ *     border.radius   var:preset|border-radius|500        → resolves
+ *     border.width    var:custom|border-width|100         → !! DROPPED !!
+ *     fontWeight      var:custom|font-weight|medium       → !! DROPPED !!
+ *     letterSpacing   var:custom|letter-spacing|narrow    → !! DROPPED !!
+ *     fontWeight      var(--wp--custom--font-weight--medium) → resolves
+ *
+ * No notice and no fallback — the declaration is simply absent and the block
+ * inherits. The navigation's `fontWeight` was in the shorthand form and had
+ * therefore never rendered; the rendered `<nav>` on dev carries no inline
+ * weight at all. Both forms are still token references, so the tokens-over-
+ * hardcoding rule holds either way — but on these four blocks it must be the
+ * parenthesised one. The static blocks around them (`core/group`,
+ * `core/heading`, `core/buttons`) keep the shorthand, because their inline
+ * styles are authored in the markup below and the shorthand is only read by the
+ * editor. → AGENTS.md, "Authored files"
+ *
+ * ## The actions are a two-up row
+ *
+ * Both actions carry `layout.selfStretch: fill` and the button carries
+ * `dimensions.width` at the `100` preset, so Call Us and Send an Email each
+ * take half the detail column and the button fills its half. `--wp--preset--dimension--100`
+ * is core's own 100% width preset, not a theme token — it is defined in
+ * wp-includes/theme.json and rendered on dev, so it resolves without the theme
+ * declaring `settings.dimensions`.
  *
  * ## Call Us
  *
@@ -110,6 +196,20 @@
  * the header nav and as a whole `wp_nav_menu()` call here
  * (functions.php:173), and the two drifted to two numbers and four. One file
  * now, and now one *mechanism* too.
+ *
+ * ### The label is uppercased in CSS, not in the string
+ *
+ * The trigger takes the heading face at semi-bold and reads in caps. The caps
+ * are `textTransform: uppercase` on the `ollie/mega-menu` block rather than an
+ * uppercase literal, because a literal would hand translators a shouted string
+ * and ship casing that no locale can override. It reaches the `<button>`:
+ * Ollie's own stylesheet sets `text-transform: inherit` on
+ * `.wp-block-ollie-mega-menu__toggle` alongside `font-family: inherit` and
+ * `font-weight: inherit`, so all three of the block's typography attributes
+ * land on the toggle. Verified against the rendered stylesheet on dev,
+ * 2026-08-28 — the block declares `__experimentalTextTransform`,
+ * `__experimentalFontFamily` and `__experimentalFontWeight` support, and the
+ * classes appear on the `<li class="wp-block-ollie-mega-menu">`.
  *
  * ### The `ollie/mega-menu` is authored inline — no `ref`
  *
@@ -125,10 +225,15 @@
  * So the panel travels in the theme file, the numbers still come from the one
  * shared template part, and there is no database row this pattern needs.
  *
- * Note that the Site Editor will offer to convert an inline navigation into a
- * saved menu if someone edits and saves a template containing this. That is an
- * editor-side conversion and does not touch this file; theme files are the
- * source of truth here. → wp-db-override-reconciliation
+ * ⚠️ **The editor converts this to a saved menu and it must be converted back
+ * on the way in.** The `archive-destination` override imported on 2026-08-28
+ * carried `"ref":65916` — a `wp_navigation` post titled "Menu" holding exactly
+ * the `ollie/mega-menu` below — because saving a template in the Site Editor
+ * offers to turn an uncontrolled navigation into a managed one and the offer
+ * was taken. The ref is a per-install id that no deploy step can fix
+ * (AGENTS.md is explicit), so it is dropped and the inner block restored every
+ * time this round-trips. Theme files are the source of truth here.
+ * → wp-db-override-reconciliation
  *
  * ### The landmark label
  *
@@ -161,10 +266,14 @@
  * free — one source of truth instead of a preset colour class that would have
  * to be fought with `!important` (core marks `.has-*-color` important).
  *
- * ⚠️ Phosphor's phone glyph, the same path used in patterns/header.php,
- * homepage-dream-trip.php, homepage-lets-make-it-happen.php and
- * cta-not-sure-where-to-go.php. Written out rather than echoed from a variable,
- * as core's patterns do; if it changes it changes in all five.
+ * ⚠️ **This is the one *filled* phone glyph in the theme.** Phosphor ships the
+ * mark in several weights; this panel takes the fill, changed 2026-08-28, and
+ * patterns/header.php, homepage-dream-trip.php,
+ * homepage-lets-make-it-happen.php and cta-not-sure-where-to-go.php all keep
+ * the regular outline. That divergence is deliberate — the glyph sits on a
+ * saturated ground here and the outline reads thin against it — so do **not**
+ * "fix" the other four to match, and do not copy this path into them. Written
+ * out rather than echoed from a variable, as core's patterns do.
  *
  * ### What went with the accordion
  *
@@ -192,36 +301,67 @@
 	/*
 	 * The card. `elements.link` is set on this group rather than left to the
 	 * global one, which is `contrast` on rest and **brand-600 on hover** — the
-	 * card's own ground, so the name would vanish under the pointer. Both
-	 * states are `base` here; `styles.blocks.core/post-title` already restores
-	 * the underline on hover, which is what carries the state.
+	 * card's own ground, so a link would vanish under the pointer. Both states
+	 * are `base` here. It still matters with the name unlinked: the Call Us
+	 * numbers and the email CTA are inside this group.
 	 */
 	?>
-	<!-- wp:group {"metadata":{"name":"Expert Card"},"className":"sd-expert__panel","style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|200"},"elements":{"link":{"color":{"text":"var:preset|color|base"},":hover":{"color":{"text":"var:preset|color|base"}}}}},"backgroundColor":"brand-600","textColor":"base","layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"}} -->
-	<div class="wp-block-group sd-expert__panel has-link-color has-base-color has-brand-600-background-color has-text-color has-background" style="border-radius:var(--wp--preset--border-radius--200);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)">
+	<!-- wp:group {"metadata":{"name":"Expert Card"},"className":"sd-expert__panel","style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|0"},"elements":{"link":{"color":{"text":"var:preset|color|base"},":hover":{"color":{"text":"var:preset|color|base"}}}}},"backgroundColor":"brand-600","textColor":"base","layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"}} -->
+	<div class="wp-block-group sd-expert__panel has-link-color has-base-color has-brand-600-background-color has-text-color has-background" style="border-radius:var(--wp--preset--border-radius--0);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)">
 
 		<?php
 		/*
-		 * The portrait. Linked to the consultant's single, as live does.
+		 * The portrait, and — below 992px only — the name beside it. See "The
+		 * identity block is authored twice" above; the compact copy of the
+		 * eyebrow and the name lives here.
 		 *
-		 * `selfStretch: fixedNoShrink` rather than a stylesheet rule: it is the
-		 * child-layout support's own way of saying "this flex child is 116px
-		 * and does not shrink", and it emits `flex-basis: 116px; flex-shrink: 0`
-		 * (wp-includes/block-supports/layout.php:148). Without it the portrait
-		 * squashes before the detail column wraps.
+		 * A nowrap row, so the name stays beside the portrait rather than
+		 * dropping under it on the narrowest cards.
 		 */
 		?>
-		<!-- wp:post-featured-image {"isLink":true,"width":"116px","height":"116px","scale":"cover","style":{"border":{"radius":"var:preset|border-radius|500","width":"var(--wp--custom--border-width--200)","style":"solid","color":"var:preset|color|base"},"layout":{"selfStretch":"fixedNoShrink","flexSize":"116px"}},"className":"sd-expert__portrait"} /-->
+		<!-- wp:group {"metadata":{"name":"Expert Identity"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+		<div class="wp-block-group">
 
-		<!-- wp:group {"metadata":{"name":"Expert Detail"},"className":"sd-expert__detail","style":{"spacing":{"blockGap":"var:preset|spacing|10"},"layout":{"selfStretch":"fill"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
+			<?php
+			/*
+			 * Linked to the consultant's single, as live does — and now the only
+			 * link to it in the panel. `aspectRatio` crops it square; core adds
+			 * `object-fit: cover` for the ratio itself.
+			 */
+			?>
+			<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1","width":"126px","className":"sd-expert__portrait","style":{"border":{"radius":"var:preset|border-radius|500"}}} /-->
+
+			<?php /* Hidden at 992px and up — the wide copy is in Expert Detail. */ ?>
+			<!-- wp:group {"metadata":{"name":"Expert Name (compact)"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true}}}}]}} -->
+			<div class="wp-block-group">
+
+				<!-- wp:heading {"className":"sd-expert__eyebrow","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","textTransform":"uppercase"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"400"} -->
+				<h2 class="wp-block-heading sd-expert__eyebrow has-base-color has-text-color has-link-color has-400-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold);text-transform:uppercase"><?php esc_html_e( 'Chat to your safari expert', 'sd-theme-2026' ); ?></h2>
+				<!-- /wp:heading -->
+
+				<!-- wp:post-title {"className":"sd-expert__name","style":{"typography":{"textTransform":"none","fontWeight":"var(--wp--custom--font-weight--medium)","letterSpacing":"var(--wp--custom--letter-spacing--narrow)"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"400"} /-->
+
+			</div>
+			<!-- /wp:group -->
+
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"metadata":{"name":"Expert Detail"},"className":"sd-expert__detail","style":{"spacing":{"blockGap":"var:preset|spacing|20"},"layout":{"selfStretch":"fill"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
 		<div class="wp-block-group sd-expert__detail">
 
-			<?php /* The eyebrow. A paragraph, not a heading — see the note above. */ ?>
-			<!-- wp:paragraph {"className":"sd-expert__eyebrow","style":{"typography":{"fontWeight":"var:custom|font-weight|regular","textTransform":"uppercase","letterSpacing":"var:custom|letter-spacing|wide"}},"fontSize":"100"} -->
-			<p class="sd-expert__eyebrow has-100-font-size" style="font-weight:var(--wp--custom--font-weight--regular);letter-spacing:var(--wp--custom--letter-spacing--wide);text-transform:uppercase"><?php esc_html_e( 'Chat to your safari expert', 'sd-theme-2026' ); ?></p>
-			<!-- /wp:paragraph -->
+			<?php /* Hidden below 992px — the compact copy is in Expert Identity. */ ?>
+			<!-- wp:group {"metadata":{"name":"Expert Name"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"medium":true,"small":true}}}}]}} -->
+			<div class="wp-block-group">
 
-			<!-- wp:post-title {"level":2,"isLink":true,"className":"sd-expert__name","style":{"typography":{"textTransform":"none","letterSpacing":"var(--wp--custom--letter-spacing--none)"}},"fontSize":"400"} /-->
+				<!-- wp:heading {"className":"sd-expert__eyebrow","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","textTransform":"uppercase"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"300"} -->
+				<h2 class="wp-block-heading sd-expert__eyebrow has-base-color has-text-color has-link-color has-300-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold);text-transform:uppercase"><?php esc_html_e( 'Chat to your safari expert', 'sd-theme-2026' ); ?></h2>
+				<!-- /wp:heading -->
+
+				<!-- wp:post-title {"className":"sd-expert__name","style":{"typography":{"textTransform":"none","fontWeight":"var(--wp--custom--font-weight--medium)","letterSpacing":"var(--wp--custom--letter-spacing--narrow)"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"400"} /-->
+
+			</div>
+			<!-- /wp:group -->
 
 			<!-- wp:group {"metadata":{"name":"Expert Actions"},"className":"sd-expert__actions","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"stretch"}} -->
 			<div class="wp-block-group sd-expert__actions">
@@ -232,25 +372,26 @@
 				 * a group that carries live's `.lsx-to-meta-data` clothing as
 				 * block attributes. Radius 0 and the button padding token, so
 				 * the box matches the height and the corner of the accent CTA
-				 * beside it rather than being a second shape.
+				 * beside it rather than being a second shape, and
+				 * `selfStretch: fill` so the two share the row evenly.
 				 *
 				 * See the long note above for why the box (and not the toggle)
 				 * is the target, and why the icon takes no colour of its own.
 				 */
 				?>
-				<!-- wp:group {"metadata":{"name":"Call Us"},"className":"sd-expert__call-box","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:custom|spacing|button|padding-vertical","right":"var:preset|spacing|20","bottom":"var:custom|spacing|button|padding-vertical","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|0","width":"var:custom|border-width|200","style":"solid","color":"var:preset|color|base"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
-				<div class="wp-block-group sd-expert__call-box" style="border-color:var(--wp--preset--color--base);border-style:solid;border-width:var(--wp--custom--border-width--200);border-radius:var(--wp--preset--border-radius--0);padding-top:var(--wp--custom--spacing--button--padding-vertical);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--custom--spacing--button--padding-vertical);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","width":"20px"} -->
-				<div class="wp-block-outermost-icon-block"><div class="icon-container" style="width:20px"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"></path></svg></div></div>
+				<!-- wp:group {"metadata":{"name":"Call Us"},"className":"sd-expert__call-box","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:custom|spacing|button|padding-vertical","right":"var:preset|spacing|20","bottom":"var:custom|spacing|button|padding-vertical","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|0","width":"var:custom|border-width|100","style":"solid"},"layout":{"selfStretch":"fill"}},"borderColor":"base","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"center"}} -->
+				<div class="wp-block-group sd-expert__call-box has-border-color has-base-border-color" style="border-style:solid;border-width:var(--wp--custom--border-width--100);border-radius:var(--wp--preset--border-radius--0);padding-top:var(--wp--custom--spacing--button--padding-vertical);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--custom--spacing--button--padding-vertical);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","width":"20px"} -->
+				<div class="wp-block-outermost-icon-block"><div class="icon-container" style="width:20px"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M231.88,175.08A56.26,56.26,0,0,1,176,224C96.6,224,32,159.4,32,80A56.26,56.26,0,0,1,80.92,24.12a16,16,0,0,1,16.62,9.52l21.12,47.15,0,.12A16,16,0,0,1,117.39,96c-.18.27-.37.52-.57.77L96,121.45c7.49,15.22,23.41,31,38.83,38.51l24.34-20.71a8.12,8.12,0,0,1,.75-.56,16,16,0,0,1,15.17-1.4l.13.06,47.11,21.11A16,16,0,0,1,231.88,175.08Z"></path></svg></div></div>
 				<!-- /wp:outermost/icon-block -->
 
-				<!-- wp:navigation {"overlayMenu":"never","ariaLabel":"<?php esc_attr_e( 'Office numbers', 'sd-theme-2026' ); ?>","className":"is-style-call-us-navigation sd-expert__call","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"},"spacing":{"blockGap":"0"}},"fontSize":"300"} -->
-				<!-- wp:ollie/mega-menu {"label":"<?php esc_attr_e( 'Call Us', 'sd-theme-2026' ); ?>","menuSlug":"dropdown-call-us","showOnHover":true,"justifyMenu":"left","width":"custom","customWidth":320,"topSpacing":8,"metadata":{"name":"Call Us"}} /-->
+				<!-- wp:navigation {"overlayMenu":"never","ariaLabel":"<?php esc_attr_e( 'Office numbers', 'sd-theme-2026' ); ?>","className":"is-style-call-us-navigation sd-expert__call","textColor":"base","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--semi-bold)"},"spacing":{"blockGap":"0"}},"fontSize":"300"} -->
+				<!-- wp:ollie/mega-menu {"label":"<?php esc_attr_e( 'Call Us', 'sd-theme-2026' ); ?>","menuSlug":"dropdown-call-us","showOnHover":true,"justifyMenu":"left","width":"custom","customWidth":320,"topSpacing":8,"fontFamily":"heading","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--semi-bold)","textTransform":"uppercase"}},"metadata":{"name":"Call Us"}} /-->
 				<!-- /wp:navigation --></div>
 				<!-- /wp:group -->
 
 				<?php /* Placeholder for the Enquiry module's modal — see the note above. */ ?>
-				<!-- wp:buttons {"className":"sd-expert__email","layout":{"type":"flex","flexWrap":"nowrap"}} -->
-				<div class="wp-block-buttons sd-expert__email"><!-- wp:button {"className":"is-style-accent-cta"} -->
+				<!-- wp:buttons {"className":"sd-expert__email","style":{"layout":{"selfStretch":"fill"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
+				<div class="wp-block-buttons sd-expert__email"><!-- wp:button {"className":"is-style-accent-cta","style":{"dimensions":{"width":"var:preset|dimension|100"}}} -->
 				<div class="wp-block-button is-style-accent-cta"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php esc_html_e( 'Send an Email', 'sd-theme-2026' ); ?></a></div>
 				<!-- /wp:button --></div>
 				<!-- /wp:buttons -->
@@ -271,6 +412,11 @@
 	 * the badge is the company's, not the consultant's, so it should not read as
 	 * part of their card. It sits inside `sd/safari-expert` rather than beside
 	 * it so that a page with no resolvable expert shows neither, as live does.
+	 *
+	 * It is centred under the card as of 2026-08-28. That is a change to
+	 * trustpilot-score.php's own layout rather than something imposed here, and
+	 * this file is its only consumer — patterns/why-choose-sd.php writes its own
+	 * copy of the badge and says why.
 	 *
 	 * `require`, not a nested `wp:pattern` reference — a nested reference is
 	 * dropped on front-end render while resolving fine under WP-CLI.

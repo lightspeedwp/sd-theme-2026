@@ -8,6 +8,21 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The destinations landing page closes with the Why Choose and enquiry bands.**
+  `patterns/template-archive-destination.php` now `require`s `patterns/why-choose-sd.php`
+  and `patterns/cta-not-sure-where-to-go.php` beneath the tile grid — the same pair, in the
+  same order, that the tours archive closes with, so the two Tour Operator archives end the
+  same way. Authored on dev 2026-08-28 and carried back here. `<main>` drops its bottom
+  padding with them: the CTA band brings its own, and a padding on the wrapper showed as a
+  strip of page ground under a full-bleed section. *(LS-2019)*
+
+  ⚠️ **The dev override held a stale inline copy of the CTA, and the maintained pattern is
+  required instead.** Inserting a pattern in the Site Editor expands it, so the override
+  carried whatever was registered at insert time: `+1 646-906-8113` where the pattern carries
+  the toll-free `+1-844-292-8240`, the two offices as `core/columns` rather than a centred
+  flex row, and a primary-600 glyph and number rather than neutral-700. Requiring the file
+  means this page shows the same CTA as every other page that uses it. Do not re-inline it.
+
 - **The tour archive is built.** `templates/archive-tour.html` was a stub Query Loop over
   the `tour` post type; it now references `patterns/template-archive-tour.php`, which
   reproduces the live tours landing page — the photographic banner, the tinted intro band
@@ -113,7 +128,92 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   run are in `assets/styles/core-group.css` — a `css` field drops `content:` rules
   outright and unwraps `@media` into unconditional ones. *(LS-2019)*
 
+- **`assets/styles/core-post-featured-image.css`** — two rules Tour Operator's term-image
+  `<figure>` never gets from core. TO builds that wrapper with
+  `get_block_wrapper_attributes()` from inside a `render_block` filter, so the classes it
+  returns are the *enclosing* block's; in a term template it emits
+  `<figure style="aspect-ratio:1" class="wp-block-term-template">` and nothing in
+  `wp-includes/blocks/post-featured-image/style.css` reaches it. Restores
+  `a { display: block; height: 100% }` and adds `object-fit: cover`, keyed off the leaked
+  class so the rules stop matching the day TO emits the right one. Both symptoms it fixes
+  are under Fixed below. *(LS-2019, item 9)*
+
 ### Changed
+
+- **The safari expert panel is restructured, and the eyebrow and name are authored twice.**
+  `patterns/safari-expert.php`, from Zared's `archive-destination` edit on dev 2026-08-28.
+  Below 992px the eyebrow and the consultant's name sit beside the portrait in a new nowrap
+  "Expert Identity" row; at 992px and up they sit at the top of "Expert Detail" above the
+  actions, and the row beside the portrait collapses to the portrait alone. Block Visibility's
+  screen-size control picks the copy — `hideOnScreenSize.large` on one, `.medium` + `.small`
+  on the other — and the two sets are mutually exclusive and cover every width, so exactly
+  one pair exists at any viewport and never zero.
+
+  The duplicate headings are not an accessibility fault: the plugin hides with
+  `display: none !important` inside a `@media` block, which removes the subtree from the
+  accessibility tree, so a screen reader is offered one eyebrow and one name. Verified on the
+  rendered local page 2026-08-28 — one `block-visibility-hide-large-screen` and one
+  `block-visibility-hide-medium-screen block-visibility-hide-small-screen` inside the panel.
+
+  With it: the card's corner goes from radius 200 to radius 0; the portrait goes from
+  116 × 116 with `scale: cover` to 126px square via `aspectRatio`; the eyebrow becomes an
+  `h2` where it had been a paragraph; Call Us and Send an Email each take half the detail
+  column (`layout.selfStretch: fill` on both, `dimensions.width` at the `100` preset on the
+  button); the Call Us trigger takes the heading face at semi-bold, uppercased; and the phone
+  glyph becomes Phosphor's **filled** mark — the only filled copy in the theme, where
+  `header.php`, `homepage-dream-trip.php`, `homepage-lets-make-it-happen.php` and
+  `cta-not-sure-where-to-go.php` all keep the outline.
+
+  This file is required by `template-archive-destination.php`,
+  `template-archive-tour.php` and `template-single-tour.php`, so all three change together —
+  Zared's call, taken over duplicating the pattern for one page. All three verified 200 on
+  local with the panel rendering.
+
+  ⚠️ **Two things the edit dropped are dropped here too, and both are one line to restore.**
+  The consultant's name is no longer a link (`isLink` off on both `core/post-title` blocks;
+  the portrait keeps its link, so the single is still reachable), and the portrait's 2px
+  `base` ring is gone — the editor left a `border-width` behind with no `border-style` beside
+  it, which draws nothing, so the dead declaration is not carried.
+
+- **The Call Us label is uppercased in CSS, not in the string.** The dev edit set the
+  `ollie/mega-menu` label to the literal `CALL US`; it is authored as `Call Us` with
+  `textTransform: uppercase` instead, so no locale is handed a shouted string it cannot
+  override. It reaches the `<button>`: Ollie's own stylesheet sets `text-transform: inherit`
+  on `.wp-block-ollie-mega-menu__toggle` beside `font-family: inherit` and
+  `font-weight: inherit`, and the block declares all three supports. Verified on the rendered
+  local page — `font-weight:var(--wp--custom--font-weight--semi-bold);text-transform:uppercase`
+  and `has-heading-font-family` on the `<li>`, label text `Call Us`.
+
+- **The destinations banner sits its type on the floor of the photograph.**
+  `contentPosition: "bottom center"` with `spacing|40` above and below, against the previous
+  `center center`. `patterns/template-archive-destination.php`, from the dev edit.
+
+- **The destinations intro band splits 55% / auto**, against `58.33%` / `41.67%`. Only the
+  description is pinned and the expert column takes the remainder, which the restructured
+  panel's two-up action row needs. The tile grid gains a `spacing|80` bottom padding to
+  match its top, and the banner tagline drops from `semi-bold` to `medium`.
+
+- **The Trustpilot badge is centred.** `justifyContent: center` on
+  `patterns/trustpilot-score.php`'s wrapper. `patterns/safari-expert.php` is its only
+  consumer — `patterns/why-choose-sd.php` writes its own stacked copy and records why — so
+  this is the badge's own arrangement rather than something one placement imposes.
+
+- **The media-overlay tile is square, not 3/4 portrait.** `aspectRatio: "1"` on both
+  `patterns/card-media-overlay-term.php` and `patterns/card-media-overlay.php`, authored on
+  dev 2026-08-28 and carried back here. The term thumbnails are landscape originals — the
+  travel styles are 554×368 — so a portrait tile threw away most of the frame's width, and a
+  square holds a two-line title without the scrim crowding it. Both archives change together,
+  as the two cards share one design. *(LS-2019, item 9)*
+
+  On the tours card only, the scrim's side padding drops to `spacing|20` against `spacing|40`
+  top and bottom, so a name as long as "Beach & Safari Vacations" breaks over two lines rather
+  than three, and the term name is `semi-bold` rather than the `bold` the card style sets.
+  Both are the values authored on dev. The destinations twin keeps the even padding and the
+  card style's weight.
+
+- **The tours archive banner sits its title at the bottom.** `contentPosition: "bottom
+  center"` with `spacing|40` top and bottom, matching what was authored on dev — the title
+  and tagline were vertically centred in the 454px cover. *(LS-2019, item 9)*
 
 - **`brand-600` is `#BC5B18`, not `#966215`.** Live leans on this orange hard — it is the
   hover colour across the site — and the token exists so the theme has the same colour to
@@ -416,6 +516,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Removed
 
+- **The destination grid's pagination and no-results fallback.**
+  `patterns/template-archive-destination.php` — `core/query-pagination` and
+  `core/query-no-results`, both deleted in Zared's dev edit and the deletion carried here on
+  his instruction. The grid is a bare loop now. With ten destinations and Tour Operator's
+  per-page setting inherited nothing paginated anyway, but an archive returning zero rows
+  renders an empty band rather than a message. Restoring the fallback is four lines and
+  changes nothing at any non-empty count. *(LS-2019)*
+
 - **Four header-only rules from `assets/styles/core-accordion.css`** — the label's
   `white-space: nowrap`, the `is-style-header` hover colour, the `is-style-header` panel
   alignment flip, and that same selector in the narrow-viewport block. The file now serves
@@ -432,6 +540,56 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **The tours archive tiles were 6.78px taller than their own crop, and the scrim covered the
+  gap.** A tile 359.16px wide rendered **365.94px tall** on dev, measured 2026-08-28 — a strip
+  of card below the photograph that the media-overlay scrim's `inset: 0` painted, which read
+  as the overlay hanging past the bottom of the tile. Tour Operator's term-image `<figure>`
+  carries the enclosing block's classes rather than the featured image's
+  (`class-taxonomy-images.php:176-266`, via `get_block_wrapper_attributes()` called from a
+  `render_block` filter), so core's `.wp-block-post-featured-image a { display: block;
+  height: 100% }` never reached the link. Left inline, the image sat in a line box and the
+  strut's descender added height the `aspect-ratio` box does not account for. *(LS-2019,
+  item 9)*
+
+- **The tile images were stretched to the crop instead of cropped to it.** Same missing class,
+  second consequence: `object-fit` is not in core's featured-image stylesheet — it comes from
+  the block's `scale` attribute, serialised inline. `scale` defaults to `"cover"`, so it is
+  absent from saved block markup, and Tour Operator reads the parsed attributes rather than
+  the defaults-merged set: `if ( ! empty( $attributes['scale'] ) )` is false and no
+  `object-fit` is emitted. The image kept `width:100%;height:100%` at the initial
+  `object-fit: fill`, so a 554×368 photograph was squashed into a 359×359 tile. *(LS-2019,
+  item 9)*
+
+  **Authoring `"scale":"cover"` is not the fix.** It renders, but the editor drops attributes
+  equal to their default on save — `patterns/safari-expert.php` carries `"scale":"cover"` and
+  dev's `single-tour` template, saved from the same pattern, has lost it. The fix is a
+  stylesheet rule, which cannot be edited away. Upstream it is two lines in
+  `render_term_featured_image()`: default `$scale` to `'cover'`, and pass the block's own
+  class into the wrapper.
+
+  Both fixes verified on local 2026-08-28: tile **359.16 × 359.16**, `object-fit: cover`,
+  and `sd-theme-2026-block-core-post-featured-image-css` enqueued on the archive.
+
+- **`var:custom|…` is silently dropped on a dynamic block.** Found while setting the tile
+  title's weight: `core/term-name` given `"fontWeight":"var:custom|font-weight|semi-bold"`
+  rendered with no inline style at all and inherited the card style's `bold`. A static block's
+  `style` object is resolved by the editor at save time; a dynamic block has no saved markup,
+  so the server-side style engine resolves it — and that only expands `var:preset|…`, and only
+  for properties declaring `css_vars`. `fontWeight`, `lineHeight`, `fontStyle`, `textTransform`
+  and `letterSpacing` declare none. Measured on local 2026-08-28, `wp_style_engine_get_styles()`
+  given all three of `fontWeight: var:custom|font-weight|semi-bold`,
+  `lineHeight: var:custom|line-height|heading` and `fontSize: var:preset|font-size|500`
+  returns only `font-size:var(--wp--preset--font-size--500);`. *(LS-2019)*
+
+  Fixed on this card by writing `var(--wp--custom--font-weight--semi-bold)`, which
+  `patterns/safari-expert.php` had already arrived at for `letterSpacing`, and written up as a
+  convention in AGENTS.md so it stops being rediscovered. **Roughly twenty other authored
+  `var:custom|…` declarations on dynamic blocks across `patterns/` are inert for the same
+  reason** — `post-title`, `query-title`, `post-excerpt`, `post-terms`, `post-author-name` and
+  `navigation` in the page, category, search, single-post, blog-card, review-card and safari-guru
+  patterns. Not swept here; each one needs its intended value checked against what the block
+  currently inherits rather than a blind find-and-replace.
 
 - **The header's search panel overhung the left edge of the screen below 781px.** The
   out-of-flow panel sized itself `min(600px, 100vw - spacing-80)` — a guess at the room to
