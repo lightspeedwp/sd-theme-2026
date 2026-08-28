@@ -8,6 +8,29 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The post grid card lifts on hover.** `.is-style-post-grid-card` now rises 4px and steps
+  one place up the shadow scale — `shadow|200` → `shadow|300` (`0 2px 4px` → `0 4px 8px`) —
+  over 250ms, with `:focus-within` matching the hover so the tile answers the keyboard. The
+  whole card is a link (`sdLinkTo`), and on a three-up shelf of identical tiles it was the
+  only click target on the homepage giving no pointer feedback. Kept deliberately small: the
+  same card is reused on the blog grid.
+
+  In `assets/styles/core-group.css`, not the section style, for the reasons AGENTS.md
+  requires be named — the `css` field strips `:hover` outright, and an `@media
+  (prefers-reduced-motion)` block does not merely fail there, it compiles its query text into
+  the selector and emits the inner rules unconditionally. `!important` on the hover shadow is
+  load-bearing and cannot be traded for specificity: the resting value is an inline style
+  written by the pattern's `style.shadow` attribute, and only an important author declaration
+  outranks one. Recorded in `style.md` §12.2 and §12.3.
+
+- **The slider shelf no longer clips its cards.** `.is-style-slider-frame .slick-list` takes
+  `padding-block: spacing|20` with a matching negative `margin-block`. Slick builds that
+  wrapper itself and vendor `slick.css` gives it `overflow: hidden` — needed horizontally,
+  since that clip is what makes the carousel a carousel, but it sheared the bottom off every
+  card shadow and would have cut the new hover lift in half. The negative margin gives the
+  height back, so the shelf occupies exactly the space it did before and neither the arrows
+  (absolutely centred on the frame) nor the dot row move.
+
 - **Mega-menu rows are tighter, and their height is one token.**
   `settings.custom.mega-menu.row-padding` in `theme.json` now holds the row's vertical
   padding, and both `styles/blocks/navigation/mega-menu-nav.json` and

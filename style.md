@@ -652,6 +652,8 @@ The rule is JSON-first, per `wp-blockstyle-css-field`. Three things forced CSS:
 | The gold `::after` rule | `assets/styles/core-heading.css` | A `css`-field rule containing `content: ""` is dropped **whole** |
 | Every hover/focus flip | `assets/styles/core-button.css` | The `css` field **strips `:hover`** entirely; and a variation's JSON `:hover` only beats the button element rule on source order |
 | The card scrim lift + chevron | `assets/styles/core-group.css` | Both of the above |
+| The post grid card's hover lift | `assets/styles/core-group.css` | `:hover` is stripped, and `@media (prefers-reduced-motion)` in a `css` field compiles into the **selector** and emits its rules unconditionally |
+| Vertical clip clearance on `.slick-list` | `assets/styles/core-group.css` | Slick's own wrapper — plugin markup, and the shelf clipped the lift and the card shadows |
 | The `:active` press-in on Raised | `assets/styles/core-button.css` | `:active` is stripped like `:hover` |
 | Pagination plates | `assets/styles/core-query-pagination-numbers.css` | The numbers are bare `<a>`/`<span>` with no block support to hang a variation off, and `current` needs a class selector core does not expose |
 | Slider arrows and dots | `assets/styles/core-group.css` | Slick and Swiper markup belongs to plugins — per `wp-thirdparty-markup-styling`, scope to the `is-style-*` class |
@@ -706,6 +708,17 @@ Two shape changes that are not about contrast:
 6. **No radius anywhere.** Live's `.btn.white-border-btn` carries a 2px radius; nothing else
    in the design does, so it is squared off.
 7. **One button box.** See §12.8.
+
+One interaction added, at Zared's direction 2026-08-28:
+
+8. **The post grid card lifts on hover.** Live's post carousel tile is inert — no hover
+   state at all. The card is now the only thing on a three-up shelf of identical tiles that
+   answers the pointer: a 4px rise and one step up the shadow scale
+   (`shadow|200` → `shadow|300`) over 250ms. The same reasoning as the pagination hover
+   above — a click target that gives no feedback is a defect — and here the whole tile is
+   the click target, so the feedback has to be the whole tile. It is kept to one step and
+   4px because the card is reused on the blog grid, where a larger lift would fight the page
+   rhythm. → `assets/styles/core-group.css`, "Post Grid Card — the hover lift"
 
 ### 12.4 A defect fixed on the way through
 

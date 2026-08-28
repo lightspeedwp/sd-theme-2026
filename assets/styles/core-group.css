@@ -168,6 +168,26 @@
 	position: relative;
 }
 
+/* Room for a card to lift inside the shelf.
+   ---------------------------------------------------------------------------
+   Slick builds its own `.slick-list` wrapper and vendor slick.css gives it
+   `overflow: hidden` — necessary horizontally, since that clip is what makes
+   the carousel a carousel, but it clips vertically too. A card's shadow is
+   therefore sheared off at the shelf edges, and the Post Grid Card's 4px hover
+   rise would be cut in half.
+
+   Padding opens the clip box vertically; the matching negative margin gives it
+   back, so the shelf occupies exactly the height it did before and the arrows
+   (absolutely centred on the frame) and the dot row (a static sibling) do not
+   move. Both axes still clip as Slick needs.
+
+   (0,2,0) against slick.css's (0,1,0) `.slick-list { margin: 0; padding: 0 }`,
+   so it wins without !important. */
+.is-style-slider-frame .slick-list {
+	padding-block: var(--wp--preset--spacing--20);
+	margin-block: calc(var(--wp--preset--spacing--20) * -1);
+}
+
 /* Arrows — vertically centred against the shelf, clear of its outer edges. */
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next) {
 	position: absolute !important;
@@ -613,6 +633,60 @@
  */
 .is-style-blog-card-wide .wp-block-post-author__name::after {
 	content: ",";
+}
+
+/**
+ * Post Grid Card — the hover lift.
+ *
+ * The card's resting treatment lives in the section style
+ * styles/sections/cards/post-grid-card.json, and its resting shadow is written
+ * as an *inline* style by the pattern's `style.shadow` attribute
+ * (`box-shadow: var(--wp--preset--shadow--200)`), so the editor can see and
+ * change it. Three pieces cannot live in that JSON:
+ *
+ *   1. the `:hover` flip itself — the block-style compiler strips `:hover`
+ *      entirely, so the rule would silently vanish;
+ *   2. the resting `transition`, kept next to the flip it animates rather than
+ *      split across two files;
+ *   3. the prefers-reduced-motion fallback — `@media` in a `css` field does not
+ *      just fail, it fails *wrong*: the query text is concatenated into the
+ *      selector and the inner rule is emitted unconditionally.
+ *
+ * `!important` on the shadow is load-bearing and cannot be traded for
+ * specificity: the resting value is an inline style, and no selector outranks
+ * one — an `!important` author declaration does. It is confined to that single
+ * declaration; the value still resolves through the preset token.
+ *
+ * One step up the shadow scale (200 → 300, `0 2px 4px` → `0 4px 8px`) and a 4px
+ * rise. Deliberately small: the band is a three-up shelf of identical tiles, so
+ * the hover only has to say "this one", and the same card is reused on the blog
+ * grid where a larger lift would fight the page rhythm.
+ *
+ * `:focus-within` matches the hover so the card answers the keyboard — the
+ * whole tile is a link (sd-enhancements' `sdLinkTo`), and the title and image
+ * carry their own anchors.
+ */
+.is-style-post-grid-card {
+	transition: transform 250ms ease, box-shadow 250ms ease;
+}
+
+.is-style-post-grid-card:hover,
+.is-style-post-grid-card:focus-within {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--300) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.is-style-post-grid-card {
+		transition-duration: 1ms;
+	}
+
+	/* The shadow still grows — it is the state cue, not the motion. Only the
+	   rise is dropped, because that is the part that moves. */
+	.is-style-post-grid-card:hover,
+	.is-style-post-grid-card:focus-within {
+		transform: none;
+	}
 }
 
 /*
