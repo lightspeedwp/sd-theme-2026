@@ -115,6 +115,37 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **`brand-600` is `#BC5B18`, not `#966215`.** Live leans on this orange hard — it is the
+  hover colour across the site — and the token exists so the theme has the same colour to
+  reach for. The old value was a desaturated brown already stepping toward `brand-700
+  #624411`, so every hover, link and panel authored against `brand-600` drifted browner
+  than the page it was reproducing. Same hue family as `brand-500 #CC7F16` now, one step
+  deeper. *(LS-2019)*
+
+  **The AA anchor is kept, and that is why it is not the sampled value.** `brand-600` was
+  chosen in the first place as the adjacent step that clears AA where `brand-500` does not
+  — `style.md` §7, the note at `assets/styles/core-button.css:32` and
+  `.github/reports/sd-design-audit-2026-08-12.md` all record it as the settled colour for
+  brand text on a light ground. Live's orange as sampled, `#BF5C18`, measures **4.41**
+  against white: AA Large only, and it would have quietly broken that contract for every
+  body-size use. `#BC5B18` is the same hue and saturation 0.6% darker in lightness —
+  visually the same colour — and measures **4.52**, so the anchor holds. For the record:
+  old `#966215` 5.18, `brand-500 #CC7F16` 3.17.
+
+  **This revises the audit's divergence D2, which had dropped live's orange rather than
+  adopting it** — as sampled it is `#BF5C17`/`#BF5C18`, 4.41, missing AA by 0.09. Adopting
+  it at `#BC5B18` keeps both the colour and the anchor. `style.md` §2.4 and §2.5 and the
+  note at `assets/styles/core-button.css:32` carry the revision and the reasoning; the
+  audit report's D2 row, divergence register, §5 contrast table and role-mapping list are
+  annotated in place, with the original 2026-08-12 measurements left intact.
+
+  The uses this touches, all now still AA: `elements.link` in
+  `styles/sections/light-page-section.json` and `tinted-page-section.json`, the byline and
+  tag rows in `patterns/card-post-list.php`, the lodge and destination link hovers in
+  `patterns/itinerary-stay.php`, the back-link hover in `patterns/template-single-post.php`,
+  white type on the `brand-600` ground of the `patterns/safari-expert.php` panel, and the
+  `Archive` headings in `patterns/template-index-news.php` and `patterns/template-category.php`.
+
 - **`is-style-script-accent` now applies to `core/post-title` as well as `core/heading`.**
   Live gives every non-home banner title the Joe Hand script face
   (`body:not(.home) #lsx-banner .container .page-title`), and on a single that title has
@@ -401,6 +432,46 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **The header's search panel overhung the left edge of the screen below 781px.** The
+  out-of-flow panel sized itself `min(600px, 100vw - spacing-80)` — a guess at the room to
+  the *left of the icon*, written as a fraction of the whole viewport, and the icon is not
+  at the viewport's edge. The trigger, the block gap, the mobile menu toggle and the root
+  gutter are roughly 110px the formula never subtracts, so the panel overhung by about that
+  much at every width where the 600px cap was not already clamping it. Measured on local
+  2026-08-28: the open panel's left edge sat at **-61px** at 390px and **-59px** at 600px.
+  Nothing scrolled — `overflow: hidden` on the closed wrapper meant the placeholder and the
+  first characters typed were simply cut off screen rather than visibly broken. *(LS-2019)*
+
+  **The fix is not a better formula.** Any formula has to hard-code the width of the
+  furniture to the icon's right and goes wrong again the next time that furniture changes.
+  Below 781px the form is allowed to grow across the row (`flex: 1 1 auto`) and the panel
+  returns to normal flow inside it, with the trigger held at the end by `justify-content:
+  flex-end`. The panel then *cannot* overhang: it is a flex item, so it stops where its flex
+  line does — the row's content edge, which is the root gutter, exactly. No magic number, and
+  it survives the toggle, the gap or the gutter changing.
+
+  In flow is what the out-of-flow model exists to avoid above 781px, where a growing panel
+  would shove the trigger leftwards and reflow the row. It doesn't here because the form has
+  the whole row's free space to grow into and the trigger is pinned to the far end of it —
+  the panel eats slack, not the trigger's position. 781px is core's own column-stacking
+  breakpoint, not a new one: at that width `wp-block-columns` drops the logo onto its own
+  line and the utility column goes full-width, which is what leaves the row that slack. The
+  two changes are the same event.
+
+  **The animation moves from `width` to `flex-basis`.** In flow the open width is `auto` —
+  resolved by the flex line, unknowable up front, and not transitionable from `0`.
+  `flex-basis` is: 0% closed, 100% open, with `flex-shrink: 1` pulling the overshoot back to
+  what the row actually leaves. That is also the axis core animates natively, so this agrees
+  with core rather than fighting it; `max-width` keeps the 600px token as a ceiling for the
+  wide end of the range. One style, not two — the treatment, its ARIA and its tokens are
+  unchanged, and the reduced-motion opt-out still applies.
+
+  In `assets/styles/core-search.css` with the full reasoning, not the block style's `css`
+  field: `@media` cannot compile there at all — it emits a dead
+  `:root :where(.is-style-header-search--N@media (max-width: 960px)){}` plus the inner rules
+  unconditionally at every width, which is silently wrong rather than silently absent.
+  Summarised in the `styles/blocks/search/header-search.json` description.
 
 - **Mega-panel query rows stopped hovering.** A regression from moving the row contract
   into a variation: the resting rule needs `color: inherit !important` to beat theme.json's

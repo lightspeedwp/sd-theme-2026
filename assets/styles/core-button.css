@@ -27,11 +27,19 @@ variation's own `:hover` therefore only beats the button *element* `:hover` by
 source order, which is fragile. These rules carry real specificity, so they land
 regardless of order. Keep each one in sync with its JSON or theme.json partner.
 
-Hover colour note: the live site hovers to #BF5C17. That value was dropped in
-the design audit (divergence D2) because it measures 4.41:1 on white and misses
-WCAG AA by 0.09. brand-600 (#966215, 5.18:1) is the settled replacement and
-reads as the same colour. Confirmed 2026-08-20. Anything that changes brand-500
-itself is a Change-Control Register entry. */
+Hover colour note: the live site hovers to #BF5C17, and brand-600 now carries
+that orange as #BC5B18 (4.52:1 on white, AA).
+
+This revises divergence D2, which had dropped live's value: #BF5C17 measures
+4.41:1 and misses WCAG AA by 0.09, so brand-600 was held at #966215 (5.18:1)
+instead. The cost was that every hover in the theme read browner than the site
+it reproduces — #966215 is a desaturated brown stepping toward brand-700, not
+an orange. #BC5B18 is live's hue and saturation 0.6% darker in lightness:
+visually the same colour, and it clears AA rather than missing it. Live's
+orange is adopted, not dropped, and the contrast constraint still holds.
+
+Measured 2026-08-28 (2026-08-20 for the live sample). Anything that changes
+brand-500 itself is a Change-Control Register entry. */
 
 
 /* Outline Light — base-bordered on dark and brand grounds → fills with base.
