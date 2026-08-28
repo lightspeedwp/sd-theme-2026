@@ -221,28 +221,89 @@
 	padding: 0;
 }
 
-.sd-mega-panel .sd-mega-list .wp-block-post-title {
-	margin: 0;
+/* The rows.
+   ---------------------------------------------------------------------------
+   Everything below re-states, on a post title, what
+   styles/blocks/navigation/mega-menu-nav.json states on a navigation item. The
+   two are not derivable from one another — a navigation item is
+   `li > a.wp-block-navigation-item__content`, a query row is
+   `li > h3.wp-block-post-title > a` — so they are written twice and have to be
+   changed twice. Measured side by side on dev 2026-08-28, before this rule the
+   query rows differed on six counts:
+
+   | | Navigation row | Query row, before |
+   |---|---|---|
+   | font-family | `body` | `heading` — theme.json's `elements.heading` |
+   | font-weight | `regular` | `semi-bold` — the bare `h3` rule |
+   | letter-spacing | `0` | `heading` |
+   | line-height | `snug` | `button` |
+   | row divider | 1px `neutral-300` | none |
+   | vertical padding | spacing 20 | spacing 10, plus a row gap |
+
+   `font-size` is deliberately not set: the blocks carry `fontSize: "200"`, and
+   core emits `.has-200-font-size` with `!important`, so it is already the
+   navigation row's size and a declaration here would silently lose to it.
+
+   `margin-block: 0` on the row is what kills the block gap. `core/post-template`
+   lays out flow, so its gap arrives as `margin-block-start` on every row after
+   the first — `gap: 0` on the flex container above never touched it. The rows
+   are flush and the hairline separates them, as in the navigation columns.
+
+   Both post-templates also carry `blockGap: "0"` on the block, so the editor
+   preview matches. The declaration here is kept as the guarantee: with the
+   attribute absent the gap falls back to theme.json's global `blockGap`, not to
+   zero, so removing it in the Site Editor would reopen the rows. */
+.sd-mega-panel .sd-mega-list .wp-block-post-template > li {
+	border-bottom: 1px solid var(--wp--preset--color--neutral-300);
+	margin-block: 0;
 }
 
+.sd-mega-panel .sd-mega-list .wp-block-post-title {
+	font-family: var(--wp--preset--font-family--body);
+	font-weight: var(--wp--custom--font-weight--regular);
+	letter-spacing: 0;
+	line-height: var(--wp--custom--line-height--snug);
+	margin: 0;
+	text-transform: none;
+}
+
+/* `color: inherit` rather than a named colour, so both column types take the
+   panel's text colour from the same place.
+
+   The navigation rows get theirs by accident: mega-menu-nav.json asks for
+   `contrast`, but core ships an always-on
+   `.wp-block-navigation .wp-block-navigation-item__content.wp-block-navigation-item__content
+   { color: inherit }` at (0,3,0) that outranks the `:root :where()` the
+   variation compiles to, so those rows inherit the panel instead — `neutral-700`,
+   not black. The query rows had no such reset and were taking `contrast` from
+   theme.json's `elements.link`, which is `#000000`. Inheriting here matches the
+   rows as they actually render, and keeps them matched if the panel's colour
+   changes. The dead `contrast` in the variation is left alone deliberately:
+   forcing it would turn both columns pure black, which is not what has been
+   reviewed. */
 .sd-mega-panel .sd-mega-list .wp-block-post-title a {
+	color: inherit;
 	display: block;
-	padding-block: var(--wp--preset--spacing--10);
+	padding-block: var(--wp--preset--spacing--20);
 	text-decoration: none;
 }
 
-/* Hover and focus, matching the navigation-block columns exactly — the two list
-   types sit side by side in the same panel and have to behave as one list. The
+/* Hover and focus, matching the navigation columns exactly — the two list types
+   sit side by side in the same panel and have to behave as one list. The
    navigation half is in assets/styles/core-navigation.css, keyed off
    `is-style-mega-menu-nav`; it cannot be written here because these blocks are
    queries, not navigations, and cannot be written there because that file's
    selectors are scoped to the variation. Change one, change the other.
 
-   `brand-600` was `brand-500` until 2026-08-28. */
+   `brand-600` was `brand-500`, and the underline is dropped, both on
+   2026-08-28: the navigation rows change colour only, and theme.json's
+   `elements.link` already hovers to `brand-600` sitewide. The underline came
+   from theme.json's `core/post-title` link `:hover`, which is why it is turned
+   off explicitly rather than simply left unset. */
 .sd-mega-panel .sd-mega-list .wp-block-post-title a:hover,
 .sd-mega-panel .sd-mega-list .wp-block-post-title a:focus-visible {
 	color: var(--wp--preset--color--brand-600);
-	text-decoration: underline;
+	text-decoration: none;
 }
 
 /* The featured card
@@ -397,6 +458,130 @@
 	.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle-icon svg,
 	.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container,
 	.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container .wp-block-group {
+		transition-duration: 1ms;
+	}
+}
+
+/* ===========================================================================
+   Call Us on the safari expert panel — the same nav item, in a box
+   ===========================================================================
+   patterns/safari-expert.php carries a second `is-style-call-us-navigation`,
+   swapped in for a `core/accordion` on 2026-08-28. Everything above already
+   applies to it: the pop-out's ground, border, radius and shadow, the row
+   hairlines and tint, the stretched row links, the trigger's hover colour.
+
+   What is here is only the difference between the header's placement and this
+   one — live draws its copy as a bordered box with a phone glyph inside it
+   (`.lsx-to-meta-data`, assets/css/custom.css:3919), not as a bare label in a
+   utility bar. The box itself is a `core/group` and its border, radius and
+   padding are block attributes on it; these are the four things that placement
+   needs and block attributes cannot express.
+
+   Scoped to `.sd-expert__call` / `.sd-expert__call-box` throughout, so none of
+   it reaches the header's copy in the same document. */
+
+/* 1 — The box is the positioning context, and the trigger fills it
+   ---------------------------------------------------------------------------
+   `ollie/mega-menu`'s `label` is a block attribute that its `render.php`
+   escapes, so the phone icon cannot go inside the `<button>`; it is a sibling
+   `outermost/icon-block`, as it is in the header. In the header that costs 20px
+   of dead zone beside a text link, which is tolerable. Inside something shaped
+   like a button it is not — people click the box.
+
+   So the toggle is stretched over the whole box with an `::after`, exactly as
+   the number rows above are. For that to reach the box rather than stop at the
+   nav item, the three elements core's navigation stylesheet puts
+   `position: relative` on have to go back to `static` — the same move, and the
+   same reasoning, as the header's main nav at the top of this file. Safe for
+   the same reason too: `overlayMenu: "never"`, one item, and that item is an
+   `ollie/mega-menu`, so there is no core submenu whose positioning depends on
+   the `relative` being removed.
+
+   Handing the containing block up to the box is also what puts the pop-out
+   under the *box* instead of under the label. `z-index` is deliberately absent
+   from the `::after`: neither the icon nor the label is interactive, so there
+   is nothing for it to steal a click from. */
+.sd-expert__call-box {
+	position: relative;
+}
+
+.sd-expert__call-box .sd-expert__call,
+.sd-expert__call-box .sd-expert__call > .wp-block-navigation__container,
+.sd-expert__call-box .sd-expert__call > .wp-block-navigation__container > .wp-block-navigation-item {
+	position: static;
+}
+
+.sd-expert__call-box .sd-expert__call .wp-block-ollie-mega-menu__toggle::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+/* 2 — The pop-out drops from the box's inline start
+   ---------------------------------------------------------------------------
+   The variation's `css` field pins the panel's *end* edge (`inset-inline: auto
+   0`), which is right in the header, where the trigger sits at the right of a
+   utility bar. Here the box sits at the left of the actions row, so the panel
+   is pinned by its start edge instead and opens rightward into the card.
+
+   `!important` because the declaration being overridden is `!important` — see
+   the note in styles/blocks/navigation/call-us-navigation.json for why that
+   one has to be. The clearance is the same 8px the trigger's `topSpacing`
+   asks for, expressed as the spacing token rather than a literal. */
+.sd-expert__call-box .sd-expert__call .wp-block-ollie-mega-menu__menu-container {
+	inset-block-start: calc(100% + var(--wp--preset--spacing--10)) !important;
+	inset-inline: 0 auto !important;
+}
+
+/* 3 — Hover and focus: the outline button's treatment, not the header's
+   ---------------------------------------------------------------------------
+   The header darkens its label to brand-600. That is invisible here, because
+   brand-600 *is* the card's ground — so the box takes the treatment
+   `is-style-outline-light` gives the button beside it instead: the white
+   outline fills, and the label, the icon and Ollie's chevron all go
+   primary-500. One look for the two actions in the row.
+
+   Live hovers `#D59844`, a lighter amber on its orange. That is not carried:
+   it leaves white text at 2.4:1 against the hovered ground, and the fill-and-
+   invert already reads as a state change without breaking contrast (primary-500
+   on base measures 9.5:1).
+
+   `:focus-within` alongside `:hover`, so a keyboard user gets the same state,
+   and so the box stays filled while someone is tabbing through the four
+   numbers in the open panel.
+
+   `:has()` rather than a class, and the whole thing scoped to the box: the
+   toggle is the only interactive thing in it, so the box's own `:hover` is
+   enough. The icon needs naming explicitly — it is a `<div>`, and `color`
+   inherits into it, but Ollie's chevron takes `stroke: currentColor` from the
+   toggle and the toggle is `color: currentColor` from the plugin's own reset,
+   so both follow the one declaration on the box.
+
+   Timing matches `styles.elements.button` — 0.25s ease-in-out — so the two
+   actions in the row animate together. */
+.sd-expert__call-box {
+	transition:
+		background-color 0.25s ease-in-out,
+		color 0.25s ease-in-out;
+}
+
+.sd-expert__call-box:hover,
+.sd-expert__call-box:focus-within {
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--primary-500);
+}
+
+/* The trigger's colour is set by the variation's own `:hover` rule above, which
+   sends it to brand-600 — invisible on the filled box. Named here so the label
+   follows the box rather than the header's rule. */
+.sd-expert__call-box:hover .sd-expert__call .wp-block-ollie-mega-menu__toggle,
+.sd-expert__call-box:focus-within .sd-expert__call .wp-block-ollie-mega-menu__toggle {
+	color: var(--wp--preset--color--primary-500);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.sd-expert__call-box {
 		transition-duration: 1ms;
 	}
 }

@@ -8,6 +8,66 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The safari expert panel is live's widget again — a brand card, not a neutral one.**
+  `patterns/safari-expert.php` had drifted to a `neutral-100` card that live never shipped.
+  Rebuilt against live's own measurements (`sd-lsx-child/assets/css/custom.css:3791`,
+  `#safari-expert-box`): a brand-coloured card holding the portrait beside the eyebrow,
+  the name and the two actions, with the Trustpilot badge moved out of the card and onto
+  the page ground beneath it, which is where live's `.trust-pilot-box` sits.
+
+  The facelift over live is four things: an 8px corner instead of 1px, a 2px `base` ring
+  on the portrait, and the two actions taking the theme's own button clothing —
+  `is-style-outline-light`'s for the Call Us box and `is-style-accent-cta` for "Send an
+  Email" — rather than live's hand-rolled `.lsx-to-meta-data` and `.cta-btn`.
+
+  ⚠️ **The ground is `brand-600`, not live's `brand-500`.** Live's `#cc7f16` *is*
+  `brand-500` exactly, and white on it measures **3.18:1** — under the 4.5:1 AA floor for
+  the eyebrow, the Call Us label and the numbers — while `accent-400` on it measures
+  **1.83:1**, under the 3:1 SC 1.4.11 floor for the CTA's own boundary. `brand-600` is the
+  next step down the same ramp; measured off the rendered page it gives 5.18:1 for the
+  eyebrow, the name, the Call Us label and its outline, and 7.23:1 for the CTA's own
+  label. The CTA *fill* lands at 2.98:1 — a hundredth under the non-text floor, accepted
+  rather than tuned, because the control is identified by that 19.2px uppercase label and
+  no palette token sits between `accent-400` and the card. Nothing between `brand-500`
+  and `brand-600` exists in the palette either. Reverting to live's exact orange is one word on the
+  panel group and ships live's contrast failure with it.
+
+- **The panel's Call Us is the header's nav item, not a `core/accordion`.** Same
+  construction as `patterns/header.php` — an `ollie/mega-menu` inside a `core/navigation`
+  carrying `is-style-call-us-navigation`, hover-open, its panel the one shared
+  `parts/dropdown-call-us.html` reached through `menuSlug`. One mechanism for the widget
+  across the site.
+
+  Authored **inline, with no `ref`**, so unlike the header's copy it needs no
+  `wp_navigation` row: `WP_Block_Type_Navigation::get_inner_blocks()`
+  (`wp-includes/blocks/navigation.php:518`) only replaces a block's own inner blocks when
+  `ref` is present. That answers the objection
+  `styles/blocks/accordion/call-us-dropdown.json` had recorded against the swap.
+
+  The trigger is a box, as live draws it: a `core/group` carrying the border, radius and
+  padding as block attributes, with the Phosphor phone glyph beside the navigation.
+  Because `ollie/mega-menu` escapes its `label`, the icon cannot go inside the `<button>`
+  — so the toggle is stretched over the whole box with an `::after` and the nav, its
+  container and its item go `position: static`, which also puts the pop-out under the box
+  rather than under the label. Hover and `:focus-within` fill the box white and take the
+  label, the icon and Ollie's chevron to `primary-500`, matching the button beside it;
+  live's `#D59844` hover is not carried, because it leaves white text at 2.4:1. The new
+  rules are the last section of `assets/styles/ollie-mega-menu.css`.
+
+  The landmark is labelled **"Office numbers"** — the header's "Call us" and the mobile
+  menu's "Contact numbers" are both already in the DOM, and WordPress disambiguates
+  duplicate landmark labels by appending a number.
+
+  Measured on local at 1440/1024/768/390: no horizontal overflow at any width, the panel
+  opens 8px below the box and aligned to its inline start, `Escape` closes it, and
+  focusing the toggle opens it and fills the box.
+
+  ⚠️ `styles/blocks/accordion/call-us-dropdown.json` and the
+  `.is-style-call-us-dropdown` half of `assets/styles/core-accordion.css` now have **no
+  placement in the theme** — this was the last one. Left in place rather than deleted;
+  `core-accordion.css` only loads where a `core/accordion` renders, so the cost is a dead
+  entry in the editor's style picker.
+
 - **Mega-menu link rows take a `brand-600` hover.** Neither list type had one that worked.
   The navigation columns had no hover rule at all — `styles/blocks/navigation/mega-menu-nav.json`
   records that a block style's `css` field has `:hover` stripped out of it, and the rule it
@@ -23,9 +83,37 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `blockTypes: ["core/navigation"]`, so WordPress compiles its selector as
   `.wp-block-navigation.is-style-mega-menu-nav` and the class matched nothing — while the
   whole "Link lists" section of `assets/styles/ollie-mega-menu.css`, written against
-  `sd-mega-list`, matched nothing either. Both blocks carry `sd-mega-list` now: the shared
-  list type, the flush rows and the hover are live, and the two columns read as one list with
-  the navigation columns beside them. Their hover moves `brand-500` → `brand-600` to match.
+  `sd-mega-list`, matched nothing either. Both blocks carry `sd-mega-list` now.
+
+- **The query columns now match the navigation columns.** With `sd-mega-list` live the rows
+  were styled but still did not read as the same list — measured side by side on dev, they
+  differed on six counts, because a query row is `li > h3.wp-block-post-title > a` and picks
+  up theme.json's `elements.heading` and the bare `h3` rule, where a navigation row is
+  `li > a.wp-block-navigation-item__content` and picks up the variation:
+
+  | | Navigation row | Query row, before |
+  |---|---|---|
+  | font-family | `body` | `heading` |
+  | font-weight | `regular` | `semi-bold` |
+  | letter-spacing | `0` | `heading` |
+  | line-height | `snug` | `button` |
+  | row divider | 1px `neutral-300` | none |
+  | vertical padding | spacing 20 | spacing 10, plus a row gap |
+
+  The "Link lists" section of `assets/styles/ollie-mega-menu.css` now re-states the
+  variation's row on a post title. Colour is `inherit` rather than a named token, so both
+  column types take it from the panel: the navigation rows already do — core's always-on
+  `color: inherit` reset at (0,3,0) beats the `:root :where()` the variation compiles to, so
+  the `contrast` it asks for has never rendered — while the query rows were taking `contrast`
+  (`#000000`) from `elements.link` and reading noticeably blacker. The dead `contrast` in the
+  variation is left as it is; forcing it would turn both columns pure black. Hover is
+  `brand-600` with no underline on both, dropping the underline theme.json's
+  `core/post-title` link `:hover` was adding. `font-size` is left to the blocks' own
+  `fontSize: "200"`, since core emits `.has-200-font-size` with `!important`.
+
+  Both post-templates take `blockGap: "0"` so the editor preview matches; the CSS keeps a
+  `margin-block: 0` as the guarantee, because with the attribute absent the gap falls back to
+  the global `blockGap`, not to zero.
 
 - **The Why Choose band's Trustpilot badge is its own component, no longer shared with
   `patterns/trustpilot-score.php`.** `patterns/why-choose-sd.php` used to `require` the shared

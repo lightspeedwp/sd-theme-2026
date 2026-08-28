@@ -104,7 +104,7 @@ Drop these into any page body.
 | Pattern | What it is | Live data |
 |---|---|---|
 | **Page Hero Banner** | The standard page banner — a full-width photograph carrying the page title. | — |
-| **Safari Expert Panel** | "Chat to a Safari Expert" — the consultant's portrait, name, and phone, with an email action. Picks the right consultant for the page it is on. | Team |
+| **Safari Expert Panel** | "Chat to your Safari Expert" — a brand-coloured card holding the consultant's portrait and name, a Call Us dropdown carrying the four office numbers, and an email action, with the Trustpilot badge beneath the card. Picks the right consultant for the page it is on. | Team · Trustpilot |
 | **CTA — Not Sure Where To Go** | The enquiry band: a script heading over the two office numbers, with "Send us an Email" beneath. | — |
 | **Why Choose Southern Destinations** | See above. | Trustpilot score |
 | **Trustpilot Score** | The rating badge on its own — the word, the mark, the stars and the TrustScore line. Already included inside the two patterns above; place it separately only where you want the badge alone. | Trustpilot |
@@ -113,6 +113,11 @@ Drop these into any page body.
 the destination or tour you are on, then the consultant connected to the post, then
 somebody from the expert pool in the Tour Operator settings. If none of those resolve,
 the panel renders nothing rather than showing the wrong person.
+
+**Its Call Us dropdown is the same one as the header's** — hover or click the box and the
+four office numbers drop out of it. There is one place those numbers live, the
+`dropdown-call-us` template part, so editing them there changes the header, the footer,
+the mobile menu and this panel together.
 
 **Three headings exist for the CTA band on the current site** — "Not sure where to go?"
 on the destination and brand archives, "Like what you see? Let's start planning!" on
