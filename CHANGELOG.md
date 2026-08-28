@@ -8,6 +8,46 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The tour archive is built.** `templates/archive-tour.html` was a stub Query Loop over
+  the `tour` post type; it now references `patterns/template-archive-tour.php`, which
+  reproduces the live tours landing page — the photographic banner, the tinted intro band
+  pairing the archive description with the safari expert panel, the tile grid, and the
+  Why Choose and enquiry bands beneath it. Measured from `/tours/` on 2026-08-28.
+  *(LS-2019, item 9)*
+
+  **The grid lists travel styles, not tours.** Live's tours archive is ten tiles reading
+  "Safari Honeymoons", "Family Safaris", "Gorilla Trekking" and so on, each clicking
+  through to that term's archive; the tours themselves live a level down. So this is a
+  `core/terms-query` over `travel-style`, not a Query Loop, and it carries
+  `sd-featured-terms-query` so `sd-enhancements` restricts it to the terms flagged
+  `featured` — which on dev are exactly live's ten. Without that flag the grid would also
+  render "Top 10 Safari Tours", the mega-menu curation term, whose thumbnail is the same
+  attachment as Luxury Big Five Safaris.
+
+  Banner image, title, tagline and description are the `tour` block of `_lsx-to_settings`
+  read on dev, so they are the values live renders rather than a transcription of the
+  page. The tagline is stored upper case and is set in sentence case here, matching the
+  destinations banner.
+
+  **Three columns, where live runs two** — decided 2026-08-28, so every Tour Operator
+  archive shares one grid and one tile shape. Ten tiles at three columns leave a row of
+  one; that is the accepted trade.
+
+- **`patterns/card-media-overlay-term.php`** — the term twin of
+  `patterns/card-media-overlay.php`, for a `core/term-template`. Same
+  `is-style-media-overlay-card` styling, so the two archives stay one design;
+  `core/term-name` replaces `core/post-title` and the whole tile links to the term
+  through `sdLinkTo: "term"`.
+
+  The image is `core/post-featured-image`, which looks wrong and is not: Tour Operator
+  filters that block and, given a `termId` in context, swaps in the term's `thumbnail`
+  meta wrapped in `get_term_link()` with the term name as `alt`, emitting the same
+  `<figure style="aspect-ratio:…">` core does. That branch is reachable only because
+  `SD\Enhancements\Compat::declare_term_context_on_featured_image()` adds the context
+  keys TO reads but never declared — the same shim the homepage brands shelf depends on.
+  `sd/term-image` does not fit: its `metaKey` allow-list covers `sd_thumbnail` /
+  `sd_thumbnail_color`, and travel styles carry TO's `thumbnail`.
+
 - **The tour single is built.** `templates/single-tour.html` was a verbatim copy of Tour
   Operator 2.2's default template; it now references
   `patterns/template-single-tour.php`, which reproduces the live tour page section for
