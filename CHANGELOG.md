@@ -8,6 +8,174 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The accommodation archive is built.** `templates/archive-accommodation.html` was a
+  generic three-up Query Loop over the `accommodation` post type; it now references
+  `patterns/template-archive-accommodation.php`, which reproduces the live accommodation
+  landing page section for section — banner, the two-panel Best Price Guarantee and
+  specials band, the grid of accommodation-type tiles, closing on the brands shelf and Why
+  Choose. Measured from `/accommodation/` on 2026-08-31 against `custom.css:1449, 3957,
+  4000` and the `accommodation` block of `_lsx-to_settings` on dev. *(LS-2019, item 9)*
+
+  **The grid lists types, not properties.** Live's tiles are the ten accommodation types —
+  Safari Lodges, Luxury Tented Camps, Boutique Hotels and so on — so this is a
+  `core/terms-query` over `accommodation-type` carrying `sd-featured-terms-query`, the
+  exact device the tours archive runs over `travel-style`. It needed no plugin change:
+  `SD\Enhancements\TermMeta` already registers the `featured` checkbox against both
+  taxonomies and `Queries::arm_featured_terms()` reads the taxonomy off the query block.
+  Dev already holds the flags — twelve of the twenty-six `accommodation-type` terms are
+  ticked. The card is `patterns/card-media-overlay-term.php`, unchanged.
+
+  ⚠️ **Two data items, not markup.** *Luxury Trains* is featured with a count of 0, so
+  `hideEmpty` drops it — live drops it too. *Africa's Finest* is featured, has 19
+  accommodations and carries **no `thumbnail` term meta**, so Tour Operator's featured-image
+  filter falls through to `render_placeholder_image()` and the grid renders eleven tiles
+  with one grey placeholder where live renders ten. Giving that term a Featured Image or
+  unticking Featured on it fixes it; both are one field on the term edit screen.
+
+  **The intro band is not the one the other two archives run.** This page has no safari
+  expert panel (`grep -c safari-expert-box` over the rendered page returns 0). In its place
+  live runs `#accommodation-cta-header`, the child theme's `partials/accommodation-search.php`
+  (port inventory K-17): the Best Price Guarantee panel — the same one the accommodation
+  single carries, written out again because that file is a template and not a section
+  pattern — beside a specials panel linking to the specials archive. Live wraps the whole
+  specials panel in one `<a>`; `SD\Enhancements\GroupLink` extends `core/group` only, so the
+  link is on the heading and the badge is decorative. **`assets/images/current-accommodation-bg.jpg`**
+  and **`assets/images/specials-badge.svg`** are ported from the child theme as theme
+  chrome, not seeded into the media library. `specials-badge.svg` is the 169px archive
+  plate and is **not** `special-badge.svg`, the 218px shadowed plate the single carries.
+
+  **One knowing departure from live:** the brands shelf keeps its heading. Live's widget
+  renders titleless on this page; the pattern included here is the homepage's, whose
+  heading reads "We only work with Africa's finest" — a five-up row of unlabelled logos is
+  not a section. Live's tiles also point at SearchWP facet URLs
+  (`/search/accommodation/safari+lodges/`) where these point at the term archive, as the
+  tours archive's tiles already do; routing them at the facet search is a decision for the
+  search line.
+
+  Verified on local against a seeded fixture of six terms and five properties: the featured
+  filter admitted three featured-with-thumbnail terms and the thumbnail-less one (rendering
+  TO's placeholder) and excluded both the unfeatured term and the empty one; three-up grid;
+  tiles link to `accommodation-type` term archives with the whole-card overlay; both cover
+  photographs and the badge resolve; the specials heading links to the specials archive;
+  one `<main>`, h1 → h2 → h3 with no skips; `phpcs --standard=WordPress patterns/` silent.
+  Fixture deleted. Not visually confirmed in a browser — the structural check is on the
+  rendered HTML.
+
+- **The accommodation single is built.** `templates/single-accommodation.html` was a
+  verbatim copy of Tour Operator 2.2's default template; it now references
+  `patterns/template-single-accommodation.php`, which reproduces the live accommodation
+  page section for section — banner, the summary band pairing the property copy with the
+  rating box and the Best Price Guarantee panel, the gallery, the units band, the tours and
+  review shelves, closing on the "Inspired by this property?" band and Why Choose. Measured
+  from `/accommodation/chitwa-chitwa-private-game-lodge/` on 2026-08-31 against
+  `sd-lsx-child/includes/layout.php:117-155` and `includes/functions.php:531, 683`.
+  *(LS-2019, item 9)*
+
+  **The rating box is three wrapper classes and no theme PHP.**
+  `lsx-accommodation-price-box-wrapper` removes the framed box when the property has no
+  rating, no price band and no connected special; `lsx-accommodation-price-facts-wrapper`
+  removes the left column on its own; `lsx-special-to-accommodation-wrapper` removes the
+  badge. The first two are registered by `SD\Enhancements\Wrappers` against Tour Operator's
+  `lsx_to_multi_field_wrappers` filter. The stars are `lsx/post-meta` on `rating`, which Tour
+  Operator's own `Accommodation::rating()` filter answers with five star images filled down
+  to the stored value; the band is `sd/post-meta` on `price_rating`, whose `price-band`
+  format returns null for the stored literal `none`. `centered-rating` / `centered-special`
+  are deliberately not ported — a `justifyContent: center` does that job with no PHP.
+
+  **The units band is one heading where live has up to five.** Live loops the five unit
+  types and emits a section per type; Tour Operator 2.2's `render_units_block()` returns
+  every unit in one pass, so there is no per-type band to head. "Rooms" is live's heading on
+  the measured page. The card is `patterns/accommodation-unit.php`, which carries the
+  `lsx/accommodation-units` binding and is what repeats, and the band is a three-up grid
+  rather than a carousel because Tour Operator's slider extends `core/query` and
+  `core/terms-query` only.
+
+  **`patterns/cta-inspired-by-this-property.php`** is the third sibling of the same enquiry
+  band, differing from `cta-tell-us-your-trip-ideas.php` in exactly three lines: the slug,
+  the anchor and the heading. **`assets/images/guarantee-bg.jpg`** and
+  **`assets/images/special-badge.svg`** are ported from the child theme as theme chrome, not
+  seeded into the media library.
+
+  Deliberately **not** here, each for a reason recorded in the pattern's docblock: the
+  **specials shelf** (needs the special card that `styles/sections/cards/special-card.json`
+  is written for and no pattern uses yet — the specials archive's work, as on the
+  destination single); the **map, facilities and videos bands** and the
+  **related-accommodation shelf** (in Tour Operator's default template and in live's hidden
+  spy nav, but live renders none of them); the **breadcrumb bar** and the **`.more-text`
+  read-more collapse** with its gold drop cap (`sd-enhancements` work by the deactivation
+  test); and **live's rotating banner image**, which LSX Banners picks at random from eleven
+  site-wide photographs — the property's own banner image then its featured image is used
+  instead, as on the tour and destination singles.
+
+  The units band sits on white rather than live's `#f7f5f2`: live's card is `#ece9e3` on
+  that ground and the palette resolves both to `neutral-200`, so keeping live's band colour
+  would make the cards vanish into it. The contrast relationship is preserved; the two
+  absolute values are not.
+
+  Verified on local against a seeded fixture: all four gallery images render, three unit
+  cards repeat with titles and descriptions substituted and the empty description hidden,
+  the star row draws 4/5, the price band prints `$$$`, the tour and review shelves appear
+  when connections exist and vanish when they do not, and emptying `rating` and setting
+  `price_rating` to `none` removes the whole framed box. One `<main>`, no heading-level
+  skips, `phpcs --standard=WordPress` silent. Fixture deleted.
+
+- **The destination single is built.** `templates/single-destination.html` was a verbatim
+  copy of Tour Operator 2.2's default template; it now references
+  `patterns/template-single-destination.php`, which reproduces the live destination page
+  section for section — banner, the summary band pairing the destination copy and the
+  safari expert with the cluster map, the gallery, and the region, accommodation, tour and
+  review shelves, closing on the "Not sure where to go?" band and Why Choose. Measured from
+  `/destination/botswana/` (a country) and `/destination/botswana/chobe-national-park/`
+  (a region) on 2026-08-31 against `sd-lsx-child/includes/layout.php:166-215` and
+  `includes/template-tags.php:520-600`. *(LS-2019, item 9)*
+
+  **One template, not the country/region pair live branches into.**
+  `sd_lsx_to_destination_single_content_bottom()` asks `lsx_to_item_has_children()` and
+  renders either gallery → regions → tours or gallery → accommodation → specials → tours →
+  reviews. In blocks that branch is not a conditional: every shelf carries an
+  `lsx-…-wrapper` class and Tour Operator's `Query_Loop::maybe_hide_varitaion()` removes
+  the band, heading included, when the query behind it is empty — and it checks the
+  `regions` key against `lsx_to_item_has_children()` by name, which is the same test live
+  branches on. So both live orders come out of one template with no theme PHP. Tour
+  Operator's `single-region` and `single-country` templates are *assignable* per post, not
+  routes; nothing on live assigns one, and the two files commit `de58c9a` copied in are
+  left untouched for now.
+
+  Section headings that interpolate the post title — "Popular Travel Destinations in
+  Botswana", "Botswana Tours to Inspire You", "Our Favourite {region} Accommodations" —
+  are `sd/post-field` bindings using its `prefix`/`suffix` args, which is the case that
+  source was written for. The theme owns those strings and their translation.
+
+  The regions shelf carries `patterns/card-media-overlay.php` and the tours shelf
+  `patterns/card-tour-compact.php`, so regions read as the same object as the countries on
+  `/destinations/` and a tour looks the same wherever it is shelved.
+
+  Four things are deliberately **not** here. The **specials shelf** needs a card that does
+  not exist yet — `styles/sections/cards/special-card.json` is registered and no pattern
+  uses it — and belongs with the specials archive. The **`.more-text` read-more collapse**
+  and its gold drop cap are a JavaScript behaviour over post content, so `sd-enhancements`
+  work, exactly as the tour single decided. The **breadcrumb bar** is a filter over a
+  third-party plugin's trail, the same call already recorded twice. **Travel Information**
+  is commented out on live (`layout.php:169`) and has not rendered in years, despite every
+  field being populated.
+
+  Only the summary band is tinted; the sections below it sit on white. That is live, and
+  it is deliberately not the tinted/light stripe the tour single runs — the tour's gallery
+  genuinely is tinted on live and the destination's is not.
+
+  ⚠️ **The map column renders empty on Tour Operator 2.2, and the fault is upstream.**
+  `lsx_to_map()` (`tour-operator/includes/template-tags/maps.php:66`) opens by reading the
+  `{post_id}_location` transient, and when it finds one it builds `$map` and then executes
+  a bare `return;` at line 233 — discarding the markup and ignoring `$echo`. The
+  `return $before . $map . $after` that honours `$echo` sits below that block and is
+  unreachable whenever the transient is warm, which it always is: `render_map_block()`
+  calls `lsx_to_has_map()` first and that function's last act is to `set_transient()`. So
+  the google branch of TO's map binding returns null for every caller. Measured on local
+  2026-08-31 against a seeded Botswana: `has_map=1 enabled=1 transient=array maplen=0`.
+  The blocks are correct and stay as authored — when the upstream `return;` is fixed, or
+  `sd-enhancements` answers TO's own `lsx_to_map_override` filter, the map appears with no
+  change here.
+
 - **The destinations landing page closes with the Why Choose and enquiry bands.**
   `patterns/template-archive-destination.php` now `require`s `patterns/why-choose-sd.php`
   and `patterns/cta-not-sure-where-to-go.php` beneath the tile grid — the same pair, in the

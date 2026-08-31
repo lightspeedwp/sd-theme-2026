@@ -108,6 +108,7 @@ Drop these into any page body.
 | **Safari Expert Panel** | "Chat to your Safari Expert" — a brand-coloured card holding the consultant's portrait and name, a Call Us dropdown carrying the four office numbers, and an email action, with the Trustpilot badge beneath the card. Picks the right consultant for the page it is on. | Team · Trustpilot |
 | **CTA — Not Sure Where To Go** | The enquiry band: a script heading over the two office numbers, with "Send us an Email" beneath. | — |
 | **CTA — Tell Us Your Trip Ideas** | The same enquiry band with the heading every tour, lodge and destination page uses. Placed by the tour template; place it by hand only on a page that needs it. | — |
+| **CTA — Inspired By This Property** | The same enquiry band with the heading the accommodation page uses. Placed by the accommodation template; place it by hand only on a page that needs it. | — |
 | **Why Choose Southern Destinations** | See above. | Trustpilot score |
 | **Trustpilot Score** | The rating badge on its own — the word, the mark, the stars and the TrustScore line. Already included inside the two patterns above; place it separately only where you want the badge alone. | Trustpilot |
 
@@ -190,6 +191,8 @@ recognise the name if you meet it in the Site Editor.
 | Pattern | Template |
 |---|---|
 | **Template: Destinations Archive** | The destinations landing page |
+| **Template: Tours Archive** | The tours landing page |
+| **Template: Accommodation Archive** | The accommodation landing page |
 | **Template: Blog Landing (News)** | The news index |
 | **Template: Category** | Category archives |
 | **Template: Archive** | Generic archives |
@@ -200,6 +203,8 @@ recognise the name if you meet it in the Site Editor.
 | **Template: Page (With Sidebar)** | Pages with the sidebar |
 | **Template: Single Tour** | The tour page |
 | **Itinerary Stay** | One row of the tour page's itinerary list. Repeated once per stay by the Tour Operator plugin — you never place it. |
+| **Template: Single Accommodation** | The accommodation page |
+| **Accommodation Unit** | One card in the accommodation page's Rooms band. Repeated once per unit by the Tour Operator plugin — you never place it. |
 
 ---
 
