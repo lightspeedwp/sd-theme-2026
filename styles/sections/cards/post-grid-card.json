@@ -49,6 +49,22 @@
 				}
 			}
 		},
+		"blocks": {
+			"core/post-terms": {
+				"color": {
+					"text": "var:preset|color|brand-600"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|body",
+					"fontSize": "var:preset|font-size|100",
+					"fontStyle": "italic",
+					"lineHeight": "var:custom|line-height|body"
+				},
+				":hover": {
+					"textDecoration": "none"
+				}
+			}
+		},
 		"css": "& { overflow: hidden; height: 100%; } & .wp-block-post-terms__prefix { font-weight: var(--wp--custom--font-weight--regular) !important; } & .wp-block-group:not(:has(> *)) { display: none; }"
 	}
 }

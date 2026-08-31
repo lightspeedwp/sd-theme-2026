@@ -16,10 +16,13 @@
 /*
  * Finalised from the composition signed off on the dev homepage (2026-08-27),
  * captured back out of the DB front-page override into this file so the pattern
- * is the source of truth again. Everything here — the 3/2 image, the rounded
+ * is the source of truth again. Everything here — the 3/2 image, the
  * neutral-100 panel with shadow-200, the centred title, the date/category
  * byline, the "/.." excerpt more-text and the ruled tag footer — is that
- * composition unchanged. The whole card is clickable via `sdLinkTo: "post"`
+ * composition unchanged, with one later change: the corners are square. The
+ * radius|100 the signed-off version carried was removed on 2026-08-31 — the card
+ * is a square panel now, and patterns/card-tour-compact.php matches it.
+ * The whole card is clickable via `sdLinkTo: "post"`
  * (sd-enhancements' group-link module), so nothing inside needs its own link
  * except the blocks that already carry one.
  *
@@ -35,9 +38,11 @@
  * card that rendered no element children is hidden" — keyed off core's own
  * `.wp-block-group`, with no hand-rolled helper class added here. That is the
  * AGENTS.md rule ("never off a hand-written helper class"), and it means this
- * markup is byte-identical to the signed-off dev composition: the fix is
- * entirely in the style JSON, so the dev front-page DB override needs no edit.
- * It generalises correctly too — a post with no featured image empties the
+ * markup carries no hand-rolled class for it: the fix is
+ * entirely in the style JSON, so the dev front-page DB override needed no edit
+ * for it. (The square corners above *are* a markup change, so that override is
+ * now one radius behind this file — see the reconciliation note in the
+ * changelog.) It generalises correctly too — a post with no featured image empties the
  * Media group, and an empty box is no more wanted there than an empty rule.
  *
  * Two reasons it is CSS and not a visibility control: the condition is per-post
@@ -49,8 +54,8 @@
  * and edit the footer that a tagless post will hide.
  */
 ?>
-<!-- wp:group {"metadata":{"name":"Card — Post (Grid)"},"className":"is-style-post-grid-card","style":{"shadow":"var:preset|shadow|200","border":{"radius":{"topLeft":"var:preset|border-radius|100","topRight":"var:preset|border-radius|100","bottomLeft":"var:preset|border-radius|100","bottomRight":"var:preset|border-radius|100"}},"spacing":{"blockGap":"var:preset|spacing|0"}},"backgroundColor":"neutral-100","layout":{"type":"default"},"sdLinkTo":"post"} -->
-<div class="wp-block-group is-style-post-grid-card has-neutral-100-background-color has-background" style="border-top-left-radius:var(--wp--preset--border-radius--100);border-top-right-radius:var(--wp--preset--border-radius--100);border-bottom-left-radius:var(--wp--preset--border-radius--100);border-bottom-right-radius:var(--wp--preset--border-radius--100);box-shadow:var(--wp--preset--shadow--200)">
+<!-- wp:group {"metadata":{"name":"Card — Post (Grid)"},"className":"is-style-post-grid-card","style":{"shadow":"var:preset|shadow|200","spacing":{"blockGap":"var:preset|spacing|0"}},"backgroundColor":"neutral-100","layout":{"type":"default"},"sdLinkTo":"post"} -->
+<div class="wp-block-group is-style-post-grid-card has-neutral-100-background-color has-background" style="box-shadow:var(--wp--preset--shadow--200)">
 	<!-- wp:group {"metadata":{"name":"Media"},"className":"post-grid-card__media","layout":{"type":"default"}} -->
 	<div class="wp-block-group post-grid-card__media">
 		<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"3/2"} /-->

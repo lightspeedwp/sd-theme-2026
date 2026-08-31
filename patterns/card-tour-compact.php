@@ -2,9 +2,9 @@
 /**
  * Title: Card — Tour (Compact)
  * Slug: sd-theme-2026/card-tour-compact
- * Description: The compact tour tile the related-tours carousels carry on every Tour Operator single — a landscape featured image above a tinted panel centring the title, the travel style and the connected destinations.
+ * Description: The compact tour tile the related-tours carousel carries on every Tour Operator single — a 3/2 featured image above a tinted panel centring the title, the duration, the travel styles, the connected destinations and the excerpt.
  * Categories: sd-theme-2026/card, sd-theme-2026/tour-operator
- * Keywords: card, compact, tile, tour, related, carousel
+ * Keywords: card, compact, tile, tour, related, carousel, duration
  * Viewport Width: 480
  * Block Types: core/post-template
  * Post Types: tour
@@ -13,20 +13,79 @@
  * @package sd-theme-2026
  */
 
-?>
-<!-- wp:group {"metadata":{"name":"Tour Card — Compact"},"className":"is-style-listing-card-compact","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
-<div class="wp-block-group is-style-listing-card-compact">
-	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
+/*
+ * Captured back out of the dev single-tour DB override on 2026-08-31, where the
+ * card was restructured in the Site Editor. What changed from the first pass:
+ *
+ *  - **It is a panel now, not a bare tint.** `neutral-100` plus `shadow|200`,
+ *    written as block attributes so the editor can see them, over the
+ *    `neutral-200` the section style paints. That makes it the same device as
+ *    patterns/card-post-grid.php, and it is why the hover lift below can be the
+ *    same one — see assets/styles/core-group.css.
+ *  - **3/2, not 16/9.** Same crop as the post grid card, so the two shelves
+ *    read as one system. Image crops are `aspectRatio`, never CSS. → AGENTS.md
+ *  - **An even 30 panel** in place of the 40/30/60/30 that left room for a
+ *    read-more the carousel hides. The excerpt fills that space now.
+ *  - **A duration row and an excerpt** joined the title, travel styles and
+ *    destinations.
+ *  - **`sdLinkTo: "post"`** — the whole tile is the target, via
+ *    sd-enhancements' group-link module, exactly as the post grid card does it.
+ *    The blocks that already carry their own anchor keep them.
+ *
+ * ## Two places the dev markup is not copied verbatim
+ *
+ * 1. **`var:preset|spacing|0` is not a token.** The editor wrote it for the
+ *    zeroed paddings, but `settings.spacing.spacingSizes` runs 5 → 100 with no
+ *    `0` member, so `var(--wp--preset--spacing--0)` resolves to nothing and the
+ *    declaration is dropped at computed-value time. A plain `0` is authored
+ *    instead — same result, no orphaned reference. → `theme-orphaned-refs`
+ * 2. **The travel-style weight is the parenthesised token.** The editor wrote a
+ *    raw `500`. `core/post-terms` is dynamic — it has no saved markup, so the
+ *    server-side style engine builds its inline style, and that engine does not
+ *    expand the `var:custom|…` shorthand for `fontWeight`; the declaration
+ *    comes out absent. `var(--wp--custom--font-weight--medium)` resolves.
+ *    Measured in patterns/safari-expert.php, which carries the full table.
+ *
+ * The `prefix` / `prefixBold` attributes on the bound blocks are Tour
+ * Operator's, not core's, and its bindings render them — which is why that copy
+ * is not in a translation call here. The one literal string the theme owns is
+ * "days", and it is.
+ */
 
-	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|30","bottom":"var:preset|spacing|60","left":"var:preset|spacing|30"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group has-200-font-size" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
+?>
+<!-- wp:group {"metadata":{"name":"Tour Card — Compact"},"className":"is-style-listing-card-compact","style":{"spacing":{"blockGap":"0","padding":{"top":"0","bottom":"0"}},"shadow":"var:preset|shadow|200"},"backgroundColor":"neutral-100","layout":{"type":"default"},"sdLinkTo":"post"} -->
+<div class="wp-block-group is-style-listing-card-compact has-neutral-100-background-color has-background" style="padding-top:0;padding-bottom:0;box-shadow:var(--wp--preset--shadow--200)">
+	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"3/2"} /-->
+
+	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group has-200-font-size" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
 		<!-- wp:post-title {"level":4,"isLink":true,"style":{"typography":{"textAlign":"center"}}} /-->
 
-		<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Style: ","style":{"typography":{"textAlign":"center"}}} /-->
+		<!-- wp:group {"metadata":{"name":"Meta"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group">
 
-		<!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour"}}}},"className":"lsx-destination-to-tour-wrapper","prefix":"Destinations:","prefixBold":true,"style":{"typography":{"textAlign":"center"}}} -->
-		<p class="has-text-align-center lsx-destination-to-tour-wrapper"></p>
-		<!-- /wp:paragraph -->
+			<!-- wp:group {"metadata":{"name":"Duration"},"style":{"spacing":{"blockGap":"var:preset|spacing|5","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
+			<div class="wp-block-group" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+				<!-- wp:paragraph {"metadata":{"name":"Duration Value","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"duration"}}}},"prefix":"Duration:","prefixBold":true} -->
+				<p></p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"style":{"spacing":{"padding":{"top":"2px","bottom":"2px"}}}} -->
+				<p style="padding-top:2px;padding-bottom:2px"><?php esc_html_e( 'days', 'sd-theme-2026' ); ?></p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Styles: ","style":{"typography":{"textAlign":"center","fontStyle":"normal","fontWeight":"var(--wp--custom--font-weight--medium)"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}}} /-->
+
+			<!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour","parents":true}}}},"className":"lsx-destination-to-tour-wrapper","style":{"typography":{"textAlign":"center"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"prefix":"Destinations:","prefixBold":true} -->
+			<p class="has-text-align-center lsx-destination-to-tour-wrapper has-link-color"></p>
+			<!-- /wp:paragraph -->
+
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:post-excerpt {"moreText":"/..","showMoreOnNewLine":false,"excerptLength":30,"style":{"typography":{"textAlign":"center"}},"fontSize":"200"} /-->
 	</div>
 	<!-- /wp:group -->
 </div>

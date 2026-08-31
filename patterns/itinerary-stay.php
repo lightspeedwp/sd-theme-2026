@@ -67,17 +67,25 @@
  * assets/styles/core-group.css: every one of them needs `content:`, which a
  * block-style `css` field mangles. → AGENTS.md, "Styling lives in JSON"
  *
- * ## Two things live shows that are not available yet, both flagged
+ * ## One row per stay, not one per day
  *
- *  - **"2 Nights" rather than "Day 1".** Live merges consecutive days that
- *    share a lodge and labels the merged row with its night count. That
- *    algorithm is already written — `SD\Enhancements\Itinerary::collapse()`,
- *    port-inventory item K-08 — and is waiting on the upstream
- *    `lsx_to_itinerary_items` filter (tour-operator#1293, LS-2531). Until it
- *    lands `itinerary-title` renders Tour Operator's own row title, "Day 1".
- *    Nothing here changes when it does: the plugin rewrites the same field
- *    through `lsx_to_itinerary_field_value`.
- *  - **The country line.** Live's `.itinerary-country` came from
+ * Tour Operator stores an itinerary as one row per day, so the binding would
+ * repeat this pattern fourteen times on a fourteen-day tour. Live shows one row
+ * per *stay* — consecutive days sharing a lodge merged, and the row labelled
+ * with its night count.
+ *
+ * That merge is the plugin's, not the theme's: `SD\Enhancements\Itinerary`
+ * (port-inventory item K-08) seeds the `$tour_itinerary` global with collapsed
+ * rows on `render_block` at priority 9, one ahead of the binding, and rewrites
+ * each row's stored `title` to "3 Nights". Tour Operator's renderer is
+ * unmodified and this pattern is unchanged by it — `itinerary-title` is filled
+ * from `lsx_to_itinerary_title()` either way. The authored text below is an
+ * editor placeholder only, and is written as a night count so the editor
+ * preview matches the front end.
+ *
+ * ## The country line — still missing, flagged
+ *
+ *  - Live's `.itinerary-country` came from
  *    `lsx_to_itinerary_country()`, which the child theme *redefined* over Tour
  *    Operator's own tag (M-09) and which 2.2 does not expose as an itinerary
  *    field. There is no binding for it, so the row stops at the destination.
@@ -113,7 +121,7 @@
 
 			<!-- wp:group {"metadata":{"name":"Nights"},"className":"itin-title-wrapper","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
 			<div class="wp-block-group itin-title-wrapper"><!-- wp:heading {"level":3,"className":"itinerary-title","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","lineHeight":"var:custom|line-height|snug","textTransform":"none","letterSpacing":"var:custom|letter-spacing|none"}},"textColor":"neutral-700","fontSize":"300"} -->
-			<h3 class="wp-block-heading itinerary-title has-neutral-700-color has-text-color has-300-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold);letter-spacing:var(--wp--custom--letter-spacing--none);line-height:var(--wp--custom--line-height--snug);text-transform:none"><?php esc_html_e( 'Day 1', 'sd-theme-2026' ); ?></h3>
+			<h3 class="wp-block-heading itinerary-title has-neutral-700-color has-text-color has-300-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold);letter-spacing:var(--wp--custom--letter-spacing--none);line-height:var(--wp--custom--line-height--snug);text-transform:none"><?php esc_html_e( '2 Nights', 'sd-theme-2026' ); ?></h3>
 			<!-- /wp:heading --></div>
 			<!-- /wp:group -->
 

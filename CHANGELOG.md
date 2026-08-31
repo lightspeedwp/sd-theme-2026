@@ -140,6 +140,67 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The Single Tour banner is shorter, bottom-aligned and unscrimmed.**
+  `patterns/template-single-tour.php`'s cover drops from 608px to 360px, moves its content
+  from `center center` to `bottom center`, takes spacing|40 top and bottom, and sets
+  `dimRatio` to 0. Carried back from the dev DB override, edited there 2026-08-28.
+  *(LS-2019)*
+
+  ⚠️ **`dimRatio: 0` removes the scrim entirely, and the banner type is white.**
+  `styles/sections/hero-banner.json` paints the scrim as
+  `background-color: color-mix(in srgb, neutral-900 45%, transparent) !important` on
+  `.wp-block-cover__background` — but core gives that span `opacity: 0` for
+  `has-background-dim-0`, so the 45% wash is gone and `is-style-hero-banner`'s `base` text
+  colour now sits directly on the photograph. The previous `dimRatio: 100` was not a black
+  banner: it made the span fully opaque so the style's authored 45% showed at strength. To
+  put the scrim back, that one attribute goes back to 100 — nothing else changes.
+
+- **The Single Tour tagline is medium, not semi-bold.** 500 rather than 600, with an explicit
+  `normal` font style. Set on dev 2026-08-28; authored as `var:custom|font-weight|medium`
+  rather than the editor's raw `500`, which `core/paragraph` can carry because it is static.
+  *(LS-2019)*
+
+- **The related-tours shelf runs 15 deep and excludes the tour being viewed.** `perPage` 9 →
+  15 and `excludeCurrent: true` on the Query Loop in
+  `patterns/template-single-tour.php`. Three tiles still show at a time; the count is how
+  far the carousel runs. *(LS-2019)*
+
+- **The tour card is a panel, and it lifts on hover like the post grid card.**
+  `patterns/card-tour-compact.php` was restructured in the Site Editor on dev and is carried
+  back here: a `neutral-100` ground with an inline `shadow|200`, a 3/2 crop in place of
+  16/9, an even spacing|30 panel in place of 40/30/60/30, `sdLinkTo: "post"` so the whole
+  tile is the target, and a duration row, an excerpt and connected-destination *parents*
+  added beside the title and travel styles. *(LS-2019)*
+
+  The hover is the post grid card's, unchanged — a 4px rise and 200 → 300 on the shadow
+  scale, `:focus-within` matched, the rise dropped under `prefers-reduced-motion` while the
+  shadow still grows. It lives in `assets/styles/core-group.css` because the block-style
+  `css` field strips `:hover` and mis-compiles `@media`, and it carries `!important` on the
+  shadow for the same reason the post grid card's does: the resting value is an inline style,
+  which no selector outranks.
+
+  **Scoped to `.lsx-tour-related-tour-query`**, the post-template class the shelf carries,
+  not to `.is-style-listing-card-compact` — that section style is shared with the
+  accommodation and destination compact cards, which have no resting shadow, so a bare class
+  selector would pop a shadow-300 in from nothing on two cards nobody asked to change. The
+  tour card is referenced from that one shelf and nowhere else. Verified in the dev DOM
+  2026-08-31: the `<ul>` renders `columns-3 has-native-responsive-grid
+  lsx-tour-related-tour-query …` and the card `<div>` inside it renders
+  `is-style-listing-card-compact … sd-has-link`, so the selector matches; the shelf's
+  `is-style-slider-frame` already opens the Slick clip box vertically, so the rise is not
+  sheared.
+
+- **The post grid card's corners are square.** The `border-radius|100` on all four corners of
+  the root group in `patterns/card-post-grid.php` is removed; the `shadow|200` stays.
+  *(LS-2019)*
+
+  ⚠️ **The dev front-page DB override (post 65895) still carries the radius**, as a
+  four-corner `topLeft`/`topRight`/`bottomLeft`/`bottomRight` object on its inline copy of
+  this card. The homepage carousel will keep rendering rounded tiles until the theme is
+  deployed to dev and that override is reconciled. Same for the single-tour override (post
+  65924) and every change above it. → `wp-db-override-reconciliation`
+
+
 - **The safari expert panel is restructured, and the eyebrow and name are authored twice.**
   `patterns/safari-expert.php`, from Zared's `archive-destination` edit on dev 2026-08-28.
   Below 992px the eyebrow and the consultant's name sit beside the portrait in a new nowrap
@@ -540,6 +601,19 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **`patterns/itinerary-stay.php` was authored against a placeholder that no longer applies.**
+  The repeated row's heading held `Day 1` and the file documented the night count as blocked
+  on an upstream Tour Operator filter. `sd-enhancements` now collapses the itinerary to one
+  row per stay and labels each row with its night count, so the placeholder is `2 Nights` and
+  the docblock records the mechanism instead of the blocker. *(LS-2019)*
+
+  Nothing in the block markup changed: `itinerary-title` is filled from
+  `lsx_to_itinerary_title()` either way, and the numbered spine is a CSS counter on
+  `.sd-itinerary__stay` (`assets/styles/core-group.css:729-771`) that renumbers itself from
+  the rows it is given. The authored text is an editor placeholder only, and is now written
+  as a night count so the editor preview matches the front end. The country line stays
+  flagged as missing — Tour Operator 2.2 exposes no itinerary field for it.
 
 - **The tours archive tiles were 6.78px taller than their own crop, and the scrim covered the
   gap.** A tile 359.16px wide rendered **365.94px tall** on dev, measured 2026-08-28 — a strip

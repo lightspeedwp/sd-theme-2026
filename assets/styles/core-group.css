@@ -689,6 +689,50 @@
 	}
 }
 
+/**
+ * Tour Card (Compact) — the same hover lift.
+ *
+ * patterns/card-tour-compact.php was restructured on dev to be the same device
+ * as the post grid card above: a `neutral-100` panel carrying an *inline*
+ * `shadow|200`, a 3/2 crop and `sdLinkTo`. It gets the same 4px rise and the
+ * same step up the shadow scale, for the same reasons — including the
+ * `!important`, which is still load-bearing against the inline resting value,
+ * and the reduced-motion fallback that drops the rise but keeps the shadow.
+ *
+ * Scoped to `.lsx-tour-related-tour-query`, the post-template class the
+ * related-tours shelf carries, rather than to `.is-style-listing-card-compact`
+ * itself: that section style is shared with the accommodation and destination
+ * compact cards, which have no resting shadow, so a bare class selector would
+ * pop a shadow-300 in from nothing on two cards nobody asked to change. The
+ * tour card is referenced from this one shelf and nowhere else (grep
+ * `card-tour-compact`), so this scope is the card wherever it appears today; if
+ * the family should lift as a whole, the fix is to widen this selector and give
+ * the other two a resting shadow.
+ *
+ * The lift is not sheared by the carousel: `.is-style-slider-frame .slick-list`
+ * above opens the clip box vertically for exactly this.
+ */
+.lsx-tour-related-tour-query .is-style-listing-card-compact {
+	transition: transform 250ms ease, box-shadow 250ms ease;
+}
+
+.lsx-tour-related-tour-query .is-style-listing-card-compact:hover,
+.lsx-tour-related-tour-query .is-style-listing-card-compact:focus-within {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--300) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.lsx-tour-related-tour-query .is-style-listing-card-compact {
+		transition-duration: 1ms;
+	}
+
+	.lsx-tour-related-tour-query .is-style-listing-card-compact:hover,
+	.lsx-tour-related-tour-query .is-style-listing-card-compact:focus-within {
+		transform: none;
+	}
+}
+
 /*
  * Card image sizing used to live here — ~100 lines of (0,3,0) selectors that
  * existed only because `height`/`width` set in a section style's `css` field

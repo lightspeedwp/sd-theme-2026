@@ -117,8 +117,9 @@
 	 *
 	 * The title is the Joe Hand script line at 60px/200 that live gives every
 	 * non-home banner (custom.css:366) — `is-style-script-accent` at font-size
-	 * 800 — and the tagline is the heading face at 30px/600 (custom.css:378),
-	 * which is `is-style-subheading-large` plus the family and weight. Exactly
+	 * 800 — and the tagline is the heading face at 30px (custom.css:378), which is
+	 * `is-style-subheading-large` plus the family and weight — medium (500)
+	 * rather than live's 600, set on dev 2026-08-28. Exactly
 	 * the pairing patterns/template-archive-destination.php uses, so the archive
 	 * and the single read as one device.
 	 *
@@ -133,16 +134,16 @@
 	 * destinations archive banner, which has the note in full.
 	 */
 	?>
-	<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":608,"minHeightUnit":"px","contentPosition":"center center","align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull is-style-hero-banner" style="min-height:608px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"useFeaturedImage":true,"dimRatio":0,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","isDark":false,"align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull is-light has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
-		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
+		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
 
 			<!-- wp:post-title {"level":1,"metadata":{"name":"Tour Title"},"className":"is-style-script-accent","fontSize":"800"} /-->
 
-			<!-- wp:paragraph {"metadata":{"name":"Tour Tagline","bindings":{"content":{"source":"sd/banner","args":{"key":"subtitle"}}}},"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontFamily":"heading"} -->
-			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php esc_html_e( 'Nights', 'sd-theme-2026' ); ?></p>
+			<!-- wp:paragraph {"metadata":{"name":"Tour Tagline","bindings":{"content":{"source":"sd/banner","args":{"key":"subtitle"}}}},"className":"is-style-subheading-large","style":{"typography":{"fontStyle":"normal","fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
+			<p class="is-style-subheading-large has-heading-font-family" style="font-style:normal;font-weight:var(--wp--custom--font-weight--medium)"><?php esc_html_e( 'Nights', 'sd-theme-2026' ); ?></p>
 			<!-- /wp:paragraph -->
 
 		</div>
@@ -533,6 +534,10 @@
 	 * `lsx_to_related_items()` is called with it verbatim (layout.php:281), and
 	 * `global $columns = 3` is the three-up shelf.
 	 *
+	 * `excludeCurrent` keeps the tour being viewed out of its own shelf, and the
+	 * page size is 15 rather than 9 — both set on dev 2026-08-28. The shelf shows
+	 * three at a time either way; the count is how deep the carousel runs.
+	 *
 	 * Same query convention as the reviews above: `lsx-tour-related-tour-query`
 	 * on the post-template, `…-wrapper` on the group. That key resolves through
 	 * the tour's `tour` connection *and* its shared destinations, and Tour
@@ -552,9 +557,9 @@
 		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-other-tours-you-might-like"><?php esc_html_e( 'Other tours you might like', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 
-		<!-- wp:query {"query":{"perPage":9,"pages":0,"offset":0,"postType":"tour","order":"asc","orderBy":"title","search":"","exclude":[],"sticky":"","inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
+		<!-- wp:query {"query":{"perPage":15,"pages":0,"offset":0,"postType":"tour","order":"asc","orderBy":"title","search":"","exclude":[],"sticky":"","inherit":false,"excludeCurrent":true},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-query alignwide is-style-slider-frame lsx-to-slider">
-			<!-- wp:post-template {"className":"lsx-tour-related-tour-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3}} -->
+			<!-- wp:post-template {"className":"lsx-tour-related-tour-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
 				<!-- wp:pattern {"slug":"sd-theme-2026/card-tour-compact"} /-->
 			<!-- /wp:post-template -->
 		</div>
