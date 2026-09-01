@@ -62,8 +62,7 @@
  *
  * ## The two `facts-*-wrapper` classes are load-bearing — do not drop them
  *
- * They are not styling hooks. Tour Operator's `Query_Loop::maybe_hide_varitaion()`
- * (includes/classes/blocks/class-query-loop.php:79) filters `render_block` on
+ * They are not styling hooks. Tour Operator's `Query_Loop::maybe_hide_variation()`
  * `core/group` *and* `core/paragraph`, reads a `(lsx|facts)-(.*?)-wrapper` class
  * off the block and returns an empty string when the field behind it is empty.
  * `country-query` returns `''` when `get_post_parent()` is null;
