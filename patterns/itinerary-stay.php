@@ -57,6 +57,46 @@
  *    inside `.lsx-itinerary-wrapper` (tour-operator/build/style.css, last
  *    rule), which is why the list in the template carries that class.
  *
+ * ## The row reads as one sentence
+ *
+ * Rebuilt on dev 2026-09-01 to match live's reading order: the night count, the
+ * lodge and the lodge's own destination run together on one line — "3 Nights
+ * Sable Alley, Khwai Private Reserve" — with the tour's parent destinations on
+ * a quieter second line beneath.
+ *
+ * That is why `itinerary-location` sits *inside* the accommodation wrapper,
+ * beside the comma, rather than in a block of its own: the comma has to belong
+ * to the lodge, so that a stay with no lodge drops the comma with it when Tour
+ * Operator marks `itin-accommodation-wrapper` hidden. The `itin-location-wrapper`
+ * group below carries something different — the `destination_to_tour`
+ * connection, the tour's parent destinations, not the stay's.
+ *
+ * ## Wrapping
+ *
+ * Both flex rows here wrap, and that is deliberate rather than a default.
+ * They were authored `nowrap` and a long lodge name — "Stanley & Livingstone
+ * Boutique Hotel" — broke the row: the night count was squeezed until "2
+ * Nights" split mid-word into "2 / Night / s", and the lodge and destination
+ * were held apart on one over-long line. `wrap` on the stay heading lets the
+ * lodge drop below the night count, and `wrap` on the accommodation wrapper
+ * lets the destination drop below the lodge, each still in reading order.
+ *
+ * The night count is pinned at its content width by
+ * `.sd-itinerary__stay .itin-title-wrapper { flex: 0 0 auto }` in
+ * assets/styles/core-group.css — there is no block attribute for it, and
+ * without it a wrapping row still shrinks the count before it wraps.
+ *
+ * The comma between the lodge and its destination is **not a block**. It was
+ * authored as a paragraph of its own beside the lodge, which made it a separate
+ * flex item: once the lodge name wrapped, the comma stayed at the right-hand
+ * edge of the lodge's shrunken box, stranded a line away from the word it
+ * belongs to. It is now
+ * `.sd-itinerary__stay .itinerary-accommodation::after { content: "," }` in
+ * assets/styles/core-group.css, so it is part of the lodge's own inline flow
+ * and can neither detach nor begin a line. It also leaves one fewer empty block
+ * in the editor, and it disappears with the lodge when Tour Operator marks
+ * `itin-accommodation-wrapper` hidden.
+ *
  * ## The number is a CSS counter, not a value
  *
  * `render_itinerary_block()` passes a row index into `build_itinerary_field()`
@@ -83,22 +123,15 @@
  * editor placeholder only, and is written as a night count so the editor
  * preview matches the front end.
  *
- * ## The country line — still missing, flagged
- *
- *  - Live's `.itinerary-country` came from
- *    `lsx_to_itinerary_country()`, which the child theme *redefined* over Tour
- *    Operator's own tag (M-09) and which 2.2 does not expose as an itinerary
- *    field. There is no binding for it, so the row stops at the destination.
- *    → .github/reports/sd-lsx-child-port-inventory-2026-08-12.md
- *
  * ## Type and colour
  *
  * Live sets the whole content column in the heading face at 19px/600 with an
  * 18px leading — font-size 300 (19.2px) at semi-bold with the snug line-height,
  * to the digit. Lodge links are `#cc7f16` (brand-500); the destination link is
  * `#60483b` (neutral-700), i.e. it is deliberately *not* accented, so the eye
- * follows the lodges down the spine. The heading is an `h3` because the column
- * it sits in is headed by an `h2`.
+ * follows the lodges down the spine. The numbered marker takes the deeper
+ * brand-600. The heading is an `h3` because the column it sits in is headed by
+ * an `h2`.
  */
 
 ?>
@@ -110,13 +143,12 @@
 
 		<?php
 		/*
-		 * The night count and the lodge share a line, as live runs them
-		 * together, so they are one wrapping flex row rather than two blocks in
-		 * flow. Each keeps its own `itin-…-wrapper` so either can drop out on
-		 * its own.
+		 * The night count and the lodge line share a row and it wraps — see
+		 * "Wrapping" above. The night count keeps its own `itin-title-wrapper`
+		 * so it can drop out on its own.
 		 */
 		?>
-		<!-- wp:group {"metadata":{"name":"Stay Heading"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"top"}} -->
+		<!-- wp:group {"metadata":{"name":"Stay Heading"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"top"}} -->
 		<div class="wp-block-group">
 
 			<!-- wp:group {"metadata":{"name":"Nights"},"className":"itin-title-wrapper","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
@@ -125,18 +157,41 @@
 			<!-- /wp:heading --></div>
 			<!-- /wp:group -->
 
-			<!-- wp:group {"metadata":{"name":"Lodge"},"className":"itin-accommodation-wrapper","style":{"spacing":{"blockGap":"0"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"layout":{"type":"constrained","justifyContent":"left"}} -->
-			<div class="wp-block-group itin-accommodation-wrapper has-link-color"><!-- wp:paragraph {"metadata":{"name":"Lodge Value"},"className":"itinerary-accommodation","style":{"spacing":{"margin":{"top":"0","bottom":"0"}}},"fontSize":"300"} -->
-			<p class="itinerary-accommodation has-300-font-size" style="margin-top:0;margin-bottom:0">Card Link</p>
-			<!-- /wp:paragraph --></div>
+			<?php
+			/*
+			 * The lodge and the stay's destination. Both sit in the
+			 * accommodation wrapper so that a stay with no lodge takes the
+			 * comma — a `::after` on the lodge, not a block — down with it.
+			 * See "The row reads as one sentence" above.
+			 */
+			?>
+			<!-- wp:group {"metadata":{"name":"Lodge"},"className":"itin-accommodation-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|5"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-group itin-accommodation-wrapper has-link-color">
+
+				<!-- wp:paragraph {"metadata":{"name":"Lodge Value"},"className":"itinerary-accommodation","style":{"spacing":{"margin":{"top":"0","bottom":"0"}}},"fontSize":"300"} -->
+				<p class="itinerary-accommodation has-300-font-size" style="margin-top:0;margin-bottom:0">Card Link</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"metadata":{"name":"Destination Value"},"className":"itinerary-location","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|neutral-700"}}}},"textColor":"neutral-700","fontSize":"300"} -->
+				<p class="itinerary-location has-neutral-700-color has-text-color has-link-color has-300-font-size" style="margin-top:0;margin-bottom:0">Card Link</p>
+				<!-- /wp:paragraph -->
+
+			</div>
 			<!-- /wp:group -->
 
 		</div>
 		<!-- /wp:group -->
 
+		<?php
+		/*
+		 * The tour's parent destinations, from the `destination_to_tour`
+		 * connection — not the stay's own location, which is on the lodge line
+		 * above. Quieter and smaller, so it reads as a footnote to the row.
+		 */
+		?>
 		<!-- wp:group {"metadata":{"name":"Destination"},"className":"itin-location-wrapper","style":{"spacing":{"blockGap":"0"},"elements":{"link":{"color":{"text":"var:preset|color|neutral-700"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"textColor":"neutral-700","layout":{"type":"constrained","justifyContent":"left"}} -->
-		<div class="wp-block-group itin-location-wrapper has-neutral-700-color has-text-color has-link-color"><!-- wp:paragraph {"metadata":{"name":"Destination Value"},"className":"itinerary-location","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"typography":{"fontWeight":"var:custom|font-weight|regular"}},"fontSize":"200"} -->
-		<p class="itinerary-location has-200-font-size" style="margin-top:0;margin-bottom:0;font-weight:var(--wp--custom--font-weight--regular)">Card Link</p>
+		<div class="wp-block-group itin-location-wrapper has-neutral-700-color has-text-color has-link-color"><!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour","parents":true}}}},"style":{"typography":{"fontStyle":"normal","fontWeight":"400"}},"fontSize":"200","prefixBold":true} -->
+		<p class="has-200-font-size" style="font-style:normal;font-weight:400"></p>
 		<!-- /wp:paragraph --></div>
 		<!-- /wp:group -->
 

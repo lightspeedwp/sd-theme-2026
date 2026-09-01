@@ -770,6 +770,59 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **The itinerary row broke rather than wrapped, and the marker took the wrong orange.**
+  Both flex rows in `patterns/itinerary-stay.php` were authored `flexWrap: nowrap`, which
+  held every row on one line no matter how long the lodge name was. On
+  `/tour/botswana-victoria-falls-safari/`, "Stanley & Livingstone Boutique Hotel" squeezed
+  the night count until `2 Nights` split mid-word into `2 / Night / s` and pushed the lodge
+  and its destination apart across an over-long line. The stay heading and
+  `itin-accommodation-wrapper` are now `wrap`, so the lodge drops below the night count and
+  the destination below the lodge, each still in reading order. Verified on dev at 360px,
+  390px and 1440px. *(LS-2019)*
+
+  Two rules back the attributes up, both in `assets/styles/core-group.css` because neither
+  has a block attribute behind it. `.sd-itinerary__stay .itin-title-wrapper { flex: 0 0 auto }`
+  pins the night count at its content width — a wrapping row still shrinks a constrained
+  flex child before it wraps it. And the comma between the lodge and its destination is now
+  `.sd-itinerary__stay .itinerary-accommodation::after { content: "," }` rather than the
+  paragraph block it was authored as: as a block it was a flex item of its own, so once the
+  lodge name wrapped the comma stayed pinned to the right edge of the lodge's shrunken box,
+  a line away from the word it punctuates. As a pseudo-element it can neither detach nor
+  begin a line, and it is hidden along with the lodge when Tour Operator marks the wrapper
+  hidden. `content:` is why it is enqueued CSS and not a block-style `css` field.
+
+  **The numbered marker is `brand-600` (#BC5B18), not `brand-500`.** Live paints the circle
+  `#BF5C17`, which the CSS comment recorded as dropped from the palette — it is not:
+  `brand-600` is that colour to within a shade. The marker and the lodge links are now
+  deliberately different weights of the accent, which is how live reads.
+
+  ⚠️ **The pattern file was rebuilt to match dev.** The itinerary was reauthored in the Site
+  Editor on dev — `itinerary-location` moved inside `itin-accommodation-wrapper` so the
+  night count, lodge and the stay's own destination run together as one sentence, with the
+  `destination_to_tour` connection on a quieter line beneath. That structure existed only in
+  the `wp_template` DB override; it is now in the pattern file, so a deploy no longer
+  reverts it. The same edits were applied to the dev override (post 65930) so the two agree.
+
+  ⚠️ **Unfixed and separate: `Card Link` leaks on stays with no destination.** Rows 1, 3 and
+  4 of that tour render the literal placeholder. `build_itinerary_field()` only rewrites a
+  field's class to `hidden itin-<field>-wrapper` on the group carrying that class, and
+  `itinerary-location` no longer sits in one — `itin-location-wrapper` now holds the tour's
+  parent destinations instead. An empty stay destination therefore has nothing to hide it,
+  and the `::after` comma dangles after the lodge. Needs a decision on where the two
+  destination lines should live before it can be fixed.
+
+- **The media-overlay card's chevron could wrap onto a line of its own.** The `›` the card
+  appends after its title is a `::after` on the heading, and it was `display: inline-block`.
+  That makes it an atomic inline, and the line breaker takes a break opportunity on either
+  side of one — so any title that filled its line left the chevron stranded alone on the
+  next. It is now a plain `inline` whose `content` opens with a no-break space
+  (`"\00A0\203A"`) instead of carrying a `margin-inline-start`, which glues it to the last
+  word of the title so the two wrap together. The 0.3em gap is unchanged in appearance: a
+  no-break space at the chevron's 1.15em is the same width. The optical nudge moved from
+  `transform: translateY()` to `position: relative; top:`, because `transform` has no effect
+  on a non-replaced inline box. `assets/styles/core-group.css:44-63`; applies to both
+  `patterns/card-media-overlay.php` and `patterns/card-media-overlay-term.php`. *(LS-2019)*
+
 - **`patterns/itinerary-stay.php` was authored against a placeholder that no longer applies.**
   The repeated row's heading held `Day 1` and the file documented the night count as blocked
   on an upstream Tour Operator filter. `sd-enhancements` now collapses the itinerary to one

@@ -45,15 +45,22 @@
    plain character here so the theme carries no icon-font dependency). Set at
    1.15em so it reads as a deliberate affordance next to the enlarged title
    rather than a stray punctuation mark, and nudged optically to sit on the
-   cap-height centre. */
+   cap-height centre.
+
+   It must never wrap onto a line of its own. `display: inline-block` made it an
+   atomic inline, and the line breaker takes a break opportunity either side of
+   one of those — so a two-word title could drop the chevron alone onto line
+   two. Kept `inline` instead, with the gap carried by a leading no-break space
+   inside `content` rather than a margin, so the chevron is glued to the last
+   word of the title and travels with it. The optical nudge moves to relative
+   positioning because `transform` has no effect on a non-replaced inline. */
 .is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6)::after {
-	content: "\203A";
-	display: inline-block;
-	margin-inline-start: 0.3em;
+	content: "\00A0\203A";
 	font-size: 1.15em;
 	font-weight: var(--wp--custom--font-weight--regular);
 	line-height: 1;
-	transform: translateY(0.06em);
+	position: relative;
+	top: 0.06em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -765,10 +772,12 @@
  * better behaviour anyway: it renumbers on its own when a row is dropped.
  *
  * Every colour and measure is live's, through the nearest token. The circle is
- * `brand-500`: live paints it `#BF5C17`, which style.md §2 records as dropped
- * from the palette, with `brand-600` taking over its *hover* role — this is a
- * resting fill, so it takes the resting brand orange. The dashed rule is
- * `#B4A48C` → `neutral-400`, the mapping style.md made on 2026-08-20.
+ * `brand-600` (#BC5B18) — live paints it `#BF5C17`, and brand-600 is that
+ * colour to within a shade, so the marker takes it directly rather than the
+ * lighter `brand-500` the lodge links use. Keeping the two apart is the point:
+ * the spine reads as one deeper accent and the links stay the lighter one.
+ * The dashed rule is `#B4A48C` → `neutral-400`, the mapping style.md made on
+ * 2026-08-20.
  */
 .sd-itinerary {
 	counter-reset: sd-itinerary;
@@ -791,7 +800,7 @@
 	min-width: 33px;
 	height: 33px;
 	border-radius: var(--wp--preset--border-radius--500);
-	background-color: var(--wp--preset--color--brand-500);
+	background-color: var(--wp--preset--color--brand-600);
 	color: var(--wp--preset--color--base);
 	font-family: var(--wp--preset--font-family--heading);
 	font-size: var(--wp--preset--font-size--300);
@@ -814,6 +823,30 @@
 
 .sd-itinerary__stay:last-child::after {
 	content: none;
+}
+
+/* The night count holds its line. It sits in a constrained group, which is a
+   flex item of the wrapping stay heading and would otherwise be shrunk below
+   its content — long enough lodge names pushed it past the point where
+   "2 Nights" broke mid-word into "2 / Night / s". `flex: 0 0 auto` fixes it at
+   its content width, so the lodge and its destination are what wrap. This is
+   the one part of the wrap behaviour with no block attribute behind it; the
+   two `flexWrap` values it works with are authored in
+   patterns/itinerary-stay.php. */
+.sd-itinerary__stay .itin-title-wrapper {
+	flex: 0 0 auto;
+}
+
+/* The comma between the lodge and its destination. It belongs to the lodge's
+   inline flow, so it is a pseudo-element rather than the block it was authored
+   as: as a block it was a flex item of its own, and once the lodge name wrapped
+   it stayed pinned to the right edge of the lodge's shrunken box, a line away
+   from the word it punctuates. Here it can neither detach nor begin a line, and
+   it is hidden along with the lodge when Tour Operator marks
+   `itin-accommodation-wrapper` hidden. `content:` is why this is not in a
+   block-style `css` field. → AGENTS.md, "Styling lives in JSON" */
+.sd-itinerary__stay .itinerary-accommodation::after {
+	content: ",";
 }
 
 
