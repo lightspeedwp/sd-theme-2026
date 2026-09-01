@@ -287,12 +287,14 @@
  *
  * ## What is deliberately not here
  *
- * The **"Send an Email" modal**. Live's `sd_lsx_to_enquire_modal()` opens
- * Gravity Form 13 in a Bootstrap modal; that is the Enquiry module (D-01–D-06,
- * LS-2530) and it is M3 work. Until it lands this is a link to `/contact/`,
- * which is the fallback the plugin's own playbook prescribes. Swap the href for
- * the modal trigger when the module ships — do not add a Gravity Forms shortcode
- * with inline colours here.
+ * The **enquiry form**. The "Send an Email" button opens the shared enquiry
+ * modal — `href="#to-modal-modal-enquiry"`, resolving to
+ * parts/modal-enquiry.html, which is where Gravity Form 1 lives. Do not add a
+ * Gravity Forms shortcode here: there is one enquiry form on the site and it is
+ * in one template part. patterns/cta-not-sure-where-to-go.php is the canonical
+ * account of that action, including why it is a `core/button` rather than
+ * `lsx-tour-operator/modal-button` and why the form is GF 1 and not the GF 13
+ * an earlier revision of this comment named.
  */
 ?>
 <!-- wp:sd/safari-expert {"tagName":"section","className":"sd-expert","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
@@ -392,7 +394,7 @@
 				<?php /* Placeholder for the Enquiry module's modal — see the note above. */ ?>
 				<!-- wp:buttons {"className":"sd-expert__email","style":{"layout":{"selfStretch":"fill"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
 				<div class="wp-block-buttons sd-expert__email"><!-- wp:button {"className":"is-style-accent-cta","style":{"dimensions":{"width":"var:preset|dimension|100"}}} -->
-				<div class="wp-block-button is-style-accent-cta"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php esc_html_e( 'Send an Email', 'sd-theme-2026' ); ?></a></div>
+				<div class="wp-block-button is-style-accent-cta"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send an Email', 'sd-theme-2026' ); ?></a></div>
 				<!-- /wp:button --></div>
 				<!-- /wp:buttons -->
 

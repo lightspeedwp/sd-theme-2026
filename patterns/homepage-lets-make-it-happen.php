@@ -41,14 +41,18 @@
  * Phosphor phone the rest of the theme uses, with `fill="currentColor"` so the
  * preset colour class actually reaches it.
  *
- * ## The email action goes to /contact/
+ * ## The email action opens the enquiry modal
  *
- * Live's button is `href="send_email"`, a bare relative path its JavaScript
- * intercepts to open Gravity Form 13 in a modal. That modal is the Enquiry
- * module (D-01–D-06, LS-2530) and is M3 work, so this links to `/contact/` —
- * the fallback patterns/safari-expert.php already documents and uses for the
- * same action. Swap the href when the module ships; do not put a Gravity Forms
- * shortcode with inline colours here.
+ * Live's button is `href="send_email"`, a bare relative path **Popup Maker**
+ * intercepts — popup 51800, "Send Us An Email", carrying Gravity Form 14. That
+ * is a second enquiry system: every Tour Operator single uses the LSX Bootstrap
+ * modal and Gravity Form 1 instead. Three forms, the same five fields, one job.
+ *
+ * The rebuild has one: `href="#to-modal-modal-enquiry"`, resolving to
+ * parts/modal-enquiry.html and Gravity Form 1 — Zared's decision, 2026-09-01,
+ * with the GF 13 and GF 14 Salesforce feeds being reconciled with the client
+ * separately (→ LS-2033). patterns/cta-not-sure-where-to-go.php carries the
+ * full account. Do not put a Gravity Forms shortcode here.
  */
 
 ?>
@@ -121,7 +125,7 @@
 	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
 	<div class="wp-block-buttons">
 		<!-- wp:button {"className":"is-style-fill"} -->
-		<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php esc_html_e( 'Send us an email', 'sd-theme-2026' ); ?></a></div>
+		<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send us an email', 'sd-theme-2026' ); ?></a></div>
 		<!-- /wp:button -->
 	</div>
 	<!-- /wp:buttons -->
