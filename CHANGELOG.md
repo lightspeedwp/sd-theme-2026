@@ -390,7 +390,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `spoken_languages`, which TO's own `parts/fast-facts-destination.html` carries, is on none.
 
   ⚠️ **The two `facts-*-wrapper` classes on those rows are load-bearing, not styling hooks.**
-  Tour Operator's `Query_Loop::maybe_hide_varitaion()` (`class-query-loop.php:79`) filters
+  Tour Operator's `Query_Loop::maybe_hide_variation()` (`class-query-loop.php:79`) filters
   `render_block` on `core/group` *and* `core/paragraph`, reads a `(lsx|facts)-(.*?)-wrapper`
   class off the block and returns an empty string when the field behind it is empty. Drop
   them and both rows render on every card, failing two ways that CSS cannot reach: TO's
