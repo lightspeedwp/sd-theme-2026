@@ -1284,6 +1284,26 @@
 			"name": "single-hero",
 			"title": "Single Hero",
 			"area": "uncategorized"
+		},
+		{
+			"name": "modal-tour",
+			"title": "Modal — Tour",
+			"area": "modals"
+		},
+		{
+			"name": "modal-accommodation",
+			"title": "Modal — Accommodation",
+			"area": "modals"
+		},
+		{
+			"name": "modal-destination",
+			"title": "Modal — Destination",
+			"area": "modals"
+		},
+		{
+			"name": "modal-enquiry",
+			"title": "Modal — Enquiry",
+			"area": "modals"
 		}
 	]
 }

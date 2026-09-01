@@ -8,6 +8,44 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The four Tour Operator modals are theme files now** — `parts/modal-tour.html`,
+  `parts/modal-accommodation.html`, `parts/modal-destination.html` and
+  `parts/modal-enquiry.html`, registered in `theme.json` against Tour Operator's
+  `modals` template-part area. *(LS-2530, estimate line 17)*
+
+  **The three post-type modals are the compact cards.** Each mirrors the pattern the
+  carousels on the singles already use — `card-tour-compact`, `card-accommodation-compact`,
+  `card-destination-compact` — so a preview modal and the card that links to it are the
+  same object. `is-style-listing-card-compact` already carries live's modal typography
+  exactly: centred, `neutral-700` heading, `brand-600` link hover, measured from
+  `.modal .modal-content .lsx-to-modal-content-area` in `sd-lsx-child/assets/css/custom.css`
+  on 2026-09-01. Nothing new had to be styled for the panel interior.
+
+  Two departures from the card, both deliberate:
+
+  - **The title is an `<h2>`, not an `<h4>`.** `sd-enhancements`' ModalA11y names each
+    dialog from its first heading, and AGENTS.md requires the first heading in a modal be
+    an `h2`. Live is an `h4` inside a modal whose real `.modal-title` is
+    `display: none` — an accessibility defect, not a design decision. The visual size is
+    unchanged: `styles/sections/cards/listing-card-compact.json` styles `elements.heading`,
+    which covers every level.
+  - **No `sdLinkTo: "post"`.** A whole-tile link is a carousel affordance; in a dialog the
+    title link is the way out, as on live.
+
+  Live's modals also carry an Envira gallery slider that is **empty on every modal on
+  every page sampled** — 17 on `/tour/best-of-southern-africa/`, 1 on
+  `/accommodation/singita-lebombo-lodge/`, and `lsx-to-modal-thumb` never renders at all.
+  So live's modals show no image. The compact card does, which is an improvement on live
+  rather than a port of it.
+
+  **`parts/modal-enquiry.html` carries Gravity Form 1.** Live prints two modals per CPT
+  single, both with `id="lsx-enquire-modal"` — GF 1 first, GF 13 second — so Bootstrap
+  only ever opens GF 1 and GF 13 has never been reachable. Consolidating on GF 1 is
+  Zared's decision, 2026-09-01; the GF 13 and GF 14 Salesforce feeds are being reconciled
+  with the client separately. The heading reuses `is-style-section-title`, which is
+  already live's `#lsx-enquire-modal .modal-title` device — uppercase, `neutral-700`, with
+  the 80×2px `accent-500` rule.
+
 - **The accommodation archive is built.** `templates/archive-accommodation.html` was a
   generic three-up Query Loop over the `accommodation` post type; it now references
   `patterns/template-archive-accommodation.php`, which reproduces the live accommodation
@@ -307,6 +345,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- **The five enquiry CTAs open the modal instead of linking to `/contact/`.**
+  `patterns/safari-expert.php`, `cta-not-sure-where-to-go.php`,
+  `cta-tell-us-your-trip-ideas.php`, `cta-inspired-by-this-property.php` and
+  `homepage-lets-make-it-happen.php` now carry `href="#to-modal-modal-enquiry"`.
+  *(LS-2530)*
+
+  They stay plain `core/button`s. `lsx-tour-operator/modal-button` writes its `className`
+  onto the outer `wp-block-buttons` wrapper, where `is-style-fill` and
+  `is-style-accent-cta` cannot reach it, and those variations are registered for
+  `core/button` in any case. `sd-enhancements`' Enquiry module registers the modal off the
+  href instead, so the theme declares the intent and the plugin supplies the behaviour.
+
+  The comments in `safari-expert.php` and `cta-not-sure-where-to-go.php` said this CTA
+  opens Gravity Form 13. It renders GF 13 into the DOM; it opens GF 1. Corrected, with the
+  measurement.
+
+- **`style.css` carries the dialog chrome.** Tour Operator 2.2 prints its modals into
+  `wp_footer` as a bare `<dialog class="wp-block-hm-popup">` — outside the block system, so
+  there is no block to hang `wp_enqueue_block_style()` on. `tour-operator-style` enqueues
+  at priority 1 and the theme's sheet at 10, so these rules land after it without
+  `!important`. Live's measured 590px panel width (Tour Operator defaults to the theme's
+  900px `contentSize`); the white gutter Tour Operator paints around the panel removed so
+  the card's image meets the edge; a `neutral-400` close button with a real focus ring,
+  where upstream has none; and a `prefers-reduced-motion` guard on transitions that had
+  none.
 
 - **The accommodation card is a panel with a full meta block, carried back from dev.**
   `patterns/card-accommodation-compact.php` was restructured in the Site Editor on the dev

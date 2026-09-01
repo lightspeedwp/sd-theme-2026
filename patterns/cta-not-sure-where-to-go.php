@@ -23,7 +23,7 @@
  *
  * It is the twin of patterns/homepage-lets-make-it-happen.php and follows that
  * file's structure deliberately: same office loop, same Phosphor phone, same
- * interim `/contact/` action. The differences are the ground, the heading, and
+ * enquiry-modal action. The differences are the ground, the heading, and
  * that this one carries no numbered steps.
  *
  * ## The heading is one of four on live, and that is a template concern
@@ -80,11 +80,29 @@
  *    carry. Live's own string is ported here rather than harmonised, because a
  *    toll-free number on a high-intent enquiry CTA may well be deliberate and
  *    content is migrated, not rewritten. It is one line to change if it is not.
- *  - The **"Send us an Email" modal** is not built. Live's
- *    `lsx_to_enquire_modal()` opens Gravity Form 13 in a modal; that is the
- *    Enquiry module (D-01–D-06, LS-2530) and it is M3 work. Until it lands this
- *    is a link to `/contact/`, which is what patterns/safari-expert.php and
- *    patterns/homepage-lets-make-it-happen.php already do.
+ *  - The **"Send us an Email" button opens the enquiry modal** —
+ *    `href="#to-modal-modal-enquiry"`, which resolves to
+ *    parts/modal-enquiry.html. This is the canonical account of that action;
+ *    patterns/safari-expert.php, patterns/cta-tell-us-your-trip-ideas.php,
+ *    patterns/cta-inspired-by-this-property.php and
+ *    patterns/homepage-lets-make-it-happen.php all carry the same href and
+ *    point here.
+ *
+ *    ⚠️ Live *renders* Gravity Form 13 into this CTA's modal but **opens
+ *    Gravity Form 1**: `sd_lsx_enquire_modal_output()` prints two modals per
+ *    CPT single, both with `id="lsx-enquire-modal"`, and Bootstrap resolves a
+ *    `data-target` to the first match. Measured 2026-09-01 on
+ *    /tour/best-of-southern-africa/ and
+ *    /accommodation/singita-lebombo-lodge/. GF 1 is therefore the form that
+ *    carries live's production volume and the one the rebuild keeps — Zared's
+ *    decision, 2026-09-01. An earlier revision of this comment said GF 13; it
+ *    was reading the DOM, not the behaviour.
+ *
+ *    It is a plain `core/button`, not `lsx-tour-operator/modal-button`: that
+ *    block puts its `className` on the outer `wp-block-buttons` wrapper, where
+ *    `is-style-fill` and `is-style-accent-cta` cannot reach it. The modal is
+ *    registered off the href by `sd-enhancements`' Enquiry module, which is
+ *    where the reasoning lives in full.
  *
  * ## The phone icon is inline SVG, written out per office
  *
@@ -150,7 +168,7 @@
 	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
 	<div class="wp-block-buttons">
 		<!-- wp:button {"className":"is-style-fill"} -->
-		<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php esc_html_e( 'Send us an Email', 'sd-theme-2026' ); ?></a></div>
+		<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send us an Email', 'sd-theme-2026' ); ?></a></div>
 		<!-- /wp:button -->
 	</div>
 	<!-- /wp:buttons -->
