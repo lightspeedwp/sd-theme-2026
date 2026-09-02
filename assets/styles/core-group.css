@@ -89,6 +89,19 @@
 	inset: 0;
 }
 
+/*
+ * The team archive card's name band has the same problem and the same fix, but
+ * it is pinned to the foot of the photograph rather than covering it, so it
+ * takes its own rule instead of joining the selector list above. `inset: 0`
+ * would stretch the band over the whole image in the canvas and nowhere else.
+ * → styles/sections/cards/team-archive-card.json
+ */
+.editor-styles-wrapper .is-style-team-archive-card .team-archive-card__caption {
+	position: absolute;
+	inset-inline: 0;
+	inset-block-end: 0;
+}
+
 
 /**
  * Team Member Card — bio overlay reveal animation.

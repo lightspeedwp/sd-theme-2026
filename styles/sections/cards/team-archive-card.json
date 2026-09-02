@@ -1,0 +1,54 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Team Archive Card",
+	"slug": "team-archive-card",
+	"blockTypes": [
+		"core/group"
+	],
+	"description": "The consultant tile on the live team landing page — a portrait with a warm-dark band pinned along its bottom edge carrying the name in uppercase base type and the role beneath it. Measured from `.post-type-archive-lsx-to-team #primary .lsx-to-archive-container .lsx-to-archive-wrapper .lsx-to-archive-content` on 2026-09-02: a 70px absolute strip at rgba(26, 18, 5, 0.7), which is neutral-900 at 70%. This is NOT the Team Member Card style: that one is the homepage row, whose bio panel covers the whole photograph and is revealed on hover. This band is always visible, covers only the foot of the image, and has no hover state — live's team archive has none. The band's height is left to its padding rather than pinned at 70px, so a two-line name grows the band instead of being clipped as it is on live.",
+	"styles": {
+		"color": {
+			"text": "var:preset|color|base"
+		},
+		"spacing": {
+			"padding": {
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0"
+			}
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|base"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|400",
+					"fontWeight": "var:custom|font-weight|bold",
+					"lineHeight": "var:custom|line-height|heading",
+					"textTransform": "uppercase"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|base"
+				},
+				"typography": {
+					"textDecoration": "none"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|accent-300"
+					},
+					"typography": {
+						"textDecoration": "none"
+					}
+				}
+			}
+		},
+		"css": "& { position: relative; overflow: hidden; } & .team-archive-card__caption { position: absolute; inset-inline: 0; inset-block-end: 0; background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 70%, transparent); }"
+	}
+}

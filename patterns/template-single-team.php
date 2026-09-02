@@ -1,0 +1,548 @@
+<?php
+/**
+ * Title: Template: Single Team Member
+ * Slug: sd-theme-2026/template-single-team
+ * Description: The consultant profile — the banner, the tinted summary band pairing the bio with the portrait, the Trustpilot feedback row, the gallery, and the tour, destination and blog shelves, closing on the Why Choose band.
+ * Categories: sd-theme-2026/tour-operator
+ * Keywords: team, consultant, profile, single, safari, guru, expert, template
+ * Viewport Width: 1400
+ * Template Types: single
+ * Post Types: wp_template
+ * Inserter: false
+ *
+ * @package sd-theme-2026
+ */
+
+/*
+ * Live's team single, translated to blocks.
+ *
+ * Measured from https://www.southerndestinations.com/team/camille-rowe/ on
+ * 2026-09-02, against sd-lsx-child/assets/css/custom.css:2113-2230 and 4335-4416,
+ * and checked against the same member on dev (post 41452), which carries every
+ * field the page reads.
+ *
+ * Live renders six sections in this order, and so does this file:
+ *
+ *     #summary      the bio beside the portrait, on the tinted band
+ *     #feedback     the Trustpilot badge and three reviews
+ *     #gallery      the member's own photographs
+ *     #map          "Places {name} has visited"      → not here, see below
+ *     #tours        connected tours
+ *     #destination  connected destinations
+ *     #posts        connected blog posts
+ *
+ * ## Every heading is composed from the member's first name
+ *
+ * "Meet Camille", "Camille’s client feedback", "Camille’s Wild Adventures",
+ * "Camille’s Favourite Tours". Live builds all of them through
+ * `sd_first_name_team()` (sd-lsx-child/includes/functions.php:424), which is
+ * `current( explode( ' ', $name ) )`.
+ *
+ * `sd/post-field` with `format: first-name` is that function, and it exists for
+ * this template specifically — its docblock in sd-enhancements says so. A
+ * binding replaces a block's whole `content` attribute, so the standing half of
+ * each heading cannot be static text beside a bound span: the `prefix` and
+ * `suffix` args carry it, and this file owns those strings and their
+ * translation. The authored text inside each heading is the fallback — what the
+ * editor shows, and what renders if the binding cannot resolve a post.
+ *
+ * The apostrophes are typographic (’), which is the theme's convention and also
+ * the only form that survives the trip: a straight `'` inside an `esc_attr_e()`
+ * in a block-comment attribute is escaped to `&#039;`, and the block parser
+ * reads that comment as JSON without decoding entities, so it would render
+ * literally.
+ *
+ * ## The shelves are Tour Operator's connection queries
+ *
+ * Each is a `core/query` whose `core/post-template` carries an
+ * `lsx-<to>-related-team-query` class. `Query_Loop::query_args_filter()`
+ * (tour-operator/includes/classes/blocks/class-query-loop.php:467) reads it and
+ * rewrites the query to the ids in the current post's `<to>_to_team` meta; the
+ * matching `…-query-wrapper` on the section group removes the band, heading
+ * included, when the connection is empty. `to-team` 2.2.0 registers a query
+ * variation for each of them (build/blocks/{tour,destination,post}-related-team),
+ * so these are the plugin's own keys and not invented ones.
+ *
+ * Measured on dev against Camille (41452): `tour_to_team` 4, `destination_to_team`
+ * 6, `post_to_team` 9 — which is exactly what live's three carousels show.
+ *
+ * The class goes on the **post-template**, not the query — `query_loop_block_query_vars`
+ * is applied by `render_block_core_post_template()`. Same convention as
+ * patterns/template-single-destination.php, which has the full note.
+ *
+ * ## The tiles, and why they are the ones they are
+ *
+ * - **Tours** — `patterns/card-tour-compact.php`, the tile every Tour Operator
+ *   single already shelves a tour in, so a tour looks the same wherever it
+ *   appears.
+ * - **Destinations** — `patterns/card-media-overlay.php`, the square photograph
+ *   with the title over a scrim. Live's destination tile here is the same
+ *   image-over-white-panel card as its tours, but the overlay tile is what the
+ *   destinations archive and the destination single's regions rail already use,
+ *   and it makes a member's destinations read as the same object as the
+ *   countries on /destinations/. Zared's call, 2026-09-02.
+ * - **Posts** — `patterns/card-post-grid.php`, the tile the homepage "Tales
+ *   from our trails" carousel carries. Same three-across carousel, same card.
+ *
+ * All three at three across, as live's `slidesToShow: 3`. Slick reads that
+ * count off the `columns-N` class `core/post-template` emits from its own
+ * `layout.columnCount`, so the grid is both the carousel's setting and what the
+ * shelf degrades to with JavaScript off. `perPage` is well above what any
+ * member connects: the shelf shows three at a time either way, and the count is
+ * how deep the carousel runs.
+ *
+ * ## What this template does not carry, and why
+ *
+ * - **The map.** Live's `#map` is "Places {name} has visited" — a Google
+ *   *cluster* map built from marker data for the member's 60 connected
+ *   accommodations (`accommodation_to_team`), behind a click-to-load
+ *   placeholder. It is not reachable from here. Tour Operator's `lsx/map`
+ *   binding answers for two types only, `wetu` and `google`
+ *   (class-bindings.php:940-969), and its `google` branch calls `lsx_to_map()`,
+ *   which reads the post's own `location` meta — a single point, which a team
+ *   member does not have. The cluster is the **Team Member Map block**, and it
+ *   is its own task: LS-2020 items 10.4 and 17.7 both name it, built in the
+ *   plugin. When it lands it goes directly between the gallery and the tours
+ *   shelf, in a `<section id="map">`, and nothing else here changes.
+ *   → AGENTS.md, theme/plugin boundary
+ * - **The breadcrumb bar.** Live draws Yoast's trail along the bottom of the
+ *   banner ("Home / About Us — Meet The Team / Camille Rowe"). Breadcrumb output
+ *   is a filter over a third-party plugin's trail — behaviour, not design — so
+ *   it is `sd-enhancements` work, and the team post type's parent-link handling
+ *   is called out separately as item 10.7. Same decision, same place, as
+ *   patterns/template-archive-team.php and every other single in this theme.
+ * - **The socials, the phone and the email as a contact block.** `to-team`'s own
+ *   `single-team.html` puts `role`, `contact_email`, `contact_number` and five
+ *   social links in a boxed panel beside the bio. Live renders none of it on the
+ *   single — only the role, under the name. The email is reached through the
+ *   "Get in touch" action below, which is the one live gives.
+ * - **Tour Operator's sticky section menu.** `to-team`'s template opens with
+ *   `lsx-tour-operator/sticky-menu` and lists five sections. Live has the
+ *   equivalent markup and switches it off — `.single .lsx-to-navigation
+ *   { display: none !important }` (custom.css:1795). It has never been visible
+ *   on a single.
+ * - **The collapsing "Summary" heading.** Live's `h2.lsx-to-collapse-title` is
+ *   `hidden-lg` and toggles a Bootstrap collapse below 1200px. It is a mobile
+ *   accordion over a section that has no second state on desktop; the block
+ *   equivalent is a `core/details`, which would change the desktop page to fix
+ *   a phone. Left out, as it is on the other three singles.
+ *
+ * ## Section grounds follow live
+ *
+ * Only the summary band is tinted: `#collapse-summary .collapse-inner > .row`
+ * is full-bleed `#f7f5f2` at 6.4rem (custom.css:2126-2132, which names
+ * `.single-lsx-to-team` alongside the accommodation, tour and destination
+ * singles) — that is `neutral-200`, and the spacing-70
+ * `is-style-tinted-page-section` already carries it. Everything below sits on
+ * white. Measured, not assumed: nothing in custom.css tints `#feedback`,
+ * `#gallery`, `#tours`, `#destination` or `#posts` on this template.
+ *
+ * `require`, not `<!-- wp:pattern -->`, for the score badge and the closing
+ * band — a nested pattern reference inside another *pattern* is dropped on
+ * front-end render while still resolving under a WP-CLI `do_blocks()` test.
+ * References inside a *query loop* are fine, which is why the three card
+ * patterns below are still written as references.
+ * → .claude/skills/wp-pattern-runtime-pitfalls
+ */
+
+?>
+<!-- wp:group {"tagName":"main","metadata":{"name":"Team Member Single"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
+<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
+
+	<?php
+	/*
+	 * The banner.
+	 *
+	 * The same device as the other three Tour Operator singles, at the same
+	 * 360px floor, so they all open identically: `is-style-hero-banner` owns the
+	 * scrim and the type colours, and only the composition is here.
+	 *
+	 * The image is the member's banner image, not their portrait. Tour
+	 * Operator's `Bindings::render_banner_block()` (class-bindings.php:1144)
+	 * swaps a cover's background for the `banner_image_id` meta whenever the
+	 * cover carries an `lsx/post-meta` binding on `content` — the args are only
+	 * a marker; the key it reads is fixed. Measured on dev: Camille's
+	 * `banner_image_id` is 51808, `header-team-camille.jpg`, which is the image
+	 * live paints into `.page-banner-image`. `useFeaturedImage` stays on
+	 * underneath as the fallback, so a member with no banner image set keeps
+	 * their portrait rather than rendering an empty scrim.
+	 *
+	 * **No tagline**, as the destination single has none. `to-team` registers a
+	 * `tagline` field and its own template binds a paragraph to it; live's team
+	 * banner carries the `<h1>` alone, and no member on dev has the field
+	 * populated.
+	 *
+	 * A flow layout, not constrained, so `alignwide` reaches the children
+	 * instead of being re-clamped to the content measure.
+	 */
+	?>
+	<!-- wp:cover {"useFeaturedImage":true,"dimRatio":0,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","isDark":false,"align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull is-light has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
+
+		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
+		<div class="wp-block-group alignwide">
+
+			<!-- wp:post-title {"level":1,"metadata":{"name":"Member Name"},"className":"is-style-script-accent","fontSize":"800"} /-->
+
+		</div>
+		<!-- /wp:group -->
+
+	</div></section>
+	<!-- /wp:cover -->
+
+	<?php
+	/*
+	 * The summary band — live's `#summary`.
+	 *
+	 * Two columns at live's `col-md-8` / `col-md-4`: the bio on the left, the
+	 * portrait on the right. Unlike the destination single's two equal columns,
+	 * because live's split here is 2:1.
+	 *
+	 * The order inside the left column is live's: the "Meet {name}" heading, the
+	 * role beneath it, the bio, then the action.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Team Member Summary"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"summary"} -->
+	<section class="wp-block-group alignfull is-style-tinted-page-section" id="summary">
+
+		<!-- wp:columns {"verticalAlignment":"top","align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|60"}}}} -->
+		<div class="wp-block-columns alignwide are-vertically-aligned-top">
+
+			<!-- wp:column {"verticalAlignment":"top","width":"66.66%","style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
+			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:66.66%">
+
+				<?php
+				/*
+				 * Live's `h2.lsx-to-team-name`. `is-style-section-title-left`
+				 * rather than the centred `is-style-section-title` the shelves
+				 * below carry: this heading opens a column of running text and
+				 * live sets it left, with the gold rule under it.
+				 */
+				?>
+				<!-- wp:heading {"metadata":{"name":"Meet Heading","bindings":{"content":{"source":"sd/post-field","args":{"field":"title","format":"first-name","prefix":"<?php esc_attr_e( 'Meet ', 'sd-theme-2026' ); ?>"}}}},"className":"is-style-section-title-left","anchor":"h-summary"} -->
+				<h2 class="wp-block-heading is-style-section-title-left" id="h-summary"><?php esc_html_e( 'Meet our safari guru', 'sd-theme-2026' ); ?></h2>
+				<!-- /wp:heading -->
+
+				<?php
+				/*
+				 * Live's `h5.lsx-to-team-job-title` — the bare role value, with
+				 * no "Role:" label, because `.lsx-to-meta-data-key` is
+				 * `display: none`. A paragraph and not a heading: it labels the
+				 * person, it heads nothing.
+				 *
+				 * `lsx-role-wrapper` removes it when the member has no role.
+				 * ⚠️ Note *how* it removes it: `maybe_hide_varitaion()` tests
+				 * `taxonomy_exists()` before it falls through to post meta, and
+				 * `role` is **both** a `to-team` taxonomy and a `to-team` meta
+				 * key. So this wrapper resolves through the taxonomy branch and
+				 * hides the paragraph when the member carries no `role` *term*,
+				 * while the value printed comes from the *meta*. On dev the two
+				 * agree on all fifteen published members (checked 2026-09-02) —
+				 * every one has both — but they are two separate fields and a
+				 * member could be given one without the other.
+				 */
+				?>
+				<!-- wp:paragraph {"metadata":{"name":"Role","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"role"}}}},"className":"lsx-role-wrapper","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"300","fontFamily":"heading"} -->
+				<p class="lsx-role-wrapper has-heading-font-family has-300-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"></p>
+				<!-- /wp:paragraph -->
+
+				<?php
+				/*
+				 * The bio. Live's `.lsx-to-team-content` is the post content,
+				 * rendered whole — this template has no `.more-text` collapse to
+				 * reproduce, unlike the tour and destination singles, because
+				 * custom.js only truncates `.entry-content` on those.
+				 */
+				?>
+				<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+
+				<?php
+				/*
+				 * Live's `.lsx-to-enquire-form > a.btn.cta-btn` — "Get in touch",
+				 * which opens the site-wide enquiry modal.
+				 *
+				 * Here it is the member's own address. `sd/post-meta` with
+				 * `format: mailto` is the same binding the homepage's "Meet our
+				 * safari gurus" cards use for the same button on the same person
+				 * (patterns/homepage-safari-gurus.php), so the two agree; the
+				 * format returns null rather than a broken `mailto:` when the
+				 * stored value is not an address, which leaves the authored
+				 * `/contact/` href standing. That fallback is also what renders
+				 * for a member with no email at all, and it is the target every
+				 * other enquiry action in this theme uses.
+				 *
+				 * The modal itself is not reproduced: it is a Gravity Forms
+				 * dialog with a form handler behind it, which is
+				 * `sd-enhancements` work by the deactivation test, and the theme
+				 * currently ships no modal parts.
+				 */
+				?>
+				<!-- wp:buttons {"metadata":{"name":"Enquiry Action"},"layout":{"type":"flex"}} -->
+				<div class="wp-block-buttons">
+					<!-- wp:button {"className":"is-style-fill","metadata":{"name":"Get in touch","bindings":{"url":{"source":"sd/post-meta","args":{"key":"contact_email","format":"mailto"}}}}} -->
+					<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php esc_html_e( 'Get in touch', 'sd-theme-2026' ); ?></a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+
+			</div>
+			<!-- /wp:column -->
+
+			<!-- wp:column {"verticalAlignment":"top","width":"33.33%"} -->
+			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:33.33%">
+
+				<?php
+				/*
+				 * Live's `figure.lsx-to-team-thumb` — a 350 x 350 crop of the
+				 * portrait. Square, and not a link: this *is* the member's page.
+				 * Image crops are `aspectRatio`, never CSS. → AGENTS.md
+				 */
+				?>
+				<!-- wp:post-featured-image {"aspectRatio":"1","metadata":{"name":"Portrait"}} /-->
+
+			</div>
+			<!-- /wp:column -->
+
+		</div>
+		<!-- /wp:columns -->
+
+	</section>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The Trustpilot feedback row — live's `#feedback`.
+	 *
+	 * `#tb-list-review-container` is a flex row capped at 1200px holding four
+	 * children at 25% each: the score badge, then three reviews
+	 * (custom.css:4335-4396). `core/columns` at 25/75 with the reviews three
+	 * across is that row, and it stacks below 782px without a hand-written
+	 * media query, which live needs one for.
+	 *
+	 * ## The whole section is gated on the member having a Trustpilot tag
+	 *
+	 * `lsx-truspilot-id-wrapper` — the misspelling is the stored meta key and is
+	 * preserved deliberately; sd-enhancements says why. Tour Operator's
+	 * `maybe_hide_varitaion()` finds no `truspilot-id` query, taxonomy or
+	 * special case, falls through to its post-meta branch, converts the hyphens
+	 * and reads `truspilot_id` — so a member with no tag loses the band,
+	 * heading and badge included.
+	 *
+	 * That is deliberate rather than incidental. `Trustpilot::context_tag()`
+	 * returns `''` when there is no tag, and an empty tag is the *company's*
+	 * review list — so without this wrapper a member with no Trustpilot
+	 * presence would show three unrelated company reviews under a heading
+	 * reading "{their name}’s client feedback". Camille's tag is `Camille`
+	 * (dev, 41452).
+	 *
+	 * The reviews themselves come from `sd/trustpilot-reviews`, which repeats
+	 * its inner blocks once per cached review and renders nothing at all when
+	 * the cache is empty — a cold cache, a missing `SD_TRUSTPILOT_API_KEY`, or a
+	 * tag with no reviews. The cache holds three (`Trustpilot::REVIEW_COUNT`),
+	 * which is the row live draws.
+	 *
+	 * ⚠️ **Nothing renders here until the API key is rotated and set.** The key
+	 * that is committed to the `sd-lsx-child` repository must not be reused;
+	 * the replacement belongs in `wp-config.php` as `SD_TRUSTPILOT_API_KEY` on
+	 * each environment. Until then this band is absent, which is the intended
+	 * cold-start behaviour and not a fault in this template. → AGENTS.md
+	 *
+	 * The `#feedback` anchor is load-bearing beyond this page:
+	 * patterns/homepage-safari-gurus.php links each guru's "Read my reviews"
+	 * button to `{permalink}#feedback` through `sd/post-field`.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Client Feedback"},"align":"full","className":"is-style-light-page-section lsx-truspilot-id-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"feedback"} -->
+	<section class="wp-block-group alignfull is-style-light-page-section lsx-truspilot-id-wrapper" id="feedback">
+
+		<!-- wp:heading {"textAlign":"center","metadata":{"name":"Feedback Heading","bindings":{"content":{"source":"sd/post-field","args":{"field":"title","format":"first-name","suffix":"<?php esc_attr_e( '’s client feedback', 'sd-theme-2026' ); ?>"}}}},"className":"is-style-section-title","anchor":"h-feedback"} -->
+		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-feedback"><?php esc_html_e( 'Client feedback', 'sd-theme-2026' ); ?></h2>
+		<!-- /wp:heading -->
+
+		<!-- wp:columns {"verticalAlignment":"top","align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|50"}}}} -->
+		<div class="wp-block-columns alignwide are-vertically-aligned-top">
+
+			<!-- wp:column {"verticalAlignment":"top","width":"25%"} -->
+			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:25%">
+
+				<?php
+				/*
+				 * Live's `#tb-horizon-review` inside the row — the same badge
+				 * the header and the Why Choose band carry, and the company's
+				 * score rather than the consultant's, because `sd/trustpilot`
+				 * reads the business unit. `require`, not a nested pattern
+				 * reference.
+				 */
+				require __DIR__ . '/trustpilot-score.php';
+				?>
+
+			</div>
+			<!-- /wp:column -->
+
+			<!-- wp:column {"verticalAlignment":"top","width":"75%"} -->
+			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:75%">
+
+				<!-- wp:sd/trustpilot-reviews {"metadata":{"name":"Trustpilot Reviews"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+					<!-- wp:pattern {"slug":"sd-theme-2026/card-trustpilot-review"} /-->
+				<!-- /wp:sd/trustpilot-reviews -->
+
+			</div>
+			<!-- /wp:column -->
+
+		</div>
+		<!-- /wp:columns -->
+
+	</section>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The gallery — live's `#gallery`, "Camille’s Wild Adventures".
+	 *
+	 * The engine is Envira on live and Tour Operator's own gallery binding here:
+	 * `Bindings::render_gallery_block()` reads the `gallery` meta and rebuilds
+	 * the figure from it, discarding whatever image blocks are authored inside.
+	 * The three below exist so the block has something to show in the editor;
+	 * they are never rendered on the front end. Camille's `gallery` meta holds
+	 * ten images, and all ten render.
+	 *
+	 * ⚠️ **This is the placeholder pass, not the gallery build.** Live runs
+	 * Envira's `lsx-staggered-columns` theme — a three-column staggered grid
+	 * capped at five visible tiles with a "+N more" overlay on the fifth,
+	 * opening an Envira lightbox. This renders every image in a plain grid,
+	 * which is what was asked for now. The staggered layout, the overflow tile
+	 * and the lightbox are a separate task; nothing here needs to change for
+	 * them except this block. Identical decision, and identical wording, to
+	 * patterns/template-single-destination.php.
+	 *
+	 * `lsx-gallery-wrapper` drops the band, heading included, when the meta is
+	 * not an array — `maybe_hide_varitaion()`, `'gallery'` branch.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Gallery"},"align":"full","className":"is-style-light-page-section lsx-gallery-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"gallery"} -->
+	<section class="wp-block-group alignfull is-style-light-page-section lsx-gallery-wrapper" id="gallery">
+
+		<!-- wp:heading {"textAlign":"center","metadata":{"name":"Gallery Heading","bindings":{"content":{"source":"sd/post-field","args":{"field":"title","format":"first-name","suffix":"<?php esc_attr_e( '’s Wild Adventures', 'sd-theme-2026' ); ?>"}}}},"className":"is-style-section-title","anchor":"h-gallery"} -->
+		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-gallery"><?php esc_html_e( 'Wild Adventures', 'sd-theme-2026' ); ?></h2>
+		<!-- /wp:heading -->
+
+		<!-- wp:gallery {"columns":3,"linkTo":"media","linkTarget":"_blank","sizeSlug":"large","align":"wide","metadata":{"name":"Team Member Gallery","bindings":{"content":{"source":"lsx/gallery"}}},"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|10","left":"var:preset|spacing|10"}}}} -->
+		<figure class="wp-block-gallery alignwide has-nested-images columns-3 is-cropped"><!-- wp:image {"linkDestination":"media"} -->
+		<figure class="wp-block-image"><img alt=""/></figure>
+		<!-- /wp:image -->
+
+		<!-- wp:image {"linkDestination":"media"} -->
+		<figure class="wp-block-image"><img alt=""/></figure>
+		<!-- /wp:image -->
+
+		<!-- wp:image {"linkDestination":"media"} -->
+		<figure class="wp-block-image"><img alt=""/></figure>
+		<!-- /wp:image --></figure>
+		<!-- /wp:gallery -->
+
+	</section>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The tours shelf — live's `#tours`, "Camille’s Favourite Tours".
+	 *
+	 * `tour-related-team` resolves through the member's `tour_to_team` meta —
+	 * four on Camille, which is live's carousel exactly. The wrapper removes the
+	 * band where a member connects none.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Favourite Tours"},"align":"full","className":"is-style-light-page-section lsx-tour-related-team-query-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"tours"} -->
+	<section class="wp-block-group alignfull is-style-light-page-section lsx-tour-related-team-query-wrapper" id="tours">
+
+		<!-- wp:heading {"textAlign":"center","metadata":{"name":"Tours Heading","bindings":{"content":{"source":"sd/post-field","args":{"field":"title","format":"first-name","suffix":"<?php esc_attr_e( '’s Favourite Tours', 'sd-theme-2026' ); ?>"}}}},"className":"is-style-section-title","anchor":"h-tours"} -->
+		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-tours"><?php esc_html_e( 'Favourite Tours', 'sd-theme-2026' ); ?></h2>
+		<!-- /wp:heading -->
+
+		<!-- wp:query {"query":{"perPage":15,"pages":0,"offset":0,"postType":"tour","order":"asc","orderBy":"title","search":"","exclude":[],"sticky":"","inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
+		<div class="wp-block-query alignwide is-style-slider-frame lsx-to-slider">
+			<!-- wp:post-template {"className":"lsx-tour-related-team-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+				<!-- wp:pattern {"slug":"sd-theme-2026/card-tour-compact"} /-->
+			<!-- /wp:post-template -->
+		</div>
+		<!-- /wp:query -->
+
+	</section>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The destinations shelf — live's `#destination`, "Camille’s Favourite
+	 * Destinations". Note the singular `id`: it is live's, and it is what any
+	 * existing inbound anchor points at.
+	 *
+	 * `destination-related-team` resolves through `destination_to_team` — six on
+	 * Camille, matching live. The tile is the media-overlay card; see the head
+	 * of this file for why that one rather than live's panelled card.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Favourite Destinations"},"align":"full","className":"is-style-light-page-section lsx-destination-related-team-query-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"destination"} -->
+	<section class="wp-block-group alignfull is-style-light-page-section lsx-destination-related-team-query-wrapper" id="destination">
+
+		<!-- wp:heading {"textAlign":"center","metadata":{"name":"Destinations Heading","bindings":{"content":{"source":"sd/post-field","args":{"field":"title","format":"first-name","suffix":"<?php esc_attr_e( '’s Favourite Destinations', 'sd-theme-2026' ); ?>"}}}},"className":"is-style-section-title","anchor":"h-destination"} -->
+		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-destination"><?php esc_html_e( 'Favourite Destinations', 'sd-theme-2026' ); ?></h2>
+		<!-- /wp:heading -->
+
+		<!-- wp:query {"query":{"perPage":15,"pages":0,"offset":0,"postType":"destination","order":"asc","orderBy":"title","search":"","exclude":[],"sticky":"","inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
+		<div class="wp-block-query alignwide is-style-slider-frame lsx-to-slider">
+			<!-- wp:post-template {"className":"lsx-destination-related-team-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+				<!-- wp:pattern {"slug":"sd-theme-2026/card-media-overlay"} /-->
+			<!-- /wp:post-template -->
+		</div>
+		<!-- /wp:query -->
+
+	</section>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The blog shelf — live's `#posts`, "Read Camille’s Blog".
+	 *
+	 * `post-related-team` resolves through `post_to_team` — nine on Camille.
+	 * Ordered newest first, as live's carousel is; the three shelves above are
+	 * alphabetical because live's are, and this one is not.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Blog Posts"},"align":"full","className":"is-style-light-page-section lsx-post-related-team-query-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"posts"} -->
+	<section class="wp-block-group alignfull is-style-light-page-section lsx-post-related-team-query-wrapper" id="posts">
+
+		<!-- wp:heading {"textAlign":"center","metadata":{"name":"Blog Heading","bindings":{"content":{"source":"sd/post-field","args":{"field":"title","format":"first-name","prefix":"<?php esc_attr_e( 'Read ', 'sd-theme-2026' ); ?>","suffix":"<?php esc_attr_e( '’s Blog', 'sd-theme-2026' ); ?>"}}}},"className":"is-style-section-title","anchor":"h-posts"} -->
+		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-posts"><?php esc_html_e( 'Read the Blog', 'sd-theme-2026' ); ?></h2>
+		<!-- /wp:heading -->
+
+		<!-- wp:query {"query":{"perPage":15,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
+		<div class="wp-block-query alignwide is-style-slider-frame lsx-to-slider">
+			<!-- wp:post-template {"className":"lsx-post-related-team-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+				<!-- wp:pattern {"slug":"sd-theme-2026/card-post-grid"} /-->
+			<!-- /wp:post-template -->
+		</div>
+		<!-- /wp:query -->
+
+	</section>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The closing band.
+	 *
+	 * Live's team single ends on `#footer-choose-cta`, the "Why choose Southern
+	 * Destinations" value band with the Trustpilot score inside it — and on that
+	 * alone. There is no "Not sure where to go?" enquiry band beneath it, unlike
+	 * the destination and tour singles, whose `sd_call_info_section()` call this
+	 * template's PHP does not make. The member's own "Get in touch" action is up
+	 * in the summary, which is where live puts the ask.
+	 *
+	 * This is why `<main>` above carries no bottom padding: the band brings its
+	 * own, and a padding on the wrapper would show as a strip of page ground
+	 * under a full-bleed section.
+	 */
+	require __DIR__ . '/why-choose-sd.php';
+	?>
+
+</main>
+<!-- /wp:group -->
