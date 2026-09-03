@@ -190,6 +190,44 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   against live's 9/7 (360 × 280) — the nearest standard ratio, and the one the review
   archive already uses, so the archives stay one system.
 
+- **The four Tour Operator modals are theme files now** — `parts/modal-tour.html`,
+  `parts/modal-accommodation.html`, `parts/modal-destination.html` and
+  `parts/modal-enquiry.html`, registered in `theme.json` against Tour Operator's
+  `modals` template-part area. *(LS-2530, estimate line 17)*
+
+  **The three post-type modals are the compact cards.** Each mirrors the pattern the
+  carousels on the singles already use — `card-tour-compact`, `card-accommodation-compact`,
+  `card-destination-compact` — so a preview modal and the card that links to it are the
+  same object. `is-style-listing-card-compact` already carries live's modal typography
+  exactly: centred, `neutral-700` heading, `brand-600` link hover, measured from
+  `.modal .modal-content .lsx-to-modal-content-area` in `sd-lsx-child/assets/css/custom.css`
+  on 2026-09-01. Nothing new had to be styled for the panel interior.
+
+  Two departures from the card, both deliberate:
+
+  - **The title is an `<h2>`, not an `<h4>`.** `sd-enhancements`' ModalA11y names each
+    dialog from its first heading, and AGENTS.md requires the first heading in a modal be
+    an `h2`. Live is an `h4` inside a modal whose real `.modal-title` is
+    `display: none` — an accessibility defect, not a design decision. The visual size is
+    unchanged: `styles/sections/cards/listing-card-compact.json` styles `elements.heading`,
+    which covers every level.
+  - **No `sdLinkTo: "post"`.** A whole-tile link is a carousel affordance; in a dialog the
+    title link is the way out, as on live.
+
+  Live's modals also carry an Envira gallery slider that is **empty on every modal on
+  every page sampled** — 17 on `/tour/best-of-southern-africa/`, 1 on
+  `/accommodation/singita-lebombo-lodge/`, and `lsx-to-modal-thumb` never renders at all.
+  So live's modals show no image. The compact card does, which is an improvement on live
+  rather than a port of it.
+
+  **`parts/modal-enquiry.html` carries Gravity Form 1.** Live prints two modals per CPT
+  single, both with `id="lsx-enquire-modal"` — GF 1 first, GF 13 second — so Bootstrap
+  only ever opens GF 1 and GF 13 has never been reachable. Consolidating on GF 1 is
+  Zared's decision, 2026-09-01; the GF 13 and GF 14 Salesforce feeds are being reconciled
+  with the client separately. The heading reuses `is-style-section-title`, which is
+  already live's `#lsx-enquire-modal .modal-title` device — uppercase, `neutral-700`, with
+  the 80×2px `accent-500` rule.
+
 - **The accommodation archive is built.** `templates/archive-accommodation.html` was a
   generic three-up Query Loop over the `accommodation` post type; it now references
   `patterns/template-archive-accommodation.php`, which reproduces the live accommodation
@@ -489,6 +527,126 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- **The five enquiry CTAs open the modal instead of linking to `/contact/`.**
+  `patterns/safari-expert.php`, `cta-not-sure-where-to-go.php`,
+  `cta-tell-us-your-trip-ideas.php`, `cta-inspired-by-this-property.php` and
+  `homepage-lets-make-it-happen.php` now carry `href="#to-modal-modal-enquiry"`.
+  *(LS-2530)*
+
+  They stay plain `core/button`s. `lsx-tour-operator/modal-button` writes its `className`
+  onto the outer `wp-block-buttons` wrapper, where `is-style-fill` and
+  `is-style-accent-cta` cannot reach it, and those variations are registered for
+  `core/button` in any case. `sd-enhancements`' Enquiry module registers the modal off the
+  href instead, so the theme declares the intent and the plugin supplies the behaviour.
+
+  The comments in `safari-expert.php` and `cta-not-sure-where-to-go.php` said this CTA
+  opens Gravity Form 13. It renders GF 13 into the DOM; it opens GF 1. Corrected, with the
+  measurement.
+
+- **`style.css` carries the dialog chrome.** Tour Operator 2.2 prints its modals into
+  `wp_footer` as a bare `<dialog class="wp-block-hm-popup">` — outside the block system, so
+  there is no block to hang `wp_enqueue_block_style()` on. `tour-operator-style` enqueues
+  at priority 1 and the theme's sheet at 10, so these rules land after it without
+  `!important`. Live's measured 590px panel width (Tour Operator defaults to the theme's
+  900px `contentSize`); the white gutter Tour Operator paints around the panel removed so
+  the card's image meets the edge; a `neutral-400` close button with a real focus ring,
+  where upstream has none; and a `prefers-reduced-motion` guard on transitions that had
+  none.
+
+- **The accommodation card is a panel with a full meta block, carried back from dev.**
+  `patterns/card-accommodation-compact.php` was restructured in the Site Editor on the dev
+  single-destination template and is imported here: an explicit `neutral-200` ground with an
+  inline `shadow|200`, an even spacing|30 body in place of the 40/30/60/30 that left room for
+  a read-more the carousel hides, a Meta group at spacing|10 holding the price band, travel
+  styles, brand, type, connected destination and star rating, an excerpt closing on `/..`,
+  and `sdLinkTo: "post"` so the whole tile is the target. The same device as the tour card
+  and the post grid card. *(LS-2019)*
+
+  Three departures from the editor's markup, each recorded in the file: `var:preset|spacing|0`
+  became a plain `0` (there is no `0` member in `spacingSizes`, so the token resolves to
+  nothing and the declaration is dropped); the Type row's one-off `primary-500` link colour
+  is gone; and the rating stars are restyled in CSS rather than by an attribute, because the
+  markup is Tour Operator's, not ours.
+
+- **Every link in the three compact cards is `neutral-800`, `brand-600` on hover, no
+  underline.** `styles/sections/cards/listing-card-compact.json`'s `elements.link` moves from
+  `neutral-700`, and the per-block `primary-500` the editor had put on the accommodation
+  card's Type row is dropped — between them they had the four link rows on one card at three
+  different colours. Title, brand, type, travel style and connected destination now read as
+  one thing. The linked title therefore sits a step darker than the `neutral-700` on
+  `elements.heading`, which stays as the fallback for placements where the title is not a
+  link. *(LS-2019)*
+
+- **The accommodation rating renders as brand-500 Phosphor stars.** `lsx/post-meta` on
+  `rating` does not return a number: Tour Operator's `lsx_to_accommodation_rating()`
+  (`includes/classes/legacy/class-accommodation.php:179`) filters it into five
+  `<figure class="wp-block-image">` wrappers around 20px PNGs from its own plugin directory,
+  which are raster images of a particular gold and cannot be recoloured by anything in
+  `theme.json`. So `assets/styles/core-group.css` hides the PNG and repaints each star as a
+  **mask** over a `brand-500` ground — Phosphor's `star-fill` for a whole star, Phosphor's
+  regular `star` for an empty one, whose outer contours are identical so the two sit on the
+  same centres at the same size. One colour token paints both, which is what "brand-500 fill
+  and border, brand-500 border" reduces to. *(LS-2019)*
+
+  Full and empty are told apart by the PNG filename (`img[src$="rating-star-full.png"]`),
+  lifted to the `<figure>` with `:has()` — Tour Operator gives the two figures identical
+  classes. If it ever renames or re-formats those files the masks stop matching and the PNGs
+  come back, which is the right way for this to fail. It is enqueued CSS rather than the
+  section style's `css` field for one reason only: a variation's `css` is emitted in the
+  document head, so a relative `url()` would resolve against the page. The masks are
+  therefore inline `data:` URIs and carry no hex.
+
+  Two empty paragraphs the row leaves behind are hidden by `& p:empty` in the section style —
+  one where the HTML parser splits the bound `<p>` in front of the `<div class="rating-stars">`
+  TO emits *inside* it, and the Rating Authority paragraph on a property whose `rating_type`
+  is empty or "Unspecified". Both were zero-width flex items still taking a gap either side.
+
+- **The whole compact-card family lifts on hover, not just the tour card.** The lift in
+  `assets/styles/core-group.css` was scoped to `.lsx-tour-related-tour-query`, the
+  post-template class the related-tours shelf carries — so the same card missed the lift on
+  the destination single, whose shelf is `.lsx-tour-related-destination-query`. The class is
+  per-shelf and the card is on four templates, so the selector is now the section style
+  itself. 4px rise, 200 → 300 on the shadow scale, `:focus-within` matched, the rise dropped
+  under `prefers-reduced-motion` while the shadow still grows — all unchanged. *(LS-2019)*
+
+  **Qualified by `.sd-has-link`.** A rise plus a deeper shadow is an affordance, and one
+  member of the family is not a link: `patterns/accommodation-unit.php`, the repeated room
+  tile on the accommodation single, wears this section style so a unit reads as the same
+  object as the tiles around it. `sd-has-link` is the class `SD\Enhancements\GroupLink` adds
+  once it has resolved an `sdLinkTo` into an overlay anchor — the hook that module's own
+  docblock nominates — so the lift lands on exactly the cards that are clickable, without a
+  hand-rolled opt-out class.
+
+- **The destination card is structured like the tour and accommodation cards, and now carries
+  meta.** `patterns/card-destination-compact.php` was the odd one of the three: a bare tint
+  with a title, an excerpt and a read-more, and no meta at all. It is now the same panel —
+  `shadow|200`, an even spacing|30 body, a Meta group at spacing|10, `sdLinkTo: "post"`, the
+  read-more dropped and the excerpt closing on `/..`. *(LS-2019)*
+
+  **Which meta, measured over the 107 published destinations on dev 2026-09-01.** A
+  destination's own fields are almost all travel-information prose — `climate`, `visa`,
+  `health`, `banking`, `cuisine`, `dress`, `electricity`, `transport`, eleven or twelve
+  country records each — and belong to the single's travel-information band, not a tile.
+  What is short, present and useful is the hierarchy and the taxonomies: Continent
+  (`continent`, 2 of 107), Country (`post_parent`, 97 of 107 — every region), Regions
+  (`post_children`, 10 of 107 — every country) and Travel Styles (`travel-style`, 13 of 107).
+  Country and Regions are never both filled, so one row shows per card and it is the useful
+  one either way. `location` is on 107 of 107 and is the cluster map's lat/long, not a row;
+  `spoken_languages`, which TO's own `parts/fast-facts-destination.html` carries, is on none.
+
+  ⚠️ **The two `facts-*-wrapper` classes on those rows are load-bearing, not styling hooks.**
+  Tour Operator's `Query_Loop::maybe_hide_variation()` (`class-query-loop.php:79`) filters
+  `render_block` on `core/group` *and* `core/paragraph`, reads a `(lsx|facts)-(.*?)-wrapper`
+  class off the block and returns an empty string when the field behind it is empty. Drop
+  them and both rows render on every card, failing two ways that CSS cannot reach: TO's
+  `render_paragraph_prefix_block()` prepends the `prefix` with no test on the bound value, so
+  an empty `post_children` renders a bare "**Regions:**" that is indistinguishable from a real
+  one-word value to a selector; and `post_parent` calls `prep_links()` on
+  `wp_get_post_parent_id()` without checking it, so `get_permalink( 0 )` falls through to the
+  global post and a country renders "Country: Botswana" linking to itself. Verified locally
+  against post 65904, 2026-09-01. The `country-query` wrapper removes that row before it
+  renders, which is what makes the row safe to author.
 
 - **The Single Tour banner is shorter, bottom-aligned and unscrimmed.**
   `patterns/template-single-tour.php`'s cover drops from 608px to 360px, moves its content

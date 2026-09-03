@@ -264,3 +264,87 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 .wp-block-table tfoot td {
 	border-bottom: none;
 }
+
+/* Tour Operator modals
+   -------------------------------------------------------------------------
+   Tour Operator 2.2 prints its modals into `wp_footer` as a bare
+   `<dialog class="wp-block-hm-popup">` — outside the block system, so there is
+   no block to hang `wp_enqueue_block_style()` on and no `is-style-*` class to
+   reach it with. It arrives already styled by `tour-operator-style`
+   (tour-operator/build/style.css, src/css/_modals.scss). That sheet is enqueued
+   on `wp_enqueue_scripts` at priority 1 and this one at 10, so these rules land
+   after it and win on equal specificity — no `!important`, no dependency.
+   → `wp-thirdparty-markup-styling`
+
+   The panel *interior* is not styled here. Each modal is a template part
+   (parts/modal-*.html) built from the same blocks as its carousel card, so
+   `is-style-listing-card-compact` already delivers live's centred neutral-700 /
+   brand-600 treatment. Only the chrome around it needs saying.
+
+   Measured from live's `sd-lsx-child/assets/css/custom.css` on 2026-09-01. */
+
+/* Live: `.modal .modal-dialog { max-width: 590px }`. Tour Operator's default is
+   `var(--wp--style--global--content-size)`, which in this theme is 900px — half
+   again as wide as the design. */
+.wp-block-hm-popup {
+	max-width: 590px;
+}
+
+/* Tour Operator paints the direct child white and pads it 1.5rem, which was
+   right for its own parts and is wrong for a card: it puts a white gutter
+   around an image that is meant to meet the panel edge. The part owns its own
+   ground and padding instead. `overflow-y` stays Tour Operator's — the radius
+   clips on both axes regardless, so the image corners round with the panel. */
+.wp-block-hm-popup > * {
+	background-color: transparent;
+	padding: 0;
+	border-radius: var(--wp--preset--border-radius--200);
+	overflow-x: hidden;
+}
+
+/* `is-style-listing-card-compact` sets `height: 100%` so cards in a carousel
+   row match each other. In a dialog there is no row, and it stretches the panel
+   to the full 95vh. */
+.wp-block-hm-popup .is-style-listing-card-compact {
+	height: auto;
+}
+
+/* Live's close button is a `&times;` on #C6BCAA — neutral-400. Tour Operator's
+   is an SVG on translucent white with no focus style at all, which on a control
+   that sits over a photograph is both invisible and unreachable by keyboard. */
+.wp-block-hm-popup__close {
+	background: var(--wp--preset--color--neutral-400);
+	color: var(--wp--preset--color--neutral-900);
+	border-radius: 0 var(--wp--preset--border-radius--200) 0 var(--wp--preset--border-radius--100);
+}
+
+.wp-block-hm-popup__close:hover,
+.wp-block-hm-popup__close:focus-visible {
+	background: var(--wp--preset--color--brand-600);
+	color: var(--wp--preset--color--base);
+}
+
+.wp-block-hm-popup__close:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent-500);
+	outline-offset: 2px;
+}
+
+/* `modals.js` calls `popup.focus()` on the dialog itself so the whole panel
+   takes focus on open, which in Chrome draws a ring around the entire modal.
+   Suppress it for pointer users only — keyboard focus keeps its ring. */
+.wp-block-hm-popup:focus:not(:focus-visible) {
+	outline: none;
+}
+
+/* Tour Operator animates `opacity`, `top` and the backdrop on open with no
+   guard. The dialog still appears and still closes; only the travel is
+   dropped. */
+@media (prefers-reduced-motion: reduce) {
+
+	.wp-block-hm-popup,
+	.wp-block-hm-popup[open],
+	.wp-block-hm-popup::backdrop,
+	.wp-block-hm-popup[open]::backdrop {
+		transition: none;
+	}
+}

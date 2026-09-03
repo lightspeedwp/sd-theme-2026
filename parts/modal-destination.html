@@ -1,0 +1,31 @@
+<!-- wp:group {"metadata":{"name":"Destination Modal — mirrors pattern card-destination-compact"},"className":"is-style-listing-card-compact","style":{"spacing":{"blockGap":"0"},"shadow":"var:preset|shadow|200"},"backgroundColor":"neutral-200","layout":{"type":"default"}} -->
+<div class="wp-block-group is-style-listing-card-compact has-neutral-200-background-color has-background" style="box-shadow:var(--wp--preset--shadow--200)">
+	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
+
+	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group has-200-font-size" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
+		<!-- wp:post-title {"level":2,"isLink":true,"style":{"typography":{"textAlign":"center"}}} /-->
+
+		<!-- wp:group {"metadata":{"name":"Meta"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group">
+
+			<!-- wp:post-terms {"term":"continent","prefix":"Continent: ","style":{"typography":{"textAlign":"center"}}} /-->
+
+			<!-- wp:paragraph {"metadata":{"name":"Country","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"post_parent"}}}},"className":"facts-country-query-wrapper","style":{"typography":{"textAlign":"center"}},"prefix":"Country:","prefixBold":true} -->
+			<p class="has-text-align-center facts-country-query-wrapper"></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"metadata":{"name":"Regions","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"post_children"}}}},"className":"facts-regions-query-wrapper","style":{"typography":{"textAlign":"center"}},"prefix":"Regions:","prefixBold":true} -->
+			<p class="has-text-align-center facts-regions-query-wrapper"></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:post-terms {"term":"travel-style","prefix":"Travel styles: ","style":{"typography":{"textAlign":"center"}},"fontSize":"200","fontFamily":"body"} /-->
+
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:post-excerpt {"moreText":"/..","showMoreOnNewLine":false,"excerptLength":30,"style":{"typography":{"textAlign":"center"}}} /-->
+	</div>
+	<!-- /wp:group -->
+</div>
+<!-- /wp:group -->

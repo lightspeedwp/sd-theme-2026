@@ -22,7 +22,7 @@
  * related-tours shelf.
  *
  * **Everything else about this band — the ground, the offices, the phone mark,
- * the interim `/contact/` action, and why the US number here is the toll-free
+ * the enquiry-modal action, and why the US number here is the toll-free
  * one rather than the number the rest of the theme carries — is set out in
  * patterns/cta-not-sure-where-to-go.php.** This file is that band with one
  * string changed, which is exactly what LS-2014 item 4.6 says the five-branch
@@ -92,7 +92,7 @@
 	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
 	<div class="wp-block-buttons">
 		<!-- wp:button {"className":"is-style-fill"} -->
-		<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php esc_html_e( 'Send us an Email', 'sd-theme-2026' ); ?></a></div>
+		<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send us an Email', 'sd-theme-2026' ); ?></a></div>
 		<!-- /wp:button -->
 	</div>
 	<!-- /wp:buttons -->

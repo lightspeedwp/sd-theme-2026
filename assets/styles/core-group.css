@@ -710,48 +710,156 @@
 }
 
 /**
- * Tour Card (Compact) — the same hover lift.
+ * Listing Card (Compact) — the same hover lift, for the whole family.
  *
- * patterns/card-tour-compact.php was restructured on dev to be the same device
- * as the post grid card above: a `neutral-100` panel carrying an *inline*
- * `shadow|200`, a 3/2 crop and `sdLinkTo`. It gets the same 4px rise and the
- * same step up the shadow scale, for the same reasons — including the
- * `!important`, which is still load-bearing against the inline resting value,
- * and the reduced-motion fallback that drops the rise but keeps the shadow.
+ * The three compact cards — patterns/card-tour-compact.php,
+ * patterns/card-accommodation-compact.php and
+ * patterns/card-destination-compact.php — are all the same device as the post
+ * grid card above: a panel carrying an *inline* `shadow|200`, a cropped
+ * featured image and `sdLinkTo`. They get the same 4px rise and the same step
+ * up the shadow scale, for the same reasons — including the `!important`, which
+ * is still load-bearing against the inline resting value, and the
+ * reduced-motion fallback that drops the rise but keeps the shadow.
  *
- * Scoped to `.lsx-tour-related-tour-query`, the post-template class the
- * related-tours shelf carries, rather than to `.is-style-listing-card-compact`
- * itself: that section style is shared with the accommodation and destination
- * compact cards, which have no resting shadow, so a bare class selector would
- * pop a shadow-300 in from nothing on two cards nobody asked to change. The
- * tour card is referenced from this one shelf and nowhere else (grep
- * `card-tour-compact`), so this scope is the card wherever it appears today; if
- * the family should lift as a whole, the fix is to widen this selector and give
- * the other two a resting shadow.
+ * **Keyed off the section style, not a shelf class** (widened 2026-09-01). It
+ * used to be scoped to `.lsx-tour-related-tour-query`, the post-template class
+ * the related-tours shelf carries. That scope meant the *same* card missed the
+ * lift on the destination single, whose shelf is
+ * `.lsx-tour-related-destination-query` — the class is per-shelf, and the card
+ * is on four templates. So the selector is the section style itself: apply
+ * `is-style-listing-card-compact` and the card lifts, wherever it is. A card
+ * added to the family needs a resting `shadow|200` in its pattern, or its hover
+ * will step up from nothing instead of one stop.
+ *
+ * **Qualified by `.sd-has-link`, which is not decoration.** A rise plus a
+ * deeper shadow is an affordance — it says *this is one thing and you can click
+ * it*. `sd-has-link` is the class `SD\Enhancements\GroupLink` adds to a
+ * `core/group` once it has actually resolved an `sdLinkTo` into an overlay
+ * anchor (modules/group-link.php:101, and the hook that module's own docblock
+ * nominates), so the lift lands on exactly the cards that are clickable. The
+ * one member of the family that is *not* a link —
+ * `patterns/accommodation-unit.php`, the repeated room tile on the
+ * accommodation single, which wears this section style so a unit reads as the
+ * same object as the tiles around it — is excluded by that qualifier rather
+ * than by a hand-rolled opt-out class. Without it a room tile lifts under the
+ * cursor and nothing happens on click.
  *
  * The lift is not sheared by the carousel: `.is-style-slider-frame .slick-list`
  * above opens the clip box vertically for exactly this.
  */
-.lsx-tour-related-tour-query .is-style-listing-card-compact {
+.is-style-listing-card-compact.sd-has-link {
 	transition: transform 250ms ease, box-shadow 250ms ease;
 }
 
-.lsx-tour-related-tour-query .is-style-listing-card-compact:hover,
-.lsx-tour-related-tour-query .is-style-listing-card-compact:focus-within {
+.is-style-listing-card-compact.sd-has-link:hover,
+.is-style-listing-card-compact.sd-has-link:focus-within {
 	transform: translateY(-4px);
 	box-shadow: var(--wp--preset--shadow--300) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.lsx-tour-related-tour-query .is-style-listing-card-compact {
+	.is-style-listing-card-compact.sd-has-link {
 		transition-duration: 1ms;
 	}
 
-	.lsx-tour-related-tour-query .is-style-listing-card-compact:hover,
-	.lsx-tour-related-tour-query .is-style-listing-card-compact:focus-within {
+	.is-style-listing-card-compact.sd-has-link:hover,
+	.is-style-listing-card-compact.sd-has-link:focus-within {
 		transform: none;
 	}
 }
+
+/**
+ * The accommodation star rating — brand-500 Phosphor stars over Tour Operator's
+ * PNGs.
+ *
+ * `lsx/post-meta` on the `rating` key does not return a number. Tour Operator's
+ * `lsx_to_accommodation_rating()`
+ * (includes/classes/legacy/class-accommodation.php:179) filters it into five
+ * `<figure class="wp-block-image">` wrappers around 20px PNGs from its own
+ * plugin directory — `rating-star-full.png` for each whole star up to the
+ * stored value, `rating-star-empty.png` for the rest — inside a
+ * `<div class="rating-stars">`. Two consequences worth knowing:
+ *
+ *   1. **The stars cannot be recoloured.** They are raster images of a
+ *      particular gold, not glyphs, so nothing in theme.json or a section style
+ *      reaches them.
+ *   2. **The markup arrives as a sibling, not a child.** TO emits the `<div>`
+ *      inside the bound `<p>`; the HTML parser closes the paragraph in front of
+ *      it, so on the front end `.rating-stars` is a direct flex child of
+ *      `.lsx-rating-wrapper` alongside an empty `<p>` the split leaves behind.
+ *      Measured on dev 2026-09-01. Don't write selectors that assume the nesting
+ *      the source shows.
+ *
+ * So the PNG is hidden and the star is repainted as a **mask** over a
+ * `brand-500` ground: the fill silhouette for a whole star, the outline for an
+ * empty one. Both are Phosphor Icons' `star` at 256 — `star-fill` and `star`
+ * (regular) — whose outer contours are identical, so a full and an empty star
+ * are the same size and sit on the same centres. One colour token paints both,
+ * which is what "brand-500 fill and border, brand-500 border" reduces to.
+ *
+ * ## Why this is CSS and not a section style's `css` field
+ *
+ * A `css` field would hold the selectors happily — `:has()` survives
+ * sanitisation, as styles/sections/cards/post-grid-card.json already relies on.
+ * What it cannot hold is the asset reference: a variation's `css` is emitted in
+ * a `<style>` in the document head, so a relative `url()` would resolve against
+ * the *page*, not the theme. The masks are therefore inline `data:` URIs, which
+ * resolve identically from anywhere — and which also survive
+ * `wp_maybe_inline_styles()` deciding to inline this sheet. → AGENTS.md,
+ * "Styling lives in JSON"; `wp-thirdparty-markup-styling`.
+ *
+ * ## Why the discriminator is the `src`
+ *
+ * Full and empty are distinguishable only by the PNG filename — TO gives the
+ * two figures identical classes. `:has()` moves that test up to the `<figure>`,
+ * which is the box that has to carry the mask once the `<img>` is gone. If TO
+ * ever renames or re-formats those files the masks stop matching and the PNGs
+ * come back, which is the right way for this to fail.
+ */
+.rating-stars {
+	display: flex;
+	align-items: center;
+}
+
+.rating-stars figure {
+	/* The <img> is hidden below, so the figure carries its own box. 20px is
+	   TO's own inline width on the image it replaces. */
+	flex: none;
+	inline-size: 1.25rem;
+	block-size: 1.25rem;
+	margin: 0;
+	background-color: var(--wp--preset--color--brand-500);
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+
+/* Phosphor `star-fill` — a solid star, so fill and border are one colour. */
+.rating-stars figure:has(img[src$="rating-star-full.png"]) {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z'/%3E%3C/svg%3E");
+}
+
+/* Phosphor `star` (regular) — the outline alone, so the ground shows through
+   the middle and only the border is brand-500. */
+.rating-stars figure:has(img[src$="rating-star-empty.png"]) {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z'/%3E%3C/svg%3E");
+}
+
+/* The PNG itself. `display: none` and not `visibility`/`opacity`: those would
+   take the figure's background — and therefore the star — with them. */
+.rating-stars figure img {
+	display: none;
+}
+
+/* The empty paragraphs the rating row leaves behind are hidden in the section
+   style's `css` field, not here — see styles/sections/cards/listing-card-compact.json.
+   Nothing about that rule needs `:hover`, `@media`, `content` or a URL, so it
+   belongs in the JSON. → AGENTS.md, "Styling lives in JSON" */
 
 /*
  * Card image sizing used to live here — ~100 lines of (0,3,0) selectors that
