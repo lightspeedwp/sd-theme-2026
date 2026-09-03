@@ -24,14 +24,27 @@
 				},
 				":hover": {
 					"color": {
-						"text": "var:preset|color|accent-300"
+						"text": "var:preset|color|accent-500"
 					},
 					"typography": {
-						"textDecoration": "underline"
+						"textDecoration": "none"
 					}
 				}
 			}
 		},
-		"css": "& .wp-block-read-more { text-decoration: none; } & .wp-block-read-more:hover { text-decoration: underline; }"
+		"blocks": {
+			"core/read-more": {
+				"typography": {
+					"fontSize": "var:preset|font-size|small",
+					"textDecoration": "none"
+				},
+				":hover": {
+					"typography": {
+						"textDecoration": "none"
+					}
+				}
+			}
+		},
+		"css": "& .wp-block-read-more { text-decoration: none; } & .wp-block-read-more:hover { text-decoration: none; }"
 	}
 }

@@ -8,6 +8,90 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The country and region singles are built, and the destination sections are now shared
+  partials.** `templates/single-country.html` and `templates/single-region.html` were Tour
+  Operator's own defaults, copied in wholesale by commit de58c9a — a Yoast breadcrumb strip
+  on `primary`, a gradient cover and the plugin's section set, none of it live's design.
+  Both are now four lines referencing `patterns/template-single-country.php` and
+  `patterns/template-single-region.php`, and they state live's country/region branch
+  explicitly instead of leaving it to the shelves to hide themselves. *(LS-2033)*
+
+  **The branch, as live's PHP has it.** `sd_lsx_to_destination_single_content_bottom()`
+  asks `lsx_to_item_has_children()` and renders one of two section sets — country → gallery
+  → regions → tours, region → gallery → accommodation → specials → tours → reviews
+  (`sd-lsx-child/includes/layout.php:166-215`). The two new templates carry one arm each:
+  Single Country keeps the regions shelf and drops accommodation; Single Region keeps
+  accommodation and drops regions.
+
+  **Both are assignable, not routes.** Tour Operator registers `single-country` and
+  `single-region` with `post_types: [ destination ]`
+  (`includes/classes/blocks/class-templates.php:89-99`), so they appear in the Template
+  panel on a destination and an author picks them per post. Every destination on live
+  carries `destination_attribute: default`, so `templates/single-destination.html` remains
+  what WordPress resolves, and it still serves a destination of either kind on its own.
+  A theme file of the same slug replaces the registered one — `get_block_templates()`
+  drops any registered template that has a theme file
+  (`wp-includes/block-template-utils.php:1231`) — so the plugin's versions no longer
+  appear. Both are declared in `theme.json` `customTemplates` scoped to `destination`;
+  without that they were offered on every post type.
+
+  **Single Country answers the accommodation deviation.** The route template's
+  accommodation shelf resolves through `accommodation_to_destination`, and a country
+  carries that meta too — Botswana lists 93 — so it renders there where live hides it.
+  That was flagged on LS-2033; assigning Single Country removes it, because the section is
+  not in the file.
+
+  **Seven shared section partials, `Inserter: false`** —
+  `patterns/destination-{banner,summary,gallery,regions,accommodation,tours,reviews}.php`.
+  All three templates `require` them, so there is one copy of every section and no third
+  place to keep in step. `patterns/template-single-destination.php` was rewired to the same
+  partials and its markup is unchanged: the pre- and post-refactor renders are identical
+  once whitespace is normalised (33,649 → 33,527 bytes, indentation only). `require`, not
+  a nested `<!-- wp:pattern /-->`, which is dropped on front-end render while still
+  resolving under a WP-CLI `do_blocks()` test.
+
+  **Verified** on local 2026-09-03, on this branch's base: all ten patterns register;
+  composition is destination = 7 sections, country = 6 without accommodation, region = 6
+  without regions, each with exactly one `<main>` and one `<h1>`;
+  `phpcs --standard=WordPress patterns/` silent; both templates resolve as `source: theme`
+  with `post_types: [destination]` and the plugin's are filtered out. Seeding a child
+  destination under Botswana renders the regions band on Single Country and not on Single
+  Region. **The accommodation and tour shelves and the gallery could not be exercised** —
+  local has no accommodation fixtures and the six destinations carry no gallery meta or
+  real connections, so every shelf self-hides. Their markup is byte-identical to the
+  destination single's, which does render them on dev.
+
+  **Still missing: the specials shelf.** Live's region branch renders `#special` between
+  the accommodation and tour shelves. `styles/sections/cards/special-card.json` is written
+  and registered and no pattern uses it yet; when that card lands it becomes a
+  `destination-specials` partial required between `destination-accommodation` and
+  `destination-tours`. **Connected reviews are kept on Single Country**, where live's
+  country branch shows none — the two differences asked for were the regions and
+  accommodation shelves, and the band is correct content either way. Both on LS-2033.
+
+- **The "Why choose Southern Destinations" band now closes every static page.**
+  `patterns/template-page-full.php` — the body of the "Page (Full Width, No Title)"
+  template — `require`s `patterns/why-choose-sd.php` at the foot of its `<main>`, which is
+  the follow-up that pattern's own notes were waiting on. On live the band is not page
+  content: the child theme emits `.footer-cta-section` beneath every inner page, which is
+  why it appears verbatim on `/about-us/social-responsibility/` and
+  `/about-us/connect-with-us/` while being absent from both pages' stored content. It is a
+  template concern, so it is declared once rather than pasted into five page bodies where
+  the sixth would be forgotten. *(LS-2033)*
+
+  **This template and not `templates/page.html`.** The full-width no-title template is the
+  static-page template and nothing else — About Us and its three children, plus Contact Us,
+  are its only consumers. The default page template still serves Privacy Policy, Terms,
+  Sitemap, Thank You and the two enquiry pages, none of which close on a marketing CTA.
+  Decision 2026-09-03.
+
+  `require`, not a nested `<!-- wp:pattern /-->`: a pattern reference inside a pattern is
+  dropped on front-end render while still resolving under a WP-CLI `do_blocks()` test.
+  `templates/front-page.html` can use the reference because it is a template file, not a
+  pattern. Verified by rendering the registered pattern — one `<main>`, one `<section>`, the
+  band present. `<main>` carries no bottom padding, so the band's own preset 70 is the only
+  gap between the last content section and the footer.
+
 - **The four Tour Operator modals are theme files now** — `parts/modal-tour.html`,
   `parts/modal-accommodation.html`, `parts/modal-destination.html` and
   `parts/modal-enquiry.html`, registered in `theme.json` against Tour Operator's
