@@ -8,6 +8,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The destination copy collapses to a Read More, and the gap between its paragraphs is
+  tighter.** `patterns/destination-summary.php` — imported from the Site Editor on dev
+  2026-09-03 (wp_template 65929), verified byte-for-byte (`d858e95d…`, 500 chars) — wraps
+  `core/post-content` in a `core/group` carrying `font-style:italic;font-weight:400`, adds
+  `core/read-more`, and drops `post-content`'s own `blockGap` to `spacing|20` against the
+  `spacing|60` root default. Because the section is a shared partial, all three destination
+  templates carry it identically. This is the block-native answer to the read-more
+  truncation `template-single-destination.php` had recorded as `sd-enhancements` work
+  (sd-lsx-child/assets/js/custom.js:224-275) — `core/read-more` collapses and expands
+  `core/post-content` with no script of ours needed. *(LS-2033)*
+
+  ⚠️ **`is-style-archive-intro` is authored on `post-content` and currently styles
+  nothing.** `core/paragraph`'s root selector is bare `p`
+  (wp-includes/blocks/paragraph/block.json:80), so the variation compiles to
+  `p.is-style-archive-intro` and can only match a paragraph carrying the class itself —
+  never an ancestor — and the style is registered `blockTypes: ["core/paragraph"]` only in
+  any case. The italic and the 400 weight the page shows come from CSS inheritance off the
+  wrapping group's own inline style, exactly as dev saved it. The class is kept because
+  that is what dev authored and because it correctly marks the block's role; flagged so it
+  is not mistaken for load-bearing if the archive-intro variation is ever touched alone.
+
+  **Verified** on local 2026-09-03: `phpcs --standard=WordPress .` silent across the whole
+  theme; all three templates carry the wrap, `is-style-archive-intro` once and
+  `core/read-more` once; rendering against a real destination produces one `<main>`, one
+  `<h1>` and one `.wp-block-read-more` button on all three.
+
 - **The dev Site Editor state of the destination single is imported, and the breadcrumb
   strip and Tour Operator's Google Map land on all three destination templates.** Three
   changes were authored on dev in the Site Editor (`wp_template` 65929, modified

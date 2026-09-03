@@ -238,6 +238,7 @@ Single Country — the shelf is its regions, and there are none to list.
 | A destination page has no map at all | That destination has no **location** set. The whole map band removes itself rather than showing an empty box |
 | The destination map shows "Click here to display the map" and clicking does nothing | A known Tour Operator 2.2 fault, not a theme one — the plugin builds the map and then discards it, so the script that handles the click never starts. On the change register; it needs a plugin fix |
 | A destination's breadcrumb trail is missing a level | Yoast builds the trail from the destination's **parent**. A region with no parent country set reads as a top-level page |
+| A destination page's description is cut off with a "Read more..." link | Expected — the copy collapses to its first paragraph until a reader clicks through |
 | The safari gurus row shows the wrong people | Nobody is tagged **Safari Guru**; it is falling back to the four most recent team members |
 | A "Get in Touch" link goes nowhere | That team member has no contact email |
 | The Trustpilot badge shows placeholder text | The score cache has not refreshed; it updates twice a day |

@@ -27,6 +27,33 @@
  * Trustpilot badge under it — both are in `patterns/safari-expert.php`, and
  * `sd/safari-expert` renders nothing when it cannot resolve an expert, so
  * there is no conditional here.
+ *
+ * **The copy is wrapped, italic, and cut with a Read More.** Imported from the
+ * Site Editor on dev 2026-09-03 (wp_template 65929) and verified byte-for-byte
+ * against it. Live truncates the destination copy to its first paragraph and
+ * appends a "Read More…" link (sd-lsx-child/assets/js/custom.js:224-275); this
+ * is that behaviour built with core blocks instead of the JS truncation —
+ * `core/read-more` collapses `core/post-content` to its first block and
+ * expands it in place on click, no script of ours required.
+ *
+ * The outer `core/group`'s own inline `font-style:italic;font-weight:400`,
+ * not the `is-style-archive-intro` class, is what makes the copy italic:
+ * `core/paragraph`'s `selectors.root` is bare `p`
+ * (wp-includes/blocks/paragraph/block.json:80), so the archive-intro
+ * variation compiles to a `p.is-style-archive-intro` rule and can only ever
+ * match a `<p>` that carries the class itself — never an ancestor. Here the
+ * class sits on `core/post-content`'s own wrapper, which the JSON style was
+ * never registered against (`blockTypes: ["core/paragraph"]`), so that rule
+ * cannot reach it either way. The italic and the 400 weight the page actually
+ * shows come from CSS inheritance off the group's inline style, exactly as
+ * authored on dev. `is-style-archive-intro` is kept because that is what dev
+ * saved and because it marks the block's role correctly — it currently
+ * contributes nothing visually here, which is worth knowing if this or the
+ * archive-intro variation is ever touched in isolation. → flagged on LS-2033
+ *
+ * `post-content`'s own `blockGap` is `spacing|20`, tighter than the
+ * `spacing|60` root default every other multi-paragraph block on this page
+ * inherits, which is the closer paragraph rhythm asked for.
  */
 ?>
 <!-- wp:group {"tagName":"section","metadata":{"name":"Destination Summary"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"summary"} -->
@@ -38,7 +65,15 @@
 		<!-- wp:column {"verticalAlignment":"top","style":{"spacing":{"blockGap":"var:preset|spacing|50"}}} -->
 		<div class="wp-block-column is-vertically-aligned-top">
 
-			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+			<!-- wp:group {"style":{"typography":{"fontStyle":"italic","fontWeight":"400"},"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
+			<div class="wp-block-group" style="font-style:italic;font-weight:400">
+
+				<!-- wp:post-content {"className":"is-style-archive-intro","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} /-->
+
+				<!-- wp:read-more {"content":"Read more...","fontSize":"300"} /-->
+
+			</div>
+			<!-- /wp:group -->
 
 			<?php require __DIR__ . '/safari-expert.php'; ?>
 
