@@ -62,9 +62,9 @@
  * two they omit — so there is one copy of every section and no third place to
  * keep in step:
  *
- *   destination → banner · summary · gallery · regions · accommodation · tours · reviews
- *   country     → banner · summary · gallery · regions ·               · tours · reviews
- *   region      → banner · summary · gallery ·         · accommodation · tours · reviews
+ *   destination → banner · breadcrumbs · summary · gallery · regions · accommodation · tours · reviews
+ *   country     → banner · breadcrumbs · summary · gallery · regions ·               · tours · reviews
+ *   region      → banner · breadcrumbs · summary · gallery ·         · accommodation · tours · reviews
  *
  * ## The shelves are Tour Operator's connection queries
  *
@@ -106,15 +106,19 @@
  *   theme already has the device — `is-style-archive-intro` plus the rule in
  *   assets/styles/core-paragraph.css — so it is a style away, not a build.
  *   Left out here so the tour and destination singles stay identical.
- * - **The breadcrumb bar.** Live draws Yoast's trail in a 58px `#ece9e3` strip
- *   under the banner. Breadcrumb output is a filter over a third-party plugin's
- *   trail — behaviour, not design — so it is `sd-enhancements` work, exactly as
- *   recorded in patterns/template-single-tour.php and
- *   patterns/template-archive-destination.php. When it lands it goes directly
- *   beneath the cover, outside it. (Tour Operator's own
- *   `single-country.html`/`single-region.html` defaults opened with a
- *   `yoast-seo/breadcrumbs` band in a `primary` strip; that is the plugin's
- *   colour, not live's, and it went with the rest of those files.)
+ * - ~~**The breadcrumb bar.**~~ **Built, 2026-09-03** —
+ *   `patterns/destination-breadcrumbs.php`, imported from the Site Editor on
+ *   dev (wp_template 65929) and required directly beneath the cover on all
+ *   three templates. This file previously recorded the bar as
+ *   `sd-enhancements` work on the grounds that breadcrumb output is a filter
+ *   over a third-party plugin's trail. That holds for the trail's *contents* —
+ *   what Yoast puts in it, and any `wpseo_breadcrumb_links` filtering SD needs,
+ *   is still plugin work — but *placing* the block and choosing the band's
+ *   ground is design, so the block is a theme block. The same correction is
+ *   owed to patterns/template-single-tour.php and
+ *   patterns/template-archive-destination.php, which carry the old reasoning
+ *   verbatim; they are left alone here rather than edited outside this task's
+ *   scope. → noted on LS-2033
  * - **Tour Operator's sticky section menu.** The plugin's own
  *   `single-destination.html` opens with `lsx-tour-operator/sticky-menu`, and
  *   live has the equivalent markup — `.lsx-to-navigation .lsx-to-content-spy`,
@@ -129,15 +133,19 @@
  *
  * ## Section grounds follow live, and live does not alternate here
  *
- * Only the summary band is tinted — `#collapse-summary .collapse-inner > .row`
- * is full-bleed `#f7f5f2` at 6.4rem (custom.css:2128), which is `neutral-200`
- * and the spacing-70 `is-style-tinted-page-section` already carries. Every
- * section below it sits on white. That is deliberately *not* the tinted/light
- * stripe `patterns/template-single-tour.php` runs, because the tour single's
- * gallery genuinely is tinted on live (custom.css:2420) and the destination's
- * is not (custom.css:1802 sets padding only). Preserved rather than
- * regularised. If the flat run is ever judged too flat, it is one className per
- * section, and it is a design decision rather than a translation.
+ * The summary band is tinted — `#collapse-summary .collapse-inner > .row` is
+ * full-bleed `#f7f5f2` at 6.4rem (custom.css:2128), which is `neutral-200` and
+ * the spacing-70 `is-style-tinted-page-section` already carries — and **the
+ * tours shelf is tinted too, as of the 2026-09-03 dev import**. Everything else
+ * sits on white: gallery, regions, accommodation and reviews.
+ *
+ * That is a design decision, not a translation. Live paints every section below
+ * the summary on white (custom.css:1802 sets padding on `#gallery` only), so
+ * the second tint is Zared's, taken in the Site Editor, and it is preserved
+ * here as authored rather than argued back to live. It does mean the
+ * destination single now alternates once, which is closer to
+ * `patterns/template-single-tour.php` than the flat run this file previously
+ * described.
  *
  * `require`, not `<!-- wp:pattern -->`, for every section and for the two
  * closing bands — a nested pattern reference inside another *pattern* is
@@ -155,6 +163,7 @@
 
 	<?php
 	require __DIR__ . '/destination-banner.php';
+	require __DIR__ . '/destination-breadcrumbs.php';
 	require __DIR__ . '/destination-summary.php';
 	require __DIR__ . '/destination-gallery.php';
 	require __DIR__ . '/destination-regions.php';

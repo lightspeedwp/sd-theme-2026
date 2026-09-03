@@ -2,7 +2,7 @@
 /**
  * Title: Destination — Tours Shelf
  * Slug: sd-theme-2026/destination-tours
- * Description: The connected-tours carousel: the destination's tour_to_destination connections as compact tour cards, three across.
+ * Description: The connected-tours carousel: the destination's tour_to_destination connections as compact tour cards, three across, on the tinted ground.
  * Categories: sd-theme-2026/tour-operator
  * Keywords: destination, tours, itineraries, carousel, shelf
  * Viewport Width: 1400
@@ -31,8 +31,8 @@
  * the count is how deep the carousel runs, and Botswana connects 13 tours.
  */
 ?>
-<!-- wp:group {"tagName":"section","metadata":{"name":"Related Tours"},"align":"full","className":"is-style-light-page-section lsx-tour-related-destination-query-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"tours"} -->
-<section class="wp-block-group alignfull is-style-light-page-section lsx-tour-related-destination-query-wrapper" id="tours">
+<!-- wp:group {"tagName":"section","metadata":{"name":"Related Tours"},"align":"full","className":"lsx-tour-related-destination-query-wrapper is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"tours"} -->
+<section class="wp-block-group alignfull lsx-tour-related-destination-query-wrapper is-style-tinted-page-section" id="tours">
 
 	<!-- wp:heading {"textAlign":"center","metadata":{"name":"Tours Heading","bindings":{"content":{"source":"sd/post-field","args":{"field":"title","suffix":"<?php esc_attr_e( ' Tours to Inspire You', 'sd-theme-2026' ); ?>"}}}},"className":"is-style-section-title","anchor":"h-tours"} -->
 	<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-tours"><?php esc_html_e( 'Tours to Inspire You', 'sd-theme-2026' ); ?></h2>

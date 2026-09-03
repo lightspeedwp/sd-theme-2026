@@ -8,6 +8,79 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The dev Site Editor state of the destination single is imported, and the breadcrumb
+  strip and Tour Operator's Google Map land on all three destination templates.** Three
+  changes were authored on dev in the Site Editor (`wp_template` 65929, modified
+  2026-09-03 14:44) and are now theme files. Because the sections are shared partials, all
+  three templates picked them up by construction. *(LS-2033)*
+
+  **Breadcrumbs** — `patterns/destination-breadcrumbs.php`, required directly beneath the
+  banner cover: a full-width `primary-100` band at `spacing|10` top and bottom holding
+  `yoast-seo/breadcrumbs` at `alignwide`. Live draws the trail in a 58px `#ece9e3` strip
+  under the banner and `primary-100` is the nearest token.
+
+  **This corrects a call recorded the other way.** `template-single-destination.php` had
+  the breadcrumb bar down as `sd-enhancements` work, on the grounds that breadcrumb output
+  is a filter over a third-party plugin's trail. That still holds for the trail's
+  *contents* — what Yoast puts in it, and any `wpseo_breadcrumb_links` filtering — but
+  placing the block and choosing the band's ground is design, so the block is a theme
+  block. The stale note has been rewritten rather than left to contradict the file.
+  `patterns/template-single-tour.php` and `patterns/template-archive-destination.php`
+  carry the same old reasoning verbatim and were **left alone** as outside this task;
+  they are owed the same correction.
+
+  **The map is Tour Operator's own `lsx-tour-operator/google-map` block variation**, not
+  the two-group composition it replaces. The plugin registers a fixed inner shape in
+  `src/blocks/google-map/index.js` and its JavaScript keys off it:
+  `group.lsx-location-wrapper` → `group "Map Container"` → `cover.lsx-map-preview` +
+  `group.hidden "Map Details"` carrying the `lsx/map` binding. `lsx-location-wrapper`
+  replaces `lsx-google-map-wrapper`; both resolve through the same branch of
+  `Query_Loop::maybe_hide_varitaion()` (class-query-loop.php:213 checks `location`,
+  `google_map`, `wetu_map`, `wetu-map` and `google-map` against `lsx_to_has_map()`), so the
+  band still removes itself on a destination with no `location` meta. The preview plate is
+  a **lazy-load and it is the plugin's**: maps.js binds `.lsx-map-preview a` click →
+  `preventDefault()` → `getScript(google_url)` → `initThis()`, so Google Maps is not
+  requested until somebody asks for the map and the `href="#"` is wired upstream.
+  Tour Operator's "Title" group — separator, a centred "Location" heading, separator — is
+  deliberately not reproduced: live's `#destination-map` has no heading.
+
+  **The tours shelf is now tinted**, `is-style-light-page-section` →
+  `is-style-tinted-page-section`. Live paints every section below the summary on white
+  (custom.css:1802 sets padding on `#gallery` only), so this is a design decision taken in
+  the editor and preserved as authored, not a translation. The destination single now
+  alternates once. The "live does not alternate here" paragraph in
+  `template-single-destination.php` has been corrected.
+
+  **Verified byte-for-byte against dev, not by eye.** Each imported block was normalised
+  for newlines and hashed on both sides: breadcrumbs `bb13f7d2…` (594 chars),
+  the map block `09435070…` (1,631 chars), the tours section head `16d9405e…` — all three
+  match `wp_template` 65929 exactly. Section-level class counts now match dev too
+  (tinted 6, light 10, `primary-100` 2). The **one deliberate divergence** is the map
+  placeholder image: the editor wrote an absolute `southerndestinations.lightspeedwp.dev`
+  URL and the theme uses the root-relative plugin path, which is how Tour Operator's own
+  templates write it and the one URL here that is not environment-specific.
+  Two editor artefacts were corrected to core's actual save shape so the blocks do not
+  read as invalid: `core/cover` does not serialise `dimensions.aspectRatio` as an inline
+  style, and the preview paragraph centres via `style.typography.textAlign`, not `align`.
+
+  **Also verified** on local 2026-09-03: `phpcs --standard=WordPress patterns/` silent;
+  all eleven patterns register; section order is banner → breadcrumbs → summary → map →
+  gallery → (regions | accommodation) → tours → reviews with one `<main>` and one `<h1>`
+  each. Seeding `location` meta on Botswana renders the wrapper and the plate on all three
+  templates; removing it removes the whole band.
+
+  🔴 **The map plate is a dead click on Tour Operator 2.2, and the fault is upstream.**
+  `lsx_to_map()` builds the map and then executes a bare `return;`
+  (tour-operator/includes/template-tags/maps.php:233), discarding the markup and ignoring
+  `$echo`; the `return $before . $map . $after` below it is unreachable. So "Map Details"
+  emits nothing — measured with `location` seeded: `mapwrap=1 preview=1 maplink=1
+  mapdetails=0 lsxmap=0`. And maps.js's entire ready handler is gated on `.lsx-map`
+  existing (`jQuery(".lsx-map").length > 0 && …`), so with no `.lsx-map` in the DOM no
+  click handler is ever bound and "Click here to display the map" does nothing. The markup
+  here is the plugin's own and is correct. This needs either a Tour Operator patch or
+  `sd-enhancements` answering TO's own `lsx_to_map_override` filter **before launch** — as
+  it stands the page offers the reader a control that cannot work. → LS-2033
+
 - **The country and region singles are built, and the destination sections are now shared
   partials.** `templates/single-country.html` and `templates/single-region.html` were Tour
   Operator's own defaults, copied in wholesale by commit de58c9a — a Yoast breadcrumb strip

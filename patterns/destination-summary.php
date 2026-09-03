@@ -53,64 +53,115 @@
 			 * The map — live's `#destination-map`, Tour Operator's Google
 			 * cluster map rather than the tour single's WETU embed.
 			 *
-			 * Two nested groups, and the nesting is load-bearing. The inner
-			 * one carries the `lsx/map` binding: `Bindings::render_map_block()`
-			 * (class-bindings.php:957) replaces that group's *entire*
-			 * content with `lsx_to_map()`'s markup and copies the group's
-			 * first class string onto the emitted `.lsx-map`, so it has to
-			 * stay bare. The outer one carries
-			 * `lsx-google-map-wrapper`, which `maybe_hide_varitaion()`
-			 * resolves through its `'google-map'` branch to
-			 * `lsx_to_has_map()` and removes when the destination has no
-			 * `location` meta. Putting both on one group would leave the two
-			 * `render_block` filters — both at priority 10 — racing for the
-			 * same markup.
+			 * This is Tour Operator's own `lsx-tour-operator/google-map` block
+			 * variation, authored in the Site Editor on dev 2026-09-03
+			 * (wp_template 65929) and imported here. The plugin registers it in
+			 * src/blocks/google-map/index.js as a `core/group` variation with a
+			 * fixed inner shape, and reproducing that shape is what makes the
+			 * plugin's own JavaScript find it:
 			 *
-			 * Every SD destination measured has `location` populated
-			 * (Botswana: lat -21.667639, long 24.312744, zoom 9), so the
-			 * wrapper is insurance rather than a live branch; a destination
-			 * without one drops the map and leaves the column empty rather
-			 * than rendering a grey placeholder.
+			 *   group.lsx-location-wrapper          ← the hide wrapper
+			 *   └── group "Map Container"
+			 *       ├── cover.lsx-map-preview       ← the click-to-load plate
+			 *       └── group.hidden "Map Details"  ← the lsx/map binding
 			 *
-			 * ⚠️ **The map renders empty on Tour Operator 2.2, and the fault
-			 * is upstream.** `lsx_to_map()`
-			 * (tour-operator/includes/template-tags/maps.php:66) opens by
-			 * reading the `{post_id}_location` transient, and when it finds
-			 * one it builds `$map` and then executes a bare `return;`
-			 * (line 233) — discarding the markup and ignoring `$echo`
-			 * entirely. The `return $before . $map . $after` that honours
-			 * `$echo` is below that block and unreachable whenever the
-			 * transient is warm. It always is: `render_map_block()` calls
-			 * `lsx_to_has_map()` first, and that function's last act is to
-			 * `set_transient()` the args it just computed. So the google
-			 * branch of the map binding returns null for every caller, not
-			 * just this one.
+			 * **`lsx-location-wrapper`, not `lsx-google-map-wrapper`.** Both
+			 * resolve through the same branch of
+			 * `Query_Loop::maybe_hide_varitaion()` — `'location'`, `'google_map'`,
+			 * `'wetu_map'`, `'wetu-map'` and `'google-map'` are all checked
+			 * against `lsx_to_has_map()` at class-query-loop.php:213 — so the
+			 * band still disappears on a destination with no `location` meta.
+			 * The plugin's own class is used because maps.js keys off it too.
 			 *
-			 * Measured on local 2026-08-31 against a seeded Botswana:
-			 * `has_map=1 enabled=1 transient=array maplen=0`. The blocks
-			 * below are correct and stay as authored — when the upstream
-			 * `return;` is fixed, or `sd-enhancements` answers TO's own
-			 * `lsx_to_map_override` filter, the map appears with no change
-			 * here. Until then the right column renders empty.
+			 * **The preview plate is a lazy-load, and it is the plugin's.**
+			 * maps.js's ready handler asks whether `.lsx-map`'s
+			 * `.lsx-location-wrapper` ancestor contains a `.lsx-map-preview`:
+			 * if it does it calls `watchMapTriggers()`, which binds
+			 * `.lsx-map-preview a` click → `preventDefault()` →
+			 * `getScript(google_url)` → `initThis()`; if it does not it
+			 * initialises Google Maps on page load. So the `href="#"` is
+			 * deliberate and wired upstream, Google Maps is not requested until
+			 * somebody asks for the map, and this is not theme behaviour to
+			 * reimplement. Removing the preview cover would switch the map back
+			 * to loading eagerly.
+			 *
+			 * **"Map Details" carries the binding and stays empty.**
+			 * `Bindings::render_map_block()` replaces that group's entire
+			 * content with `lsx_to_map()`'s markup, so anything authored inside
+			 * is discarded — hence no placeholder figure here, unlike the
+			 * composition this replaces. `.hidden` keeps it out of the way until
+			 * maps.js reveals it.
+			 *
+			 * ⚠️ **Two things carried over from the editor rather than chosen
+			 * here.** The cover's `#e2f0f7` overlay is the plugin's own
+			 * placeholder tint — it ships that hex in
+			 * tour-operator/templates/single-accommodation.html and
+			 * single-tour.html, and there is no theme token near it (the closest
+			 * palette entry is `neutral-200`, a warm off-white, a different
+			 * hue). It is kept verbatim so the plate matches the plugin, and it
+			 * is the one raw hex in the theme's authored files. The dev-host
+			 * absolute URL the editor wrote for the placeholder image is *not*
+			 * kept: the plugin asset is addressed by root-relative plugin path,
+			 * which is how Tour Operator's own templates write it and the one
+			 * URL here that is not environment-specific. → flagged on LS-2033
+			 *
+			 * The plugin's variation also opens with a "Title" group — separator,
+			 * a centred "Location" heading, separator. It is deliberately not
+			 * here: live's `#destination-map` has no heading, and the summary
+			 * band's right column is the map alone.
+			 *
+			 * ⚠️ **The map may still render empty on Tour Operator 2.2, and the
+			 * fault is upstream.** `lsx_to_map()`
+			 * (tour-operator/includes/template-tags/maps.php:66) builds `$map`
+			 * and then executes a bare `return;` (line 233) — discarding the
+			 * markup and ignoring `$echo` — whenever it takes that branch. The
+			 * `return $before . $map . $after` that honours `$echo` sits below
+			 * it and is unreachable. Measured on local 2026-08-31 against a
+			 * seeded Botswana: `has_map=1 enabled=1 transient=array maplen=0`.
+			 * Re-checked against TO 2.2 on 2026-09-03: the `return;` is still
+			 * there. The blocks below are correct and stay as authored — when
+			 * the upstream `return;` is fixed, or `sd-enhancements` answers TO's
+			 * own `lsx_to_map_override` filter, the map appears with no change
+			 * here. The preview plate renders either way, so the column is no
+			 * longer empty while that is outstanding.
+			 *
+			 * ⚠️ **And that makes the plate a dead click on TO 2.2.** maps.js's
+			 * whole ready handler is gated on `.lsx-map` existing —
+			 * `jQuery(".lsx-map").length > 0 && ( … ? watchMapTriggers() :
+			 * initThis() )` — so with the binding emitting nothing, no click
+			 * handler is ever bound and "Click here to display the map" does
+			 * nothing at all. Measured on local 2026-09-03 with `location` meta
+			 * seeded on Botswana: `lsx_to_has_map()` returns true, the wrapper
+			 * and the preview plate both render, and the "Map Details" group is
+			 * removed entirely — `mapwrap=1 preview=1 maplink=1 mapdetails=0
+			 * lsxmap=0`. The markup here is the plugin's own and is correct; the
+			 * failure is one upstream `return;`. Worth resolving before launch
+			 * either by patching Tour Operator or by answering
+			 * `lsx_to_map_override` from `sd-enhancements`, because as it stands
+			 * the page offers the reader a control that cannot work.
 			 * → flagged on LS-2033
-			 *
-			 * The `core/image` inside is the figure the plugin looks for in
-			 * its WETU branch and harmless in this one; it is what the
-			 * editor shows in place of a map it cannot draw. The placeholder
-			 * ships with Tour Operator, so addressing it by plugin path is
-			 * the one URL here that is not environment-specific.
 			 */
 			?>
-			<!-- wp:group {"metadata":{"name":"Map"},"className":"lsx-google-map-wrapper","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
-			<div class="wp-block-group lsx-google-map-wrapper">
+			<!-- wp:group {"tagName":"section","metadata":{"name":"Google Map"},"align":"full","className":"lsx-location-wrapper","layout":{"type":"constrained"}} -->
+			<section class="wp-block-group alignfull lsx-location-wrapper">
 
-				<!-- wp:group {"metadata":{"name":"Destination Map","bindings":{"content":{"source":"lsx/map","type":"google"}}},"className":"lsx-map","layout":{"type":"default"}} -->
-				<div class="wp-block-group lsx-map"><!-- wp:image {"sizeSlug":"large","linkDestination":"none"} -->
-				<figure class="wp-block-image size-large"><img src="/wp-content/plugins/tour-operator/assets/img/placeholders/placeholder-map-1170x400.jpg" alt=""/></figure>
-				<!-- /wp:image --></div>
+				<!-- wp:group {"metadata":{"name":"Map Container"},"align":"wide","layout":{"type":"default"}} -->
+				<div class="wp-block-group alignwide">
+
+					<!-- wp:cover {"url":"/wp-content/plugins/tour-operator/assets/img/blocks/placeholder-map-1920x656.jpg","dimRatio":50,"customOverlayColor":"#e2f0f7","isUserOverlayColor":false,"isDark":false,"className":"lsx-map-preview","style":{"dimensions":{"aspectRatio":"1"}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-cover is-light lsx-map-preview"><img class="wp-block-cover__image-background" alt="" src="/wp-content/plugins/tour-operator/assets/img/blocks/placeholder-map-1920x656.jpg" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-background-dim" style="background-color:#e2f0f7"></span><div class="wp-block-cover__inner-container"><!-- wp:paragraph {"className":"has-text-align-center has-large-font-size","style":{"typography":{"textAlign":"center"}},"fontSize":"large"} -->
+					<p class="has-text-align-center has-large-font-size"><a href="#"><?php esc_html_e( 'Click here to display the map', 'sd-theme-2026' ); ?></a></p>
+					<!-- /wp:paragraph --></div></div>
+					<!-- /wp:cover -->
+
+					<!-- wp:group {"metadata":{"name":"Map Details","bindings":{"content":{"source":"lsx/map","type":"google"}}},"align":"wide","className":"hidden","layout":{"type":"default"}} -->
+					<div class="wp-block-group alignwide hidden"></div>
+					<!-- /wp:group -->
+
+				</div>
 				<!-- /wp:group -->
 
-			</div>
+			</section>
 			<!-- /wp:group -->
 
 		</div>

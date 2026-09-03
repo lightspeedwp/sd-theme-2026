@@ -46,8 +46,8 @@
  * Every section is the same partial file, so there is one copy of each and no
  * second place to keep in step:
  *
- *   destination → banner · summary · gallery · regions · accommodation · tours · reviews
- *   region      → banner · summary · gallery ·         · accommodation · tours · reviews
+ *   destination → banner · breadcrumbs · summary · gallery · regions · accommodation · tours · reviews
+ *   region      → banner · breadcrumbs · summary · gallery ·         · accommodation · tours · reviews
  *
  * `destination-regions` is the omission, and it is the one section that would
  * have removed itself anyway: its `lsx-regions-query-wrapper` is checked
@@ -76,10 +76,14 @@
  * the template on which its absence is visible, since live only ever showed it
  * on a region. → flagged on LS-2033
  *
- * Everything else — the banner and its `banner_image_id` binding, the tinted
- * summary band and its map caveat, the gallery placeholder pass, the flat white
- * grounds, the closing pair's order — is documented in the partial that carries
- * it and in `patterns/template-single-destination.php`. It is not restated here.
+ * Everything else — the banner and its `banner_image_id` binding, the breadcrumb
+ * strip, the tinted summary band, Tour Operator's `google-map` variation and its
+ * upstream caveat, the gallery placeholder pass, the tinted tours shelf, the
+ * closing pair's order — is documented in the partial that carries it and in
+ * `patterns/template-single-destination.php`. It is not restated here. Because
+ * every one of those is a shared partial, the Site Editor changes imported from
+ * dev on 2026-09-03 — the breadcrumb band, the map, the tours ground — landed on
+ * this template at the same time and by construction, not by being copied.
  *
  * `require`, not `<!-- wp:pattern -->`: a nested pattern reference inside
  * another *pattern* is dropped on front-end render while still resolving under
@@ -94,6 +98,7 @@
 
 	<?php
 	require __DIR__ . '/destination-banner.php';
+	require __DIR__ . '/destination-breadcrumbs.php';
 	require __DIR__ . '/destination-summary.php';
 	require __DIR__ . '/destination-gallery.php';
 	require __DIR__ . '/destination-accommodation.php';
