@@ -707,7 +707,9 @@ rather than drift. Four of the five buy contrast:
 4. **The archive card scrim rests at 45%, not 30%.** At live's 30% the title loses the fight
    against a bright photograph; the beach card on the reference page is the test case.
 5. **The active slider dot takes the brand fill.** Live leaves resting and active on the
-   same `#938673`, which gives the reader no position cue.
+   same `#938673`, which gives the reader no position cue. Revised 2026-09-03 at Zared's
+   direction: the resting dot drops to `neutral-400` — lighter than live — and the active
+   one takes `brand-600`, so the pair separates by lightness as well as hue.
 
 Two shape changes that are not about contrast:
 
@@ -725,6 +727,15 @@ One interaction added, at Zared's direction 2026-08-28:
    the click target, so the feedback has to be the whole tile. It is kept to one step and
    4px because the card is reused on the blog grid, where a larger lift would fight the page
    rhythm. → `assets/styles/core-group.css`, "Post Grid Card — the hover lift"
+
+One shape change added, at Zared's direction 2026-09-03:
+
+9. **The slider chevron is drawn, not typed.** Both vendors set the arrow as a character from
+   a bundled icon font — Slick's `←`/`→`, Swiper's `prev`/`next` ligature — and an icon font
+   has no stroke weight to set: the thickness is in the outline and there is only one face,
+   so `font-weight` does nothing. To make the arrows bigger *and* thicker the glyph is
+   switched off and the chevron is drawn from two borders on a rotated square. Size and
+   stroke are then independent, and both are custom properties on the frame. → §12.9
 
 ### 12.4 A defect fixed on the way through
 
@@ -810,7 +821,8 @@ them all to the same width — and break the moment one square image appears. It
   14/32px padding, zero radius and a 2px border; the card scrim at 45% with a **0px** top gap;
   the overlay title at preset `500` with a 36px chevron; pagination at 40×40 with a 1px
   `primary-500` border and an inverted current plate; slider arrows at 44×44 with a 32px glyph
-  centred on the dot row to **0px** offset; body copy at `rgb(91, 78, 65)`.
+  centred on the dot row to **0px** offset; body copy at `rgb(91, 78, 65)`. *(The slider
+  arrow figure is superseded — see §12.9.)*
 - Heading case confirmed in the compiled global stylesheet: `h2` is the **only** heading
   carrying `text-transform: uppercase`.
 - **Editor checked, not just the front end.** Both cards render as overlays in the block
@@ -841,3 +853,37 @@ first pass used (55px on most, 45px on Outline Light).
 
 Radius is `0` everywhere. Live carries a 2px radius on `.btn.white-border-btn` alone; nothing
 else in the design has one, so it was squared off rather than propagated.
+
+### 12.9 Slider navigation
+
+The arrows and dots on every carousel are one set of values, declared as custom properties by
+the `slider-frame` block style (`styles/sections/slider-frame.json`) and bound to both vendors'
+hooks in `assets/styles/core-group.css`. Nothing here is vendor markup we own, so the whole set
+is scoped to `.is-style-slider-frame` — the `wp-thirdparty-markup-styling` pattern.
+
+| Property | Value | Was |
+|---|---|---|
+| `--sd-slider-nav-color` | `primary-500` | `neutral-400` |
+| `--sd-slider-nav-color-active` | `brand-600` | `brand-500` |
+| `--sd-slider-nav-size` | `56px` (the hit target) | 44px |
+| `--sd-slider-chevron-size` | `18px` | — (a 32px font glyph) |
+| `--sd-slider-chevron-thickness` | `3px` | — (not settable) |
+| `--sd-slider-dot-color` | `neutral-400` | `neutral-500` |
+| `--sd-slider-dot-width` | `24px` | 24px |
+| `--sd-slider-dot-height` | `6px` | 8px |
+| dot radius | `0` | 2px |
+
+Revised 2026-09-03 at Zared's direction: bigger, thicker arrows in `primary-500` hovering to
+`brand-600`, and a lighter, thinner, square-cornered dot. It supersedes the 2026-08-20 live
+measurement (arrows `#B4A48C`, dots `#938673`) and the 44×44/32px glyph figure recorded in
+§12.7.
+
+Two mechanics are worth keeping in mind if these are touched again:
+
+- **The chevron is a rotated square, not a character.** See the ninth deliberate improvement
+  in §12.3. `border-radius: 0` on the dot is likewise explicit rather than omitted — both
+  vendors round their dot to a circle, so the corner has to be squared back off.
+- **The arrow offset is derived from the hit target.** `left`/`right` compute as
+  `calc(var(--sd-slider-nav-size) / -2 - 10px)`, which holds the arrow's centre 10px outside
+  the frame edge at any size. A flat `-2rem` would have pulled the chevron in over the shelf
+  the moment the target grew.

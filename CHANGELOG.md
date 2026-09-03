@@ -529,6 +529,34 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The slider chevrons are bigger and thicker, and the dots are lighter, thinner and
+  square-cornered.** At Zared's direction 2026-09-03.
+  `styles/sections/slider-frame.json` and `assets/styles/core-group.css`. The arrows move
+  from `neutral-400` to `primary-500`, hovering to `brand-600` rather than `brand-500`; the
+  hit target grows from 44px to 56px; the resting dot lightens from `neutral-500` to
+  `neutral-400`, thins from 8px to 6px, and its 2px radius squares off to 0.
+
+  The thickness is the part that needed a mechanism. Slick and Swiper each draw the arrow as
+  a character from a bundled icon font — `←`/`→` and the `prev`/`next` ligature — and an icon
+  font carries its weight in the outline with only one face, so there is no `font-weight` to
+  turn up. The glyph is switched off (`content: ""`) and the chevron is drawn instead from
+  `border-top` + `border-right` on a rotated square, which makes size (`18px`) and stroke
+  (`3px`) independent custom properties on the frame. Two consequences worth naming: the
+  arrow's `left`/`right` offset is now derived from the hit target
+  (`calc(var(--sd-slider-nav-size) / -2 - 10px)`) so the centre stays 10px outside the frame
+  edge as the target grows, where the old flat `-2rem` would have pulled the chevron in over
+  the shelf; and `font-size: 0` is restated on the button, because we override Slick's
+  `color: transparent` and its "Previous"/"Next" label would otherwise reappear.
+
+  Every value stays a custom property resolving to a `theme.json` preset — no raw hex — and
+  the whole set stays scoped to `.is-style-slider-frame`, per `wp-thirdparty-markup-styling`.
+  It supersedes the 2026-08-20 live measurement (arrows `#B4A48C`, dots `#938673`); recorded
+  in `style.md` §12.9, with §12.3 item 9 and the §12.7 verification line updated.
+
+  **Not yet verified in a browser** — the change is CSS only and both carousels are vendor
+  markup, so it needs a look at a real slider (homepage shelves, single-destination tours).
+  *(LS-2033)*
+
 - **The five enquiry CTAs open the modal instead of linking to `/contact/`.**
   `patterns/safari-expert.php`, `cta-not-sure-where-to-go.php`,
   `cta-tell-us-your-trip-ideas.php`, `cta-inspired-by-this-property.php` and

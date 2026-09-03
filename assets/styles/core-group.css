@@ -154,11 +154,17 @@
  * sheets without reaching for !important.
  *
  * Geometry follows ati-theme-2026 (style.css:23-118) at Zared's direction
- * 2026-08-26 — arrows lifted clear of the shelf on either side, and a pill dot
- * rather than a disc. The *colours* stay SD's: measured on the live site
- * 2026-08-20, arrows #B4A48C and dots #938673, carried as the three custom
- * properties above. ATI's arrow SVGs are not ported — SD ships no slider arrow
- * assets, so the vendor glyph is restyled instead of replaced.
+ * 2026-08-26 — arrows lifted clear of the shelf on either side, and a bar dot
+ * rather than a disc.
+ *
+ * Revised 2026-09-03, again at Zared's direction: the arrows are bigger and
+ * thicker in primary-500 with a brand-600 hover, and the dots are lighter,
+ * thinner and square-cornered. That supersedes the live measurement of
+ * 2026-08-20 (arrows #B4A48C, dots #938673) — those colours are no longer what
+ * we ship. ATI's arrow SVGs are still not ported; SD ships no slider arrow
+ * assets, so the chevron is drawn in CSS from two borders, which is also what
+ * makes a stroke weight settable at all. Every value comes from a custom
+ * property declared on the frame in styles/sections/slider-frame.json.
  *
  * ATI also styles `cb/carousel` with `.slick-*` selectors in its theme.json.
  * That is stale there: Carousel Block 2.1.5 bundles Swiper
@@ -204,42 +210,81 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 44px;
-	height: 44px;
+	width: var(--sd-slider-nav-size, 56px);
+	height: var(--sd-slider-nav-size, 56px);
 	margin: 0 !important;
 	padding: 0;
 	border: 0 !important;
 	background-color: transparent;
 	color: var(--sd-slider-nav-color);
-	font-size: 2rem;
+	/* Slick's arrow carries a visible text label ("Previous"/"Next") that its own
+	   `font-size: 0` collapses. We override the vendor's `color: transparent`, so
+	   the collapse has to be restated here or the label reappears. The chevron is
+	   sized in px and is unaffected. */
+	font-size: 0;
 	line-height: 1;
 	transition: color 0.25s;
 }
 
+/* Offset from the button's own half-width rather than a flat -2rem, so the
+   target can grow without dragging the chevron in over the shelf: the centre
+   stays 10px outside the frame edge at any --sd-slider-nav-size. That is where
+   the 44px/-2rem pair put it before the arrows were enlarged. */
 .is-style-slider-frame :is(.slick-prev, .swiper-button-prev) {
-	left: -2rem !important;
+	left: calc(var(--sd-slider-nav-size, 56px) / -2 - 10px) !important;
 	right: auto !important;
 }
 
 .is-style-slider-frame :is(.slick-next, .swiper-button-next) {
-	right: -2rem !important;
+	right: calc(var(--sd-slider-nav-size, 56px) / -2 - 10px) !important;
 	left: auto !important;
 }
 
-/* Slick and Swiper both draw their glyph in a pseudo-element with its own
-   font-size and absolute positioning. Reset both so the flex centring above
-   governs and the glyph sits on the centre of the 44px target. */
+/* The chevron itself.
+   ---------------------------------------------------------------------------
+   Slick and Swiper each draw their glyph as a character from a bundled icon
+   font — Slick's `←`/`→` in `slick`, Swiper's `prev`/`next` ligature in
+   `swiper-icons`. Neither gives us a stroke weight: an icon font's thickness is
+   baked into the outline, and `font-weight` does nothing because there is only
+   one face. Zared asked for bigger and thicker arrows (2026-09-03), so the
+   glyph is switched off and the chevron is drawn instead from two borders on a
+   square that is rotated 45°. Size is the square, thickness is the border, and
+   both are custom properties on the frame.
+
+   `content` is the only declaration here that has to beat a vendor rule
+   (slick-theme.css `.slick-prev:before`, (0,1,1) against our (0,2,1)); the rest
+   describe a box the vendors never styled. !important is kept off — natural
+   specificity is enough, which is the preferred outcome in
+   wp-thirdparty-markup-styling. */
 .is-style-slider-frame :is(.slick-prev, .slick-next)::before,
 .is-style-slider-frame :is(.swiper-button-prev, .swiper-button-next)::after {
+	content: "";
 	position: static;
 	display: block;
-	width: auto;
-	height: auto;
+	box-sizing: border-box;
+	width: var(--sd-slider-chevron-size, 18px);
+	height: var(--sd-slider-chevron-size, 18px);
 	margin: 0;
-	font-size: inherit;
-	line-height: 1;
+	border-top: var(--sd-slider-chevron-thickness, 3px) solid currentColor;
+	border-right: var(--sd-slider-chevron-thickness, 3px) solid currentColor;
+	font-size: 0;
+	line-height: 0;
 	color: inherit;
 	opacity: 1;
+}
+
+/* A right-pointing chevron is the square turned 45°; left is the same square
+   turned back the other way. The quarter-glyph's mass sits off the box centre
+   once rotated, so each is nudged a quarter of its own size along the axis it
+   points — without that the arrow reads as sitting too far into the shelf. */
+.is-style-slider-frame :is(.slick-next, .swiper-button-next)::before,
+.is-style-slider-frame :is(.slick-next, .swiper-button-next)::after {
+	transform: translateX(calc(var(--sd-slider-chevron-size, 18px) / -4)) rotate(45deg);
+}
+
+.is-style-slider-frame :is(.slick-prev, .swiper-button-prev)::before,
+.is-style-slider-frame :is(.slick-prev, .swiper-button-prev)::after {
+	transform: translateX(calc(var(--sd-slider-chevron-size, 18px) / 4)) rotate(-135deg);
 }
 
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):hover,
@@ -279,14 +324,18 @@
 	content: none !important;
 }
 
+/* A square-cornered bar, lighter and thinner than the live disc — Zared,
+   2026-09-03. Radius is explicitly 0 rather than omitted: slick-theme.css and
+   Swiper both round their dot to a circle, so the corner has to be squared
+   back off, not merely left unset. */
 .is-style-slider-frame :is(.slick-dots li button, .swiper-pagination-bullet) {
 	display: block;
-	width: 24px !important;
-	height: 8px !important;
+	width: var(--sd-slider-dot-width, 24px) !important;
+	height: var(--sd-slider-dot-height, 6px) !important;
 	margin: 0 !important;
 	padding: 0 !important;
 	border: 0 !important;
-	border-radius: 2px !important;
+	border-radius: 0 !important;
 	background-color: var(--sd-slider-dot-color) !important;
 	font-size: 0;
 	line-height: 0;
