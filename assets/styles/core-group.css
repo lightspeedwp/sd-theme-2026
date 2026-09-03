@@ -53,7 +53,10 @@
    two. Kept `inline` instead, with the gap carried by a leading no-break space
    inside `content` rather than a margin, so the chevron is glued to the last
    word of the title and travels with it. The optical nudge moves to relative
-   positioning because `transform` has no effect on a non-replaced inline. */
+   positioning because `transform` has no effect on a non-replaced inline.
+
+   The no-break space is necessary but was not sufficient — see the two rules
+   below, which are what actually hold the chevron on the line. */
 .is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6)::after {
 	content: "\00A0\203A";
 	font-size: 1.15em;
@@ -61,6 +64,53 @@
 	line-height: 1;
 	position: relative;
 	top: 0.06em;
+}
+
+/* ⚠️ The two rules that make the no-break space above actually bind. Both undo
+   a declaration core's own `core/post-title` stylesheet makes, and without them
+   the chevron still lands on a line of its own — measured on dev 2026-09-03,
+   Mozambique orphaning its chevron onto a fourth line in a squeezed tile.
+
+   1. `.wp-block-post-title :where(a) { display: inline-block }`
+      (wp-includes/blocks/post-title/style.css:5) makes the title link an
+      **atomic inline** — which is precisely the hazard the comment above
+      describes, one level out. The no-break space is the first character of the
+      heading's `::after`, so it cannot glue across the anchor's box boundary:
+      the line breaker takes its break opportunity there instead, and the
+      chevron goes down alone however short the title. Restoring `display:
+      inline` puts the title text and the pseudo-element in one inline run,
+      where the no-break space is what the breaker actually sees.
+
+   2. `.wp-block-post-title { word-break: break-word }`
+      (same file, line 3) is the deprecated value that means
+      `overflow-wrap: anywhere` — a soft wrap opportunity around *every*
+      character, and one that counts towards min-content. The scrim is a flex
+      container, so the heading's automatic minimum size collapsed to the width
+      of one letter (25px for "Botswana", measured); the tile then squeezed the
+      heading far below its text and the emergency breaks landed wherever they
+      liked, including immediately before the no-break space. `normal` restores
+      min-content to the widest unbreakable run — which, thanks to rule 1, is
+      now "lastword + chevron" — so the flex item stops shrinking at the point
+      where the chevron still fits. Long titles still wrap at their spaces; a
+      single word longer than the tile is clipped by the card's `overflow:
+      hidden` rather than shredded a letter at a time.
+
+   Both are scoped to the card, so `core/post-title` is untouched everywhere
+   else, and both are (0,2,1) against core's (0,1,0) — a section style's `css`
+   field compiles to `:root :where(…)` at (0,1,0) and would tie with the block
+   library, decided only by source order, which WordPress inverts between the
+   editor and the front end. That is the limit that forces these here.
+   → AGENTS.md, "Styling lives in JSON"
+
+   `core/term-name` carries neither declaration, so on the term twin these are
+   inert — they are written for both headings anyway to keep the two cards in
+   step. */
+.is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6) {
+	word-break: normal;
+}
+
+.is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6) a {
+	display: inline;
 }
 
 @media (prefers-reduced-motion: reduce) {

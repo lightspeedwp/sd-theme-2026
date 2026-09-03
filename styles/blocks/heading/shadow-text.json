@@ -4,9 +4,9 @@
 	"title": "Shadow Text",
 	"slug": "shadow-text",
 	"blockTypes": [
-		"core/heading", "core/paragraph", "core/post-title"
+		"core/heading", "core/paragraph", "core/post-title", "core/term-name"
 	],
-	"description": "Subtle dark shadow for headings over image backgrounds",
+	"description": "Subtle dark shadow for headings over image backgrounds. core/term-name is listed for the Media Overlay Card's term twin — the variation's CSS is generated per declared block type, so a title block missing from this list takes the class and no shadow.",
 	"styles": {
 		"css": "& { text-shadow: 2px 2px 4px color-mix(in srgb, var(--wp--preset--color--neutral-900) 50%, transparent); }"
 	}
