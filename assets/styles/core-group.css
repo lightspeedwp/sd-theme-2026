@@ -300,31 +300,29 @@
    one face. So the glyph is switched off and our own chevron is drawn in its
    place.
 
-   That chevron was two borders on a square rotated 45° (2026-09-03). It sized
-   and thickened correctly but it could not be *shaped*: two borders meeting at
-   a corner give a mitred point and square-cut ends, and at the weight Zared
-   asked for the mitre reads as a spur and the cut ends as broken stubs. Replaced
-   2026-09-03 with the SVG treatment from asnz-block-theme — a stroked polyline
-   with `stroke-linecap`/`stroke-linejoin: round`, which is the only way to get a
-   rounded apex and rounded ends.
+   That chevron was two borders on a square rotated 45° (2026-09-03), then a
+   stroked 14x24 polyline masked in from asnz-block-theme (2026-09-03) — both
+   superseded 2026-09-03, at Zared's direction, by Phosphor's `caret-left` /
+   `caret-right` glyphs (256x256, filled path), the same icon set
+   `.rating-stars` already uses further down this file. Two separate assets
+   rather than one mirrored with `scaleX(-1)`: Phosphor's own caret paths are
+   each already drawn pointing the right way, so there is nothing to flip and
+   no risk of a mirror leaving a caret subtly off-centre in its box the way the
+   rotated-square and polyline treatments both had to correct for.
 
    ## Why a mask and not a background-image
 
-   ASNZ ships two files and swaps them on hover (its style.css:396-416), because
-   its arrow colours are literals inside the artwork. Ours are tokens —
-   `--sd-slider-nav-color` and `--sd-slider-nav-color-active` — so painting the
-   colour into the SVG would fork it per state and put hex in an authored file.
-   Masked instead, the artwork carries shape only and `currentColor` carries the
-   colour, so the hover state stays the single `color` change below and both
-   values still resolve through theme.json. One asset, no duplication. That is
-   the same mask idiom as `.rating-stars` further down this file.
+   Our arrow colours are tokens — `--sd-slider-nav-color` and
+   `--sd-slider-nav-color-active` — so painting colour into the SVG would fork
+   it per state and put hex in an authored file. Masked instead, the artwork
+   carries shape only and `currentColor` carries the colour, so the hover state
+   stays the single `color` change below and both values still resolve through
+   theme.json. That is the same mask idiom as `.rating-stars`.
 
    Inline rather than a `url()` to a file: WordPress appends `?ver=` to
    style.css but never to the assets a stylesheet points at, so a revised icon
    under an unchanged filename is served from cache. Inlined, the icon is
-   versioned with the stylesheet. Regenerate this if the artwork changes — the
-   geometry is a 14x24 box, polyline `11 2 3 12 11 22`, 3px round-capped stroke,
-   which is ASNZ's chevron path at SD's proportions.
+   versioned with the stylesheet.
 
    ## Two things that must not be dropped
 
@@ -334,26 +332,25 @@
    `color: white` on the pseudo-element, and `currentColor` is what the mask is
    painted with — without the reset every arrow is white on white.
 
-   The stroke weight is now in the artwork, so `--sd-slider-chevron-thickness`
-   is gone from styles/sections/slider-frame.json. `--sd-slider-chevron-size` is
-   the chevron's height; the width follows the artwork's 14:24 aspect. */
-.is-style-slider-frame :is(.slick-prev, .slick-next)::before,
-.is-style-slider-frame :is(.swiper-button-prev, .swiper-button-next)::after {
+   The glyph's viewBox is square, so `--sd-slider-chevron-size` sets both box
+   dimensions — no aspect calc needed, unlike the polyline treatment it
+   replaced. */
+.is-style-slider-frame :is(.slick-prev)::before,
+.is-style-slider-frame :is(.swiper-button-prev)::after {
 	content: "";
 	position: static;
 	display: block;
 	box-sizing: border-box;
-	inline-size: calc(var(--sd-slider-chevron-size, 26px) * 14 / 24);
+	inline-size: var(--sd-slider-chevron-size, 26px);
 	block-size: var(--sd-slider-chevron-size, 26px);
 	margin: 0;
 	border: 0;
 	font-size: 0;
 	line-height: 0;
 	color: inherit;
-	opacity: 1;
 	background-color: currentColor;
-	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 24'%3E%3Cpolyline points='11 2 3 12 11 22' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 24'%3E%3Cpolyline points='11 2 3 12 11 22' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
 	-webkit-mask-position: center;
 	mask-position: center;
 	-webkit-mask-repeat: no-repeat;
@@ -362,14 +359,28 @@
 	mask-size: contain;
 }
 
-/* The artwork points left, so "prev" is the file as drawn and "next" is it
-   mirrored. A mirror and not a `rotate(180deg)`: the glyph is taller than it is
-   wide, so rotating inside a non-square box would need the box swapped too. The
-   off-centre nudge the rotated square needed is gone — a chevron drawn in its
-   own tight viewBox is already centred on the box. */
-.is-style-slider-frame :is(.slick-next, .swiper-button-next)::before,
-.is-style-slider-frame :is(.slick-next, .swiper-button-next)::after {
-	transform: scaleX(-1);
+.is-style-slider-frame :is(.slick-next)::before,
+.is-style-slider-frame :is(.swiper-button-next)::after {
+	content: "";
+	position: static;
+	display: block;
+	box-sizing: border-box;
+	inline-size: var(--sd-slider-chevron-size, 26px);
+	block-size: var(--sd-slider-chevron-size, 26px);
+	margin: 0;
+	border: 0;
+	font-size: 0;
+	line-height: 0;
+	color: inherit;
+	background-color: currentColor;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
 }
 
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):hover,
