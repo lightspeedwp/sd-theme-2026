@@ -890,6 +890,27 @@
 }
 
 /**
+ * Listing Card (Compact) — kill the taxonomy-row hover underline.
+ *
+ * styles/sections/cards/listing-card-compact.json sets `elements.link` with
+ * `textDecoration: none` in both states, meant to hold every link in the card
+ * — including the taxonomy rows (Travel Styles, Type, Brand), which are
+ * `core/post-terms` rather than the `<p>` the meta rows use. On the front end
+ * that variation compiles to a single class selector,
+ * `.is-style-listing-card-compact--N a:where(:not(.wp-element-button)):hover`
+ * — (0,2,1) — and core-post-terms.css's site-wide
+ * `.wp-block-post-terms a:hover { text-decoration: underline }` is also
+ * (0,2,1). Equal specificity means the tie goes to load order, and that rule
+ * wins it, so only the taxonomy rows regain an underline on hover; the meta
+ * rows' bound `<p>` links never collide with a `.wp-block-post-terms`
+ * selector in the first place. Two extra classes of specificity settles it
+ * regardless of load order, without touching either row's colour.
+ */
+.is-style-listing-card-compact .wp-block-post-terms a:hover {
+	text-decoration: none;
+}
+
+/**
  * The accommodation star rating — brand-500 Phosphor stars over Tour Operator's
  * PNGs.
  *
