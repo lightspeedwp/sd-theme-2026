@@ -880,24 +880,42 @@ Revised 2026-09-03 at Zared's direction: bigger, thicker arrows in `primary-500`
 measurement (arrows `#B4A48C`, dots `#938673`) and the 44×44/32px glyph figure recorded in
 §12.7.
 
-Two mechanics are worth keeping in mind if these are touched again:
+Three mechanics are worth keeping in mind if these are touched again:
 
 - **The chevron is a masked SVG, not a character and no longer a rotated square.** The first
   pass drew it from two borders on a square rotated 45°, which sized and thickened but could
   not be *shaped*: two borders meeting at a corner give a mitred point and square-cut ends,
-  and at the weight asked for the mitre read as a spur. It is now `asnz-block-theme`'s
-  stroked polyline (`stroke-linecap`/`stroke-linejoin: round`), inlined as a data URI and
-  applied as a `mask-image` with `background-color: currentColor`. ASNZ ships two files and
-  swaps them on hover because its arrow colours are literals in the artwork; masked, ours
-  carries shape only, so one asset covers both states and the colour still resolves through
-  the tokens above. There is consequently **no thickness property** — the stroke weight is
-  in the SVG. Two load-bearing details: `color: inherit` on the pseudo-element resets
-  `slick-theme.css`'s `color: white`, which `currentColor` would otherwise paint the mask
-  with; and `next` mirrors with `scaleX(-1)` rather than `rotate(180deg)`, because the glyph
-  box is taller than it is wide. `border-radius: 0` on the dot is likewise explicit rather
-  than omitted — both vendors round their dot to a circle, so the corner has to be squared
-  back off.
+  and at the weight asked for the mitre read as a spur. A stroked polyline lifted from
+  `asnz-block-theme` replaced it and was itself superseded the same day: the glyph is now
+  Phosphor's `caret-left` / `caret-right` (256×256, filled path), the same icon set
+  `.rating-stars` uses, inlined as a data URI and applied as a `mask-image` with
+  `background-color: currentColor`. Two separate assets rather than one mirrored with
+  `scaleX(-1)`, because Phosphor's own caret paths each already point the right way — there
+  is nothing to flip, and no risk of a mirror leaving a caret off-centre in its box the way
+  the rotated-square and polyline treatments both had to correct for. The mask carries shape
+  only and the colour resolves through the tokens above, so the hover state stays a single
+  `color` change. There is consequently **no thickness property** — the stroke weight is in
+  the artwork — and because the viewBox is square, `--sd-slider-chevron-size` sets both box
+  dimensions with no aspect calc. `color: inherit` on the pseudo-element is load-bearing
+  rather than tidy: the vendor sets `color: #fff` there and `currentColor` is what the mask
+  is painted with, so without the reset every arrow is white on a white shelf.
+  `border-radius: 0` on the dot is likewise explicit rather than omitted — both vendors
+  round their dot to a circle, so the corner has to be squared back off.
 - **The arrow offset is derived from the hit target.** `left`/`right` compute as
   `calc(var(--sd-slider-nav-size) / -2 - 10px)`, which holds the arrow's centre 10px outside
   the frame edge at any size. A flat `-2rem` would have pulled the chevron in over the shelf
   the moment the target grew.
+- **The arrows need `!important`; scoping to `.is-style-slider-frame` is not enough.**
+  Measured 2026-09-03. Tour Operator **does not enqueue `slick-theme.css`** — it inlines its
+  own arrow theming into `tour-operator/build/style.css`, which loads after our block
+  stylesheet and reaches `(0,4,1)`
+  (`.wp-block-query.lsx-to-slider .slick-arrow.slick-prev:before`), against our `(0,2,1)`.
+  Left to natural specificity the vendor takes `width`, `height`, `color`, `position`,
+  `transform`, `top`/`left` and — via the `background` shorthand — the artwork itself, so the
+  arrows render Tour Operator's 20px white feather caret in a 30px target. Beating that
+  naturally would mean forking the selector per query block and would still miss
+  `core/group` and `cb/carousel`, so those declarations carry `!important`, plus an explicit
+  `background-image: none` to undo the shorthand and an `!important` on the hover `color` so
+  it does not lose to our own base rule. The dots never showed this because their rules
+  already carried the flag. Colour is still never hardcoded — only the flag is added, the
+  values stay custom properties.

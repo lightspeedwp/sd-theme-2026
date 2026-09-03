@@ -200,8 +200,8 @@
  * different carousels emit. Neither vendor's nav elements are ours, so they
  * cannot be driven from a block-style JSON at all — see the
  * wp-thirdparty-markup-styling skill. Everything is scoped to the
- * `.is-style-slider-frame` class so natural specificity beats the vendor
- * sheets without reaching for !important.
+ * `.is-style-slider-frame` class, but on the arrows that scope is not enough
+ * on its own — see the !important note at the end of this comment.
  *
  * Geometry follows ati-theme-2026 (style.css:23-118) at Zared's direction
  * 2026-08-26 — arrows lifted clear of the shelf on either side, and a bar dot
@@ -223,10 +223,30 @@
  * nothing. Both vendors are covered here instead — Slick for Tour Operator's
  * query-loop slider, Swiper for the Carousel Block.
  *
- * !important is unavoidable on the geometry: Slick writes its own positioning
- * into an inline style block and ships `slick-theme.css` with equal-specificity
- * rules, which is the case wp-thirdparty-markup-styling calls out. It is kept
- * to layout only — every colour still resolves through a custom property.
+ * !important is unavoidable on the arrows, and on more than the geometry.
+ * Measured on dev 2026-09-03: Tour Operator does not enqueue `slick-theme.css`
+ * at all — it inlines its own arrow theming into `tour-operator/build/style.css`,
+ * which loads *after* this sheet and reaches (0,4,1):
+ *
+ *   .lsx-to-slider .slick-arrow                                  (0,2,0)
+ *     border, color:#fff, height:4rem, position, margin-top
+ *   .wp-block-query.lsx-to-slider .slick-arrow(::before)         (0,3,0)/(0,3,1)
+ *     width/height:30px
+ *   .lsx-to-slider .slick-arrow.slick-prev::before               (0,2,1)
+ *     color:#fff, position:absolute, top:47%, transform, font-family:slick
+ *   .wp-block-query.lsx-to-slider .slick-arrow.slick-prev::before (0,4,1)
+ *     background: url(<feather chevron, stroke #000>); width/height:20px; left:3px
+ *
+ * Our selectors are (0,2,0)/(0,2,1), so before this every one of those won: the
+ * button rendered 30px in white and the pseudo-element painted TO's own 20px
+ * stroked chevron instead of our masked caret — the "arrows look like defaults"
+ * regression. Beating (0,4,1) naturally would mean forking the selector per
+ * query block and would still not cover `core/group` or `cb/carousel`, so the
+ * declarations the vendor reaches are marked !important instead. `background`
+ * is a shorthand there, so `background-image: none` has to be restated
+ * explicitly — `background-color: currentColor` alone leaves TO's artwork
+ * showing through our mask. Every colour still resolves through a custom
+ * property; nothing here hardcodes one.
  */
 .is-style-slider-frame {
 	position: relative;
@@ -261,13 +281,13 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: var(--sd-slider-nav-size, 56px);
-	height: var(--sd-slider-nav-size, 56px);
+	width: var(--sd-slider-nav-size, 56px) !important;
+	height: var(--sd-slider-nav-size, 56px) !important;
 	margin: 0 !important;
 	padding: 0;
 	border: 0 !important;
-	background-color: transparent;
-	color: var(--sd-slider-nav-color);
+	background-color: transparent !important;
+	color: var(--sd-slider-nav-color) !important;
 	/* Slick's arrow carries a visible text label ("Previous"/"Next") that its own
 	   `font-size: 0` collapses. We override the vendor's `color: transparent`, so
 	   the collapse has to be restated here or the label reappears. The chevron is
@@ -324,31 +344,40 @@
    under an unchanged filename is served from cache. Inlined, the icon is
    versioned with the stylesheet.
 
-   ## Two things that must not be dropped
+   ## What must not be dropped
 
-   `content` is the only declaration that has to beat a vendor rule
-   (slick-theme.css `.slick-prev:before`, (0,1,1) against our (0,2,1)). And
-   `color: inherit` is load-bearing, not tidiness: that same vendor rule sets
-   `color: white` on the pseudo-element, and `currentColor` is what the mask is
-   painted with — without the reset every arrow is white on white.
+   Almost all of it. `slick-theme.css` is not the sheet to beat — Tour Operator
+   never enqueues it, and inlines its own arrow theming into build/style.css at
+   up to (0,4,1) against our (0,2,1), so every declaration the vendor also sets
+   carries !important; the table in this block's header comment lists them.
+
+   Two are easy to lose. `background-image: none` looks redundant next to
+   `background-color: currentColor` but is not: TO paints its chevron with the
+   `background` shorthand, so without an explicit reset its artwork shows
+   through our mask. And `color: inherit` is load-bearing rather than tidiness —
+   TO sets `color: #fff` on this pseudo-element, and `currentColor` is what the
+   mask is painted with, so without the reset every arrow is white on white.
 
    The glyph's viewBox is square, so `--sd-slider-chevron-size` sets both box
    dimensions — no aspect calc needed, unlike the polyline treatment it
    replaced. */
 .is-style-slider-frame :is(.slick-prev)::before,
 .is-style-slider-frame :is(.swiper-button-prev)::after {
-	content: "";
-	position: static;
+	content: "" !important;
+	position: static !important;
+	inset: auto !important;
+	transform: none !important;
 	display: block;
 	box-sizing: border-box;
-	inline-size: var(--sd-slider-chevron-size, 26px);
-	block-size: var(--sd-slider-chevron-size, 26px);
+	inline-size: var(--sd-slider-chevron-size, 26px) !important;
+	block-size: var(--sd-slider-chevron-size, 26px) !important;
 	margin: 0;
 	border: 0;
 	font-size: 0;
 	line-height: 0;
-	color: inherit;
-	background-color: currentColor;
+	color: inherit !important;
+	background-image: none !important;
+	background-color: currentColor !important;
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
 	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
 	-webkit-mask-position: center;
@@ -361,18 +390,21 @@
 
 .is-style-slider-frame :is(.slick-next)::before,
 .is-style-slider-frame :is(.swiper-button-next)::after {
-	content: "";
-	position: static;
+	content: "" !important;
+	position: static !important;
+	inset: auto !important;
+	transform: none !important;
 	display: block;
 	box-sizing: border-box;
-	inline-size: var(--sd-slider-chevron-size, 26px);
-	block-size: var(--sd-slider-chevron-size, 26px);
+	inline-size: var(--sd-slider-chevron-size, 26px) !important;
+	block-size: var(--sd-slider-chevron-size, 26px) !important;
 	margin: 0;
 	border: 0;
 	font-size: 0;
 	line-height: 0;
-	color: inherit;
-	background-color: currentColor;
+	color: inherit !important;
+	background-image: none !important;
+	background-color: currentColor !important;
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
 	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
 	-webkit-mask-position: center;
@@ -385,7 +417,9 @@
 
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):hover,
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):focus-visible {
-	color: var(--sd-slider-nav-color-active);
+	/* !important because the base `color` above now carries it — without a
+	   matching flag here the hover state would lose to our own base rule. */
+	color: var(--sd-slider-nav-color-active) !important;
 }
 
 /* Dots — a static row beneath the shelf, not Slick's absolute overlay. */

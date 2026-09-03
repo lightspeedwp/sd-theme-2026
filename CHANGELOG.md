@@ -576,9 +576,11 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   It supersedes the 2026-08-20 live measurement (arrows `#B4A48C`, dots `#938673`); recorded
   in `style.md` §12.9, with §12.3 item 9 and the §12.7 verification line updated.
 
-  **Not yet verified in a browser** — the change is CSS only and both carousels are vendor
-  markup, so it needs a look at a real slider (homepage shelves, single-destination tours).
-  *(LS-2033)*
+  **Verified in a browser 2026-09-03** on the dev homepage's two shelves at 1600px, and
+  the look found the arrows still rendering Tour Operator's own chevron — see the Fixed
+  entry below, which supplies the specificity this entry's rules were missing. The dot
+  treatment landed correctly first time (measured 24x6, square, `neutral-400` `#C3B6A6`),
+  because those rules already carried `!important`. *(LS-2033)*
 
 - **The five enquiry CTAs open the modal instead of linking to `/contact/`.**
   `patterns/safari-expert.php`, `cta-not-sure-where-to-go.php`,
@@ -1161,6 +1163,53 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **The slider arrows rendered Tour Operator's default chevron, not ours.** Measured on the
+  dev homepage 2026-09-03 at 1600px: both shelves drew a 20px white feather-stroke caret in
+  a 30px hit target — the vendor's own artwork — while the masked Phosphor caret, the
+  56px target and `primary-500` were all being discarded. The dots on the same sliders were
+  correct, which is what located the fault.
+
+  The cause is a stale premise recorded in `assets/styles/core-group.css`: that the only
+  vendor rules to beat are `slick-theme.css`'s, at `(0,1,1)`. **Tour Operator does not
+  enqueue `slick-theme.css` at all** — it inlines its own arrow theming into
+  `tour-operator/build/style.css`, which loads *after* our block stylesheet and reaches
+  `(0,4,1)`:
+
+  | Selector | Specificity | What it took |
+  |---|---|---|
+  | `.lsx-to-slider .slick-arrow` | `(0,2,0)` | `color:#fff`, `height:4rem`, `position`, `margin-top` |
+  | `.wp-block-query.lsx-to-slider .slick-arrow` (and `::before`) | `(0,3,0)` / `(0,3,1)` | `width`/`height:30px` |
+  | `.lsx-to-slider .slick-arrow:before` | `(0,2,1)` | `color:#fff`, `position:absolute`, `top:47%`, `transform` |
+  | `.wp-block-query.lsx-to-slider .slick-arrow.slick-prev:before` | `(0,4,1)` | `background: url(<feather chevron>)`, `width`/`height:20px`, `left:3px` |
+
+  Our selectors are `(0,2,0)` and `(0,2,1)`, so every one of those won — the arrow block was
+  the one part of this style written without `!important`, on the assumption natural
+  specificity would carry it.
+
+  Beating `(0,4,1)` naturally would mean forking the selector per query block
+  (`.wp-block-query…` / `.wp-block-terms-query…` at `(0,5,1)`) and would still leave
+  `core/group` and `cb/carousel` uncovered, so the declarations the vendor reaches now carry
+  `!important` instead — `width`, `height`, `color` and `background-color` on the button;
+  `content`, `position`, `inset`, `transform`, the two logical sizes, `color` and
+  `background-color` on the pseudo-element. Two of those are not obvious:
+  `background-image: none` has to be **stated explicitly**, because Tour Operator uses the
+  `background` shorthand — restoring `background-color: currentColor` alone leaves the
+  vendor's artwork showing through our mask — and the hover rule needs `!important` too, or
+  it loses to our own now-important base `color`.
+
+  `inset: auto` and `transform: none` on the pseudo-element replace the vendor's
+  `top: 47%` / `translateY(-50%)` absolute placement, so the caret is centred by the
+  button's own flexbox as this style intends. No colour is hardcoded: every value still
+  resolves through the custom properties in `styles/sections/slider-frame.json`.
+
+  **Verified** in a browser 2026-09-03: the patched rules injected at their real cascade
+  position (immediately after `core-group.css`, still ahead of
+  `tour-operator/build/style.css`, so source order could not do the work) on the dev
+  homepage. All four arrows on the two shelves measure a 56px target with a 26px caret,
+  `background-image: none`, `position: static`, `transform: none`, and both `color` and the
+  mask paint at `rgb(85,66,52)` — `primary-500`. Confirmed visually at device scale.
+  *(LS-2033)*
 
 - **The itinerary row broke rather than wrapped, and the marker took the wrong orange.**
   Both flex rows in `patterns/itinerary-stay.php` were authored `flexWrap: nowrap`, which
