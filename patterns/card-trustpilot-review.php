@@ -8,7 +8,7 @@
  * Viewport Width: 480
  * Block Types: sd/trustpilot-reviews
  * Template Types: single
- * Inserter: true
+ * Inserter: false
  *
  * @package sd-theme-2026
  */
