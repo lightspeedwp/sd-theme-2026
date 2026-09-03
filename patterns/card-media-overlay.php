@@ -31,10 +31,22 @@
  * ⚠️ The term twin `card-media-overlay-term.php` carries the same class, and
  * `core/term-name` had to be added to that variation's `blockTypes` for it to
  * do anything there — the variation's CSS is generated per declared block type.
+ *
+ * ## The whole tile is the link
+ *
+ * `sdLinkTo: "post"` — `SD\Enhancements\GroupLink` resolves `postId` from
+ * context (the Query Loop's answer inside `template-archive-destination.php`
+ * and `destination-regions.php`) and falls back to `get_the_ID()` when there is
+ * none, which does not arise here since both callers are query-loop contexts.
+ * The card's own title and featured image already point at the same permalink,
+ * so the module marks them `sd-link-echo` and leaves the overlay
+ * presentational — no extra tab stop, same as the term twin. Added to match
+ * `card-media-overlay-term.php`, which already carries `sdLinkTo: "term"`; the
+ * post twin was missing it and only the title text was clickable.
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Media Overlay Card"},"className":"is-style-media-overlay-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
+<!-- wp:group {"metadata":{"name":"Media Overlay Card"},"className":"is-style-media-overlay-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"},"sdLinkTo":"post"} -->
 <div class="wp-block-group is-style-media-overlay-card">
 	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1"} /-->
 

@@ -211,10 +211,11 @@
  * thicker in primary-500 with a brand-600 hover, and the dots are lighter,
  * thinner and square-cornered. That supersedes the live measurement of
  * 2026-08-20 (arrows #B4A48C, dots #938673) — those colours are no longer what
- * we ship. ATI's arrow SVGs are still not ported; SD ships no slider arrow
- * assets, so the chevron is drawn in CSS from two borders, which is also what
- * makes a stroke weight settable at all. Every value comes from a custom
- * property declared on the frame in styles/sections/slider-frame.json.
+ * we ship. The chevron itself is asnz-block-theme's stroked SVG, applied as a
+ * mask so the colour still comes from a token — see the block below for why the
+ * two-border CSS chevron it replaced could not be shaped. ATI's arrow SVGs are
+ * a filled disc and are deliberately still not ported. Every value comes from a
+ * custom property declared on the frame in styles/sections/slider-frame.json.
  *
  * ATI also styles `cb/carousel` with `.slick-*` selectors in its theme.json.
  * That is stale there: Carousel Block 2.1.5 bundles Swiper
@@ -296,45 +297,79 @@
    font — Slick's `←`/`→` in `slick`, Swiper's `prev`/`next` ligature in
    `swiper-icons`. Neither gives us a stroke weight: an icon font's thickness is
    baked into the outline, and `font-weight` does nothing because there is only
-   one face. Zared asked for bigger and thicker arrows (2026-09-03), so the
-   glyph is switched off and the chevron is drawn instead from two borders on a
-   square that is rotated 45°. Size is the square, thickness is the border, and
-   both are custom properties on the frame.
+   one face. So the glyph is switched off and our own chevron is drawn in its
+   place.
 
-   `content` is the only declaration here that has to beat a vendor rule
-   (slick-theme.css `.slick-prev:before`, (0,1,1) against our (0,2,1)); the rest
-   describe a box the vendors never styled. !important is kept off — natural
-   specificity is enough, which is the preferred outcome in
-   wp-thirdparty-markup-styling. */
+   That chevron was two borders on a square rotated 45° (2026-09-03). It sized
+   and thickened correctly but it could not be *shaped*: two borders meeting at
+   a corner give a mitred point and square-cut ends, and at the weight Zared
+   asked for the mitre reads as a spur and the cut ends as broken stubs. Replaced
+   2026-09-03 with the SVG treatment from asnz-block-theme — a stroked polyline
+   with `stroke-linecap`/`stroke-linejoin: round`, which is the only way to get a
+   rounded apex and rounded ends.
+
+   ## Why a mask and not a background-image
+
+   ASNZ ships two files and swaps them on hover (its style.css:396-416), because
+   its arrow colours are literals inside the artwork. Ours are tokens —
+   `--sd-slider-nav-color` and `--sd-slider-nav-color-active` — so painting the
+   colour into the SVG would fork it per state and put hex in an authored file.
+   Masked instead, the artwork carries shape only and `currentColor` carries the
+   colour, so the hover state stays the single `color` change below and both
+   values still resolve through theme.json. One asset, no duplication. That is
+   the same mask idiom as `.rating-stars` further down this file.
+
+   Inline rather than a `url()` to a file: WordPress appends `?ver=` to
+   style.css but never to the assets a stylesheet points at, so a revised icon
+   under an unchanged filename is served from cache. Inlined, the icon is
+   versioned with the stylesheet. Regenerate this if the artwork changes — the
+   geometry is a 14x24 box, polyline `11 2 3 12 11 22`, 3px round-capped stroke,
+   which is ASNZ's chevron path at SD's proportions.
+
+   ## Two things that must not be dropped
+
+   `content` is the only declaration that has to beat a vendor rule
+   (slick-theme.css `.slick-prev:before`, (0,1,1) against our (0,2,1)). And
+   `color: inherit` is load-bearing, not tidiness: that same vendor rule sets
+   `color: white` on the pseudo-element, and `currentColor` is what the mask is
+   painted with — without the reset every arrow is white on white.
+
+   The stroke weight is now in the artwork, so `--sd-slider-chevron-thickness`
+   is gone from styles/sections/slider-frame.json. `--sd-slider-chevron-size` is
+   the chevron's height; the width follows the artwork's 14:24 aspect. */
 .is-style-slider-frame :is(.slick-prev, .slick-next)::before,
 .is-style-slider-frame :is(.swiper-button-prev, .swiper-button-next)::after {
 	content: "";
 	position: static;
 	display: block;
 	box-sizing: border-box;
-	width: var(--sd-slider-chevron-size, 18px);
-	height: var(--sd-slider-chevron-size, 18px);
+	inline-size: calc(var(--sd-slider-chevron-size, 26px) * 14 / 24);
+	block-size: var(--sd-slider-chevron-size, 26px);
 	margin: 0;
-	border-top: var(--sd-slider-chevron-thickness, 3px) solid currentColor;
-	border-right: var(--sd-slider-chevron-thickness, 3px) solid currentColor;
+	border: 0;
 	font-size: 0;
 	line-height: 0;
 	color: inherit;
 	opacity: 1;
+	background-color: currentColor;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 24'%3E%3Cpolyline points='11 2 3 12 11 22' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 24'%3E%3Cpolyline points='11 2 3 12 11 22' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
 }
 
-/* A right-pointing chevron is the square turned 45°; left is the same square
-   turned back the other way. The quarter-glyph's mass sits off the box centre
-   once rotated, so each is nudged a quarter of its own size along the axis it
-   points — without that the arrow reads as sitting too far into the shelf. */
+/* The artwork points left, so "prev" is the file as drawn and "next" is it
+   mirrored. A mirror and not a `rotate(180deg)`: the glyph is taller than it is
+   wide, so rotating inside a non-square box would need the box swapped too. The
+   off-centre nudge the rotated square needed is gone — a chevron drawn in its
+   own tight viewBox is already centred on the box. */
 .is-style-slider-frame :is(.slick-next, .swiper-button-next)::before,
 .is-style-slider-frame :is(.slick-next, .swiper-button-next)::after {
-	transform: translateX(calc(var(--sd-slider-chevron-size, 18px) / -4)) rotate(45deg);
-}
-
-.is-style-slider-frame :is(.slick-prev, .swiper-button-prev)::before,
-.is-style-slider-frame :is(.slick-prev, .swiper-button-prev)::after {
-	transform: translateX(calc(var(--sd-slider-chevron-size, 18px) / 4)) rotate(-135deg);
+	transform: scaleX(-1);
 }
 
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):hover,

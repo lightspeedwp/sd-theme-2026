@@ -730,12 +730,15 @@ One interaction added, at Zared's direction 2026-08-28:
 
 One shape change added, at Zared's direction 2026-09-03:
 
-9. **The slider chevron is drawn, not typed.** Both vendors set the arrow as a character from
-   a bundled icon font — Slick's `←`/`→`, Swiper's `prev`/`next` ligature — and an icon font
-   has no stroke weight to set: the thickness is in the outline and there is only one face,
-   so `font-weight` does nothing. To make the arrows bigger *and* thicker the glyph is
-   switched off and the chevron is drawn from two borders on a rotated square. Size and
-   stroke are then independent, and both are custom properties on the frame. → §12.9
+9. **The slider chevron is our own artwork, not a typed character.** Both vendors set the
+   arrow as a character from a bundled icon font — Slick's `←`/`→`, Swiper's `prev`/`next`
+   ligature — and an icon font has no stroke weight to set: the thickness is in the outline
+   and there is only one face, so `font-weight` does nothing. To make the arrows bigger *and*
+   thicker the glyph is switched off (`content: ""`) and ours is drawn in its place. The
+   first pass drew it from two borders on a square rotated 45°; that sized and thickened but
+   could not be shaped, so it now uses `asnz-block-theme`'s stroked polyline — rounded apex,
+   rounded ends — inlined as a data URI and masked, which keeps the colour on a token.
+   → §12.9
 
 ### 12.4 A defect fixed on the way through
 
@@ -866,8 +869,7 @@ is scoped to `.is-style-slider-frame` — the `wp-thirdparty-markup-styling` pat
 | `--sd-slider-nav-color` | `primary-500` | `neutral-400` |
 | `--sd-slider-nav-color-active` | `brand-600` | `brand-500` |
 | `--sd-slider-nav-size` | `56px` (the hit target) | 44px |
-| `--sd-slider-chevron-size` | `18px` | — (a 32px font glyph) |
-| `--sd-slider-chevron-thickness` | `3px` | — (not settable) |
+| `--sd-slider-chevron-size` | `26px` (the glyph's height) | — (a 32px font glyph) |
 | `--sd-slider-dot-color` | `neutral-400` | `neutral-500` |
 | `--sd-slider-dot-width` | `24px` | 24px |
 | `--sd-slider-dot-height` | `6px` | 8px |
@@ -880,9 +882,21 @@ measurement (arrows `#B4A48C`, dots `#938673`) and the 44×44/32px glyph figure 
 
 Two mechanics are worth keeping in mind if these are touched again:
 
-- **The chevron is a rotated square, not a character.** See the ninth deliberate improvement
-  in §12.3. `border-radius: 0` on the dot is likewise explicit rather than omitted — both
-  vendors round their dot to a circle, so the corner has to be squared back off.
+- **The chevron is a masked SVG, not a character and no longer a rotated square.** The first
+  pass drew it from two borders on a square rotated 45°, which sized and thickened but could
+  not be *shaped*: two borders meeting at a corner give a mitred point and square-cut ends,
+  and at the weight asked for the mitre read as a spur. It is now `asnz-block-theme`'s
+  stroked polyline (`stroke-linecap`/`stroke-linejoin: round`), inlined as a data URI and
+  applied as a `mask-image` with `background-color: currentColor`. ASNZ ships two files and
+  swaps them on hover because its arrow colours are literals in the artwork; masked, ours
+  carries shape only, so one asset covers both states and the colour still resolves through
+  the tokens above. There is consequently **no thickness property** — the stroke weight is
+  in the SVG. Two load-bearing details: `color: inherit` on the pseudo-element resets
+  `slick-theme.css`'s `color: white`, which `currentColor` would otherwise paint the mask
+  with; and `next` mirrors with `scaleX(-1)` rather than `rotate(180deg)`, because the glyph
+  box is taller than it is wide. `border-radius: 0` on the dot is likewise explicit rather
+  than omitted — both vendors round their dot to a circle, so the corner has to be squared
+  back off.
 - **The arrow offset is derived from the hit target.** `left`/`right` compute as
   `calc(var(--sd-slider-nav-size) / -2 - 10px)`, which holds the arrow's centre 10px outside
   the frame edge at any size. A flat `-2rem` would have pulled the chevron in over the shelf

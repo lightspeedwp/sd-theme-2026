@@ -536,12 +536,35 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   hit target grows from 44px to 56px; the resting dot lightens from `neutral-500` to
   `neutral-400`, thins from 8px to 6px, and its 2px radius squares off to 0.
 
-  The thickness is the part that needed a mechanism. Slick and Swiper each draw the arrow as
-  a character from a bundled icon font — `←`/`→` and the `prev`/`next` ligature — and an icon
-  font carries its weight in the outline with only one face, so there is no `font-weight` to
-  turn up. The glyph is switched off (`content: ""`) and the chevron is drawn instead from
-  `border-top` + `border-right` on a rotated square, which makes size (`18px`) and stroke
-  (`3px`) independent custom properties on the frame. Two consequences worth naming: the
+  The chevron itself is the part that needed a mechanism. Slick and Swiper each draw the
+  arrow as a character from a bundled icon font — `←`/`→` and the `prev`/`next` ligature —
+  and an icon font carries its weight in the outline with only one face, so there is no
+  `font-weight` to turn up. The glyph is switched off (`content: ""`) and ours is drawn in
+  its place.
+
+  That first went in as `border-top` + `border-right` on a square rotated 45°, which made
+  size and stroke independent custom properties but left the *shape* unsettable: two borders
+  meeting at a corner give a mitred point and square-cut ends, and at the weight asked for
+  the mitre read as a spur and the ends as broken stubs. Same day, at Zared's direction, it
+  was replaced with the SVG treatment from `asnz-block-theme` — a stroked polyline with
+  `stroke-linecap`/`stroke-linejoin: round`, the only way to get a rounded apex and rounded
+  ends. The artwork is inlined as a data URI (WordPress appends `?ver=` to `style.css` but
+  never to the assets a stylesheet points at, so a revised icon under an unchanged filename
+  would be served from cache) and applied as a `mask-image` with
+  `background-color: currentColor`. ASNZ ships two files and swaps them on hover because its
+  arrow colours are literals inside the artwork; masked, ours carries shape only, so one
+  asset covers both states and the hover stays a single `color` change on a token. That is
+  the same mask idiom `.rating-stars` already uses in this file.
+  `--sd-slider-chevron-thickness` is gone with it — the stroke weight is now in the SVG —
+  and `--sd-slider-chevron-size` is the glyph's height (`26px`), its width following the
+  artwork's 14:24 aspect.
+
+  Two details in that swap are load-bearing rather than tidy: `color: inherit` on the
+  pseudo-element resets `slick-theme.css`'s `color: white`, which `currentColor` would
+  otherwise paint the mask with, giving white arrows on a white shelf; and `next` mirrors
+  with `scaleX(-1)` rather than `rotate(180deg)`, because the glyph box is taller than it is
+  wide and rotating would need the box swapped too. Two further consequences worth naming:
+  the
   arrow's `left`/`right` offset is now derived from the hit target
   (`calc(var(--sd-slider-nav-size) / -2 - 10px)`) so the centre stays 10px outside the frame
   edge as the target grows, where the old flat `-2rem` would have pulled the chevron in over
