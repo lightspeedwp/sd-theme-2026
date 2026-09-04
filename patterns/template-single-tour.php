@@ -230,7 +230,7 @@
 
 					<!-- wp:post-content {"className":"is-style-archive-intro","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} /-->
 
-					<!-- wp:read-more {"content":"Read more...","fontSize":"300"} /-->
+					<!-- wp:read-more {"content":"<?php esc_attr_e( 'Read more...', 'sd-theme-2026' ); ?>","fontSize":"300"} /-->
 
 				</div>
 				<!-- /wp:group -->
