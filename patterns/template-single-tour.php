@@ -169,10 +169,20 @@
 	 * carries.
 	 *
 	 * Two `col-md-6` columns. The left is the tour copy with the safari expert
-	 * panel beneath it; the right is `#single-tour-summary`, which live caps at
-	 * `max-width: 497px` (custom.css:2308). That cap is a `contentSize` on a
-	 * constrained group, not CSS: core turns it into the group's own measure and
-	 * the editor shows it.
+	 * panel beneath it; the right is the summary card with the itinerary spine.
+	 *
+	 * **The card is not capped.** Live puts `max-width: 497px` on
+	 * `#single-tour-summary` (custom.css:2308), and that cap was reproduced here
+	 * as a `contentSize` on the summary group until 2026-09-04. It does not
+	 * translate. On live the cap sits on the column itself, inside a
+	 * `justify-content: space-between` flex row, so the 497px card is flush to
+	 * the container's right edge and nothing is left beside it. Here the cap sat
+	 * on a group inside a `core/column` — half of an `alignwide` 1440px row, so
+	 * ~696px — and left ~200px of dead space to its right while the itinerary
+	 * rows broke mid-term at ~436px of text (497 less the 33px marker and its
+	 * gap). The card now takes its column, which is the wider measure of the
+	 * two; the itinerary breaks later than live but breaks the same way, on the
+	 * word. → patterns/itinerary-stay.php, "Wrapping"
 	 *
 	 * The expert panel is live's `#safari-expert-box`, which sits inside the
 	 * tour's `.entry-content` on /tour/best-of-southern-africa/ and is absent on
@@ -233,7 +243,7 @@
 			<!-- wp:column {"verticalAlignment":"top","style":{"spacing":{"blockGap":"var:preset|spacing|20"}}} -->
 			<div class="wp-block-column is-vertically-aligned-top">
 
-				<!-- wp:group {"metadata":{"name":"Summary Card"},"className":"sd-tour-summary","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained","contentSize":"497px","justifyContent":"left"}} -->
+				<!-- wp:group {"metadata":{"name":"Summary Card"},"className":"sd-tour-summary","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
 				<div class="wp-block-group sd-tour-summary">
 
 					<?php

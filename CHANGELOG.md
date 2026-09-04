@@ -539,6 +539,21 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The tour summary card fills its column instead of stopping at 497px.**
+  `patterns/template-single-tour.php` drops the `contentSize: "497px"` from the Summary
+  Card group's constrained layout. The cap reproduced live's
+  `#single-tour-summary { max-width: 497px }` (sd-lsx-child custom.css:2308), but the cap
+  does not translate: on live it sits on the column itself inside a
+  `justify-content: space-between` flex row, so the card is flush to the container's right
+  edge with nothing beside it. Here it sat on a group inside a `core/column` — half of an
+  `alignwide` 1440px row, so ~696px — which stranded ~200px to its right and broke the
+  itinerary rows mid-term at ~436px of text (497 less the 33px marker and its gap). The
+  itinerary spine still breaks on the word rather than the term; it simply breaks later.
+  The stale cross-references in `patterns/destination-summary.php` and
+  `patterns/template-single-accommodation.php`, both of which described the tour's right
+  column as "a 497px-capped fast-facts card", are corrected to say the cap is live's and
+  not this theme's. *(LS-2033)*
+
 - **`patterns/destination-breadcrumbs.php` is renamed to `patterns/breadcrumbs.php`**
   (slug `sd-theme-2026/destination-breadcrumbs` → `sd-theme-2026/breadcrumbs`, title
   "Destination — Breadcrumbs" → "Breadcrumbs"). The band carries nothing
@@ -1267,10 +1282,25 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Every Tour Operator modal is square now, and its close button is the mark on its own.**
   `style.css` — radius off the panel (`.wp-block-hm-popup > *`) and off the close button,
   which loses Tour Operator's translucent-white ground and quarter-radius corner weld for a
-  transparent square inset `spacing|10` from the top and right, outlined `brand-600`, its
-  glyph `neutral-800` going `brand-600` on hover and focus. Tour Operator hard-codes the
-  close SVG at 32px in a private, unfiltered method, so the glyph is sized to 1.25rem here
-  rather than there. Zared, 2026-09-04.
+  transparent 36px square inset `spacing|10` from the top and right. Its chrome arrives on
+  hover and keyboard focus only: a 2px `brand-600` border, `base` at 75% over whatever is
+  behind it, and the glyph going `brand-600` from a resting `neutral-800`. The border is
+  declared transparent at rest rather than omitted, so the box does not move when it
+  appears. Zared, 2026-09-04.
+
+- **The close mark was drawn off-centre and clipped, and it is Tour Operator's `wp_kses`
+  that does it.** `Modals::get_modal_allowed_html()` allows the attribute as
+  `'viewBox' => true`, and `wp_kses` lowercases every attribute name before looking it up —
+  so `viewbox` misses the list and **the attribute is stripped from the rendered SVG**
+  (core's own allow-lists spell it `'viewbox'` for exactly this reason). Without a viewBox
+  the SVG cannot scale: `width`/`height` resize the viewport while the path stays at its
+  authored 32 user units, so the mark draws full-size against the top-left corner and is
+  cut off on the other two. Measured on dev 2026-09-04 with `width: 1.25rem`: the 20px box
+  centred to the pixel, the 16px ink inside it sitting at gaps of 16/4 left/right and
+  16.5/3.5 top/bottom. The theme's `svg` sizing rule is gone and the button is sized around
+  the glyph instead — 36px box, 2px border, 32px viewport, 16px mark, measured back at
+  10/10 and 10.5/9.5 (the half-pixel is TO's own artwork, whose path is authored 0.5 units
+  low). A ⚠️ note in `style.css` says not to put the sizing back. Reported upstream.
 
 - **The card modals were rendering with none of their card styling.** The cause is not in
   this theme and the fix is not either — Tour Operator renders its modal parts on

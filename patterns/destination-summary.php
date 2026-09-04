@@ -19,8 +19,9 @@
  * Live's two `col-md-6` columns inside `#collapse-summary`. The left is the
  * destination copy with the safari expert panel beneath it; the right is
  * `#map-box`, which holds the whole `#destination-map` section. Two equal
- * columns, as live has them — unlike the tour single, whose right column is
- * a 497px-capped fast-facts card.
+ * columns, as live has them — like the tour single, whose right column is a
+ * fast-facts card. (Live caps that card at 497px; this theme does not — see
+ * patterns/template-single-tour.php, "The summary band".)
  *
  * The expert panel is live's `#safari-expert-box`, which sits inside the
  * destination's `.entry-content` on /destination/botswana/ and carries the
