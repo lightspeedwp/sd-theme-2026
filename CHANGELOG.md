@@ -1279,6 +1279,43 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **The enquiry modal's Gravity Form is sized against the theme's own controls.**
+  `style.css` — a `Gravity Forms in a modal` block scoped to
+  `.wp-block-hm-popup .gform-theme`. Gravity Forms' framework sheets size a form for a
+  page, not a 590px dialog: measured on dev 2026-09-04, `--gf-form-gap-y: 40px` between
+  fields, `--gf-ctrl-size-md: 38px` tall inputs, and 14px text and placeholders in them
+  (`--gf-font-size-primary`). Against this theme's other text control — the header search
+  input — that is small fields with a large gap between them.
+
+  The block re-declares five tokens rather than any rule: `--gf-form-gap-y` to
+  `spacing|20`, `--gf-ctrl-size-md` to the search input's own box expressed as
+  `font-size|200 x line-height|body + spacing|10 x 2 + border-width|100 x 2`,
+  `--gf-font-size-primary` and `--gf-ctrl-btn-font-size-md` to `font-size|200`, and
+  `--gf-padding-x` / `--gf-padding-y` to `spacing|20` / `spacing|10`. No widths, no
+  heights, no `!important`.
+
+  Two things make that hold, and the file says both. Every one of these tokens is
+  declared by Gravity Forms on a single class — `.gform-theme--framework` or
+  `.gform-theme--foundation`, (0,1,0) — so `.wp-block-hm-popup .gform-theme` at (0,2,0)
+  wins on specificity with no dependency on stylesheet order. And the overrides are of
+  the `-md` **size step**, not the resolved token: the form block prints an inline
+  `<style>` at `#gform_wrapper_1[data-form-index="0"].gform-theme`, (1,2,0), which no
+  class selector can reach, and what it writes there are `var()` references
+  (`--gf-ctrl-size: var(--gf-ctrl-size-md)`, and the same for `--gf-ctrl-btn-size` and
+  `--gf-ctrl-btn-font-size`). Redefining the step resolves the inline declaration;
+  redefining the token loses to it. Because `--gf-ctrl-btn-size-md` is itself
+  `var(--gf-ctrl-size-md)`, the submit button and the fields are the same height by
+  construction.
+
+  Colour stays out of this block: it arrives through the form block's own
+  `inputPrimaryColor` and `buttonPrimaryBackgroundColor` attributes in
+  `parts/modal-enquiry.html`, already pointing at `primary-500` and `brand-500`.
+
+  The stray paragraphs and line breaks the form used to render with are **not** papered
+  over here — they were Tour Operator running `wpautop()` and `wp_kses()` over the
+  rendered template part, and `SD\Enhancements\ModalMarkup` fixes that at the source.
+  Without that module no gap or height set here will square the form up. *(LS-2033)*
+
 - **The safari expert card no longer breaks between ~990px and ~1250px.**
   `patterns/safari-expert.php` and `assets/styles/core-group.css`. The card is one
   two-column grid of three siblings — portrait, identity, actions — and the arrangement

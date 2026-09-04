@@ -407,3 +407,91 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 		transition: none;
 	}
 }
+
+/* Gravity Forms in a modal
+   -------------------------------------------------------------------------
+   The enquiry modal is `parts/modal-enquiry.html` — a heading and one
+   `gravityforms/form` block on the `orbital` theme, Gravity Form 1. Gravity
+   Forms' own framework sheets ship a full design system in custom properties
+   and size it for a page, not a 590px dialog: `--gf-form-gap-y: 40px` between
+   fields, `--gf-ctrl-size-md: 38px` tall inputs, and 14px text in them
+   (`--gf-font-size-primary`), all measured from
+   gravity-forms-theme-framework.min.css and
+   gravity-forms-theme-foundation.min.css on dev, 2026-09-04. Beside this
+   theme's own text controls that reads as small fields with a large gap
+   between them.
+
+   So this block re-declares the tokens rather than the rules — no widths, no
+   heights, no `!important`, and nothing that has to be revisited when Gravity
+   Forms changes a selector.
+
+   Two things make that work, and both are worth knowing before editing:
+
+   1. **Scope beats definition.** Every token below is declared by Gravity
+      Forms on a single class — `.gform-theme--framework` or
+      `.gform-theme--foundation`, (0,1,0). `.wp-block-hm-popup .gform-theme` is
+      (0,2,0), so these win on specificity and carry no dependency on
+      stylesheet order.
+
+   2. **Override the `-md` variant, not the resolved token.** The form block
+      prints an inline `<style>` at `#gform_wrapper_1[data-form-index="0"].gform-theme`
+      — (1,2,0), which no class selector can reach — and among the settings it
+      writes there are `--gf-ctrl-size: var(--gf-ctrl-size-md)`,
+      `--gf-ctrl-btn-size: var(--gf-ctrl-btn-size-md)` and
+      `--gf-ctrl-btn-font-size: var(--gf-ctrl-btn-font-size-md)`. Those are
+      `var()` references to the size-step tokens, and the size steps are *not*
+      in the inline style. Redefine the step and the inline declaration
+      resolves to it. Set `--gf-ctrl-size` here instead and the inline style
+      wins, which is how this ends up in an `!important` fight.
+
+   Colour is deliberately absent. It arrives through the block's own style
+   attributes in `parts/modal-enquiry.html` — `inputPrimaryColor` and
+   `buttonPrimaryBackgroundColor`, already pointing at `primary-500` and
+   `brand-500` — which is the editable, token-referencing place for it. Add
+   colour there, not here.
+
+   The stray paragraphs and line breaks this form used to render with are not a
+   CSS problem and are not papered over here: Tour Operator ran `wpautop()`
+   and `wp_kses()` over the rendered template part, which paragraphed the name
+   field's two sub-field `<span>`s out of their flex row, put a margin-bearing
+   `<p>` around the inline `<script>` above the first field, and gave
+   `.gform-footer` — `display: flex`, `align-items: stretch` — ten `<br />`
+   to stretch the submit button against. `SD\Enhancements\ModalMarkup` prints
+   the template-part modals itself instead. Without that module the form comes
+   back mangled and no gap or height set here will square it up. */
+.wp-block-hm-popup .gform-theme {
+
+	/* Was 40px. `spacing-20` is the gap the theme uses between stacked
+	   controls elsewhere, and 40px in a 590px dialog reads as four unrelated
+	   fields rather than one form. */
+	--gf-form-gap-y: var(--wp--preset--spacing--20);
+
+	/* The same box as the header search input
+	   (assets/styles/core-search.css): `font-size-200` text, `spacing-10`
+	   above and below it, and a 1px border. Written as the sum rather than a
+	   flat length because Gravity Forms applies this token as `block-size` on
+	   single-line controls, so the box cannot come out of its content — and
+	   because every part of it then tracks the token it came from. Feeds
+	   `--gf-ctrl-size` and, through `--gf-ctrl-btn-size-md`, the submit
+	   button, so the button and the fields stay the same height by
+	   construction. */
+	--gf-ctrl-size-md: calc(
+		(var(--wp--preset--font-size--200) * var(--wp--custom--line-height--body)) +
+		(var(--wp--preset--spacing--10) * 2) +
+		(var(--wp--custom--border-width--100) * 2)
+	);
+
+	/* Was 14px, for both the value and the placeholder — and the placeholders
+	   are the labels here, the form hides its own. `--gf-ctrl-font-size` and
+	   `--gf-ctrl-placeholder-font-size` both reference this. */
+	--gf-font-size-primary: var(--wp--preset--font-size--200);
+
+	/* Was 14px against 16px fields. */
+	--gf-ctrl-btn-font-size-md: var(--wp--preset--font-size--200);
+
+	/* Was 12px each. Matches the search input's `padding-inline` and
+	   `padding-block`; `--gf-padding-y` reaches the textarea, which sizes from
+	   its rows rather than from `--gf-ctrl-size`. */
+	--gf-padding-x: var(--wp--preset--spacing--20);
+	--gf-padding-y: var(--wp--preset--spacing--10);
+}
