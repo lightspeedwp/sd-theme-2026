@@ -529,6 +529,45 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The Related Reviews band is a full-bleed quote with no carousel nav, on every template
+  that carries it.** At Zared's direction 2026-09-03, matching live.
+  `patterns/destination-reviews.php`, `patterns/template-single-tour.php` and
+  `patterns/template-single-accommodation.php` — the three shelves stay identical.
+  - The wrapper group drops `is-style-light-page-section`, whose `spacing|70` block padding
+    was what held the card off the bands above and below, and drops its `constrained`
+    layout. Under `useRootPaddingAwareAlignments` core adds `has-global-padding` to *any*
+    constrained block regardless of its padding
+    (`wp-includes/block-supports/layout.php:1112-1118`), which both re-applies the root
+    inline padding and gives an `alignfull` child a negative root-padding margin — so a
+    flow layout is what actually reaches the viewport edge. The band is now flush top and
+    bottom, and the card is the full width of the screen.
+  - The query goes `alignwide` → `alignfull` and takes a new `sd-slider-nav-hidden` class;
+    `assets/styles/core-group.css` hides Slick's arrows and dot row (and Swiper's
+    equivalents) against it. Tour Operator offers no way to ask for this: `build_slider()`
+    in `tour-operator/build/custom.js` hardcodes `dots: true` and leaves `arrows` at
+    Slick's default on every `.lsx-to-slider .wp-block-post-template`, and its only opt-out
+    (`.slider-disabled`) turns the carousel off and stacks every review. `display: none`
+    rather than `visibility: hidden`, so the controls are not tab stops; `!important` for
+    the same reason the rest of that block needs it — `tour-operator/build/style.css` loads
+    after this sheet and reaches (0,4,1).
+
+  ⚠️ **On desktop this leaves slides 2..n unreachable.** TO initialises the shelf with
+  `draggable: false` and `swipe: false`, so the arrows were the only way through; below
+  1228px its responsive settings turn `swipe` back on, so touch still works. Reaching the
+  rest on desktop means changing the query (`perPage: 1`, which also stops Slick
+  initialising at all) or TO's options — not this sheet. *(LS-2033)*
+
+- **The Review Quote Card's "Read More" is font-size 300 and flips to brand-500.**
+  `styles/sections/cards/review-quote-card.json` asked for
+  `var:preset|font-size|small`, and there is no `small` slug in this theme — the scale is
+  numeric, and "Small" is `300` — so the declaration was orphaned and the size came from
+  the pattern's own `fontSize: 200`. Both now say `300`. The hover colour is in
+  `assets/styles/core-read-more.css`, scoped to the variation: a `:hover` key under
+  `styles.blocks.<block>` is never compiled (core compiles pseudo-selectors for elements
+  only), and the variation's `elements.link:hover` would have taken the linked post title
+  with it. The now-inert `:hover` key and the `css`-field hover rule (the field strips
+  `:hover` outright) are removed rather than left looking load-bearing. *(LS-2033)*
+
 - **The slider chevrons are bigger and thicker, and the dots are lighter, thinner and
   square-cornered.** At Zared's direction 2026-09-03.
   `styles/sections/slider-frame.json` and `assets/styles/core-group.css`. The arrows move

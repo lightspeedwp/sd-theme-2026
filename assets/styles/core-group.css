@@ -492,6 +492,39 @@
 	}
 }
 
+/* Slider Frame — the nav-less variant.
+ *
+ * The review shelves on every Tour Operator single carry a full-bleed quote one
+ * slide at a time, and live draws no chevrons and no dot row against it — the
+ * quote is the whole band, edge to edge, with nothing painted over it. Zared
+ * confirmed 2026-09-03 that the block theme follows live here.
+ *
+ * Tour Operator gives us no way to ask for that: `build_slider()`
+ * (tour-operator/build/custom.js) hardcodes `dots: true` and leaves `arrows` at
+ * Slick's default, on every `.lsx-to-slider .wp-block-post-template`, with no
+ * filter and no data attribute. The only opt-out it offers is the
+ * `.slider-disabled` class, which turns the carousel off altogether and stacks
+ * every review. So the controls are emitted and suppressed here.
+ *
+ * `display: none` rather than `visibility: hidden` — a hidden-but-present nav
+ * is still a tab stop with no visible focus ring. !important for the same
+ * reason the block above needs it: `tour-operator/build/style.css` loads after
+ * this sheet and reaches (0,4,1) on `.slick-arrow`.
+ *
+ * Slick appends both to the *parent* of the template element (custom.js
+ * `appendArrows`/`appendDots`), which is the query block itself — so this class
+ * goes on the query alongside `is-style-slider-frame`, not on the template.
+ *
+ * ⚠️ On desktop this leaves slides 2..n unreachable: TO initialises the shelf
+ * with `draggable: false` and `swipe: false`, so the arrows were the only way
+ * through. Below 1228px the responsive settings turn `swipe` back on, so touch
+ * still works. Reaching the rest on desktop needs a change to the query
+ * (`perPage: 1`) or to TO's options, not to this sheet. */
+.sd-slider-nav-hidden :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next),
+.sd-slider-nav-hidden :is(.slick-dots, .swiper-pagination) {
+	display: none !important;
+}
+
 /* Header rules removed 2026-08-21
    ===========================================================================
    Three blocks went from here, all of them hanging off hooks the header no
