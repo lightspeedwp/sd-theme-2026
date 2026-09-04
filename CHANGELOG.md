@@ -191,6 +191,188 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   band present. `<main>` carries no bottom padding, so the band's own preset 70 is the only
   gap between the last content section and the footer.
 
+- **The team member single is built.** `templates/single-team.html` was header, the generic
+  `single-hero` part and a bare `core/post-content`; it now references
+  `patterns/template-single-team.php`, which reproduces the live consultant profile section
+  for section — banner, the tinted summary band pairing the bio with the portrait, the
+  Trustpilot feedback row, the gallery, and the tour, destination and blog shelves, closing
+  on Why Choose. Measured from `/team/camille-rowe/` on 2026-09-02 against
+  `custom.css:2113-2230` and `4335-4416`, and verified against the same member on dev
+  (post 41452). *(LS-2020, item 10.2)*
+
+  **Every heading is composed from the member's first name.** “Meet Camille”, “Camille’s
+  client feedback”, “Camille’s Favourite Tours”. Live builds all six through
+  `sd_first_name_team()` (`sd-lsx-child/includes/functions.php:424`), which is
+  `current( explode( ' ', $name ) )`; here they are `sd/post-field` with
+  `format: first-name` plus a `prefix`/`suffix` — the binding source sd-enhancements wrote
+  for this template specifically. A binding replaces a block's whole `content`, so the
+  standing half cannot be static text beside a bound span; the template owns those strings
+  and their translation, and the authored text inside each heading is the fallback.
+
+  The apostrophes are typographic (’) and that is load-bearing, not house style: a straight
+  `'` inside an `esc_attr_e()` in a block-comment attribute is escaped to `&#039;`, and the
+  block parser reads that comment as JSON without decoding entities, so it would render
+  literally. Verified by parsing the registered pattern back out — all six round-trip.
+
+  **The three shelves are Tour Operator connection queries**, keyed
+  `lsx-{tour,destination,post}-related-team-query` on the `core/post-template` with the
+  matching `…-wrapper` on the section group. `to-team` 2.2.0 registers a query variation
+  for each (`build/blocks/*-related-team`), so these are the plugin's own keys; they
+  resolve through `tour_to_team`, `destination_to_team` and `post_to_team` — 4, 6 and 9 on
+  Camille, which is live's three carousels exactly. The tiles are the existing
+  `card-tour-compact`, `card-media-overlay` and `card-post-grid`. The overlay tile on
+  destinations is a change from live's panelled card and is Zared's call (2026-09-02): it
+  makes a member's destinations read as the same object as the countries on
+  `/destinations/`.
+
+  **The feedback row is gated on `lsx-truspilot-id-wrapper`** — the misspelling is the
+  stored meta key. Tour Operator finds no matching query, taxonomy or special case, falls
+  through to its post-meta branch and reads `truspilot_id`, so a member with no Trustpilot
+  tag loses the whole band. That is deliberate: `Trustpilot::context_tag()` returns `''`
+  without a tag, and an empty tag is the *company's* review list, which would show three
+  unrelated reviews under “{their name}’s client feedback”.
+
+  **The role paragraph carries `lsx-role-wrapper`, and it hides on the taxonomy, not the
+  meta.** `maybe_hide_varitaion()` tests `taxonomy_exists()` before falling through to post
+  meta, and `role` is both a `to-team` taxonomy and a `to-team` meta key — so the paragraph
+  is removed when the member carries no role *term* while the value printed comes from the
+  *meta*. The two agree on all fifteen published members on dev; they are still two fields.
+  Recorded in the pattern rather than worked around.
+
+  **Not carried, and why:** the mobile "Summary" collapse (a phone accordion over a section
+  with no second desktop state), Tour Operator's sticky section menu (live sets
+  `.single .lsx-to-navigation { display: none !important }`, custom.css:1795), and the
+  boxed contact panel `to-team`'s own `single-team.html` puts beside the bio — live renders
+  none of it, only the role. The breadcrumb bar is `sd-enhancements` work as it is on every
+  other single, and item 10.7 carries the team post type's parent-link case.
+
+  **Verified on local** against a seeded fixture, both directions. Bare member: five of the
+  six sections hide themselves, the role paragraph goes, the enquiry button falls back to
+  `/contact/`. Populated: all six render, the banner takes `banner_image_id`, the gallery
+  binding replaces the three authored placeholders with the seeded images, each shelf
+  returns exactly its connected posts, and the enquiry button resolves to `mailto:`.
+  `phpcs --standard=WordPress` silent; every token reference checked against `theme.json`.
+
+  > ⚠️ **The map is not here, and it is not a gap in this template.** Live's `#map` is
+  > *"Places {name} has visited"* — a Google **cluster** map built from marker data for the
+  > member's 60 connected accommodations, behind a click-to-load placeholder. It is not
+  > reachable from the theme: Tour Operator's `lsx/map` binding answers for `wetu` and
+  > `google` only (`class-bindings.php:940-969`), and its `google` branch calls
+  > `lsx_to_map()`, which reads the post's own single `location` point — which a team member
+  > does not have. This is the **Team Member Map block**, named separately as items 10.4 and
+  > 17.7 and built in the plugin. When it lands it goes between the gallery and the tours
+  > shelf and nothing else changes.
+
+  > ⚠️ **The feedback row renders a heading and the company badge but no reviews until the
+  > Trustpilot API key is rotated and set.** `sd/trustpilot-reviews` renders nothing on a
+  > cold cache, and there is no key — the one committed to `sd-lsx-child` must not be
+  > reused; the replacement belongs in `wp-config.php` as `SD_TRUSTPILOT_API_KEY` per
+  > environment. Intended cold-start behaviour, recorded so it is not read as a fault.
+
+- **`patterns/card-trustpilot-review.php` — Card — Trustpilot Review.** One cached review as
+  live's `.tb-review-box` draws it: the date, the headline, the extract and the reviewer's
+  name. Repeated by `sd/trustpilot-reviews`, which takes its subject from the
+  `sdTrustpilotIndex` context — so the card is authored once and reads no post.
+
+  **The star row is left out and it is a plugin gap, not a design decision.**
+  `sd/trustpilot` exposes `stars_image`, which the theme itself answers through
+  `inc/trustpilot.php`; `sd/trustpilot-review` does not — its keys are `stars`, `title`,
+  `text`, `author`, `date` and `url`, and `stars` is a bare float. Binding an image to the
+  *business* rating would paint the company's score onto an individual review. It needs one
+  key on the sd-enhancements source, calling the private `stars_image()` the score source
+  already uses; nothing in the card changes when it lands. → LS-2033
+
+  **The headline is not a link.** Live wraps all three in an `<a>` to the same company
+  review page the Trustpilot mark beside them already links to — four links to one
+  destination in one section — and `core/heading` has no bindable `href` in any case.
+  `sd/trustpilot-review`'s `url` key stays available for per-review permalinks.
+
+- **The team landing page is built.** `templates/archive-team.html` was a generic three-up
+  Query Loop over the `team` post type; it now references
+  `patterns/template-archive-team.php`, which reproduces the live *Meet the Team* page
+  section for section — the About Us banner, the company standfirst, and three role
+  sections (Management Team, Consultants, Support Team). Measured from `/team/` in the
+  browser on 2026-09-02. *(LS-2020, item 10.1)*
+
+  **Three Query Loops, not one.** Live groups the archive by role through Tour Operator's
+  `posts_orderby` filter (`to-team/classes/class-to-team-frontend.php:55`), which is gated
+  on `$query->is_main_query()`, and the section headings come from the archive partial
+  walking the results. Neither half is reachable from a block template — a Query Loop is
+  never the main query, and no core block prints a heading when a queried post's term
+  changes. Three loops, one per role, is the block equivalent, and it makes each section
+  independently editable.
+
+  **The role term IDs are resolved from their slugs at render.** `core/query`'s `taxQuery`
+  holds term IDs — core runs the values through `intval()`
+  (`wp-includes/blocks.php:2912`), so a slug is silently dropped and the section renders
+  the whole roster. Local, dev and live do not share term IDs, so a literal would be wrong
+  in two environments out of three. The fallback when a term is missing is **-1, not 0**:
+  core's `array_filter( array_map( 'intval', … ) )` strips a `0`, leaving an empty `terms`
+  clause that `WP_Tax_Query` drops — which would print every published member under every
+  heading. `-1` matches no term, so a renamed role renders an empty section instead.
+  Verified on local, which has no `role` terms: three headings, no cards.
+
+  **Ordering is `menu_order`** — Tour Operator's own team ordering
+  (`to-team/classes/class-to-team-admin.php:154`), so who comes first in a section is a
+  content decision. Live's within-section order does not match dev's migrated `menu_order`
+  values on two of the three sections; that is a content fix, not a template one.
+
+  **One `h1`, and it says "About Us".** Live puts two on the page and hides one:
+  `.archive-header-wrapper` holds `<h1 class="archive-title">Team</h1>` at
+  `display: none`, and the visible title is the banner's "About Us" over the strapline
+  "Meet the Team". The hidden copy is a Tour Operator template artefact — the destinations
+  archive carries the same one — so it is not reproduced. That is also why the banner
+  title is authored rather than `core/query-title`: "About Us" is not a string
+  `query-title` can produce. The section separators move from live's `h3` to `h2`, which
+  is the correct level under that `h1`.
+
+  **No tinted intro band.** The destinations and tours archives put their standfirst on
+  `neutral-200` beside the safari expert panel because live's `.lsx-to-archive-header-tour`
+  does. The team archive's description is in `.lsx-to-archive-header` *without* the `-tour`
+  suffix — white ground, left-aligned, roman, 15px, no expert panel, no drop cap — so it is
+  a plain paragraph and not `is-style-archive-intro`.
+
+  The page closes on **Why Choose Southern Destinations** and **CTA — Not Sure Where To
+  Go**, `require`d from their own patterns. Live's team page carries only the first; the
+  pair is how every other archive in this theme ends (2026-08-28), so it ends the way its
+  siblings do.
+
+  > ⚠️ **`core/query-no-results` renders nothing anywhere on this install, and that
+  > is not this template's doing.** FacetWP Blocks Beta hooks
+  > `render_block_core/query-no-results` and returns `''` unconditionally
+  > (`facetwp-blocks-beta/includes/class-blocks-integration.php:724`). Its stated reason is
+  > that core already prints no-results content inside `core/post-template` when the query
+  > inherits from the template — true for `inherit: true`, and **not** true for the
+  > non-inheriting loops this page uses. So the three fallback messages here are dead while
+  > that plugin is active, and so are the ones in `templates/archive-review.html`. The
+  > markup is correct and is kept; the suppression is a third-party defect to raise with
+  > FacetWP or work around in `sd-enhancements`. Found 2026-09-02. → LS-2529
+
+- **`patterns/card-team.php` — Card — Team Member.** The consultant tile: a 4/3 portrait
+  with a warm-dark band pinned along its foot carrying the name in uppercase and the role
+  beneath it. `styles/sections/cards/team-archive-card.json` is the new section style that
+  owns the positioning context, the band's ground and the caption type, measured from
+  `.post-type-archive-lsx-to-team … .lsx-to-archive-content` — a 70px absolute strip at
+  `rgba(26, 18, 5, 0.7)`, which is `neutral-900` at 70%.
+
+  **This is not the Team Member Card style.** `is-style-team-member-card` is the homepage
+  row, whose bio panel covers the whole photograph and is revealed on hover.
+  `is-style-team-archive-card` is always visible, covers only the foot of the image, and
+  has no hover state, because live's team archive has none — checked against every
+  `:hover` rule in the rendered stylesheet.
+
+  **Four things live renders and this does not:** the phone, the email, the socials and the
+  "More about {name} ›" link. All four are in live's markup and all four are
+  `display: none` on this template. So is the `Role:` label
+  (`.lsx-to-meta-data-key { display: none }`), which is why the binding carries no
+  `prefix` — the band shows the bare value, "Queen Bee". The member's own page carries
+  the rest, and both the portrait and the name link to it.
+
+  **The band sizes itself** rather than being pinned at live's 70px, so a name that wraps
+  to two lines grows the band instead of being clipped as it is on live. The crop is 4/3
+  against live's 9/7 (360 × 280) — the nearest standard ratio, and the one the review
+  archive already uses, so the archives stay one system.
+
 - **The four Tour Operator modals are theme files now** — `parts/modal-tour.html`,
   `parts/modal-accommodation.html`, `parts/modal-destination.html` and
   `parts/modal-enquiry.html`, registered in `theme.json` against Tour Operator's

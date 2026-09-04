@@ -98,6 +98,61 @@ with no contact email will show a "Get in Touch" link that goes nowhere, so fill
 
 ---
 
+## The team page
+
+The *Meet the Team* page is three sections — **Management Team**, **Consultants** and
+**Support Team** — and each one is a separate listing that shows the team members tagged
+with that **Role**. Nothing on the page is a hand-written list of people.
+
+So, to change the page:
+
+| To do this | Edit this |
+|---|---|
+| Move somebody between sections, or add a new joiner | The team member's **Role** |
+| Change the order within a section | The team member's **Order** field — the sections read it low to high |
+| Change the name or the job title on a card | The team member's title and its **Role** text field |
+| Change the standfirst under the banner | The template, for now — it is not a setting yet |
+
+> Two different fields are both called "role", which is confusing and worth knowing about.
+> The **Role** *taxonomy* decides which section somebody lands in. The **Role** *text
+> field* is the job title printed on the card ("Queen Bee", "Support Travel Guru"). A
+> member can be in the Management Team section and have "CEO" printed on their card.
+
+A member tagged into more than one role appears in each of those sections. Vanessa is
+tagged both **Founder** and **Management Team** and shows once, in Management Team,
+because there is no Founder section on the page — add the role to somebody and they will
+not appear anywhere new until a section for it is added to the template.
+
+**A section with an empty heading and nothing under it** means nobody carries that role.
+Tag somebody, or ask a developer to take the section out.
+
+### A team member's own page
+
+Clicking a card opens that member's page, which is built entirely from fields on their
+post. Every section disappears on its own when the field behind it is empty, so a member
+who has only a bio gets a page with only a bio — there is nothing to switch off.
+
+| Section | Comes from |
+|---|---|
+| The banner photograph | **Banner Image** (falls back to the featured image) |
+| The job title under the name | The **Role** text field |
+| **Get in touch** | **Email** (falls back to the contact page) |
+| *{Name}’s client feedback* | **Trustpilot ID** — the tag their reviews are filed under |
+| *{Name}’s Wild Adventures* | **Gallery** |
+| *{Name}’s Favourite Tours* | **Related Tours** |
+| *{Name}’s Favourite Destinations* | **Related Destinations** |
+| *Read {Name}’s Blog* | **Related Posts** |
+
+Every heading uses the member's **first name**, taken from the post title. So a post
+titled “Camille Rowe” gives “Meet Camille” and “Camille’s Favourite Tours” — rename the
+post and all six headings follow.
+
+> **The map is not on the page yet.** Live shows *“Places {name} has visited”* — a map
+> pinned with the lodges they have been to. It needs a block that does not exist yet and
+> is being built separately; when it lands it goes between the gallery and the tours.
+
+---
+
 ## Page sections
 
 Drop these into any page body.
@@ -152,6 +207,8 @@ only when you want a single tile as a feature.
 | **Card — Category** | Category tile |
 | **Blog Card** · **Blog Card Large** | Post tiles for the news landing page |
 | **Card — Review (Quote)** | The review slide the carousels on Tour Operator singles carry — a gold quote mark over the reviewer's photograph |
+| **Card — Team Member** | The consultant tile on the team page — a portrait with a dark band along its foot carrying the name and the role |
+| **Card — Trustpilot Review** | One Trustpilot review on a consultant's own page. Repeated three times by the reviews block; you never place it. |
 
 All of the Tour Operator cards read their content from the post they are showing, so
 they always match the tour, lodge or destination they sit on.
@@ -193,6 +250,8 @@ recognise the name if you meet it in the Site Editor.
 | **Template: Destinations Archive** | The destinations landing page |
 | **Template: Tours Archive** | The tours landing page |
 | **Template: Accommodation Archive** | The accommodation landing page |
+| **Template: Team Archive** | The team landing page — *Meet the Team* |
+| **Template: Single Team Member** | A consultant's own page |
 | **Template: Blog Landing (News)** | The news index |
 | **Template: Category** | Category archives |
 | **Template: Archive** | Generic archives |
@@ -241,6 +300,8 @@ Single Country — the shelf is its regions, and there are none to list.
 | A destination page's description is cut off with a "Read more..." link | Expected — the copy collapses to its first paragraph until a reader clicks through |
 | The safari gurus row shows the wrong people | Nobody is tagged **Safari Guru**; it is falling back to the four most recent team members |
 | A "Get in Touch" link goes nowhere | That team member has no contact email |
+| A consultant's page has no client-feedback section | They have no **Trustpilot ID**, or the review cache has not refreshed |
+| A consultant's page has no map | The map is a separate build and is not on the page yet |
 | The Trustpilot badge shows placeholder text | The score cache has not refreshed; it updates twice a day |
 | A pattern is missing from the inserter | It is a template pattern — see the table above |
 | A block is missing at one screen size only | Check the **Visibility** panel in the block sidebar |
