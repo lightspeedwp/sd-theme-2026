@@ -38,12 +38,17 @@
  *   { display: none !important }` (custom.css:1795). It is a spy nav that has
  *   never been visible on a single. Porting it would be adding a component, not
  *   preserving one.
- * - **The breadcrumb bar.** Live draws Yoast's trail in a 58px `#ece9e3` strip
- *   under the banner. Breadcrumb output is a filter over a third-party plugin's
- *   trail — behaviour, not design — so by the deactivation test it is
- *   `sd-enhancements` work, exactly as recorded in
- *   patterns/template-archive-destination.php. When it lands it goes directly
- *   beneath the cover, outside it.
+ * - ~~**The breadcrumb bar.**~~ **Built, 2026-09-04** — `patterns/breadcrumbs.php`,
+ *   required directly beneath the cover, outside it, exactly as on the three
+ *   destination templates. This file previously recorded the bar as
+ *   `sd-enhancements` work on the grounds that breadcrumb output is a filter
+ *   over a third-party plugin's trail. That holds for the trail's *contents* —
+ *   what Yoast puts in it, and any `wpseo_breadcrumb_links` filtering SD
+ *   needs, is still plugin work — but *placing* the block and choosing the
+ *   band's ground is design, so the block is a theme block. The same
+ *   correction was made to patterns/template-single-destination.php on
+ *   2026-09-03; patterns/template-archive-destination.php still carries the
+ *   old reasoning verbatim. → noted on LS-2033
  * - **The 18 accommodation modals** the live page carries in its DOM. Tour
  *   Operator 2.2 renders its own `<dialog>` modals from `parts/modal-*.html`;
  *   the theme's half of that work is the heading rule in
@@ -152,6 +157,8 @@
 	</div></section>
 	<!-- /wp:cover -->
 
+	<?php require __DIR__ . '/breadcrumbs.php'; ?>
+
 	<?php
 	/*
 	 * The summary band.
@@ -162,16 +169,51 @@
 	 * carries.
 	 *
 	 * Two `col-md-6` columns. The left is the tour copy with the safari expert
-	 * panel beneath it; the right is `#single-tour-summary`, which live caps at
-	 * `max-width: 497px` (custom.css:2308). That cap is a `contentSize` on a
-	 * constrained group, not CSS: core turns it into the group's own measure and
-	 * the editor shows it.
+	 * panel beneath it; the right is the summary card with the itinerary spine.
+	 *
+	 * **The card is not capped.** Live puts `max-width: 497px` on
+	 * `#single-tour-summary` (custom.css:2308), and that cap was reproduced here
+	 * as a `contentSize` on the summary group until 2026-09-04. It does not
+	 * translate. On live the cap sits on the column itself, inside a
+	 * `justify-content: space-between` flex row, so the 497px card is flush to
+	 * the container's right edge and nothing is left beside it. Here the cap sat
+	 * on a group inside a `core/column` — half of an `alignwide` 1440px row, so
+	 * ~696px — and left ~200px of dead space to its right while the itinerary
+	 * rows broke mid-term at ~436px of text (497 less the 33px marker and its
+	 * gap). The card now takes its column, which is the wider measure of the
+	 * two; the itinerary breaks later than live but breaks the same way, on the
+	 * word. → patterns/itinerary-stay.php, "Wrapping"
 	 *
 	 * The expert panel is live's `#safari-expert-box`, which sits inside the
 	 * tour's `.entry-content` on /tour/best-of-southern-africa/ and is absent on
 	 * a tour with no consultant. `sd/safari-expert` reproduces that exactly — it
 	 * renders nothing when it cannot resolve an expert — so there is no
 	 * conditional here either.
+	 *
+	 * **The copy is wrapped, italic, and cut with a Read More** — the same
+	 * composition as `patterns/destination-summary.php`, and for the same
+	 * reason. Live truncates the tour copy to its first paragraph and appends a
+	 * "Read More…" link (sd-lsx-child/assets/js/custom.js:224-275);
+	 * `core/read-more` collapses `core/post-content` to its first block and
+	 * expands it in place on click, so the behaviour is core's and no script of
+	 * ours is required. This file previously routed that truncation to
+	 * `sd-enhancements` on the grounds that it is a JavaScript behaviour over
+	 * post content. That reasoning is superseded: there is a core block for it,
+	 * so it is neither plugin work nor a script.
+	 *
+	 * The outer group's own inline `font-style:italic;font-weight:400`, not the
+	 * `is-style-archive-intro` class, is what makes the copy italic —
+	 * `core/paragraph`'s `selectors.root` is bare `p`, so the archive-intro
+	 * variation compiles to `p.is-style-archive-intro` and can never match an
+	 * ancestor, and here the class sits on `core/post-content`'s wrapper. It is
+	 * kept because it marks the block's role and because it is what the
+	 * destination single carries; the italic and the 400 weight the page shows
+	 * come from inheritance off the group. → the same note in
+	 * `patterns/destination-summary.php`
+	 *
+	 * `post-content`'s `blockGap` is `spacing|20`, tighter than the `spacing|60`
+	 * root default, which is the closer paragraph rhythm the destination single
+	 * uses.
 	 */
 	?>
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Tour Summary"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
@@ -183,7 +225,14 @@
 			<!-- wp:column {"verticalAlignment":"top","style":{"spacing":{"blockGap":"var:preset|spacing|50"}}} -->
 			<div class="wp-block-column is-vertically-aligned-top">
 
-				<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+				<!-- wp:group {"style":{"typography":{"fontStyle":"italic","fontWeight":"var:custom|font-weight|regular"},"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
+				<div class="wp-block-group" style="font-style:italic;font-weight:var(--wp--custom--font-weight--regular)">
+					<!-- wp:post-content {"className":"is-style-archive-intro","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} /-->
+
+					<!-- wp:read-more {"content":"<?php esc_attr_e( 'Read more...', 'sd-theme-2026' ); ?>","fontSize":"300"} /-->
+
+				</div>
+				<!-- /wp:group -->
 
 				<?php require __DIR__ . '/safari-expert.php'; ?>
 
@@ -193,7 +242,7 @@
 			<!-- wp:column {"verticalAlignment":"top","style":{"spacing":{"blockGap":"var:preset|spacing|20"}}} -->
 			<div class="wp-block-column is-vertically-aligned-top">
 
-				<!-- wp:group {"metadata":{"name":"Summary Card"},"className":"sd-tour-summary","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained","contentSize":"497px","justifyContent":"left"}} -->
+				<!-- wp:group {"metadata":{"name":"Summary Card"},"className":"sd-tour-summary","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
 				<div class="wp-block-group sd-tour-summary">
 
 					<?php

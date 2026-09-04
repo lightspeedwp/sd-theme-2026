@@ -39,7 +39,7 @@
  *     background-color: #cc7f16               brand-600 — see the contrast note
  *     padding: 15px                           spacing 20
  *     border-radius: 1px                      border-radius 0
- *     display: flex; align-items: center      flex, wrap, centred
+ *     display: flex; align-items: center      a two-column grid, centred
  *     thumb 116 × 116, object-fit: cover      126px, square, radius 500
  *     .travel-expert-title  white, uppercase  base, uppercase, semi-bold
  *     .lsx-to-contact-name  white             base, title case, font-size 400
@@ -81,40 +81,71 @@
  * accessible token is what is authored; the decision is recorded here rather
  * than taken quietly.
  *
- * ## The identity block is authored twice, and exactly one is ever exposed
+ * ## The card is one grid, and the arrangement is a container query
  *
- * Restructured in the Site Editor by Zared on 2026-08-28 and imported from the
- * `archive-destination` override; the arrangement below is his, not a
- * derivation of it.
+ * Three siblings — the portrait, "Expert Identity" (the eyebrow and the name)
+ * and "Expert Actions" — placed into a two-column grid by name. Two
+ * arrangements:
  *
- * The eyebrow and the name move between two places depending on viewport:
+ *     narrow   "portrait name"      the name beside the portrait,
+ *              "actions actions"    the actions across the full card
  *
- *   - **Below 992px** they sit beside the portrait, inside "Expert Identity" —
- *     a nowrap flex row, so a narrow card reads as a portrait with a name next
- *     to it rather than a portrait above a stack of actions.
- *   - **At 992px and up** they sit at the top of "Expert Detail", above the
- *     actions, and the row beside the portrait collapses to the portrait alone.
+ *     wide     "portrait name"      the portrait beside a stacked
+ *              "portrait actions"   name-over-actions column
  *
- * Both copies are in the markup and Block Visibility's screen-size control
- * decides which renders — `hideOnScreenSize.large` on the compact copy,
- * `hideOnScreenSize.medium` + `.small` on the wide one. The two sets are
- * mutually exclusive and cover every width, so exactly one pair exists at any
- * viewport and never zero.
+ * The tracks and the areas are in assets/styles/core-group.css, because
+ * `grid-template-areas` has no block attribute and a `@container` block does
+ * not survive a block style's `css` field — the same sanitiser that unwraps
+ * `@media` there. The block carries `layout: {type: grid, columnCount: 2}` so
+ * the editor shows two columns, and `blockGap` as an object so the row and
+ * column gaps (spacing 20 and 30) stay authored in markup. → AGENTS.md
  *
- * **This is why the duplicate headings are not an accessibility fault.** The
- * plugin hides with `display: none !important` inside a `@media` block
- * (measured in `block-visibility-screen-size-styles-inline-css` on dev,
- * 2026-08-28: large ≥ 992px, medium 768–991.98px, small ≤ 767.98px), and
- * `display: none` removes a subtree from the accessibility tree — so a screen
- * reader is offered one eyebrow and one name, not two. The same mechanism
- * carries the header's desktop/mobile split, so this is the theme's established
- * way of doing it rather than a new one. → AGENTS.md, and note that a
- * media-query hide written in CSS would *not* be equivalent here: it would be
- * invisible to the editor.
+ * ### Why a container query, and what it replaced
  *
- * The two copies differ only in the eyebrow's font size — 400 in the compact
- * row, 300 in the wide column. Keep them otherwise in step; they are one piece
- * of content in two positions, and a divergence in the copy is a bug.
+ * The identity block used to be authored **twice** — once beside the portrait
+ * and once above the actions — with Block Visibility's screen-size control
+ * choosing between the copies at its `large` breakpoint. Zared restructured it
+ * that way in the Site Editor on 2026-08-28; it was collapsed to one copy on
+ * 2026-09-04 because the viewport switch could not be made correct.
+ *
+ * It produced a band, roughly 990–1250px on the tour single, where the wide
+ * arrangement was switched on inside a card too narrow to hold it. The old
+ * `.sd-expert__detail` was `flex: 1 1 auto`, so flexbox sized it from its
+ * ~470px max-content, could not fit that beside the 126px portrait, and
+ * wrapped it to a second flex line — leaving the portrait alone on row one
+ * with the eyebrow, the name and both actions stacked underneath it. Measured
+ * on local: **313px tall at the switch against 175px at 1440px.**
+ *
+ * The band was not the same width in two environments, which is what made it
+ * hard to pin down. Block Visibility's breakpoints are a global plugin
+ * setting, and `large` is **1200px on local and 992px on dev** — so the same
+ * fault appeared at 1200–1250 in one place and 992–1250 in the other. The
+ * "large ≥ 992px" this comment used to assert was a dev measurement stated as
+ * a fact about the plugin.
+ *
+ * And no viewport breakpoint could have been right anyway. This pattern is
+ * required by three templates and the column it sits in is a different width
+ * in each — patterns/template-single-tour.php gives it half of `alignwide`,
+ * patterns/template-archive-destination.php a re-proportioned column. What
+ * decides the arrangement is how wide *the card* is, so that is what is asked.
+ *
+ * A container query is also more truthful in the editor than the viewport
+ * queries were: the canvas is narrower than the viewport, so a `min-width:
+ * 992px` media query already reported the wrong arrangement there.
+ *
+ * ⚠️ **Do not reach for Block Visibility to re-solve this.** Its screen-size
+ * control is viewport media queries and cannot express "when the container is
+ * narrow" — this is the documented exception to the theme's
+ * Block-Visibility-over-CSS-hiding rule, and nothing is hidden now in any
+ * case. The header's desktop/mobile split still uses the plugin correctly.
+ *
+ * ### The eyebrow keeps both sizes
+ *
+ * 400 beside the portrait, 300 above the name — Zared's sizes, carried over
+ * from the two copies. The 400 is the block attribute; the step down to 300
+ * lives inside the `@container` block, marked `!important` because core marks
+ * every preset font-size class important. The column gap is likewise 30 in the
+ * narrow arrangement and 20 in the wide one, as the two nested groups gave it.
  *
  * ## Heading levels
  *
@@ -136,7 +167,7 @@
  * ⚠️ **The name is no longer a link.** It was `isLink: true` until 2026-08-28.
  * The consultant's single is still reachable from the panel — the portrait
  * keeps its link — so this is one link to that page rather than two adjacent
- * ones. Restore `"isLink":true` on both `core/post-title` blocks if it should
+ * ones. Restore `"isLink":true` on the `core/post-title` below if it should
  * come back.
  *
  * ⚠️ **The portrait has no ring.** It carried a 2px `base` ring until
@@ -154,7 +185,7 @@
  *
  * ## ⚠️ Four blocks here are dynamic, so their custom tokens use `var(--wp--custom--…)`
  *
- * `core/post-title` (×2), `core/navigation` and `ollie/mega-menu` have no saved
+ * `core/post-title`, `core/navigation` and `ollie/mega-menu` have no saved
  * markup — the server-side style engine builds their inline styles, and it does
  * not expand the `var:custom|…` shorthand for `fontWeight`, `letterSpacing`,
  * `fontStyle`, `textTransform` or `lineHeight`. Measured on local 2026-08-28
@@ -180,7 +211,7 @@
  *
  * Both actions carry `layout.selfStretch: fill` and the button carries
  * `dimensions.width` at the `100` preset, so Call Us and Send an Email each
- * take half the detail column and the button fills its half. `--wp--preset--dimension--100`
+ * take half the `actions` grid area and the button fills its half. `--wp--preset--dimension--100`
  * is core's own 100% width preset, not a theme token — it is defined in
  * wp-includes/theme.json and rendered on dev, so it resolves without the theme
  * declaring `settings.dimensions`.
@@ -308,98 +339,65 @@
 	 * numbers and the email CTA are inside this group.
 	 */
 	?>
-	<!-- wp:group {"metadata":{"name":"Expert Card"},"className":"sd-expert__panel","style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|0"},"elements":{"link":{"color":{"text":"var:preset|color|base"},":hover":{"color":{"text":"var:preset|color|base"}}}}},"backgroundColor":"brand-600","textColor":"base","layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"}} -->
+	<!-- wp:group {"metadata":{"name":"Expert Card"},"className":"sd-expert__panel","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|20","left":"var:preset|spacing|30"},"padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|0"},"elements":{"link":{"color":{"text":"var:preset|color|base"},":hover":{"color":{"text":"var:preset|color|base"}}}}},"backgroundColor":"brand-600","textColor":"base","layout":{"type":"grid","columnCount":2}} -->
 	<div class="wp-block-group sd-expert__panel has-link-color has-base-color has-brand-600-background-color has-text-color has-background" style="border-radius:var(--wp--preset--border-radius--0);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)">
 
 		<?php
 		/*
-		 * The portrait, and — below 992px only — the name beside it. See "The
-		 * identity block is authored twice" above; the compact copy of the
-		 * eyebrow and the name lives here.
-		 *
-		 * A nowrap row, so the name stays beside the portrait rather than
-		 * dropping under it on the narrowest cards.
+		 * The portrait — grid area `portrait`. Linked to the consultant's
+		 * single, as live does, and the only link to it in the panel.
+		 * `aspectRatio` crops it square; core adds `object-fit: cover` for the
+		 * ratio itself.
 		 */
 		?>
-		<!-- wp:group {"metadata":{"name":"Expert Identity"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
-		<div class="wp-block-group">
+		<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1","width":"126px","className":"sd-expert__portrait","style":{"border":{"radius":"var:preset|border-radius|500"}}} /-->
 
-			<?php
-			/*
-			 * Linked to the consultant's single, as live does — and now the only
-			 * link to it in the panel. `aspectRatio` crops it square; core adds
-			 * `object-fit: cover` for the ratio itself.
-			 */
-			?>
-			<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1","width":"126px","className":"sd-expert__portrait","style":{"border":{"radius":"var:preset|border-radius|500"}}} /-->
+		<?php /* The eyebrow and the name — grid area `name`. */ ?>
+		<!-- wp:group {"metadata":{"name":"Expert Identity"},"className":"sd-expert__identity","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group sd-expert__identity">
 
-			<?php /* Hidden at 992px and up — the wide copy is in Expert Detail. */ ?>
-			<!-- wp:group {"metadata":{"name":"Expert Name (compact)"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true}}}}]}} -->
-			<div class="wp-block-group">
+			<!-- wp:heading {"className":"sd-expert__eyebrow","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","textTransform":"uppercase"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"400"} -->
+			<h2 class="wp-block-heading sd-expert__eyebrow has-base-color has-text-color has-link-color has-400-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold);text-transform:uppercase"><?php esc_html_e( 'Chat to your safari expert', 'sd-theme-2026' ); ?></h2>
+			<!-- /wp:heading -->
 
-				<!-- wp:heading {"className":"sd-expert__eyebrow","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","textTransform":"uppercase"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"400"} -->
-				<h2 class="wp-block-heading sd-expert__eyebrow has-base-color has-text-color has-link-color has-400-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold);text-transform:uppercase"><?php esc_html_e( 'Chat to your safari expert', 'sd-theme-2026' ); ?></h2>
-				<!-- /wp:heading -->
-
-				<!-- wp:post-title {"className":"sd-expert__name","style":{"typography":{"textTransform":"none","fontWeight":"var(--wp--custom--font-weight--medium)","letterSpacing":"var(--wp--custom--letter-spacing--narrow)"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"400"} /-->
-
-			</div>
-			<!-- /wp:group -->
+			<!-- wp:post-title {"className":"sd-expert__name","style":{"typography":{"textTransform":"none","fontWeight":"var(--wp--custom--font-weight--medium)","letterSpacing":"var(--wp--custom--letter-spacing--narrow)"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"400"} /-->
 
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"metadata":{"name":"Expert Detail"},"className":"sd-expert__detail","style":{"spacing":{"blockGap":"var:preset|spacing|20"},"layout":{"selfStretch":"fill"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
-		<div class="wp-block-group sd-expert__detail">
+		<?php /* Call Us and Send an Email — grid area `actions`. */ ?>
+		<!-- wp:group {"metadata":{"name":"Expert Actions"},"className":"sd-expert__actions","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"stretch"}} -->
+		<div class="wp-block-group sd-expert__actions">
 
-			<?php /* Hidden below 992px — the compact copy is in Expert Identity. */ ?>
-			<!-- wp:group {"metadata":{"name":"Expert Name"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"medium":true,"small":true}}}}]}} -->
-			<div class="wp-block-group">
+			<?php
+			/*
+			 * The Call Us box — the icon beside the navigation, both inside
+			 * a group that carries live's `.lsx-to-meta-data` clothing as
+			 * block attributes. Radius 0 and the button padding token, so
+			 * the box matches the height and the corner of the accent CTA
+			 * beside it rather than being a second shape, and
+			 * `selfStretch: fill` so the two share the row evenly.
+			 *
+			 * See the long note above for why the box (and not the toggle)
+			 * is the target, and why the icon takes no colour of its own.
+			 */
+			?>
+			<!-- wp:group {"metadata":{"name":"Call Us"},"className":"sd-expert__call-box","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:custom|spacing|button|padding-vertical","right":"var:preset|spacing|20","bottom":"var:custom|spacing|button|padding-vertical","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|0","width":"var:custom|border-width|100","style":"solid"},"layout":{"selfStretch":"fill"}},"borderColor":"base","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"center"}} -->
+			<div class="wp-block-group sd-expert__call-box has-border-color has-base-border-color" style="border-style:solid;border-width:var(--wp--custom--border-width--100);border-radius:var(--wp--preset--border-radius--0);padding-top:var(--wp--custom--spacing--button--padding-vertical);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--custom--spacing--button--padding-vertical);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","width":"20px"} -->
+			<div class="wp-block-outermost-icon-block"><div class="icon-container" style="width:20px"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M231.88,175.08A56.26,56.26,0,0,1,176,224C96.6,224,32,159.4,32,80A56.26,56.26,0,0,1,80.92,24.12a16,16,0,0,1,16.62,9.52l21.12,47.15,0,.12A16,16,0,0,1,117.39,96c-.18.27-.37.52-.57.77L96,121.45c7.49,15.22,23.41,31,38.83,38.51l24.34-20.71a8.12,8.12,0,0,1,.75-.56,16,16,0,0,1,15.17-1.4l.13.06,47.11,21.11A16,16,0,0,1,231.88,175.08Z"></path></svg></div></div>
+			<!-- /wp:outermost/icon-block -->
 
-				<!-- wp:heading {"className":"sd-expert__eyebrow","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","textTransform":"uppercase"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"300"} -->
-				<h2 class="wp-block-heading sd-expert__eyebrow has-base-color has-text-color has-link-color has-300-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold);text-transform:uppercase"><?php esc_html_e( 'Chat to your safari expert', 'sd-theme-2026' ); ?></h2>
-				<!-- /wp:heading -->
-
-				<!-- wp:post-title {"className":"sd-expert__name","style":{"typography":{"textTransform":"none","fontWeight":"var(--wp--custom--font-weight--medium)","letterSpacing":"var(--wp--custom--letter-spacing--narrow)"},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"400"} /-->
-
-			</div>
+			<!-- wp:navigation {"overlayMenu":"never","ariaLabel":"<?php esc_attr_e( 'Office numbers', 'sd-theme-2026' ); ?>","className":"is-style-call-us-navigation sd-expert__call","textColor":"base","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--semi-bold)"},"spacing":{"blockGap":"0"}},"fontSize":"300"} -->
+			<!-- wp:ollie/mega-menu {"label":"<?php esc_attr_e( 'Call Us', 'sd-theme-2026' ); ?>","menuSlug":"dropdown-call-us","showOnHover":true,"justifyMenu":"left","width":"custom","customWidth":320,"topSpacing":8,"fontFamily":"heading","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--semi-bold)","textTransform":"uppercase"}},"metadata":{"name":"Call Us"}} /-->
+			<!-- /wp:navigation --></div>
 			<!-- /wp:group -->
 
-			<!-- wp:group {"metadata":{"name":"Expert Actions"},"className":"sd-expert__actions","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"stretch"}} -->
-			<div class="wp-block-group sd-expert__actions">
-
-				<?php
-				/*
-				 * The Call Us box — the icon beside the navigation, both inside
-				 * a group that carries live's `.lsx-to-meta-data` clothing as
-				 * block attributes. Radius 0 and the button padding token, so
-				 * the box matches the height and the corner of the accent CTA
-				 * beside it rather than being a second shape, and
-				 * `selfStretch: fill` so the two share the row evenly.
-				 *
-				 * See the long note above for why the box (and not the toggle)
-				 * is the target, and why the icon takes no colour of its own.
-				 */
-				?>
-				<!-- wp:group {"metadata":{"name":"Call Us"},"className":"sd-expert__call-box","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:custom|spacing|button|padding-vertical","right":"var:preset|spacing|20","bottom":"var:custom|spacing|button|padding-vertical","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|0","width":"var:custom|border-width|100","style":"solid"},"layout":{"selfStretch":"fill"}},"borderColor":"base","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"center"}} -->
-				<div class="wp-block-group sd-expert__call-box has-border-color has-base-border-color" style="border-style:solid;border-width:var(--wp--custom--border-width--100);border-radius:var(--wp--preset--border-radius--0);padding-top:var(--wp--custom--spacing--button--padding-vertical);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--custom--spacing--button--padding-vertical);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","width":"20px"} -->
-				<div class="wp-block-outermost-icon-block"><div class="icon-container" style="width:20px"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M231.88,175.08A56.26,56.26,0,0,1,176,224C96.6,224,32,159.4,32,80A56.26,56.26,0,0,1,80.92,24.12a16,16,0,0,1,16.62,9.52l21.12,47.15,0,.12A16,16,0,0,1,117.39,96c-.18.27-.37.52-.57.77L96,121.45c7.49,15.22,23.41,31,38.83,38.51l24.34-20.71a8.12,8.12,0,0,1,.75-.56,16,16,0,0,1,15.17-1.4l.13.06,47.11,21.11A16,16,0,0,1,231.88,175.08Z"></path></svg></div></div>
-				<!-- /wp:outermost/icon-block -->
-
-				<!-- wp:navigation {"overlayMenu":"never","ariaLabel":"<?php esc_attr_e( 'Office numbers', 'sd-theme-2026' ); ?>","className":"is-style-call-us-navigation sd-expert__call","textColor":"base","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--semi-bold)"},"spacing":{"blockGap":"0"}},"fontSize":"300"} -->
-				<!-- wp:ollie/mega-menu {"label":"<?php esc_attr_e( 'Call Us', 'sd-theme-2026' ); ?>","menuSlug":"dropdown-call-us","showOnHover":true,"justifyMenu":"left","width":"custom","customWidth":320,"topSpacing":8,"fontFamily":"heading","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--semi-bold)","textTransform":"uppercase"}},"metadata":{"name":"Call Us"}} /-->
-				<!-- /wp:navigation --></div>
-				<!-- /wp:group -->
-
-				<?php /* Placeholder for the Enquiry module's modal — see the note above. */ ?>
-				<!-- wp:buttons {"className":"sd-expert__email","style":{"layout":{"selfStretch":"fill"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
-				<div class="wp-block-buttons sd-expert__email"><!-- wp:button {"className":"is-style-accent-cta","style":{"dimensions":{"width":"var:preset|dimension|100"}}} -->
-				<div class="wp-block-button is-style-accent-cta"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send an Email', 'sd-theme-2026' ); ?></a></div>
-				<!-- /wp:button --></div>
-				<!-- /wp:buttons -->
-
-			</div>
-			<!-- /wp:group -->
+			<?php /* Placeholder for the Enquiry module's modal — see the note above. */ ?>
+			<!-- wp:buttons {"className":"sd-expert__email","style":{"layout":{"selfStretch":"fill"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
+			<div class="wp-block-buttons sd-expert__email"><!-- wp:button {"className":"is-style-accent-cta","style":{"dimensions":{"width":"var:preset|dimension|100"}}} -->
+			<div class="wp-block-button is-style-accent-cta"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send an Email', 'sd-theme-2026' ); ?></a></div>
+			<!-- /wp:button --></div>
+			<!-- /wp:buttons -->
 
 		</div>
 		<!-- /wp:group -->

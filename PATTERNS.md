@@ -267,7 +267,8 @@ recognise the name if you meet it in the Site Editor.
 | **Template: Single Destination** | Any destination page — country or region. What a destination uses unless you pick otherwise. |
 | **Template: Single Country** | A destination page with the **regions** shelf and no accommodation shelf |
 | **Template: Single Region** | A destination page with the **accommodation** shelf and no regions shelf |
-| **Destination — Banner / Breadcrumbs / Summary Band / Gallery / Regions Shelf / Accommodation Shelf / Tours Shelf / Reviews Shelf** | The eight sections the three destination templates are built from. Each appears in all the templates that use it, so a change to one section changes every destination page that shows it — which is the point. You never place them. |
+| **Destination — Banner / Summary Band / Gallery / Regions Shelf / Accommodation Shelf / Tours Shelf / Reviews Shelf** | The seven sections the three destination templates are built from. Each appears in all the templates that use it, so a change to one section changes every destination page that shows it — which is the point. You never place them. |
+| **Breadcrumbs** | The Yoast trail band beneath the banner. Shared by all three destination templates and the tour template — a change here changes every page that shows it. You never place it. |
 
 ### Choosing Single Country or Single Region
 

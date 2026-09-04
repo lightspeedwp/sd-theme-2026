@@ -179,8 +179,10 @@
 	 *
 	 * Live's two `col-md-6` columns inside `#collapse-summary`: the property
 	 * copy on the left, `.single-accommodation-box-wrap` on the right. Two equal
-	 * columns, as live has them — like the destination single and unlike the
-	 * tour, whose right column is a 497px-capped fast-facts card.
+	 * columns, as live has them — like the destination single and like the
+	 * tour, whose right column is a fast-facts card. (Live caps that card at
+	 * 497px; this theme does not — see patterns/template-single-tour.php, "The
+	 * summary band".)
 	 *
 	 * **No safari expert panel.** Both sibling singles carry one beneath the
 	 * copy; live's accommodation single does not — `#safari-expert-box` is

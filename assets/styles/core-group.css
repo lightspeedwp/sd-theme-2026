@@ -1237,16 +1237,37 @@
 	content: none;
 }
 
-/* The night count holds its line. It sits in a constrained group, which is a
-   flex item of the wrapping stay heading and would otherwise be shrunk below
-   its content — long enough lodge names pushed it past the point where
-   "2 Nights" broke mid-word into "2 / Night / s". `flex: 0 0 auto` fixes it at
-   its content width, so the lodge and its destination are what wrap. This is
-   the one part of the wrap behaviour with no block attribute behind it; the
-   two `flexWrap` values it works with are authored in
-   patterns/itinerary-stay.php. */
-.sd-itinerary__stay .itin-title-wrapper {
-	flex: 0 0 auto;
+/* The row is one inline flow, so it breaks on the word rather than on the term.
+
+   Live's `.lsx-to-archive-content` is a plain block whose night-count `h3` is
+   `display: inline` (custom.css:2375-2378), with the lodge and its destination
+   as `<span>`s after it: nothing in the row is a box that can drop whole, so a
+   long lodge name breaks between its own words. The block version was three
+   wrapping flex rows, which made every `itin-<field>-wrapper` an atomic flex
+   item — the lodge dropped whole below the night count, the destination whole
+   below the lodge. The groups are flow layout now (patterns/itinerary-stay.php)
+   and are made inline here.
+
+   The wrappers cannot be flattened away: Tour Operator rewrites
+   `itin-<field>-wrapper` to `hidden itin-<field>-wrapper` to drop an empty
+   field, and its `.lsx-itinerary-wrapper .hidden { display: none }` is (0,2,0)
+   — the same weight this rule would carry without `:not(.hidden)`, decided by
+   source order. The negation puts these at (0,3,0) so an empty field still
+   disappears.
+
+   `display: inline` on the wrappers is also what replaced the `flex: 0 0 auto`
+   that used to pin the night count: there is no flex item left to shrink, so
+   "2 Nights" can no longer be squeezed until it breaks into "2 / Night / s".
+   The spaces between the three terms are the newlines between the wrappers in
+   the serialized markup, collapsed by the inline formatting context — live
+   emits the same single space with `echo ' '` (layout.php:405). */
+.sd-itinerary__stay .itin-title-wrapper:not(.hidden),
+.sd-itinerary__stay .itin-accommodation-wrapper:not(.hidden),
+.sd-itinerary__stay .itinerary-title,
+.sd-itinerary__stay .itinerary-accommodation,
+.sd-itinerary__stay .itinerary-location {
+	display: inline;
+	margin: 0;
 }
 
 /* The comma between the lodge and its destination. It belongs to the lodge's
@@ -1305,5 +1326,110 @@
 	.is-style-highlights-list ul {
 		columns: 2;
 		column-gap: var(--wp--preset--spacing--50);
+	}
+}
+
+/**
+ * Safari Expert Panel — the arrangement.
+ *
+ * patterns/safari-expert.php. Three siblings in one grid: the portrait, the
+ * identity block (eyebrow + name) and the actions row. Two arrangements —
+ *
+ *     narrow   "portrait name"      the name beside the portrait,
+ *              "actions actions"    the actions across the full card
+ *
+ *     wide     "portrait name"      the portrait beside a stacked
+ *              "portrait actions"   name-over-actions column
+ *
+ * This is here rather than in a block-style JSON for the reason AGENTS.md
+ * gives for `@media`: a `css` field's sanitiser unwraps at-rules, dropping the
+ * query and promoting its rules to unconditional ones. `@container` goes the
+ * same way. `grid-template-areas` has no block attribute either.
+ *
+ * ## Why it is a container query
+ *
+ * Until 2026-09-04 the identity block was authored twice and Block
+ * Visibility's screen-size control chose between the copies. That left a band
+ * — roughly 990–1250px on the tour single — where the wide arrangement was
+ * switched on inside a card too narrow to hold it: the detail column was
+ * `flex: 1 1 auto`, so flexbox sized it from its ~470px max-content, could not
+ * fit that beside the 126px portrait, and wrapped it to a second flex line.
+ * The portrait was left alone on row one with everything else stacked beneath
+ * it — 313px tall at the switch against 175px at 1440px, measured on local.
+ *
+ * The band differed by environment, because Block Visibility's breakpoints are
+ * a global plugin setting: `large` is 1200px on local and 992px on dev. And no
+ * viewport breakpoint could have been right regardless — three templates
+ * require this pattern and the column it sits in is a different width in each.
+ * What decides the arrangement is the card's own width.
+ *
+ * ## The threshold is 36rem, and it is measured
+ *
+ * 576px of card width is where the actions row stops wrapping once the name
+ * column has given up the portrait's 126px and the gap. Measured on local
+ * 2026-09-04, card width against card height in the wide arrangement:
+ * **563px → 247px** (actions on two lines), **577px → 181px** (one line).
+ * Below the threshold the narrow arrangement hands the actions the full card
+ * width, so they stay on one line down to ~447px. Don't lower it without
+ * re-measuring — the failure mode is the tall card this replaced.
+ *
+ * `container-name` is set, not just `container-type`. Core's grid layout adds
+ * `container-type: inline-size` to the grid container itself as soon as a
+ * `minimumColumnWidth` is present (wp-includes/block-supports/layout.php:893),
+ * and an unnamed container would then shadow this one — a named query skips it.
+ */
+.sd-expert {
+	container-type: inline-size;
+	container-name: sd-expert;
+}
+
+/* (0,2,0), so it beats core's own `grid-template-columns: repeat(2, minmax(0,
+   1fr))` on `.wp-container-core-group-is-layout-*`, which is (0,1,0). The
+   block's `columnCount: 2` is authored so the editor shows two columns; the
+   real track sizing is here. */
+.sd-expert__panel.wp-block-group {
+	grid-template-columns: auto 1fr;
+	grid-template-areas:
+		"portrait name"
+		"actions actions";
+	align-items: center;
+}
+
+.sd-expert__panel > .sd-expert__portrait {
+	grid-area: portrait;
+}
+
+.sd-expert__panel > .sd-expert__identity {
+	grid-area: name;
+}
+
+.sd-expert__panel > .sd-expert__actions {
+	grid-area: actions;
+}
+
+@container sd-expert (min-width: 36rem) {
+
+	/* The portrait spans both rows and centres itself against them; the name
+	   and the actions stack in the second column. */
+	.sd-expert__panel.wp-block-group {
+		grid-template-areas:
+			"portrait name"
+			"portrait actions";
+		align-items: start;
+		column-gap: var(--wp--preset--spacing--20);
+	}
+
+	.sd-expert__panel > .sd-expert__portrait {
+		align-self: center;
+	}
+
+	/* The eyebrow drops a step once it sits above the name in a column rather
+	   than beside the portrait — Zared's sizes, 400 narrow and 300 wide,
+	   carried over from the two identity copies this replaced. `!important`
+	   because core marks every preset font-size class important
+	   (`.has-400-font-size{font-size:…!important}` in global-styles-inline-css),
+	   so nothing unmarked can beat the class the block attribute emits. */
+	.sd-expert__panel .sd-expert__eyebrow {
+		font-size: var(--wp--preset--font-size--300) !important;
 	}
 }

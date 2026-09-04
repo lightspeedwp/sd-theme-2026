@@ -16,7 +16,7 @@
 /*
  * Finalised from the composition signed off on the dev homepage (2026-08-27),
  * captured back out of the DB front-page override into this file so the pattern
- * is the source of truth again. Everything here — the 3/2 image, the
+ * is the source of truth again. Everything here — the 16/9 image, the
  * neutral-100 panel with shadow-200, the centred title, the date/category
  * byline, the "/.." excerpt more-text and the ruled tag footer — is that
  * composition unchanged, with one later change: the corners are square. The
@@ -58,7 +58,7 @@
 <div class="wp-block-group is-style-post-grid-card has-neutral-100-background-color has-background" style="box-shadow:var(--wp--preset--shadow--200)">
 	<!-- wp:group {"metadata":{"name":"Media"},"className":"post-grid-card__media","layout":{"type":"default"}} -->
 	<div class="wp-block-group post-grid-card__media">
-		<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"3/2"} /-->
+		<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
 	</div>
 	<!-- /wp:group -->
 

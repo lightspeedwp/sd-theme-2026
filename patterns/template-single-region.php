@@ -98,7 +98,7 @@
 
 	<?php
 	require __DIR__ . '/destination-banner.php';
-	require __DIR__ . '/destination-breadcrumbs.php';
+	require __DIR__ . '/breadcrumbs.php';
 	require __DIR__ . '/destination-summary.php';
 	require __DIR__ . '/destination-gallery.php';
 	require __DIR__ . '/destination-accommodation.php';

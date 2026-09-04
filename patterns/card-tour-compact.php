@@ -2,7 +2,7 @@
 /**
  * Title: Card — Tour (Compact)
  * Slug: sd-theme-2026/card-tour-compact
- * Description: The compact tour tile the related-tours carousel carries on every Tour Operator single — a 3/2 featured image above a tinted panel centring the title, the duration, the travel styles, the connected destinations and the excerpt.
+ * Description: The compact tour tile the related-tours carousel carries on every Tour Operator single — a 16/9 featured image above a tinted panel centring the title, the duration, the travel styles, the connected destinations and the excerpt.
  * Categories: sd-theme-2026/card, sd-theme-2026/tour-operator
  * Keywords: card, compact, tile, tour, related, carousel, duration
  * Viewport Width: 480
@@ -22,7 +22,7 @@
  *    `neutral-200` the section style paints. That makes it the same device as
  *    patterns/card-post-grid.php, and it is why the hover lift below can be the
  *    same one — see assets/styles/core-group.css.
- *  - **3/2, not 16/9.** Same crop as the post grid card, so the two shelves
+ *  - **16/9, not 3/2.** Same crop as the post grid card, so the two shelves
  *    read as one system. Image crops are `aspectRatio`, never CSS. → AGENTS.md
  *  - **An even 30 panel** in place of the 40/30/60/30 that left room for a
  *    read-more the carousel hides. The excerpt fills that space now.
@@ -55,7 +55,7 @@
 ?>
 <!-- wp:group {"metadata":{"name":"Tour Card — Compact"},"className":"is-style-listing-card-compact","style":{"spacing":{"blockGap":"0","padding":{"top":"0","bottom":"0"}},"shadow":"var:preset|shadow|200"},"backgroundColor":"neutral-100","layout":{"type":"default"},"sdLinkTo":"post"} -->
 <div class="wp-block-group is-style-listing-card-compact has-neutral-100-background-color has-background" style="padding-top:0;padding-bottom:0;box-shadow:var(--wp--preset--shadow--200)">
-	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"3/2"} /-->
+	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
 
 	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200","layout":{"type":"constrained"}} -->
 	<div class="wp-block-group has-200-font-size" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">

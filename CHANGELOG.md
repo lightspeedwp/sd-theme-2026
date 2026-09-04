@@ -8,6 +8,16 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The breadcrumb band now runs on the tour single too.** `patterns/template-single-tour.php`
+  requires `patterns/breadcrumbs.php` directly beneath the banner cover, outside it — the same
+  placement as the three destination templates. This corrects a call recorded the other way:
+  the file's own header had the bar down as `sd-enhancements` work on the grounds that
+  breadcrumb output is a filter over a third-party plugin's trail. That still holds for the
+  trail's *contents*, but placing the block and choosing the band's ground is design, so the
+  block is a theme block — the same correction `template-single-destination.php` made on
+  2026-09-03. `patterns/template-archive-destination.php` still carries the old reasoning
+  verbatim and is owed the same fix. *(LS-2033)*
+
 - **The destination copy collapses to a Read More, and the gap between its paragraphs is
   tighter.** `patterns/destination-summary.php` — imported from the Site Editor on dev
   2026-09-03 (wp_template 65929), verified byte-for-byte (`d858e95d…`, 500 chars) — wraps
@@ -710,6 +720,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- **The tour summary card fills its column instead of stopping at 497px.**
+  `patterns/template-single-tour.php` drops the `contentSize: "497px"` from the Summary
+  Card group's constrained layout. The cap reproduced live's
+  `#single-tour-summary { max-width: 497px }` (sd-lsx-child custom.css:2308), but the cap
+  does not translate: on live it sits on the column itself inside a
+  `justify-content: space-between` flex row, so the card is flush to the container's right
+  edge with nothing beside it. Here it sat on a group inside a `core/column` — half of an
+  `alignwide` 1440px row, so ~696px — which stranded ~200px to its right and broke the
+  itinerary rows mid-term at ~436px of text (497 less the 33px marker and its gap). The
+  itinerary spine still breaks on the word rather than the term; it simply breaks later.
+  The stale cross-references in `patterns/destination-summary.php` and
+  `patterns/template-single-accommodation.php`, both of which described the tour's right
+  column as "a 497px-capped fast-facts card", are corrected to say the cap is live's and
+  not this theme's. *(LS-2033)*
+
+- **`patterns/destination-breadcrumbs.php` is renamed to `patterns/breadcrumbs.php`**
+  (slug `sd-theme-2026/destination-breadcrumbs` → `sd-theme-2026/breadcrumbs`, title
+  "Destination — Breadcrumbs" → "Breadcrumbs"). The band carries nothing
+  destination-specific — it is Yoast's trail on a tinted strip — and the destination-scoped
+  name stopped describing the file the moment `template-single-tour.php` required it too.
+  All `require __DIR__ . '/destination-breadcrumbs.php'` call sites
+  (`template-single-destination.php`, `template-single-country.php`,
+  `template-single-region.php`) and the slug reference in `inc/yoast-breadcrumbs.php` are
+  updated to match. Entries above dated 2026-09-03 still name the old filename and slug — they
+  describe the state as verified that day and are left as written.
 
 - **The Yoast breadcrumb trail renders at font size `200` (Base) instead of inheriting the
   root `300`.** `assets/styles/yoast-breadcrumbs.css`, attached to `yoast-seo/breadcrumbs`
@@ -1424,6 +1460,113 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **The enquiry modal's Gravity Form is sized against the theme's own controls.**
+  `style.css` — a `Gravity Forms in a modal` block scoped to
+  `.wp-block-hm-popup .gform-theme`. Gravity Forms' framework sheets size a form for a
+  page, not a 590px dialog: measured on dev 2026-09-04, `--gf-form-gap-y: 40px` between
+  fields, `--gf-ctrl-size-md: 38px` tall inputs, and 14px text and placeholders in them
+  (`--gf-font-size-primary`). Against this theme's other text control — the header search
+  input — that is small fields with a large gap between them.
+
+  The block re-declares five tokens rather than any rule: `--gf-form-gap-y` to
+  `spacing|20`, `--gf-ctrl-size-md` to the search input's own box expressed as
+  `font-size|200 x line-height|body + spacing|10 x 2 + border-width|100 x 2`,
+  `--gf-font-size-primary` and `--gf-ctrl-btn-font-size-md` to `font-size|200`, and
+  `--gf-padding-x` / `--gf-padding-y` to `spacing|20` / `spacing|10`. No widths, no
+  heights, no `!important`.
+
+  Two things make that hold, and the file says both. Every one of these tokens is
+  declared by Gravity Forms on a single class — `.gform-theme--framework` or
+  `.gform-theme--foundation`, (0,1,0) — so `.wp-block-hm-popup .gform-theme` at (0,2,0)
+  wins on specificity with no dependency on stylesheet order. And the overrides are of
+  the `-md` **size step**, not the resolved token: the form block prints an inline
+  `<style>` at `#gform_wrapper_1[data-form-index="0"].gform-theme`, (1,2,0), which no
+  class selector can reach, and what it writes there are `var()` references
+  (`--gf-ctrl-size: var(--gf-ctrl-size-md)`, and the same for `--gf-ctrl-btn-size` and
+  `--gf-ctrl-btn-font-size`). Redefining the step resolves the inline declaration;
+  redefining the token loses to it. Because `--gf-ctrl-btn-size-md` is itself
+  `var(--gf-ctrl-size-md)`, the submit button and the fields are the same height by
+  construction.
+
+  Colour stays out of this block: it arrives through the form block's own
+  `inputPrimaryColor` and `buttonPrimaryBackgroundColor` attributes in
+  `parts/modal-enquiry.html`, already pointing at `primary-500` and `brand-500`.
+
+  The stray paragraphs and line breaks the form used to render with are **not** papered
+  over here — they were Tour Operator running `wpautop()` and `wp_kses()` over the
+  rendered template part, and `SD\Enhancements\ModalMarkup` fixes that at the source.
+  Without that module no gap or height set here will square the form up. *(LS-2033)*
+
+- **The safari expert card no longer breaks between ~990px and ~1250px.**
+  `patterns/safari-expert.php` and `assets/styles/core-group.css`. The card is one
+  two-column grid of three siblings — portrait, identity, actions — and the arrangement
+  is chosen by a `@container` query on the card's own width (36rem) rather than by Block
+  Visibility's viewport breakpoints. The duplicated identity block is gone: one eyebrow
+  and one `core/post-title` in the DOM instead of two of each.
+
+  The old build authored the identity block twice and let Block Visibility's screen-size
+  control pick a copy at its `large` breakpoint. That switched the wide arrangement on
+  inside a card too narrow to hold it: `.sd-expert__detail` was `flex: 1 1 auto`, so
+  flexbox sized it from its ~470px max-content, could not fit that beside the 126px
+  portrait, and wrapped it to a second flex line — the portrait alone on row one with the
+  eyebrow, the name and both actions stacked beneath it. Measured on local: **313px tall
+  at the switch against 175px at 1440px.**
+
+  Two things made a viewport breakpoint unfixable. Block Visibility's breakpoints are a
+  global plugin setting and `large` is **1200px on local, 992px on dev**, so the band was
+  a different width in each environment — the file's own comment asserted "large ≥ 992px"
+  as a fact about the plugin when it was a dev measurement. And the pattern is required
+  by three templates whose columns are all different widths, so one viewport number could
+  never be right for all three. Verified across 13 widths on the tour single plus both
+  archives after the change: the switch now lands at 1260px on the single, 1440px on the
+  destination archive and ~1700px on the tour archive — the same 576px of card each time
+  — and the card never exceeds 183px tall in the wide arrangement. The Call Us pop-out
+  still escapes the card unclipped with `container-type` on `.sd-expert`. *(LS-2033)*
+
+- **Every Tour Operator modal is square now, and its close button is the mark on its own.**
+  `style.css` — radius off the panel (`.wp-block-hm-popup > *`) and off the close button,
+  which loses Tour Operator's translucent-white ground and quarter-radius corner weld for a
+  transparent 36px square inset `spacing|10` from the top and right. Its chrome arrives on
+  hover and keyboard focus only: a 2px `brand-600` border, `base` at 75% over whatever is
+  behind it, and the glyph going `brand-600` from a resting `neutral-800`. The border is
+  declared transparent at rest rather than omitted, so the box does not move when it
+  appears. Zared, 2026-09-04.
+
+- **The close mark was drawn off-centre and clipped, and it is Tour Operator's `wp_kses`
+  that does it.** `Modals::get_modal_allowed_html()` allows the attribute as
+  `'viewBox' => true`, and `wp_kses` lowercases every attribute name before looking it up —
+  so `viewbox` misses the list and **the attribute is stripped from the rendered SVG**
+  (core's own allow-lists spell it `'viewbox'` for exactly this reason). Without a viewBox
+  the SVG cannot scale: `width`/`height` resize the viewport while the path stays at its
+  authored 32 user units, so the mark draws full-size against the top-left corner and is
+  cut off on the other two. Measured on dev 2026-09-04 with `width: 1.25rem`: the 20px box
+  centred to the pixel, the 16px ink inside it sitting at gaps of 16/4 left/right and
+  16.5/3.5 top/bottom. The theme's `svg` sizing rule is gone and the button is sized around
+  the glyph instead — 36px box, 2px border, 32px viewport, 16px mark, measured back at
+  10/10 and 10.5/9.5 (the half-pixel is TO's own artwork, whose path is authored 0.5 units
+  low). A ⚠️ note in `style.css` says not to put the sizing back. Reported upstream.
+
+- **The card modals were rendering with none of their card styling.** The cause is not in
+  this theme and the fix is not either — Tour Operator renders its modal parts on
+  `wp_footer`, after core has read both of the stores that hold block CSS, so the whole of
+  `is-style-listing-card-compact` and the `blockGap: 0` under the image were computed and
+  discarded (→ `SD\Enhancements\ModalStyles`, sd-enhancements-2026). What that had been
+  showing instead was the global `h2` and the default block gap, which is the oversized
+  title, the loose padding and the gap between the image and the text. The theme's part of
+  it is a note in the modal block of `style.css` saying so, because the temptation on
+  seeing it is to hard-code smaller sizes onto the modal — which would fix the symptom and
+  set the modal and its carousel card drifting.
+
+- **The tour modal now matches the accommodation and destination modals.**
+  `parts/modal-tour.html` was alone in using a `3/2` crop where the other two use `16/9`
+  (and where its own `card-tour-compact` uses `16/9`), a `neutral-100` ground against their
+  `neutral-200`, a zeroed top and bottom padding, and per-block `brand-500` link colours on
+  the travel-style and destinations rows. That last one is the case
+  `styles/sections/cards/listing-card-compact.json` explicitly warns about — every link in
+  the card is one colour, set once on the section style, and a row that overrides it
+  re-introduces the problem the style was written to solve. All four differences removed;
+  the three card modals are now identical apart from their meta rows.
 
 - **The slider arrows rendered Tour Operator's default chevron, not ours.** Measured on the
   dev homepage 2026-09-03 at 1600px: both shelves drew a 20px white feather-stroke caret in
