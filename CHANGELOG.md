@@ -8,6 +8,79 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **`templates/taxonomy-accommodation-type.html` is a real template.** It was Tour
+  Operator's stub — a three-up grid of featured images and titles. It now references
+  `patterns/template-taxonomy-accommodation-type.php`, ported from
+  https://www.southerndestinations.com/search/accommodation/safari+lodges/ measured in
+  Chrome at 1440 / 992 / 390 on 2026-09-04: the banner carrying the term name, the
+  breadcrumb band, a **25% FacetWP filter rail** and a 75% results column holding a
+  result count, a sort control, the horizontal accommodation rows and a pager. This is
+  the open decision `patterns/template-archive-accommodation.php` recorded — "routing
+  the tiles at the facet search instead is a decision for whoever builds the search
+  line" — taken the other way: the archive's tiles keep pointing at `get_term_link()`
+  and the term archive becomes the results page.
+
+  **The design is ported; the mechanism is rebuilt.** Live's `/search/accommodation/*`
+  is a FacetWP *legacy template* whose stored PHP queries `post_type => 'product'`
+  against the `product_cat` taxonomy and sorts on a `search_price` meta key it writes
+  per request — live's accommodation search runs on **WooCommerce products**, and there
+  is no WooCommerce here. So the page is a Query Loop over `accommodation` with
+  `inherit: true`, filtered by FacetWP through `enableFacetWP: true` on `core/query` —
+  a registered attribute from FacetWP Blocks (Beta) that puts a `facetwp-template` class
+  on the inner `core/post-template`. Verified on local against a two-post fixture: the
+  class lands, and the loop returns only the term's accommodation and none of the six
+  tours.
+
+  **No `core/query-pagination`, and it is not a choice.** `add_facetwp_query_args()`
+  reads FacetWP's own `fwp_paged` argument and writes `page`/`paged` straight onto
+  `$GLOBALS['wp_the_query']`, so core's `/page/N/` links are overridden after they are
+  built. The count, sort and pager are `facetwp/facet` blocks — a **Pager** facet in
+  *Result counts* mode, a **Sort** facet, and a Pager in *Page numbers* mode — rather
+  than the `[facetwp …]` shortcode extras, so every control on the page is a block the
+  Site Editor can see. ⚠️ Those three facets (`results_count`, `sort`, `pager`) must be
+  created in FacetWP → Settings; until they are, `facetwp_display()` returns `''` for an
+  unknown name and each block renders its wrapper and nothing else. That is site data in
+  `wp_options`, not theme code. *(LS-2033)*
+
+  **`core/query-no-results` is live here and nowhere else.** LS-2529 records FacetWP
+  Blocks Beta returning `''` unconditionally from `render_block_core/query-no-results`,
+  which kills the fallback on this theme's non-inheriting loops. Its stated reason — that
+  core prints the content inside `core/post-template` when the query inherits — is true,
+  and this loop inherits, so the message renders.
+
+  ⚠️ **`accommodation_type` is deliberately not one of the facets.** Live can offer it
+  because its search page is not actually scoped: `total_rows` and
+  `total_rows_unfiltered` both return 200 on `/safari+lodges/` *and* on bare
+  `/accommodation/`, and the facet lists 16 types including "Safari Lodges (162)" — the
+  path segment narrows nothing. A term archive narrows the query before FacetWP sees it,
+  so the facet's only possible choice is the term already applied. Offering the type
+  facet alongside results means this cannot be a taxonomy template. *(LS-2033)*
+
+- **FacetWP facets render as dropdowns.** `assets/styles/facetwp-facets.css` and
+  `assets/js/search-filters.js`, wired to the `facetwp/facet` block by the new
+  `inc/facetwp.php` — the stylesheet through `wp_enqueue_block_style()` and the script
+  through `render_block_facetwp/facet`, since there is no block-script counterpart, so
+  neither loads on a page with no facet. Adapted from `kwv-theme-2026`'s
+  `assets/js/shop-filters.js`, with three differences: no MutationObserver is needed
+  (FacetWP refreshes only the *inside* of `.facetwp-facet`, so the block wrapper's
+  attributes survive), the panel opens **over** the results instead of folding the rail
+  open, and outside-click and Escape close it. FacetWP's own `fselect` facet type was
+  not used: facet *type* is site configuration, and `travel_style`, `price` and the
+  `destination_to_*` connections are shared with the tours search, so retyping them
+  would change a page this line does not cover.
+
+  Live diverges twice and is not followed: its facets are Bootstrap accordions with the
+  first force-opened by `lsx-search.js`, and below 768px the rail becomes an off-canvas
+  drawer with Apply/Close controls and `auto_refresh` switched off. That second
+  interaction model is a bespoke mobile design and out of scope; the dropdowns stack.
+
+  FacetWP's PNG checkbox and close icons are replaced with masked glyphs in theme
+  colours — the checked box is a single `fill-rule="evenodd"` mask that knocks the tick
+  *out* of a brand-500 tile, degrading to a solid tile if masks are unsupported.
+  ⚠️ Nothing in the sheet may set `display` on `.facet-wrap`: the blocks plugin adds
+  `.facetwp-hidden` there for a facet with no remaining choices, and that is a single
+  class at (0,1,0) which an author `display` would outrank, resurfacing an empty control.
+
 - **The accommodation archive runs a breadcrumb band under its banner.**
   `patterns/template-archive-accommodation.php` requires `patterns/breadcrumbs.php`
   directly beneath the banner cover, the same placement the tour single and the three

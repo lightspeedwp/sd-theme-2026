@@ -6,10 +6,9 @@
 	"blockTypes": [
 		"core/cover",
 		"core/image",
-		"core/post-featured-image",
-		"core/term-template"
+		"core/post-featured-image"
 	],
-	"description": "Image scales slightly on hover. core/term-template is in the list for one reason and it is not that a term template is an image: inside a terms query, Tour Operator re-renders core/post-featured-image from a render_block filter and builds the figure with get_block_wrapper_attributes(), which outside a block render returns the *enclosing* block's classes — so a class set on the featured image never reaches the markup, and the class set on the term template does. Setting it on the term template is the only way to reach that figure, and it is the same leak assets/styles/core-post-featured-image.css and SD\\Enhancements\\Queries::FEATURED_TERMS_CLASS are written around. It also renders one copy of this CSS instead of one per tile. Retire the entry once Tour Operator passes the block's own class into its wrapper.",
+	"description": "Image scales slightly on hover.",
 	"styles": {
 		"css": "&{overflow: hidden;} & .wp-block-cover__image-background{transition: transform 300ms ease;} & > img{transition: transform 300ms ease;} & > a > img{transition: transform 300ms ease;} &:hover .wp-block-cover__image-background{transform: scale(1.05);} &:hover > img{transform: scale(1.05);} &:hover > a > img{transform: scale(1.05);}"
 	}

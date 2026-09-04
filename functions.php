@@ -234,6 +234,13 @@ require_once get_theme_file_path( 'inc/mega-menu.php' );
 // enqueue_custom_block_styles()' core-* scan.
 require_once get_theme_file_path( 'inc/yoast-breadcrumbs.php' );
 
+// Styles facetwp/facet, whose inner markup is emitted by the plugin as a bare
+// `.facetwp-facet` div and then filled from JS, so it carries no block wrapper
+// attributes for theme.json to target — and a non-core block is outside
+// enqueue_custom_block_styles()' core-* scan. Also carries the dropdown script,
+// because there is no `wp_enqueue_block_script()` counterpart.
+require_once get_theme_file_path( 'inc/facetwp.php' );
+
 // Answers the plugin's `sd_enh_trustpilot_stars_image` filter with the theme's
 // own rating tile. The plugin exposes the rating as a number and says explicitly
 // that picking the graphic is the theme's job; this is the theme doing that, and
