@@ -1315,3 +1315,108 @@
 		column-gap: var(--wp--preset--spacing--50);
 	}
 }
+
+/**
+ * Safari Expert Panel — the arrangement.
+ *
+ * patterns/safari-expert.php. Three siblings in one grid: the portrait, the
+ * identity block (eyebrow + name) and the actions row. Two arrangements —
+ *
+ *     narrow   "portrait name"      the name beside the portrait,
+ *              "actions actions"    the actions across the full card
+ *
+ *     wide     "portrait name"      the portrait beside a stacked
+ *              "portrait actions"   name-over-actions column
+ *
+ * This is here rather than in a block-style JSON for the reason AGENTS.md
+ * gives for `@media`: a `css` field's sanitiser unwraps at-rules, dropping the
+ * query and promoting its rules to unconditional ones. `@container` goes the
+ * same way. `grid-template-areas` has no block attribute either.
+ *
+ * ## Why it is a container query
+ *
+ * Until 2026-09-04 the identity block was authored twice and Block
+ * Visibility's screen-size control chose between the copies. That left a band
+ * — roughly 990–1250px on the tour single — where the wide arrangement was
+ * switched on inside a card too narrow to hold it: the detail column was
+ * `flex: 1 1 auto`, so flexbox sized it from its ~470px max-content, could not
+ * fit that beside the 126px portrait, and wrapped it to a second flex line.
+ * The portrait was left alone on row one with everything else stacked beneath
+ * it — 313px tall at the switch against 175px at 1440px, measured on local.
+ *
+ * The band differed by environment, because Block Visibility's breakpoints are
+ * a global plugin setting: `large` is 1200px on local and 992px on dev. And no
+ * viewport breakpoint could have been right regardless — three templates
+ * require this pattern and the column it sits in is a different width in each.
+ * What decides the arrangement is the card's own width.
+ *
+ * ## The threshold is 36rem, and it is measured
+ *
+ * 576px of card width is where the actions row stops wrapping once the name
+ * column has given up the portrait's 126px and the gap. Measured on local
+ * 2026-09-04, card width against card height in the wide arrangement:
+ * **563px → 247px** (actions on two lines), **577px → 181px** (one line).
+ * Below the threshold the narrow arrangement hands the actions the full card
+ * width, so they stay on one line down to ~447px. Don't lower it without
+ * re-measuring — the failure mode is the tall card this replaced.
+ *
+ * `container-name` is set, not just `container-type`. Core's grid layout adds
+ * `container-type: inline-size` to the grid container itself as soon as a
+ * `minimumColumnWidth` is present (wp-includes/block-supports/layout.php:893),
+ * and an unnamed container would then shadow this one — a named query skips it.
+ */
+.sd-expert {
+	container-type: inline-size;
+	container-name: sd-expert;
+}
+
+/* (0,2,0), so it beats core's own `grid-template-columns: repeat(2, minmax(0,
+   1fr))` on `.wp-container-core-group-is-layout-*`, which is (0,1,0). The
+   block's `columnCount: 2` is authored so the editor shows two columns; the
+   real track sizing is here. */
+.sd-expert__panel.wp-block-group {
+	grid-template-columns: auto 1fr;
+	grid-template-areas:
+		"portrait name"
+		"actions actions";
+	align-items: center;
+}
+
+.sd-expert__panel > .sd-expert__portrait {
+	grid-area: portrait;
+}
+
+.sd-expert__panel > .sd-expert__identity {
+	grid-area: name;
+}
+
+.sd-expert__panel > .sd-expert__actions {
+	grid-area: actions;
+}
+
+@container sd-expert (min-width: 36rem) {
+
+	/* The portrait spans both rows and centres itself against them; the name
+	   and the actions stack in the second column. */
+	.sd-expert__panel.wp-block-group {
+		grid-template-areas:
+			"portrait name"
+			"portrait actions";
+		align-items: start;
+		column-gap: var(--wp--preset--spacing--20);
+	}
+
+	.sd-expert__panel > .sd-expert__portrait {
+		align-self: center;
+	}
+
+	/* The eyebrow drops a step once it sits above the name in a column rather
+	   than beside the portrait — Zared's sizes, 400 narrow and 300 wide,
+	   carried over from the two identity copies this replaced. `!important`
+	   because core marks every preset font-size class important
+	   (`.has-400-font-size{font-size:…!important}` in global-styles-inline-css),
+	   so nothing unmarked can beat the class the block attribute emits. */
+	.sd-expert__panel .sd-expert__eyebrow {
+		font-size: var(--wp--preset--font-size--300) !important;
+	}
+}

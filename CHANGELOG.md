@@ -1279,6 +1279,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **The safari expert card no longer breaks between ~990px and ~1250px.**
+  `patterns/safari-expert.php` and `assets/styles/core-group.css`. The card is one
+  two-column grid of three siblings — portrait, identity, actions — and the arrangement
+  is chosen by a `@container` query on the card's own width (36rem) rather than by Block
+  Visibility's viewport breakpoints. The duplicated identity block is gone: one eyebrow
+  and one `core/post-title` in the DOM instead of two of each.
+
+  The old build authored the identity block twice and let Block Visibility's screen-size
+  control pick a copy at its `large` breakpoint. That switched the wide arrangement on
+  inside a card too narrow to hold it: `.sd-expert__detail` was `flex: 1 1 auto`, so
+  flexbox sized it from its ~470px max-content, could not fit that beside the 126px
+  portrait, and wrapped it to a second flex line — the portrait alone on row one with the
+  eyebrow, the name and both actions stacked beneath it. Measured on local: **313px tall
+  at the switch against 175px at 1440px.**
+
+  Two things made a viewport breakpoint unfixable. Block Visibility's breakpoints are a
+  global plugin setting and `large` is **1200px on local, 992px on dev**, so the band was
+  a different width in each environment — the file's own comment asserted "large ≥ 992px"
+  as a fact about the plugin when it was a dev measurement. And the pattern is required
+  by three templates whose columns are all different widths, so one viewport number could
+  never be right for all three. Verified across 13 widths on the tour single plus both
+  archives after the change: the switch now lands at 1260px on the single, 1440px on the
+  destination archive and ~1700px on the tour archive — the same 576px of card each time
+  — and the card never exceeds 183px tall in the wide arrangement. The Call Us pop-out
+  still escapes the card unclipped with `container-type` on `.sd-expert`. *(LS-2033)*
+
 - **Every Tour Operator modal is square now, and its close button is the mark on its own.**
   `style.css` — radius off the panel (`.wp-block-hm-popup > *`) and off the close button,
   which loses Tour Operator's translucent-white ground and quarter-radius corner weld for a
