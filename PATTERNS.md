@@ -264,6 +264,28 @@ recognise the name if you meet it in the Site Editor.
 | **Itinerary Stay** | One row of the tour page's itinerary list. Repeated once per stay by the Tour Operator plugin — you never place it. |
 | **Template: Single Accommodation** | The accommodation page |
 | **Accommodation Unit** | One card in the accommodation page's Rooms band. Repeated once per unit by the Tour Operator plugin — you never place it. |
+| **Template: Single Destination** | Any destination page — country or region. What a destination uses unless you pick otherwise. |
+| **Template: Single Country** | A destination page with the **regions** shelf and no accommodation shelf |
+| **Template: Single Region** | A destination page with the **accommodation** shelf and no regions shelf |
+| **Destination — Banner / Breadcrumbs / Summary Band / Gallery / Regions Shelf / Accommodation Shelf / Tours Shelf / Reviews Shelf** | The eight sections the three destination templates are built from. Each appears in all the templates that use it, so a change to one section changes every destination page that shows it — which is the point. You never place them. |
+
+### Choosing Single Country or Single Region
+
+Every destination uses **Template: Single Destination** by default, and it is correct for a
+country and for a region alike: each shelf removes itself when it has nothing to show, so a
+country lands on its regions and a region lands on its accommodation without anyone
+choosing anything.
+
+Pick one of the other two — in the **Template** panel in the destination's sidebar — only
+when you want to *force* the choice:
+
+| Pick | To get |
+|---|---|
+| **Single Country** | The regions shelf, and **no** accommodation shelf even where lodges are connected to the country |
+| **Single Region** | The accommodation shelf, and no regions shelf |
+
+A country that has no child regions published yet will still show no regions shelf on
+Single Country — the shelf is its regions, and there are none to list.
 
 ---
 
@@ -272,6 +294,10 @@ recognise the name if you meet it in the Site Editor.
 | What you see | Usually means |
 |---|---|
 | A section is empty | Its query found nothing — check the post type has published content, and check any role or category filter |
+| A destination page has no map at all | That destination has no **location** set. The whole map band removes itself rather than showing an empty box |
+| The destination map shows "Click here to display the map" and clicking does nothing | A known Tour Operator 2.2 fault, not a theme one — the plugin builds the map and then discards it, so the script that handles the click never starts. On the change register; it needs a plugin fix |
+| A destination's breadcrumb trail is missing a level | Yoast builds the trail from the destination's **parent**. A region with no parent country set reads as a top-level page |
+| A destination page's description is cut off with a "Read more..." link | Expected — the copy collapses to its first paragraph until a reader clicks through |
 | The safari gurus row shows the wrong people | Nobody is tagged **Safari Guru**; it is falling back to the four most recent team members |
 | A "Get in Touch" link goes nowhere | That team member has no contact email |
 | A consultant's page has no client-feedback section | They have no **Trustpilot ID**, or the review cache has not refreshed |

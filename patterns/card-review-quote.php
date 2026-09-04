@@ -91,7 +91,7 @@
 		 */
 		?>
 		<!-- wp:group {"metadata":{"name":"Read More"},"layout":{"type":"flex","justifyContent":"center"}} -->
-		<div class="wp-block-group"><!-- wp:read-more {"content":"Read More","textColor":"accent-500","fontSize":"200"} /--></div>
+		<div class="wp-block-group"><!-- wp:read-more {"content":"Read More","textColor":"accent-500","fontSize":"300"} /--></div>
 		<!-- /wp:group -->
 
 	</div>

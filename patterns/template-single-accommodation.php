@@ -565,11 +565,11 @@
 	 * where there are none — which is why the measured page has no review band.
 	 */
 	?>
-	<!-- wp:group {"metadata":{"name":"Accommodation Reviews"},"align":"full","className":"is-style-light-page-section lsx-review-related-accommodation-query-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignfull is-style-light-page-section lsx-review-related-accommodation-query-wrapper">
+	<!-- wp:group {"metadata":{"name":"Accommodation Reviews"},"align":"full","className":"lsx-review-related-accommodation-query-wrapper","layout":{"type":"default"}} -->
+	<div class="wp-block-group alignfull lsx-review-related-accommodation-query-wrapper">
 
-		<!-- wp:query {"query":{"perPage":6,"pages":0,"offset":0,"postType":"review","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"","inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
-		<div class="wp-block-query alignwide is-style-slider-frame lsx-to-slider">
+		<!-- wp:query {"query":{"perPage":6,"pages":0,"offset":0,"postType":"review","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"","inherit":false},"hasCustomClass":true,"align":"full","className":"is-style-slider-frame lsx-to-slider sd-slider-nav-hidden sd-slider-flush","layout":{"type":"default"}} -->
+		<div class="wp-block-query alignfull is-style-slider-frame lsx-to-slider sd-slider-nav-hidden sd-slider-flush">
 			<!-- wp:post-template {"className":"lsx-review-related-accommodation-query","layout":{"type":"grid","columnCount":1}} -->
 				<!-- wp:pattern {"slug":"sd-theme-2026/card-review-quote"} /-->
 			<!-- /wp:post-template -->

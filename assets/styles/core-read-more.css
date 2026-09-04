@@ -28,3 +28,21 @@ hover flip needs real specificity here. Keep in sync with event-card.json. */
 	border-color: var(--wp--preset--color--contrast);
 	transition: background-color 0.25s, color 0.25s;
 }
+
+/* Read More - Review Quote Card hover/focus
+---------------------------------------------
+The "Read More" on a Review Quote Card (styles/sections/cards/review-quote-card.json)
+rests in accent-500 and flips to brand-500 — Zared, 2026-09-03. Two reasons it is
+here rather than in the variation: a `:hover` key under `styles.blocks.<block>` is
+never compiled (core compiles pseudo-selectors for elements only), and the
+variation's own `elements.link:hover` would take the linked post title with it,
+which is not what was asked for. Real specificity (0,2,0) also clears the
+element-level rule, which compiles to `:root :where(…)` at (0,1,0). The
+text-decoration reset is restated because the variation's `css` field has its
+`:hover` rule stripped. */
+.is-style-review-quote-card .wp-block-read-more:hover,
+.is-style-review-quote-card .wp-block-read-more:focus {
+	color: var(--wp--preset--color--brand-500);
+	text-decoration: none;
+	transition: color 0.25s;
+}

@@ -1,0 +1,18 @@
+/**
+ * Yoast SEO breadcrumbs.
+ *
+ * The block renders `<div class="yoast-breadcrumbs">` with no `wp-block-*`
+ * class and no block wrapper attributes, so neither a `styles/**` partial nor
+ * a `theme.json` `styles.blocks` entry can reach it — a theme.json rule would
+ * be written against `.wp-block-yoast-seo-breadcrumbs`, which never appears in
+ * the output. Hence one authored rule here.
+ *
+ * Only the size is set. The trail otherwise inherits the band it sits in —
+ * family, weight, colour and the link treatment all stay as they are.
+ *
+ * @package sd-theme-2026
+ */
+
+.yoast-breadcrumbs {
+	font-size: var(--wp--preset--font-size--200);
+}

@@ -8,6 +8,189 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The destination copy collapses to a Read More, and the gap between its paragraphs is
+  tighter.** `patterns/destination-summary.php` — imported from the Site Editor on dev
+  2026-09-03 (wp_template 65929), verified byte-for-byte (`d858e95d…`, 500 chars) — wraps
+  `core/post-content` in a `core/group` carrying `font-style:italic;font-weight:400`, adds
+  `core/read-more`, and drops `post-content`'s own `blockGap` to `spacing|20` against the
+  `spacing|60` root default. Because the section is a shared partial, all three destination
+  templates carry it identically. This is the block-native answer to the read-more
+  truncation `template-single-destination.php` had recorded as `sd-enhancements` work
+  (sd-lsx-child/assets/js/custom.js:224-275) — `core/read-more` collapses and expands
+  `core/post-content` with no script of ours needed. *(LS-2033)*
+
+  ⚠️ **`is-style-archive-intro` is authored on `post-content` and currently styles
+  nothing.** `core/paragraph`'s root selector is bare `p`
+  (wp-includes/blocks/paragraph/block.json:80), so the variation compiles to
+  `p.is-style-archive-intro` and can only match a paragraph carrying the class itself —
+  never an ancestor — and the style is registered `blockTypes: ["core/paragraph"]` only in
+  any case. The italic and the 400 weight the page shows come from CSS inheritance off the
+  wrapping group's own inline style, exactly as dev saved it. The class is kept because
+  that is what dev authored and because it correctly marks the block's role; flagged so it
+  is not mistaken for load-bearing if the archive-intro variation is ever touched alone.
+
+  **Verified** on local 2026-09-03: `phpcs --standard=WordPress .` silent across the whole
+  theme; all three templates carry the wrap, `is-style-archive-intro` once and
+  `core/read-more` once; rendering against a real destination produces one `<main>`, one
+  `<h1>` and one `.wp-block-read-more` button on all three.
+
+- **The dev Site Editor state of the destination single is imported, and the breadcrumb
+  strip and Tour Operator's Google Map land on all three destination templates.** Three
+  changes were authored on dev in the Site Editor (`wp_template` 65929, modified
+  2026-09-03 14:44) and are now theme files. Because the sections are shared partials, all
+  three templates picked them up by construction. *(LS-2033)*
+
+  **Breadcrumbs** — `patterns/destination-breadcrumbs.php`, required directly beneath the
+  banner cover: a full-width `primary-100` band at `spacing|10` top and bottom holding
+  `yoast-seo/breadcrumbs` at `alignwide`. Live draws the trail in a 58px `#ece9e3` strip
+  under the banner and `primary-100` is the nearest token.
+
+  **This corrects a call recorded the other way.** `template-single-destination.php` had
+  the breadcrumb bar down as `sd-enhancements` work, on the grounds that breadcrumb output
+  is a filter over a third-party plugin's trail. That still holds for the trail's
+  *contents* — what Yoast puts in it, and any `wpseo_breadcrumb_links` filtering — but
+  placing the block and choosing the band's ground is design, so the block is a theme
+  block. The stale note has been rewritten rather than left to contradict the file.
+  `patterns/template-single-tour.php` and `patterns/template-archive-destination.php`
+  carry the same old reasoning verbatim and were **left alone** as outside this task;
+  they are owed the same correction.
+
+  **The map is Tour Operator's own `lsx-tour-operator/google-map` block variation**, not
+  the two-group composition it replaces. The plugin registers a fixed inner shape in
+  `src/blocks/google-map/index.js` and its JavaScript keys off it:
+  `group.lsx-location-wrapper` → `group "Map Container"` → `cover.lsx-map-preview` +
+  `group.hidden "Map Details"` carrying the `lsx/map` binding. `lsx-location-wrapper`
+  replaces `lsx-google-map-wrapper`; both resolve through the same branch of
+  `Query_Loop::maybe_hide_varitaion()` (class-query-loop.php:213 checks `location`,
+  `google_map`, `wetu_map`, `wetu-map` and `google-map` against `lsx_to_has_map()`), so the
+  band still removes itself on a destination with no `location` meta. The preview plate is
+  a **lazy-load and it is the plugin's**: maps.js binds `.lsx-map-preview a` click →
+  `preventDefault()` → `getScript(google_url)` → `initThis()`, so Google Maps is not
+  requested until somebody asks for the map and the `href="#"` is wired upstream.
+  Tour Operator's "Title" group — separator, a centred "Location" heading, separator — is
+  deliberately not reproduced: live's `#destination-map` has no heading.
+
+  **The tours shelf is now tinted**, `is-style-light-page-section` →
+  `is-style-tinted-page-section`. Live paints every section below the summary on white
+  (custom.css:1802 sets padding on `#gallery` only), so this is a design decision taken in
+  the editor and preserved as authored, not a translation. The destination single now
+  alternates once. The "live does not alternate here" paragraph in
+  `template-single-destination.php` has been corrected.
+
+  **Verified byte-for-byte against dev, not by eye.** Each imported block was normalised
+  for newlines and hashed on both sides: breadcrumbs `bb13f7d2…` (594 chars),
+  the map block `09435070…` (1,631 chars), the tours section head `16d9405e…` — all three
+  match `wp_template` 65929 exactly. Section-level class counts now match dev too
+  (tinted 6, light 10, `primary-100` 2). The **one deliberate divergence** is the map
+  placeholder image: the editor wrote an absolute `southerndestinations.lightspeedwp.dev`
+  URL and the theme uses the root-relative plugin path, which is how Tour Operator's own
+  templates write it and the one URL here that is not environment-specific.
+  Two editor artefacts were corrected to core's actual save shape so the blocks do not
+  read as invalid: `core/cover` does not serialise `dimensions.aspectRatio` as an inline
+  style, and the preview paragraph centres via `style.typography.textAlign`, not `align`.
+
+  **Also verified** on local 2026-09-03: `phpcs --standard=WordPress patterns/` silent;
+  all eleven patterns register; section order is banner → breadcrumbs → summary → map →
+  gallery → (regions | accommodation) → tours → reviews with one `<main>` and one `<h1>`
+  each. Seeding `location` meta on Botswana renders the wrapper and the plate on all three
+  templates; removing it removes the whole band.
+
+  🔴 **The map plate is a dead click on Tour Operator 2.2, and the fault is upstream.**
+  `lsx_to_map()` builds the map and then executes a bare `return;`
+  (tour-operator/includes/template-tags/maps.php:233), discarding the markup and ignoring
+  `$echo`; the `return $before . $map . $after` below it is unreachable. So "Map Details"
+  emits nothing — measured with `location` seeded: `mapwrap=1 preview=1 maplink=1
+  mapdetails=0 lsxmap=0`. And maps.js's entire ready handler is gated on `.lsx-map`
+  existing (`jQuery(".lsx-map").length > 0 && …`), so with no `.lsx-map` in the DOM no
+  click handler is ever bound and "Click here to display the map" does nothing. The markup
+  here is the plugin's own and is correct. This needs either a Tour Operator patch or
+  `sd-enhancements` answering TO's own `lsx_to_map_override` filter **before launch** — as
+  it stands the page offers the reader a control that cannot work. → LS-2033
+
+- **The country and region singles are built, and the destination sections are now shared
+  partials.** `templates/single-country.html` and `templates/single-region.html` were Tour
+  Operator's own defaults, copied in wholesale by commit de58c9a — a Yoast breadcrumb strip
+  on `primary`, a gradient cover and the plugin's section set, none of it live's design.
+  Both are now four lines referencing `patterns/template-single-country.php` and
+  `patterns/template-single-region.php`, and they state live's country/region branch
+  explicitly instead of leaving it to the shelves to hide themselves. *(LS-2033)*
+
+  **The branch, as live's PHP has it.** `sd_lsx_to_destination_single_content_bottom()`
+  asks `lsx_to_item_has_children()` and renders one of two section sets — country → gallery
+  → regions → tours, region → gallery → accommodation → specials → tours → reviews
+  (`sd-lsx-child/includes/layout.php:166-215`). The two new templates carry one arm each:
+  Single Country keeps the regions shelf and drops accommodation; Single Region keeps
+  accommodation and drops regions.
+
+  **Both are assignable, not routes.** Tour Operator registers `single-country` and
+  `single-region` with `post_types: [ destination ]`
+  (`includes/classes/blocks/class-templates.php:89-99`), so they appear in the Template
+  panel on a destination and an author picks them per post. Every destination on live
+  carries `destination_attribute: default`, so `templates/single-destination.html` remains
+  what WordPress resolves, and it still serves a destination of either kind on its own.
+  A theme file of the same slug replaces the registered one — `get_block_templates()`
+  drops any registered template that has a theme file
+  (`wp-includes/block-template-utils.php:1231`) — so the plugin's versions no longer
+  appear. Both are declared in `theme.json` `customTemplates` scoped to `destination`;
+  without that they were offered on every post type.
+
+  **Single Country answers the accommodation deviation.** The route template's
+  accommodation shelf resolves through `accommodation_to_destination`, and a country
+  carries that meta too — Botswana lists 93 — so it renders there where live hides it.
+  That was flagged on LS-2033; assigning Single Country removes it, because the section is
+  not in the file.
+
+  **Seven shared section partials, `Inserter: false`** —
+  `patterns/destination-{banner,summary,gallery,regions,accommodation,tours,reviews}.php`.
+  All three templates `require` them, so there is one copy of every section and no third
+  place to keep in step. `patterns/template-single-destination.php` was rewired to the same
+  partials and its markup is unchanged: the pre- and post-refactor renders are identical
+  once whitespace is normalised (33,649 → 33,527 bytes, indentation only). `require`, not
+  a nested `<!-- wp:pattern /-->`, which is dropped on front-end render while still
+  resolving under a WP-CLI `do_blocks()` test.
+
+  **Verified** on local 2026-09-03, on this branch's base: all ten patterns register;
+  composition is destination = 7 sections, country = 6 without accommodation, region = 6
+  without regions, each with exactly one `<main>` and one `<h1>`;
+  `phpcs --standard=WordPress patterns/` silent; both templates resolve as `source: theme`
+  with `post_types: [destination]` and the plugin's are filtered out. Seeding a child
+  destination under Botswana renders the regions band on Single Country and not on Single
+  Region. **The accommodation and tour shelves and the gallery could not be exercised** —
+  local has no accommodation fixtures and the six destinations carry no gallery meta or
+  real connections, so every shelf self-hides. Their markup is byte-identical to the
+  destination single's, which does render them on dev.
+
+  **Still missing: the specials shelf.** Live's region branch renders `#special` between
+  the accommodation and tour shelves. `styles/sections/cards/special-card.json` is written
+  and registered and no pattern uses it yet; when that card lands it becomes a
+  `destination-specials` partial required between `destination-accommodation` and
+  `destination-tours`. **Connected reviews are kept on Single Country**, where live's
+  country branch shows none — the two differences asked for were the regions and
+  accommodation shelves, and the band is correct content either way. Both on LS-2033.
+
+- **The "Why choose Southern Destinations" band now closes every static page.**
+  `patterns/template-page-full.php` — the body of the "Page (Full Width, No Title)"
+  template — `require`s `patterns/why-choose-sd.php` at the foot of its `<main>`, which is
+  the follow-up that pattern's own notes were waiting on. On live the band is not page
+  content: the child theme emits `.footer-cta-section` beneath every inner page, which is
+  why it appears verbatim on `/about-us/social-responsibility/` and
+  `/about-us/connect-with-us/` while being absent from both pages' stored content. It is a
+  template concern, so it is declared once rather than pasted into five page bodies where
+  the sixth would be forgotten. *(LS-2033)*
+
+  **This template and not `templates/page.html`.** The full-width no-title template is the
+  static-page template and nothing else — About Us and its three children, plus Contact Us,
+  are its only consumers. The default page template still serves Privacy Policy, Terms,
+  Sitemap, Thank You and the two enquiry pages, none of which close on a marketing CTA.
+  Decision 2026-09-03.
+
+  `require`, not a nested `<!-- wp:pattern /-->`: a pattern reference inside a pattern is
+  dropped on front-end render while still resolving under a WP-CLI `do_blocks()` test.
+  `templates/front-page.html` can use the reference because it is a template file, not a
+  pattern. Verified by rendering the registered pattern — one `<main>`, one `<section>`, the
+  band present. `<main>` carries no bottom padding, so the band's own preset 70 is the only
+  gap between the last content section and the footer.
+
 - **The team member single is built.** `templates/single-team.html` was header, the generic
   `single-hero` part and a bare `core/post-content`; it now references
   `patterns/template-single-team.php`, which reproduces the live consultant profile section
@@ -527,6 +710,138 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- **The Yoast breadcrumb trail renders at font size `200` (Base) instead of inheriting the
+  root `300`.** `assets/styles/yoast-breadcrumbs.css`, attached to `yoast-seo/breadcrumbs`
+  by the new `inc/yoast-breadcrumbs.php`. Only the size is set — family, weight, colour,
+  the separator and the link treatment all continue to inherit the `primary-100` band the
+  `sd-theme-2026/destination-breadcrumbs` pattern places them on.
+
+  The rule is authored CSS rather than JSON because Yoast's block does not call
+  `get_block_wrapper_attributes()`: it renders a bare `<div class="yoast-breadcrumbs">`
+  with no `wp-block-yoast-seo-breadcrumbs` class, so a `theme.json` `styles.blocks` entry
+  would compile to a selector that never appears in the output, and a `styles/**` partial
+  has no block wrapper to attach a variation to. `enqueue_custom_block_styles()` globs
+  `core-*.css` only, so the sheet is registered by its own `inc/` module — the arrangement
+  `functions.php` documents and `inc/mega-menu.php` already follows.
+  `wp_enqueue_block_style()` keeps it lazy: nothing is printed on pages without a trail,
+  and nothing at all while Yoast SEO is inactive, since the block is then unregistered.
+
+- **The Related Reviews band is a full-bleed quote with no carousel nav, on every template
+  that carries it.** At Zared's direction 2026-09-03, matching live.
+  `patterns/destination-reviews.php`, `patterns/template-single-tour.php` and
+  `patterns/template-single-accommodation.php` — the three shelves stay identical.
+  - The wrapper group drops `is-style-light-page-section`, whose `spacing|70` block padding
+    was what held the card off the bands above and below, and drops its `constrained`
+    layout. Under `useRootPaddingAwareAlignments` core adds `has-global-padding` to *any*
+    constrained block regardless of its padding
+    (`wp-includes/block-supports/layout.php:1112-1118`), which both re-applies the root
+    inline padding and gives an `alignfull` child a negative root-padding margin — so a
+    flow layout is what actually reaches the viewport edge. The band is now flush top and
+    bottom, and the card is the full width of the screen.
+  - The query goes `alignwide` → `alignfull` and takes a new `sd-slider-nav-hidden` class;
+    `assets/styles/core-group.css` hides Slick's arrows and dot row (and Swiper's
+    equivalents) against it. Tour Operator offers no way to ask for this: `build_slider()`
+    in `tour-operator/build/custom.js` hardcodes `dots: true` and leaves `arrows` at
+    Slick's default on every `.lsx-to-slider .wp-block-post-template`, and its only opt-out
+    (`.slider-disabled`) turns the carousel off and stacks every review. `display: none`
+    rather than `visibility: hidden`, so the controls are not tab stops; `!important` for
+    the same reason the rest of that block needs it — `tour-operator/build/style.css` loads
+    after this sheet and reaches (0,4,1).
+  - The query also takes `sd-slider-flush`, which takes off everything that was still
+    holding the slide off the viewport edge. Measured on dev 2026-09-04, there were four
+    separate causes:
+    1. The root `spacing|60` block gap landed on the post-template via
+       `:root :where(.is-layout-flow) > *`. It escaped the `:first-child` exemption
+       because Slick *prepends* its prev arrow to the query (`appendArrows: o.parent()`),
+       so the template is no longer the first child — the hidden arrow is. That is why
+       the gap showed on top and not on the bottom.
+    2. `.is-style-slider-frame .slick-list` pads by `spacing|20` and pulls back with a
+       negative margin, so a focus ring on a card in a normal shelf isn't clipped. A
+       flush band has nothing to clip.
+    3. Tour Operator insets every slide 15px on all four sides
+       (`.wp-block-query.lsx-to-slider .slick-slide{padding:15px!important}`,
+       `tour-operator/build/style.css`) — (0,3,0) and `!important`, so the override has
+       to reach (0,4,0). The first attempt at this rule was (0,2,0) and silently lost.
+    4. Slick sizes the track to the tallest slide, leaving a strip of page background
+       under the shorter reviews; a flex track with `align-items: stretch` equalises
+       them, and Slick's inline widths survive it.
+
+    That inset is right for the card shelves — tours, accommodation, regions — so none of
+    it is unset globally on `.slick-slide`. The cover's own `spacing|80`/`spacing|40`
+    padding stays: it keeps the quote off the screen edge while the image and its scrim
+    run the full width. Verified in the browser on dev: cover at left 0 for the full
+    viewport width, and 0px between it and the bands above and below.
+
+  The shelf still advances on its own, so hiding the nav does not strand slides 2..n:
+  Tour Operator writes a `data-slick` override onto the post-template —
+  `{"autoplay":true,"autoplaySpeed":5000,"pauseOnHover":true,"pauseOnFocus":true}` —
+  which is merged over the `autoplay: false` default in `build_slider()`. Confirmed on
+  dev 2026-09-04. *(LS-2033)*
+
+- **The Review Quote Card's "Read More" is font-size 300 and flips to brand-500.**
+  `styles/sections/cards/review-quote-card.json` asked for
+  `var:preset|font-size|small`, and there is no `small` slug in this theme — the scale is
+  numeric, and "Small" is `300` — so the declaration was orphaned and the size came from
+  the pattern's own `fontSize: 200`. Both now say `300`. The hover colour is in
+  `assets/styles/core-read-more.css`, scoped to the variation: a `:hover` key under
+  `styles.blocks.<block>` is never compiled (core compiles pseudo-selectors for elements
+  only), and the variation's `elements.link:hover` would have taken the linked post title
+  with it. The now-inert `:hover` key and the `css`-field hover rule (the field strips
+  `:hover` outright) are removed rather than left looking load-bearing. *(LS-2033)*
+
+- **The slider chevrons are bigger and thicker, and the dots are lighter, thinner and
+  square-cornered.** At Zared's direction 2026-09-03.
+  `styles/sections/slider-frame.json` and `assets/styles/core-group.css`. The arrows move
+  from `neutral-400` to `primary-500`, hovering to `brand-600` rather than `brand-500`; the
+  hit target grows from 44px to 56px; the resting dot lightens from `neutral-500` to
+  `neutral-400`, thins from 8px to 6px, and its 2px radius squares off to 0.
+
+  The chevron itself is the part that needed a mechanism. Slick and Swiper each draw the
+  arrow as a character from a bundled icon font — `←`/`→` and the `prev`/`next` ligature —
+  and an icon font carries its weight in the outline with only one face, so there is no
+  `font-weight` to turn up. The glyph is switched off (`content: ""`) and ours is drawn in
+  its place.
+
+  That first went in as `border-top` + `border-right` on a square rotated 45°, which made
+  size and stroke independent custom properties but left the *shape* unsettable: two borders
+  meeting at a corner give a mitred point and square-cut ends, and at the weight asked for
+  the mitre read as a spur and the ends as broken stubs. Same day, at Zared's direction, it
+  was replaced with the SVG treatment from `asnz-block-theme` — a stroked polyline with
+  `stroke-linecap`/`stroke-linejoin: round`, the only way to get a rounded apex and rounded
+  ends. The artwork is inlined as a data URI (WordPress appends `?ver=` to `style.css` but
+  never to the assets a stylesheet points at, so a revised icon under an unchanged filename
+  would be served from cache) and applied as a `mask-image` with
+  `background-color: currentColor`. ASNZ ships two files and swaps them on hover because its
+  arrow colours are literals inside the artwork; masked, ours carries shape only, so one
+  asset covers both states and the hover stays a single `color` change on a token. That is
+  the same mask idiom `.rating-stars` already uses in this file.
+  `--sd-slider-chevron-thickness` is gone with it — the stroke weight is now in the SVG —
+  and `--sd-slider-chevron-size` is the glyph's height (`26px`), its width following the
+  artwork's 14:24 aspect.
+
+  Two details in that swap are load-bearing rather than tidy: `color: inherit` on the
+  pseudo-element resets `slick-theme.css`'s `color: white`, which `currentColor` would
+  otherwise paint the mask with, giving white arrows on a white shelf; and `next` mirrors
+  with `scaleX(-1)` rather than `rotate(180deg)`, because the glyph box is taller than it is
+  wide and rotating would need the box swapped too. Two further consequences worth naming:
+  the
+  arrow's `left`/`right` offset is now derived from the hit target
+  (`calc(var(--sd-slider-nav-size) / -2 - 10px)`) so the centre stays 10px outside the frame
+  edge as the target grows, where the old flat `-2rem` would have pulled the chevron in over
+  the shelf; and `font-size: 0` is restated on the button, because we override Slick's
+  `color: transparent` and its "Previous"/"Next" label would otherwise reappear.
+
+  Every value stays a custom property resolving to a `theme.json` preset — no raw hex — and
+  the whole set stays scoped to `.is-style-slider-frame`, per `wp-thirdparty-markup-styling`.
+  It supersedes the 2026-08-20 live measurement (arrows `#B4A48C`, dots `#938673`); recorded
+  in `style.md` §12.9, with §12.3 item 9 and the §12.7 verification line updated.
+
+  **Verified in a browser 2026-09-03** on the dev homepage's two shelves at 1600px, and
+  the look found the arrows still rendering Tour Operator's own chevron — see the Fixed
+  entry below, which supplies the specificity this entry's rules were missing. The dot
+  treatment landed correctly first time (measured 24x6, square, `neutral-400` `#C3B6A6`),
+  because those rules already carried `!important`. *(LS-2033)*
 
 - **The five enquiry CTAs open the modal instead of linking to `/contact/`.**
   `patterns/safari-expert.php`, `cta-not-sure-where-to-go.php`,
@@ -1109,6 +1424,53 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **The slider arrows rendered Tour Operator's default chevron, not ours.** Measured on the
+  dev homepage 2026-09-03 at 1600px: both shelves drew a 20px white feather-stroke caret in
+  a 30px hit target — the vendor's own artwork — while the masked Phosphor caret, the
+  56px target and `primary-500` were all being discarded. The dots on the same sliders were
+  correct, which is what located the fault.
+
+  The cause is a stale premise recorded in `assets/styles/core-group.css`: that the only
+  vendor rules to beat are `slick-theme.css`'s, at `(0,1,1)`. **Tour Operator does not
+  enqueue `slick-theme.css` at all** — it inlines its own arrow theming into
+  `tour-operator/build/style.css`, which loads *after* our block stylesheet and reaches
+  `(0,4,1)`:
+
+  | Selector | Specificity | What it took |
+  |---|---|---|
+  | `.lsx-to-slider .slick-arrow` | `(0,2,0)` | `color:#fff`, `height:4rem`, `position`, `margin-top` |
+  | `.wp-block-query.lsx-to-slider .slick-arrow` (and `::before`) | `(0,3,0)` / `(0,3,1)` | `width`/`height:30px` |
+  | `.lsx-to-slider .slick-arrow:before` | `(0,2,1)` | `color:#fff`, `position:absolute`, `top:47%`, `transform` |
+  | `.wp-block-query.lsx-to-slider .slick-arrow.slick-prev:before` | `(0,4,1)` | `background: url(<feather chevron>)`, `width`/`height:20px`, `left:3px` |
+
+  Our selectors are `(0,2,0)` and `(0,2,1)`, so every one of those won — the arrow block was
+  the one part of this style written without `!important`, on the assumption natural
+  specificity would carry it.
+
+  Beating `(0,4,1)` naturally would mean forking the selector per query block
+  (`.wp-block-query…` / `.wp-block-terms-query…` at `(0,5,1)`) and would still leave
+  `core/group` and `cb/carousel` uncovered, so the declarations the vendor reaches now carry
+  `!important` instead — `width`, `height`, `color` and `background-color` on the button;
+  `content`, `position`, `inset`, `transform`, the two logical sizes, `color` and
+  `background-color` on the pseudo-element. Two of those are not obvious:
+  `background-image: none` has to be **stated explicitly**, because Tour Operator uses the
+  `background` shorthand — restoring `background-color: currentColor` alone leaves the
+  vendor's artwork showing through our mask — and the hover rule needs `!important` too, or
+  it loses to our own now-important base `color`.
+
+  `inset: auto` and `transform: none` on the pseudo-element replace the vendor's
+  `top: 47%` / `translateY(-50%)` absolute placement, so the caret is centred by the
+  button's own flexbox as this style intends. No colour is hardcoded: every value still
+  resolves through the custom properties in `styles/sections/slider-frame.json`.
+
+  **Verified** in a browser 2026-09-03: the patched rules injected at their real cascade
+  position (immediately after `core-group.css`, still ahead of
+  `tour-operator/build/style.css`, so source order could not do the work) on the dev
+  homepage. All four arrows on the two shelves measure a 56px target with a 26px caret,
+  `background-image: none`, `position: static`, `transform: none`, and both `color` and the
+  mask paint at `rgb(85,66,52)` — `primary-500`. Confirmed visually at device scale.
+  *(LS-2033)*
 
 - **The itinerary row broke rather than wrapped, and the marker took the wrong orange.**
   Both flex rows in `patterns/itinerary-stay.php` were authored `flexWrap: nowrap`, which

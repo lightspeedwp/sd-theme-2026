@@ -3,8 +3,10 @@
 	"version": 3,
 	"title": "Review Quote Card",
 	"slug": "review-quote-card",
-	"blockTypes": [ "core/cover" ],
-	"description": "The full-bleed review slide the carousels on every Tour Operator single carry — live's `.lsx-to-widget-item-wrap.lsx-review > article.review`, measured 2026-08-28: the review's photograph as the card's own ground at 500px tall, with a gold quote mark, the headline and the extract centred over it in white and the Read More link in accent-500. Everything here is the type layer only; the crop, the scrim weight and the padding are attributes on the cover in patterns/card-review-quote.php, because a cover serialises them and the editor can then show them. The one colour that is not live's is the scrim itself: live sets white type straight onto the photograph with no overlay, which holds only while every connected review happens to carry a dark image. The neutral-900 overlay is the same one styles/sections/hero-banner.json uses, so the two read as one family.",
+	"blockTypes": [
+		"core/cover"
+	],
+	"description": "The full-bleed review slide the carousels on every Tour Operator single carry — live's `.lsx-to-widget-item-wrap.lsx-review > article.review`, measured 2026-08-28: the review's photograph as the card's own ground at 500px tall, with a gold quote mark, the headline and the extract centred over it in white and the Read More link in accent-500 at font-size 300, flipping to brand-500 on hover. Everything here is the type layer only; the crop, the scrim weight and the padding are attributes on the cover in patterns/card-review-quote.php, because a cover serialises them and the editor can then show them. The one colour that is not live's is the scrim itself: live sets white type straight onto the photograph with no overlay, which holds only while every connected review happens to carry a dark image. The neutral-900 overlay is the same one styles/sections/hero-banner.json uses, so the two read as one family. Two things here cannot be expressed in this file: the Read More hover colour (a `:hover` key is compiled for elements, not for a nested block, and the element-level link hover would take the post title with it) and the text-decoration reset on hover (the `css` field strips `:hover` outright) — both are in assets/styles/core-read-more.css, scoped to this variation.",
 	"styles": {
 		"color": {
 			"text": "var:preset|color|base"
@@ -24,14 +26,22 @@
 				},
 				":hover": {
 					"color": {
-						"text": "var:preset|color|accent-300"
+						"text": "var:preset|color|accent-500"
 					},
 					"typography": {
-						"textDecoration": "underline"
+						"textDecoration": "none"
 					}
 				}
 			}
 		},
-		"css": "& .wp-block-read-more { text-decoration: none; } & .wp-block-read-more:hover { text-decoration: underline; }"
+		"blocks": {
+			"core/read-more": {
+				"typography": {
+					"fontSize": "var:preset|font-size|300",
+					"textDecoration": "none"
+				}
+			}
+		},
+		"css": "& .wp-block-read-more { text-decoration: none; }"
 	}
 }

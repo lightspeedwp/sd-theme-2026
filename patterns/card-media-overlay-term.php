@@ -106,7 +106,7 @@
 
 	<!-- wp:group {"metadata":{"name":"Scrim"},"className":"media-overlay-card__scrim","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|20","bottom":"var:preset|spacing|40","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group media-overlay-card__scrim" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--20)">
-		<!-- wp:term-name {"level":3,"isLink":true,"style":{"typography":{"textAlign":"center","fontWeight":"var(\u002d\u002dwp\u002d\u002dcustom\u002d\u002dfont-weight\u002d\u002dsemi-bold)"}}} /-->
+		<!-- wp:term-name {"level":3,"isLink":true,"className":"is-style-shadow-text","style":{"typography":{"textAlign":"center","fontWeight":"var(\u002d\u002dwp\u002d\u002dcustom\u002d\u002dfont-weight\u002d\u002dsemi-bold)"}}} /-->
 	</div>
 	<!-- /wp:group -->
 </div>

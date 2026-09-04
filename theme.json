@@ -1232,6 +1232,20 @@
 				"page",
 				"post"
 			]
+		},
+		{
+			"name": "single-country",
+			"title": "Single Country",
+			"postTypes": [
+				"destination"
+			]
+		},
+		{
+			"name": "single-region",
+			"title": "Single Region",
+			"postTypes": [
+				"destination"
+			]
 		}
 	],
 	"templateParts": [

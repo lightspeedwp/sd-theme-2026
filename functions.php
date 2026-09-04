@@ -228,6 +228,12 @@ add_filter( 'default_wp_template_part_areas', __NAMESPACE__ . '\template_part_ar
 // scan.
 require_once get_theme_file_path( 'inc/mega-menu.php' );
 
+// Styles yoast-seo/breadcrumbs, whose markup is a bare `.yoast-breadcrumbs`
+// div with no block wrapper attributes — so there is no `wp-block-*` selector
+// for theme.json to target — and a non-core block is outside
+// enqueue_custom_block_styles()' core-* scan.
+require_once get_theme_file_path( 'inc/yoast-breadcrumbs.php' );
+
 // Answers the plugin's `sd_enh_trustpilot_stars_image` filter with the theme's
 // own rating tile. The plugin exposes the rating as a number and says explicitly
 // that picking the graphic is the theme's job; this is the theme doing that, and

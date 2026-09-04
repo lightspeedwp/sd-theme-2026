@@ -707,7 +707,9 @@ rather than drift. Four of the five buy contrast:
 4. **The archive card scrim rests at 45%, not 30%.** At live's 30% the title loses the fight
    against a bright photograph; the beach card on the reference page is the test case.
 5. **The active slider dot takes the brand fill.** Live leaves resting and active on the
-   same `#938673`, which gives the reader no position cue.
+   same `#938673`, which gives the reader no position cue. Revised 2026-09-03 at Zared's
+   direction: the resting dot drops to `neutral-400` — lighter than live — and the active
+   one takes `brand-600`, so the pair separates by lightness as well as hue.
 
 Two shape changes that are not about contrast:
 
@@ -725,6 +727,18 @@ One interaction added, at Zared's direction 2026-08-28:
    the click target, so the feedback has to be the whole tile. It is kept to one step and
    4px because the card is reused on the blog grid, where a larger lift would fight the page
    rhythm. → `assets/styles/core-group.css`, "Post Grid Card — the hover lift"
+
+One shape change added, at Zared's direction 2026-09-03:
+
+9. **The slider chevron is our own artwork, not a typed character.** Both vendors set the
+   arrow as a character from a bundled icon font — Slick's `←`/`→`, Swiper's `prev`/`next`
+   ligature — and an icon font has no stroke weight to set: the thickness is in the outline
+   and there is only one face, so `font-weight` does nothing. To make the arrows bigger *and*
+   thicker the glyph is switched off (`content: ""`) and ours is drawn in its place. The
+   first pass drew it from two borders on a square rotated 45°; that sized and thickened but
+   could not be shaped, so it now uses `asnz-block-theme`'s stroked polyline — rounded apex,
+   rounded ends — inlined as a data URI and masked, which keeps the colour on a token.
+   → §12.9
 
 ### 12.4 A defect fixed on the way through
 
@@ -810,7 +824,8 @@ them all to the same width — and break the moment one square image appears. It
   14/32px padding, zero radius and a 2px border; the card scrim at 45% with a **0px** top gap;
   the overlay title at preset `500` with a 36px chevron; pagination at 40×40 with a 1px
   `primary-500` border and an inverted current plate; slider arrows at 44×44 with a 32px glyph
-  centred on the dot row to **0px** offset; body copy at `rgb(91, 78, 65)`.
+  centred on the dot row to **0px** offset; body copy at `rgb(91, 78, 65)`. *(The slider
+  arrow figure is superseded — see §12.9.)*
 - Heading case confirmed in the compiled global stylesheet: `h2` is the **only** heading
   carrying `text-transform: uppercase`.
 - **Editor checked, not just the front end.** Both cards render as overlays in the block
@@ -841,3 +856,66 @@ first pass used (55px on most, 45px on Outline Light).
 
 Radius is `0` everywhere. Live carries a 2px radius on `.btn.white-border-btn` alone; nothing
 else in the design has one, so it was squared off rather than propagated.
+
+### 12.9 Slider navigation
+
+The arrows and dots on every carousel are one set of values, declared as custom properties by
+the `slider-frame` block style (`styles/sections/slider-frame.json`) and bound to both vendors'
+hooks in `assets/styles/core-group.css`. Nothing here is vendor markup we own, so the whole set
+is scoped to `.is-style-slider-frame` — the `wp-thirdparty-markup-styling` pattern.
+
+| Property | Value | Was |
+|---|---|---|
+| `--sd-slider-nav-color` | `primary-500` | `neutral-400` |
+| `--sd-slider-nav-color-active` | `brand-600` | `brand-500` |
+| `--sd-slider-nav-size` | `56px` (the hit target) | 44px |
+| `--sd-slider-chevron-size` | `26px` (the glyph's height) | — (a 32px font glyph) |
+| `--sd-slider-dot-color` | `neutral-400` | `neutral-500` |
+| `--sd-slider-dot-width` | `24px` | 24px |
+| `--sd-slider-dot-height` | `6px` | 8px |
+| dot radius | `0` | 2px |
+
+Revised 2026-09-03 at Zared's direction: bigger, thicker arrows in `primary-500` hovering to
+`brand-600`, and a lighter, thinner, square-cornered dot. It supersedes the 2026-08-20 live
+measurement (arrows `#B4A48C`, dots `#938673`) and the 44×44/32px glyph figure recorded in
+§12.7.
+
+Three mechanics are worth keeping in mind if these are touched again:
+
+- **The chevron is a masked SVG, not a character and no longer a rotated square.** The first
+  pass drew it from two borders on a square rotated 45°, which sized and thickened but could
+  not be *shaped*: two borders meeting at a corner give a mitred point and square-cut ends,
+  and at the weight asked for the mitre read as a spur. A stroked polyline lifted from
+  `asnz-block-theme` replaced it and was itself superseded the same day: the glyph is now
+  Phosphor's `caret-left` / `caret-right` (256×256, filled path), the same icon set
+  `.rating-stars` uses, inlined as a data URI and applied as a `mask-image` with
+  `background-color: currentColor`. Two separate assets rather than one mirrored with
+  `scaleX(-1)`, because Phosphor's own caret paths each already point the right way — there
+  is nothing to flip, and no risk of a mirror leaving a caret off-centre in its box the way
+  the rotated-square and polyline treatments both had to correct for. The mask carries shape
+  only and the colour resolves through the tokens above, so the hover state stays a single
+  `color` change. There is consequently **no thickness property** — the stroke weight is in
+  the artwork — and because the viewBox is square, `--sd-slider-chevron-size` sets both box
+  dimensions with no aspect calc. `color: inherit` on the pseudo-element is load-bearing
+  rather than tidy: the vendor sets `color: #fff` there and `currentColor` is what the mask
+  is painted with, so without the reset every arrow is white on a white shelf.
+  `border-radius: 0` on the dot is likewise explicit rather than omitted — both vendors
+  round their dot to a circle, so the corner has to be squared back off.
+- **The arrow offset is derived from the hit target.** `left`/`right` compute as
+  `calc(var(--sd-slider-nav-size) / -2 - 10px)`, which holds the arrow's centre 10px outside
+  the frame edge at any size. A flat `-2rem` would have pulled the chevron in over the shelf
+  the moment the target grew.
+- **The arrows need `!important`; scoping to `.is-style-slider-frame` is not enough.**
+  Measured 2026-09-03. Tour Operator **does not enqueue `slick-theme.css`** — it inlines its
+  own arrow theming into `tour-operator/build/style.css`, which loads after our block
+  stylesheet and reaches `(0,4,1)`
+  (`.wp-block-query.lsx-to-slider .slick-arrow.slick-prev:before`), against our `(0,2,1)`.
+  Left to natural specificity the vendor takes `width`, `height`, `color`, `position`,
+  `transform`, `top`/`left` and — via the `background` shorthand — the artwork itself, so the
+  arrows render Tour Operator's 20px white feather caret in a 30px target. Beating that
+  naturally would mean forking the selector per query block and would still miss
+  `core/group` and `cb/carousel`, so those declarations carry `!important`, plus an explicit
+  `background-image: none` to undo the shorthand and an `!important` on the hover `color` so
+  it does not lose to our own base rule. The dots never showed this because their rules
+  already carried the flag. Colour is still never hardcoded — only the flag is added, the
+  values stay custom properties.

@@ -53,7 +53,10 @@
    two. Kept `inline` instead, with the gap carried by a leading no-break space
    inside `content` rather than a margin, so the chevron is glued to the last
    word of the title and travels with it. The optical nudge moves to relative
-   positioning because `transform` has no effect on a non-replaced inline. */
+   positioning because `transform` has no effect on a non-replaced inline.
+
+   The no-break space is necessary but was not sufficient — see the two rules
+   below, which are what actually hold the chevron on the line. */
 .is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6)::after {
 	content: "\00A0\203A";
 	font-size: 1.15em;
@@ -61,6 +64,53 @@
 	line-height: 1;
 	position: relative;
 	top: 0.06em;
+}
+
+/* ⚠️ The two rules that make the no-break space above actually bind. Both undo
+   a declaration core's own `core/post-title` stylesheet makes, and without them
+   the chevron still lands on a line of its own — measured on dev 2026-09-03,
+   Mozambique orphaning its chevron onto a fourth line in a squeezed tile.
+
+   1. `.wp-block-post-title :where(a) { display: inline-block }`
+      (wp-includes/blocks/post-title/style.css:5) makes the title link an
+      **atomic inline** — which is precisely the hazard the comment above
+      describes, one level out. The no-break space is the first character of the
+      heading's `::after`, so it cannot glue across the anchor's box boundary:
+      the line breaker takes its break opportunity there instead, and the
+      chevron goes down alone however short the title. Restoring `display:
+      inline` puts the title text and the pseudo-element in one inline run,
+      where the no-break space is what the breaker actually sees.
+
+   2. `.wp-block-post-title { word-break: break-word }`
+      (same file, line 3) is the deprecated value that means
+      `overflow-wrap: anywhere` — a soft wrap opportunity around *every*
+      character, and one that counts towards min-content. The scrim is a flex
+      container, so the heading's automatic minimum size collapsed to the width
+      of one letter (25px for "Botswana", measured); the tile then squeezed the
+      heading far below its text and the emergency breaks landed wherever they
+      liked, including immediately before the no-break space. `normal` restores
+      min-content to the widest unbreakable run — which, thanks to rule 1, is
+      now "lastword + chevron" — so the flex item stops shrinking at the point
+      where the chevron still fits. Long titles still wrap at their spaces; a
+      single word longer than the tile is clipped by the card's `overflow:
+      hidden` rather than shredded a letter at a time.
+
+   Both are scoped to the card, so `core/post-title` is untouched everywhere
+   else, and both are (0,2,1) against core's (0,1,0) — a section style's `css`
+   field compiles to `:root :where(…)` at (0,1,0) and would tie with the block
+   library, decided only by source order, which WordPress inverts between the
+   editor and the front end. That is the limit that forces these here.
+   → AGENTS.md, "Styling lives in JSON"
+
+   `core/term-name` carries neither declaration, so on the term twin these are
+   inert — they are written for both headings anyway to keep the two cards in
+   step. */
+.is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6) {
+	word-break: normal;
+}
+
+.is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6) a {
+	display: inline;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -163,15 +213,22 @@
  * different carousels emit. Neither vendor's nav elements are ours, so they
  * cannot be driven from a block-style JSON at all — see the
  * wp-thirdparty-markup-styling skill. Everything is scoped to the
- * `.is-style-slider-frame` class so natural specificity beats the vendor
- * sheets without reaching for !important.
+ * `.is-style-slider-frame` class, but on the arrows that scope is not enough
+ * on its own — see the !important note at the end of this comment.
  *
  * Geometry follows ati-theme-2026 (style.css:23-118) at Zared's direction
- * 2026-08-26 — arrows lifted clear of the shelf on either side, and a pill dot
- * rather than a disc. The *colours* stay SD's: measured on the live site
- * 2026-08-20, arrows #B4A48C and dots #938673, carried as the three custom
- * properties above. ATI's arrow SVGs are not ported — SD ships no slider arrow
- * assets, so the vendor glyph is restyled instead of replaced.
+ * 2026-08-26 — arrows lifted clear of the shelf on either side, and a bar dot
+ * rather than a disc.
+ *
+ * Revised 2026-09-03, again at Zared's direction: the arrows are bigger and
+ * thicker in primary-500 with a brand-600 hover, and the dots are lighter,
+ * thinner and square-cornered. That supersedes the live measurement of
+ * 2026-08-20 (arrows #B4A48C, dots #938673) — those colours are no longer what
+ * we ship. The chevron itself is asnz-block-theme's stroked SVG, applied as a
+ * mask so the colour still comes from a token — see the block below for why the
+ * two-border CSS chevron it replaced could not be shaped. ATI's arrow SVGs are
+ * a filled disc and are deliberately still not ported. Every value comes from a
+ * custom property declared on the frame in styles/sections/slider-frame.json.
  *
  * ATI also styles `cb/carousel` with `.slick-*` selectors in its theme.json.
  * That is stale there: Carousel Block 2.1.5 bundles Swiper
@@ -179,10 +236,30 @@
  * nothing. Both vendors are covered here instead — Slick for Tour Operator's
  * query-loop slider, Swiper for the Carousel Block.
  *
- * !important is unavoidable on the geometry: Slick writes its own positioning
- * into an inline style block and ships `slick-theme.css` with equal-specificity
- * rules, which is the case wp-thirdparty-markup-styling calls out. It is kept
- * to layout only — every colour still resolves through a custom property.
+ * !important is unavoidable on the arrows, and on more than the geometry.
+ * Measured on dev 2026-09-03: Tour Operator does not enqueue `slick-theme.css`
+ * at all — it inlines its own arrow theming into `tour-operator/build/style.css`,
+ * which loads *after* this sheet and reaches (0,4,1):
+ *
+ *   .lsx-to-slider .slick-arrow                                  (0,2,0)
+ *     border, color:#fff, height:4rem, position, margin-top
+ *   .wp-block-query.lsx-to-slider .slick-arrow(::before)         (0,3,0)/(0,3,1)
+ *     width/height:30px
+ *   .lsx-to-slider .slick-arrow.slick-prev::before               (0,2,1)
+ *     color:#fff, position:absolute, top:47%, transform, font-family:slick
+ *   .wp-block-query.lsx-to-slider .slick-arrow.slick-prev::before (0,4,1)
+ *     background: url(<feather chevron, stroke #000>); width/height:20px; left:3px
+ *
+ * Our selectors are (0,2,0)/(0,2,1), so before this every one of those won: the
+ * button rendered 30px in white and the pseudo-element painted TO's own 20px
+ * stroked chevron instead of our masked caret — the "arrows look like defaults"
+ * regression. Beating (0,4,1) naturally would mean forking the selector per
+ * query block and would still not cover `core/group` or `cb/carousel`, so the
+ * declarations the vendor reaches are marked !important instead. `background`
+ * is a shorthand there, so `background-image: none` has to be restated
+ * explicitly — `background-color: currentColor` alone leaves TO's artwork
+ * showing through our mask. Every colour still resolves through a custom
+ * property; nothing here hardcodes one.
  */
 .is-style-slider-frame {
 	position: relative;
@@ -217,47 +294,145 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 44px;
-	height: 44px;
+	width: var(--sd-slider-nav-size, 56px) !important;
+	height: var(--sd-slider-nav-size, 56px) !important;
 	margin: 0 !important;
 	padding: 0;
 	border: 0 !important;
-	background-color: transparent;
-	color: var(--sd-slider-nav-color);
-	font-size: 2rem;
+	background-color: transparent !important;
+	color: var(--sd-slider-nav-color) !important;
+	/* Slick's arrow carries a visible text label ("Previous"/"Next") that its own
+	   `font-size: 0` collapses. We override the vendor's `color: transparent`, so
+	   the collapse has to be restated here or the label reappears. The chevron is
+	   sized in px and is unaffected. */
+	font-size: 0;
 	line-height: 1;
 	transition: color 0.25s;
 }
 
+/* Offset from the button's own half-width rather than a flat -2rem, so the
+   target can grow without dragging the chevron in over the shelf: the centre
+   stays 10px outside the frame edge at any --sd-slider-nav-size. That is where
+   the 44px/-2rem pair put it before the arrows were enlarged. */
 .is-style-slider-frame :is(.slick-prev, .swiper-button-prev) {
-	left: -2rem !important;
+	left: calc(var(--sd-slider-nav-size, 56px) / -2 - 10px) !important;
 	right: auto !important;
 }
 
 .is-style-slider-frame :is(.slick-next, .swiper-button-next) {
-	right: -2rem !important;
+	right: calc(var(--sd-slider-nav-size, 56px) / -2 - 10px) !important;
 	left: auto !important;
 }
 
-/* Slick and Swiper both draw their glyph in a pseudo-element with its own
-   font-size and absolute positioning. Reset both so the flex centring above
-   governs and the glyph sits on the centre of the 44px target. */
-.is-style-slider-frame :is(.slick-prev, .slick-next)::before,
-.is-style-slider-frame :is(.swiper-button-prev, .swiper-button-next)::after {
-	position: static;
+/* The chevron itself.
+   ---------------------------------------------------------------------------
+   Slick and Swiper each draw their glyph as a character from a bundled icon
+   font — Slick's `←`/`→` in `slick`, Swiper's `prev`/`next` ligature in
+   `swiper-icons`. Neither gives us a stroke weight: an icon font's thickness is
+   baked into the outline, and `font-weight` does nothing because there is only
+   one face. So the glyph is switched off and our own chevron is drawn in its
+   place.
+
+   That chevron was two borders on a square rotated 45° (2026-09-03), then a
+   stroked 14x24 polyline masked in from asnz-block-theme (2026-09-03) — both
+   superseded 2026-09-03, at Zared's direction, by Phosphor's `caret-left` /
+   `caret-right` glyphs (256x256, filled path), the same icon set
+   `.rating-stars` already uses further down this file. Two separate assets
+   rather than one mirrored with `scaleX(-1)`: Phosphor's own caret paths are
+   each already drawn pointing the right way, so there is nothing to flip and
+   no risk of a mirror leaving a caret subtly off-centre in its box the way the
+   rotated-square and polyline treatments both had to correct for.
+
+   ## Why a mask and not a background-image
+
+   Our arrow colours are tokens — `--sd-slider-nav-color` and
+   `--sd-slider-nav-color-active` — so painting colour into the SVG would fork
+   it per state and put hex in an authored file. Masked instead, the artwork
+   carries shape only and `currentColor` carries the colour, so the hover state
+   stays the single `color` change below and both values still resolve through
+   theme.json. That is the same mask idiom as `.rating-stars`.
+
+   Inline rather than a `url()` to a file: WordPress appends `?ver=` to
+   style.css but never to the assets a stylesheet points at, so a revised icon
+   under an unchanged filename is served from cache. Inlined, the icon is
+   versioned with the stylesheet.
+
+   ## What must not be dropped
+
+   Almost all of it. `slick-theme.css` is not the sheet to beat — Tour Operator
+   never enqueues it, and inlines its own arrow theming into build/style.css at
+   up to (0,4,1) against our (0,2,1), so every declaration the vendor also sets
+   carries !important; the table in this block's header comment lists them.
+
+   Two are easy to lose. `background-image: none` looks redundant next to
+   `background-color: currentColor` but is not: TO paints its chevron with the
+   `background` shorthand, so without an explicit reset its artwork shows
+   through our mask. And `color: inherit` is load-bearing rather than tidiness —
+   TO sets `color: #fff` on this pseudo-element, and `currentColor` is what the
+   mask is painted with, so without the reset every arrow is white on white.
+
+   The glyph's viewBox is square, so `--sd-slider-chevron-size` sets both box
+   dimensions — no aspect calc needed, unlike the polyline treatment it
+   replaced. */
+.is-style-slider-frame :is(.slick-prev)::before,
+.is-style-slider-frame :is(.swiper-button-prev)::after {
+	content: "" !important;
+	position: static !important;
+	inset: auto !important;
+	transform: none !important;
 	display: block;
-	width: auto;
-	height: auto;
+	box-sizing: border-box;
+	inline-size: var(--sd-slider-chevron-size, 26px) !important;
+	block-size: var(--sd-slider-chevron-size, 26px) !important;
 	margin: 0;
-	font-size: inherit;
-	line-height: 1;
-	color: inherit;
-	opacity: 1;
+	border: 0;
+	font-size: 0;
+	line-height: 0;
+	color: inherit !important;
+	background-image: none !important;
+	background-color: currentColor !important;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+
+.is-style-slider-frame :is(.slick-next)::before,
+.is-style-slider-frame :is(.swiper-button-next)::after {
+	content: "" !important;
+	position: static !important;
+	inset: auto !important;
+	transform: none !important;
+	display: block;
+	box-sizing: border-box;
+	inline-size: var(--sd-slider-chevron-size, 26px) !important;
+	block-size: var(--sd-slider-chevron-size, 26px) !important;
+	margin: 0;
+	border: 0;
+	font-size: 0;
+	line-height: 0;
+	color: inherit !important;
+	background-image: none !important;
+	background-color: currentColor !important;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
 }
 
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):hover,
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):focus-visible {
-	color: var(--sd-slider-nav-color-active);
+	/* !important because the base `color` above now carries it — without a
+	   matching flag here the hover state would lose to our own base rule. */
+	color: var(--sd-slider-nav-color-active) !important;
 }
 
 /* Dots — a static row beneath the shelf, not Slick's absolute overlay. */
@@ -292,14 +467,18 @@
 	content: none !important;
 }
 
+/* A square-cornered bar, lighter and thinner than the live disc — Zared,
+   2026-09-03. Radius is explicitly 0 rather than omitted: slick-theme.css and
+   Swiper both round their dot to a circle, so the corner has to be squared
+   back off, not merely left unset. */
 .is-style-slider-frame :is(.slick-dots li button, .swiper-pagination-bullet) {
 	display: block;
-	width: 24px !important;
-	height: 8px !important;
+	width: var(--sd-slider-dot-width, 24px) !important;
+	height: var(--sd-slider-dot-height, 6px) !important;
 	margin: 0 !important;
 	padding: 0 !important;
 	border: 0 !important;
-	border-radius: 2px !important;
+	border-radius: 0 !important;
 	background-color: var(--sd-slider-dot-color) !important;
 	font-size: 0;
 	line-height: 0;
@@ -324,6 +503,97 @@
 	.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next, .slick-dots li button, .swiper-pagination-bullet) {
 		transition-duration: 1ms;
 	}
+}
+
+/* Slider Frame — the nav-less variant.
+ *
+ * The review shelves on every Tour Operator single carry a full-bleed quote one
+ * slide at a time, and live draws no chevrons and no dot row against it — the
+ * quote is the whole band, edge to edge, with nothing painted over it. Zared
+ * confirmed 2026-09-03 that the block theme follows live here.
+ *
+ * Tour Operator gives us no way to ask for that: `build_slider()`
+ * (tour-operator/build/custom.js) hardcodes `dots: true` and leaves `arrows` at
+ * Slick's default, on every `.lsx-to-slider .wp-block-post-template`, with no
+ * filter and no data attribute. The only opt-out it offers is the
+ * `.slider-disabled` class, which turns the carousel off altogether and stacks
+ * every review. So the controls are emitted and suppressed here.
+ *
+ * `display: none` rather than `visibility: hidden` — a hidden-but-present nav
+ * is still a tab stop with no visible focus ring. !important for the same
+ * reason the block above needs it: `tour-operator/build/style.css` loads after
+ * this sheet and reaches (0,4,1) on `.slick-arrow`.
+ *
+ * Slick appends both to the *parent* of the template element (custom.js
+ * `appendArrows`/`appendDots`), which is the query block itself — so this class
+ * goes on the query alongside `is-style-slider-frame`, not on the template.
+ *
+ * The shelf still advances on its own: Tour Operator writes a `data-slick`
+ * override onto the post-template — `{"autoplay":true,"autoplaySpeed":5000,
+ * "pauseOnHover":true,"pauseOnFocus":true}` — which is merged over the
+ * `autoplay: false` default in `build_slider()`. Verified on dev 2026-09-04. */
+.sd-slider-nav-hidden :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next),
+.sd-slider-nav-hidden :is(.slick-dots, .swiper-pagination) {
+	display: none !important;
+}
+
+/* Slider Frame — the flush variant.
+ *
+ * The review band is edge to edge on live: the quote's dimmed image runs the
+ * full viewport width and butts straight up against the sections above and
+ * below it. Making the query `alignfull` gets the *frame* there; four separate
+ * things then hold the slide off it, all measured on dev 2026-09-04.
+ *
+ * 1. `:root :where(.is-layout-flow) > *` (global styles) puts the root
+ *    `spacing|60` block gap on the post-template. It escapes the `:first-child`
+ *    exemption because Slick *prepends* its prev arrow to the query
+ *    (`appendArrows: o.parent()`), so the template is no longer the first
+ *    child — the arrow is, hidden by the block above but still in the DOM.
+ *    That is the whole reason the gap appeared on top and not on the bottom.
+ * 2. `.is-style-slider-frame .slick-list` above pads the list by `spacing|20`
+ *    and pulls it back with a negative margin, so a focus ring on a card in a
+ *    normal shelf is not clipped. A flush band has nothing to clip.
+ * 3. Tour Operator insets every slide by 15px on all four sides
+ *    (`.wp-block-query.lsx-to-slider .slick-slide{padding:15px!important}`,
+ *    tour-operator/build/style.css). That selector is (0,3,0) and carries
+ *    `!important`, so ours has to reach (0,4,0) to take it off — matching the
+ *    vendor's own shape plus our class is the least surprising way to get there.
+ * 4. Slick sizes the track to the tallest slide and leaves the rest at their
+ *    own height, so a short review left a strip of page background under it.
+ *    A flex track with `align-items: stretch` is the standard equal-height
+ *    recipe; Slick's inline widths on track and slides survive it untouched.
+ *
+ * The inset in (3) is right for the card shelves — tours, accommodation,
+ * regions — so none of this is unset globally on `.slick-slide`; it comes off
+ * only where a shelf asks to be flush. The cover's own `spacing|80`/`spacing|40`
+ * padding stays: that keeps the quote off the screen edge while the image and
+ * its scrim run the full width. */
+.sd-slider-flush > * {
+	margin-block: 0 !important;
+}
+
+.sd-slider-flush :is(.slick-list, .slick-track) {
+	margin-block: 0 !important;
+	padding: 0 !important;
+}
+
+.wp-block-query.lsx-to-slider.sd-slider-flush .slick-slide,
+.wp-block-terms-query.lsx-to-slider.sd-slider-flush .slick-slide {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.sd-slider-flush .slick-track {
+	display: flex !important;
+	align-items: stretch !important;
+}
+
+.sd-slider-flush .slick-slide {
+	height: auto !important;
+}
+
+.sd-slider-flush .slick-slide > * {
+	height: 100%;
 }
 
 /* Header rules removed 2026-08-21
@@ -766,6 +1036,27 @@
 	.is-style-listing-card-compact.sd-has-link:focus-within {
 		transform: none;
 	}
+}
+
+/**
+ * Listing Card (Compact) — kill the taxonomy-row hover underline.
+ *
+ * styles/sections/cards/listing-card-compact.json sets `elements.link` with
+ * `textDecoration: none` in both states, meant to hold every link in the card
+ * — including the taxonomy rows (Travel Styles, Type, Brand), which are
+ * `core/post-terms` rather than the `<p>` the meta rows use. On the front end
+ * that variation compiles to a single class selector,
+ * `.is-style-listing-card-compact--N a:where(:not(.wp-element-button)):hover`
+ * — (0,2,1) — and core-post-terms.css's site-wide
+ * `.wp-block-post-terms a:hover { text-decoration: underline }` is also
+ * (0,2,1). Equal specificity means the tie goes to load order, and that rule
+ * wins it, so only the taxonomy rows regain an underline on hover; the meta
+ * rows' bound `<p>` links never collide with a `.wp-block-post-terms`
+ * selector in the first place. Two extra classes of specificity settles it
+ * regardless of load order, without touching either row's colour.
+ */
+.is-style-listing-card-compact .wp-block-post-terms a:hover {
+	text-decoration: none;
 }
 
 /**
