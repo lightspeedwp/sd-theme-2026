@@ -515,11 +515,10 @@
  * `appendArrows`/`appendDots`), which is the query block itself — so this class
  * goes on the query alongside `is-style-slider-frame`, not on the template.
  *
- * ⚠️ On desktop this leaves slides 2..n unreachable: TO initialises the shelf
- * with `draggable: false` and `swipe: false`, so the arrows were the only way
- * through. Below 1228px the responsive settings turn `swipe` back on, so touch
- * still works. Reaching the rest on desktop needs a change to the query
- * (`perPage: 1`) or to TO's options, not to this sheet. */
+ * The shelf still advances on its own: Tour Operator writes a `data-slick`
+ * override onto the post-template — `{"autoplay":true,"autoplaySpeed":5000,
+ * "pauseOnHover":true,"pauseOnFocus":true}` — which is merged over the
+ * `autoplay: false` default in `build_slider()`. Verified on dev 2026-09-04. */
 .sd-slider-nav-hidden :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next),
 .sd-slider-nav-hidden :is(.slick-dots, .swiper-pagination) {
 	display: none !important;
@@ -529,29 +528,59 @@
  *
  * The review band is edge to edge on live: the quote's dimmed image runs the
  * full viewport width and butts straight up against the sections above and
- * below it. Making the query `alignfull` gets the *frame* there, but not the
- * slide — Tour Operator insets every slide by 25px on all four sides, in two
- * separate declarations, both `!important`
- * (tour-operator/build/style.css: `.slick-slide{margin:10px!important;
- * padding:0!important}` then `.lsx-to-slider .slick-slide{padding:15px!important}`).
- * That inset is what leaves the white gutters at the sides and the white gap
- * above and below. It is right for the card shelves — tours, accommodation,
- * regions — so it can't be unset globally on `.slick-slide`; this zeroes it
- * only where a shelf asks to be flush.
+ * below it. Making the query `alignfull` gets the *frame* there; four separate
+ * things then hold the slide off it, all measured on dev 2026-09-04.
  *
- * !important is unavoidable: both vendor declarations carry it, so nothing
- * without it can win at any specificity.
+ * 1. `:root :where(.is-layout-flow) > *` (global styles) puts the root
+ *    `spacing|60` block gap on the post-template. It escapes the `:first-child`
+ *    exemption because Slick *prepends* its prev arrow to the query
+ *    (`appendArrows: o.parent()`), so the template is no longer the first
+ *    child — the arrow is, hidden by the block above but still in the DOM.
+ *    That is the whole reason the gap appeared on top and not on the bottom.
+ * 2. `.is-style-slider-frame .slick-list` above pads the list by `spacing|20`
+ *    and pulls it back with a negative margin, so a focus ring on a card in a
+ *    normal shelf is not clipped. A flush band has nothing to clip.
+ * 3. Tour Operator insets every slide by 15px on all four sides
+ *    (`.wp-block-query.lsx-to-slider .slick-slide{padding:15px!important}`,
+ *    tour-operator/build/style.css). That selector is (0,3,0) and carries
+ *    `!important`, so ours has to reach (0,4,0) to take it off — matching the
+ *    vendor's own shape plus our class is the least surprising way to get there.
+ * 4. Slick sizes the track to the tallest slide and leaves the rest at their
+ *    own height, so a short review left a strip of page background under it.
+ *    A flex track with `align-items: stretch` is the standard equal-height
+ *    recipe; Slick's inline widths on track and slides survive it untouched.
  *
- * `.slick-list` is included because Slick writes an inline horizontal padding
- * onto it whenever `centerMode` is on. TO doesn't set `centerMode` today, so
- * this is a guard against an upstream default change, not a live fix. */
+ * The inset in (3) is right for the card shelves — tours, accommodation,
+ * regions — so none of this is unset globally on `.slick-slide`; it comes off
+ * only where a shelf asks to be flush. The cover's own `spacing|80`/`spacing|40`
+ * padding stays: that keeps the quote off the screen edge while the image and
+ * its scrim run the full width. */
+.sd-slider-flush > * {
+	margin-block: 0 !important;
+}
+
 .sd-slider-flush :is(.slick-list, .slick-track) {
+	margin-block: 0 !important;
 	padding: 0 !important;
 }
 
-.sd-slider-flush .slick-slide {
+.wp-block-query.lsx-to-slider.sd-slider-flush .slick-slide,
+.wp-block-terms-query.lsx-to-slider.sd-slider-flush .slick-slide {
 	margin: 0 !important;
 	padding: 0 !important;
+}
+
+.sd-slider-flush .slick-track {
+	display: flex !important;
+	align-items: stretch !important;
+}
+
+.sd-slider-flush .slick-slide {
+	height: auto !important;
+}
+
+.sd-slider-flush .slick-slide > * {
+	height: 100%;
 }
 
 /* Header rules removed 2026-08-21

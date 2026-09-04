@@ -566,25 +566,36 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
     rather than `visibility: hidden`, so the controls are not tab stops; `!important` for
     the same reason the rest of that block needs it — `tour-operator/build/style.css` loads
     after this sheet and reaches (0,4,1).
-  - The query also takes `sd-slider-flush`, which zeroes Tour Operator's per-slide inset.
-    `alignfull` gets the *frame* to the viewport edge but not the slide: TO insets every
-    slide by 25px on all four sides in two separate `!important` declarations
-    (`tour-operator/build/style.css` — `.slick-slide{margin:10px!important;padding:0!important}`,
-    then `.lsx-to-slider .slick-slide{padding:15px!important}`). That inset was the white
-    gutter at the sides and the white gap above and below, left over after the wrapper's
-    own padding went. It is right for the card shelves — tours, accommodation, regions —
-    so it is unset per-shelf rather than globally on `.slick-slide`, and it needs
-    `!important` because both vendor declarations carry it. The cover's own
-    `spacing|80`/`spacing|40` padding stays: that keeps the quote off the edge, while the
-    image and its scrim run the full width.
+  - The query also takes `sd-slider-flush`, which takes off everything that was still
+    holding the slide off the viewport edge. Measured on dev 2026-09-04, there were four
+    separate causes:
+    1. The root `spacing|60` block gap landed on the post-template via
+       `:root :where(.is-layout-flow) > *`. It escaped the `:first-child` exemption
+       because Slick *prepends* its prev arrow to the query (`appendArrows: o.parent()`),
+       so the template is no longer the first child — the hidden arrow is. That is why
+       the gap showed on top and not on the bottom.
+    2. `.is-style-slider-frame .slick-list` pads by `spacing|20` and pulls back with a
+       negative margin, so a focus ring on a card in a normal shelf isn't clipped. A
+       flush band has nothing to clip.
+    3. Tour Operator insets every slide 15px on all four sides
+       (`.wp-block-query.lsx-to-slider .slick-slide{padding:15px!important}`,
+       `tour-operator/build/style.css`) — (0,3,0) and `!important`, so the override has
+       to reach (0,4,0). The first attempt at this rule was (0,2,0) and silently lost.
+    4. Slick sizes the track to the tallest slide, leaving a strip of page background
+       under the shorter reviews; a flex track with `align-items: stretch` equalises
+       them, and Slick's inline widths survive it.
 
-  ⚠️ **On desktop this leaves slides 2..n unreachable.** TO initialises the shelf with
-  `draggable: false` and `swipe: false`, so the arrows were the only way through; below
-  1228px its responsive settings turn `swipe` back on, so touch still works. Reaching the
-  rest on desktop means changing the query (`perPage: 1`, which also stops Slick
-  initialising at all) or TO's options — not this sheet. Autoplay is **not** a way out:
-  `build_slider()` passes `autoplay: false, autoplaySpeed: 0` and exposes no filter, so
-  the shelf does not advance on its own. *(LS-2033)*
+    That inset is right for the card shelves — tours, accommodation, regions — so none of
+    it is unset globally on `.slick-slide`. The cover's own `spacing|80`/`spacing|40`
+    padding stays: it keeps the quote off the screen edge while the image and its scrim
+    run the full width. Verified in the browser on dev: cover at left 0 for the full
+    viewport width, and 0px between it and the bands above and below.
+
+  The shelf still advances on its own, so hiding the nav does not strand slides 2..n:
+  Tour Operator writes a `data-slick` override onto the post-template —
+  `{"autoplay":true,"autoplaySpeed":5000,"pauseOnHover":true,"pauseOnFocus":true}` —
+  which is merged over the `autoplay: false` default in `build_slider()`. Confirmed on
+  dev 2026-09-04. *(LS-2033)*
 
 - **The Review Quote Card's "Read More" is font-size 300 and flips to brand-500.**
   `styles/sections/cards/review-quote-card.json` asked for
