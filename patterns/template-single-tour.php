@@ -38,12 +38,17 @@
  *   { display: none !important }` (custom.css:1795). It is a spy nav that has
  *   never been visible on a single. Porting it would be adding a component, not
  *   preserving one.
- * - **The breadcrumb bar.** Live draws Yoast's trail in a 58px `#ece9e3` strip
- *   under the banner. Breadcrumb output is a filter over a third-party plugin's
- *   trail — behaviour, not design — so by the deactivation test it is
- *   `sd-enhancements` work, exactly as recorded in
- *   patterns/template-archive-destination.php. When it lands it goes directly
- *   beneath the cover, outside it.
+ * - ~~**The breadcrumb bar.**~~ **Built, 2026-09-04** — `patterns/breadcrumbs.php`,
+ *   required directly beneath the cover, outside it, exactly as on the three
+ *   destination templates. This file previously recorded the bar as
+ *   `sd-enhancements` work on the grounds that breadcrumb output is a filter
+ *   over a third-party plugin's trail. That holds for the trail's *contents* —
+ *   what Yoast puts in it, and any `wpseo_breadcrumb_links` filtering SD
+ *   needs, is still plugin work — but *placing* the block and choosing the
+ *   band's ground is design, so the block is a theme block. The same
+ *   correction was made to patterns/template-single-destination.php on
+ *   2026-09-03; patterns/template-archive-destination.php still carries the
+ *   old reasoning verbatim. → noted on LS-2033
  * - **The 18 accommodation modals** the live page carries in its DOM. Tour
  *   Operator 2.2 renders its own `<dialog>` modals from `parts/modal-*.html`;
  *   the theme's half of that work is the heading rule in
@@ -151,6 +156,8 @@
 
 	</div></section>
 	<!-- /wp:cover -->
+
+	<?php require __DIR__ . '/breadcrumbs.php'; ?>
 
 	<?php
 	/*

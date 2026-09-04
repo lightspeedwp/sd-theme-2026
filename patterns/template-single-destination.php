@@ -107,17 +107,18 @@
  *   assets/styles/core-paragraph.css — so it is a style away, not a build.
  *   Left out here so the tour and destination singles stay identical.
  * - ~~**The breadcrumb bar.**~~ **Built, 2026-09-03** —
- *   `patterns/destination-breadcrumbs.php`, imported from the Site Editor on
- *   dev (wp_template 65929) and required directly beneath the cover on all
- *   three templates. This file previously recorded the bar as
- *   `sd-enhancements` work on the grounds that breadcrumb output is a filter
- *   over a third-party plugin's trail. That holds for the trail's *contents* —
- *   what Yoast puts in it, and any `wpseo_breadcrumb_links` filtering SD needs,
- *   is still plugin work — but *placing* the block and choosing the band's
- *   ground is design, so the block is a theme block. The same correction is
- *   owed to patterns/template-single-tour.php and
- *   patterns/template-archive-destination.php, which carry the old reasoning
- *   verbatim; they are left alone here rather than edited outside this task's
+ *   `patterns/breadcrumbs.php` (renamed from `destination-breadcrumbs.php` once
+ *   `patterns/template-single-tour.php` started requiring it too), imported
+ *   from the Site Editor on dev (wp_template 65929) and required directly
+ *   beneath the cover on all three destination templates. This file previously
+ *   recorded the bar as `sd-enhancements` work on the grounds that breadcrumb
+ *   output is a filter over a third-party plugin's trail. That holds for the
+ *   trail's *contents* — what Yoast puts in it, and any `wpseo_breadcrumb_links`
+ *   filtering SD needs, is still plugin work — but *placing* the block and
+ *   choosing the band's ground is design, so the block is a theme block. The
+ *   same correction has now been made to patterns/template-single-tour.php;
+ *   patterns/template-archive-destination.php still carries the old reasoning
+ *   verbatim and is left alone here rather than edited outside this task's
  *   scope. → noted on LS-2033
  * - **Tour Operator's sticky section menu.** The plugin's own
  *   `single-destination.html` opens with `lsx-tour-operator/sticky-menu`, and
@@ -163,7 +164,7 @@
 
 	<?php
 	require __DIR__ . '/destination-banner.php';
-	require __DIR__ . '/destination-breadcrumbs.php';
+	require __DIR__ . '/breadcrumbs.php';
 	require __DIR__ . '/destination-summary.php';
 	require __DIR__ . '/destination-gallery.php';
 	require __DIR__ . '/destination-regions.php';

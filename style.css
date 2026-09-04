@@ -281,7 +281,18 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
    `is-style-listing-card-compact` already delivers live's centred neutral-700 /
    brand-600 treatment. Only the chrome around it needs saying.
 
-   Measured from live's `sd-lsx-child/assets/css/custom.css` on 2026-09-01. */
+   That treatment only reaches the page because SD Enhancements puts it there.
+   Rendering on `wp_footer` is *after* core reads both of its block-CSS stores,
+   so every rule a modal render generates — the section style's heading size and
+   link colours, and the `blockGap` that holds the image against the panel — is
+   computed and discarded. `SD\Enhancements\ModalStyles` diffs the two stores
+   around Tour Operator's render and enqueues what was missed. Without it the
+   modal falls back to the global h2 and the default block gap, which is the
+   large title and the gap under the image. Do not paper over that here with
+   sizes: fix the store, or the modal and its card drift apart.
+
+   Measured from live's `sd-lsx-child/assets/css/custom.css` on 2026-09-01;
+   the store diagnosis measured on dev, 2026-09-04. */
 
 /* Live: `.modal .modal-dialog { max-width: 590px }`. Tour Operator's default is
    `var(--wp--style--global--content-size)`, which in this theme is 900px — half
@@ -293,16 +304,29 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 /* Tour Operator paints the direct child white and pads it 1.5rem, which was
    right for its own parts and is wrong for a card: it puts a white gutter
    around an image that is meant to meet the panel edge. The part owns its own
-   ground and padding instead. `overflow-y` stays Tour Operator's — the radius
-   clips on both axes regardless, so the image corners round with the panel. */
+   ground and padding instead. Square, not rounded — the panel is the card, and
+   the cards on the page behind it are square (Zared, 2026-09-04). */
 .wp-block-hm-popup > * {
 	background-color: transparent;
 	padding: 0;
-	border-radius: var(--wp--preset--border-radius--200);
+	border-radius: 0;
 	overflow-x: hidden;
 }
 
-/* `is-style-listing-card-compact` sets `height: 100%` so cards in a carousel
+/* One rule for every modal, and deliberately so. All four parts —
+   modal-tour, modal-accommodation, modal-destination, modal-enquiry — share
+   this chrome, and the three card modals share their interior through
+   `is-style-listing-card-compact`, the same section style their carousel cards
+   use. That is the shared style: the interior is the compact card, and the only
+   thing a modal has to say about it is the line below. A second section style
+   layered on top would not work even if it were wanted — core applies only the
+   first `is-style-*` variation that carries data
+   (wp-includes/block-supports/block-style-variations.php:93-100), so stacking
+   one on `listing-card-compact` silently drops it, and duplicating the compact
+   card into a modal-only style re-introduces the drift that style exists to
+   prevent. Anything genuinely modal-specific belongs here.
+
+   `is-style-listing-card-compact` sets `height: 100%` so cards in a carousel
    row match each other. In a dialog there is no row, and it stretches the panel
    to the full 95vh. */
 .wp-block-hm-popup .is-style-listing-card-compact {
@@ -310,18 +334,37 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 }
 
 /* Live's close button is a `&times;` on #C6BCAA — neutral-400. Tour Operator's
-   is an SVG on translucent white with no focus style at all, which on a control
-   that sits over a photograph is both invisible and unreachable by keyboard. */
+   is an SVG on translucent white, welded into the top-right corner with a
+   quarter-radius, and with no focus style at all: on a control that sits over a
+   photograph that is both invisible and unreachable by keyboard.
+
+   The rebuild's is the mark on its own — square, transparent, inset from the
+   corner, outlined in brand-600, and going brand-600 on hover (Zared,
+   2026-09-04). Tour Operator hard-codes the SVG at 32px
+   (Modals::get_modal_close_button(), which is private and unfiltered), so the
+   glyph is sized here rather than there. */
 .wp-block-hm-popup__close {
-	background: var(--wp--preset--color--neutral-400);
-	color: var(--wp--preset--color--neutral-900);
-	border-radius: 0 var(--wp--preset--border-radius--200) 0 var(--wp--preset--border-radius--100);
+	top: var(--wp--preset--spacing--10);
+	right: var(--wp--preset--spacing--10);
+	padding: 0;
+	width: 2.25rem;
+	height: 2.25rem;
+	background: transparent;
+	border: 1px solid var(--wp--preset--color--brand-600);
+	border-radius: 0;
+	color: var(--wp--preset--color--neutral-800);
+	transition: color 150ms linear;
+}
+
+.wp-block-hm-popup__close svg {
+	width: 1.25rem;
+	height: 1.25rem;
 }
 
 .wp-block-hm-popup__close:hover,
 .wp-block-hm-popup__close:focus-visible {
-	background: var(--wp--preset--color--brand-600);
-	color: var(--wp--preset--color--base);
+	background: transparent;
+	color: var(--wp--preset--color--brand-600);
 }
 
 .wp-block-hm-popup__close:focus-visible {

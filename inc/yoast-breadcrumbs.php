@@ -21,7 +21,7 @@
  * ## Why this belongs in the theme
  *
  * It is presentation and nothing else: one font-size, on the band the
- * `sd-theme-2026/destination-breadcrumbs` pattern places. The trail's
+ * `sd-theme-2026/breadcrumbs` pattern places. The trail's
  * *contents* — what Yoast puts in it and any `wpseo_breadcrumb_links`
  * filtering — remain plugin work, as inc/README.md requires, and none of that
  * is here.

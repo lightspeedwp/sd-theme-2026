@@ -8,6 +8,16 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The breadcrumb band now runs on the tour single too.** `patterns/template-single-tour.php`
+  requires `patterns/breadcrumbs.php` directly beneath the banner cover, outside it — the same
+  placement as the three destination templates. This corrects a call recorded the other way:
+  the file's own header had the bar down as `sd-enhancements` work on the grounds that
+  breadcrumb output is a filter over a third-party plugin's trail. That still holds for the
+  trail's *contents*, but placing the block and choosing the band's ground is design, so the
+  block is a theme block — the same correction `template-single-destination.php` made on
+  2026-09-03. `patterns/template-archive-destination.php` still carries the old reasoning
+  verbatim and is owed the same fix. *(LS-2033)*
+
 - **The destination copy collapses to a Read More, and the gap between its paragraphs is
   tighter.** `patterns/destination-summary.php` — imported from the Site Editor on dev
   2026-09-03 (wp_template 65929), verified byte-for-byte (`d858e95d…`, 500 chars) — wraps
@@ -528,6 +538,17 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- **`patterns/destination-breadcrumbs.php` is renamed to `patterns/breadcrumbs.php`**
+  (slug `sd-theme-2026/destination-breadcrumbs` → `sd-theme-2026/breadcrumbs`, title
+  "Destination — Breadcrumbs" → "Breadcrumbs"). The band carries nothing
+  destination-specific — it is Yoast's trail on a tinted strip — and the destination-scoped
+  name stopped describing the file the moment `template-single-tour.php` required it too.
+  All `require __DIR__ . '/destination-breadcrumbs.php'` call sites
+  (`template-single-destination.php`, `template-single-country.php`,
+  `template-single-region.php`) and the slug reference in `inc/yoast-breadcrumbs.php` are
+  updated to match. Entries above dated 2026-09-03 still name the old filename and slug — they
+  describe the state as verified that day and are left as written.
 
 - **The Yoast breadcrumb trail renders at font size `200` (Base) instead of inheriting the
   root `300`.** `assets/styles/yoast-breadcrumbs.css`, attached to `yoast-seo/breadcrumbs`
@@ -1242,6 +1263,35 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **Every Tour Operator modal is square now, and its close button is the mark on its own.**
+  `style.css` — radius off the panel (`.wp-block-hm-popup > *`) and off the close button,
+  which loses Tour Operator's translucent-white ground and quarter-radius corner weld for a
+  transparent square inset `spacing|10` from the top and right, outlined `brand-600`, its
+  glyph `neutral-800` going `brand-600` on hover and focus. Tour Operator hard-codes the
+  close SVG at 32px in a private, unfiltered method, so the glyph is sized to 1.25rem here
+  rather than there. Zared, 2026-09-04.
+
+- **The card modals were rendering with none of their card styling.** The cause is not in
+  this theme and the fix is not either — Tour Operator renders its modal parts on
+  `wp_footer`, after core has read both of the stores that hold block CSS, so the whole of
+  `is-style-listing-card-compact` and the `blockGap: 0` under the image were computed and
+  discarded (→ `SD\Enhancements\ModalStyles`, sd-enhancements-2026). What that had been
+  showing instead was the global `h2` and the default block gap, which is the oversized
+  title, the loose padding and the gap between the image and the text. The theme's part of
+  it is a note in the modal block of `style.css` saying so, because the temptation on
+  seeing it is to hard-code smaller sizes onto the modal — which would fix the symptom and
+  set the modal and its carousel card drifting.
+
+- **The tour modal now matches the accommodation and destination modals.**
+  `parts/modal-tour.html` was alone in using a `3/2` crop where the other two use `16/9`
+  (and where its own `card-tour-compact` uses `16/9`), a `neutral-100` ground against their
+  `neutral-200`, a zeroed top and bottom padding, and per-block `brand-500` link colours on
+  the travel-style and destinations rows. That last one is the case
+  `styles/sections/cards/listing-card-compact.json` explicitly warns about — every link in
+  the card is one colour, set once on the section style, and a row that overrides it
+  re-introduces the problem the style was written to solve. All four differences removed;
+  the three card modals are now identical apart from their meta rows.
 
 - **The slider arrows rendered Tour Operator's default chevron, not ours.** Measured on the
   dev homepage 2026-09-03 at 1600px: both shelves drew a 20px white feather-stroke caret in

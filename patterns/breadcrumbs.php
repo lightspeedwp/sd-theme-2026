@@ -1,10 +1,10 @@
 <?php
 /**
- * Title: Destination — Breadcrumbs
- * Slug: sd-theme-2026/destination-breadcrumbs
- * Description: The breadcrumb strip live runs beneath the destination banner — Yoast's trail on the warm-grey band, at the content measure.
+ * Title: Breadcrumbs
+ * Slug: sd-theme-2026/breadcrumbs
+ * Description: The breadcrumb strip live runs beneath the banner — Yoast's trail on the warm-grey band, at the content measure.
  * Categories: sd-theme-2026/tour-operator
- * Keywords: destination, breadcrumbs, trail, navigation, yoast
+ * Keywords: breadcrumbs, trail, navigation, yoast
  * Viewport Width: 1400
  * Template Types: single
  * Post Types: wp_template
@@ -32,6 +32,14 @@
  * ground and rhythm, is design, so the block itself belongs here. Decision
  * 2026-09-03; the note in that file has been corrected rather than left to
  * contradict this.
+ *
+ * ## Renamed from `destination-breadcrumbs`
+ *
+ * The band carries nothing destination-specific — it is Yoast's trail on a
+ * tinted strip, full stop — so once `patterns/template-single-tour.php`
+ * required it too the destination-scoped name stopped describing what the
+ * file is. Renamed to `breadcrumbs.php` / `sd-theme-2026/breadcrumbs` so the
+ * name matches every template that requires it, not just the first three.
  *
  * `yoast-seo/breadcrumbs` renders nothing at all when Yoast SEO is inactive, so
  * the band needs no wrapper class and no conditional — it collapses to an empty
