@@ -6,7 +6,7 @@
 	"blockTypes": [
 		"core/group"
 	],
-	"description": "The card every grid archive on the live site uses — tours, accommodation, destinations and brands all render it. A full-bleed image at least 368px tall, a warm-dark scrim across the whole of it, and the title centred on top in base with a chevron after it. The interaction is the distinctive part: the scrim *lifts* on hover, going fully transparent over half a second so the photograph comes forward rather than dimming. Measured from `.lsx-to-archive-template-grid … .lsx-to-archive-wrapper`, whose scrim is rgba(26, 18, 5, 0.3). The resting scrim is carried at 45% rather than that 30% so the title holds against a bright photograph. Structure lives here; the scrim colour, the hover lift, the chevron and the reduced-motion fallback live in assets/styles/core-group.css, because the css field strips :hover and drops any rule containing content:\"\".",
+	"description": "The card every grid archive on the live site uses — tours, accommodation, destinations and brands all render it. A full-bleed image at least 368px tall, a warm-dark scrim across the whole of it, and the title centred on top in base with a chevron after it. The interaction is the distinctive part: the scrim *lifts* on hover, going fully transparent over half a second so the photograph comes forward rather than dimming. Measured from `.lsx-to-archive-template-grid … .lsx-to-archive-wrapper`, whose scrim is rgba(26, 18, 5, 0.3). The resting scrim is carried at 45% rather than that 30% so the title holds against a bright photograph. The label is `medium`, not the `bold` the live cards carry: at the tile sizes the rebuild uses, a 700 label over a photograph reads as shouting and crowds a two-line name. Structure lives here; the scrim colour, the hover lift, the chevron and the reduced-motion fallback live in assets/styles/core-group.css, because the css field strips :hover and drops any rule containing content:\"\".",
 	"styles": {
 		"color": {
 			"text": "var:preset|color|base"
@@ -27,7 +27,7 @@
 				"typography": {
 					"fontFamily": "var:preset|font-family|heading",
 					"fontSize": "var:preset|font-size|500",
-					"fontWeight": "var:custom|font-weight|bold",
+					"fontWeight": "var:custom|font-weight|medium",
 					"lineHeight": "var:custom|line-height|heading",
 					"textTransform": "none"
 				}

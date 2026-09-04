@@ -8,6 +8,47 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The accommodation archive runs a breadcrumb band under its banner.**
+  `patterns/template-archive-accommodation.php` requires `patterns/breadcrumbs.php`
+  directly beneath the banner cover, the same placement the tour single and the three
+  destination templates use. The file's header had the bar down as `sd-enhancements`
+  work; that reasoning is corrected here for the same reason it was corrected on those
+  templates — filtering what Yoast puts in the trail is plugin work, placing the band is
+  design. `patterns/template-archive-destination.php` still carries the old note and is
+  owed the same fix. *(LS-2033)*
+
+- **The whole specials panel is a link, not just its heading.**
+  `patterns/template-archive-accommodation.php` wraps the Accommodation Specials cover in
+  a flow-layout `core/group` carrying `sdLinkTo: "custom"` and `sdLinkUrl`, which is what
+  live does (`<a>` around the entire plate). `SD\Enhancements\GroupLink` finds the
+  heading's existing link to the same URL, marks it `sd-link-echo` and leaves the overlay
+  presentational — verified on local: one overlay, one echo, so no second tab stop. No
+  `sdLinkLabel`: with none set the module falls back to the first heading inside the
+  group, which is both the right name and already translated. The wrapper is deliberately
+  **flow** rather than the constrained layout the editor saved — constrained picks up
+  `has-global-padding` and inset the cover by `spacing|20` a side, leaving this panel
+  visibly narrower than the guarantee panel beside it.
+
+- **`patterns/card-media-overlay-term.php` takes one parameter: the crop.**
+  `$sd_card_aspect_ratio`, read once with a `'1'` default, so an includer can ask for a
+  different ratio immediately before the `require` and the standalone pattern still
+  registers square. Verified on local: the accommodation archive resolves to `16/9`, the
+  tour and destination archives and the pattern's own registration all resolve to `1`.
+
+- **The brands shelf logos zoom on hover.** `patterns/homepage-brands.php` carries
+  `is-style-image-hover-zoom` on `core/term-template`, and
+  `styles/blocks/media/image-hover-zoom.json` declares `core/term-template` to match. The
+  class does **not** work on `core/post-featured-image` inside a terms query, which is
+  where an author would put it: Tour Operator builds that `<figure>` with
+  `get_block_wrapper_attributes()` from a `render_block` filter, so it comes back as
+  `<figure class="columns-5 wp-block-term-template">` with neither
+  `wp-block-post-featured-image` nor any `is-style-*` on it, and the generated
+  `.wp-block-post-featured-image.is-style-image-hover-zoom--N` selector matches nothing.
+  Measured on dev 2026-09-04: the per-image class emitted twenty-two copies of the CSS and
+  changed no pixel. On the term template it lands on that figure and emits one copy. The
+  same leak `assets/styles/core-post-featured-image.css` and
+  `SD\Enhancements\Queries::FEATURED_TERMS_CLASS` are written around.
+
 - **The breadcrumb band now runs on the tour single too.** `patterns/template-single-tour.php`
   requires `patterns/breadcrumbs.php` directly beneath the banner cover, outside it — the same
   placement as the three destination templates. This corrects a call recorded the other way:
@@ -720,6 +761,40 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- **The media overlay card's label is `medium`.**
+  `styles/sections/cards/media-overlay-card.json` sets
+  `elements.heading.typography.fontWeight` to `var:custom|font-weight|medium`, down from
+  `bold`, and both cards stop overriding it — `patterns/card-media-overlay-term.php` drops
+  its `semi-bold`. One weight for the post tile and the term tile, set in one place. This
+  also retires that file's `var(--wp--custom--font-weight--…)` escaping; the dynamic-block
+  rule it worked around is unchanged and still documented on `patterns/safari-expert.php`.
+
+- **The accommodation archive's type grid is two columns with a 16/9 crop, and its intro
+  band runs at the theme's wide measure.** Imported from the Site Editor on dev
+  2026-09-04 (wp_template 65931). Live runs two columns and eleven type tiles at three-up
+  left a ragged last row; a square tile at half the wide measure is a very tall
+  photograph, so this grid alone asks the card for `16/9`. The intro band drops
+  `contentSize: 1130px` for `alignwide` on the row, and its columns are top-aligned with
+  `minHeight: 300` on each panel instead of stretched, so neither panel's height is
+  decided by the other's copy length. `perPage` is raised from 12 to 33 — a ceiling above
+  the *unfiltered* term count, so a thirteenth featured term is a tick on a term and
+  nothing here. Both panel headings become `is-style-script-accent` at font-size 700, and
+  the guarantee paragraph takes the body size.
+
+  ⚠️ Two markers tried on that query on dev are **not** carried: `parents-only` and
+  `custom-order` are Tour Operator query markers whose handler allow-lists `core/query`
+  only (`class-query-loop.php:288-317`), so a `core/terms-query` never reaches them. Both
+  are inert. Re-measured the same day, `sd-featured-terms-query` alone is doing the job:
+  twelve of twenty-six `accommodation-type` terms are featured and the page renders
+  eleven — Luxury Trains has a count of 0 and `hideEmpty` drops it, as live drops it. The
+  standing ⚠️ about Africa's Finest rendering Tour Operator's grey placeholder is
+  **resolved**: term 1799 now has `thumbnail` 51625, and all twelve featured terms have
+  one.
+
+- **The accommodation banner's tagline is `medium`.** `semi-bold` on
+  `patterns/template-archive-accommodation.php` matched the tours archive; the
+  destinations archive already ran `medium` and dev was re-authored to it.
 
 - **The tour summary card fills its column instead of stopping at 497px.**
   `patterns/template-single-tour.php` drops the `contentSize: "497px"` from the Summary

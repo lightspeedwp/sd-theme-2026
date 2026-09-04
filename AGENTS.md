@@ -162,7 +162,9 @@ sd-theme-2026/
   the declaration is simply absent and the block inherits. `var:preset|color|…` and
   `var:preset|font-size|…` are safe on dynamic blocks; those two do declare `css_vars`.
   The `var(--wp--custom--…)` form is still a token reference, so the rule above holds.
-  → `patterns/card-media-overlay-term.php`, `patterns/safari-expert.php`
+  → `patterns/safari-expert.php` (and the note in
+  `patterns/card-media-overlay-term.php`, which no longer needs the workaround
+  itself — its label weight moved to the card section style)
 - Semantic HTML `tagName`s; correct heading hierarchy; keep templates/parts lean (no inline
   styles).
 - **Every template must have exactly one `<main>` landmark.** The sibling ATI theme shipped

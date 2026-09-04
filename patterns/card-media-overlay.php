@@ -32,6 +32,15 @@
  * `core/term-name` had to be added to that variation's `blockTypes` for it to
  * do anything there — the variation's CSS is generated per declared block type.
  *
+ * ## The label's weight comes from the section style
+ *
+ * There is no `fontWeight` on the title here and there should not be. The
+ * section style set `bold`, the term twin overrode it to `semi-bold`, and both
+ * were too heavy for a label sitting on a photograph — so
+ * `styles/sections/cards/media-overlay-card.json` now carries `medium` for the
+ * two cards together and neither card overrides it. Change it there, once, and
+ * both tiles move.
+ *
  * ## The whole tile is the link
  *
  * `sdLinkTo: "post"` — `SD\Enhancements\GroupLink` resolves `postId` from

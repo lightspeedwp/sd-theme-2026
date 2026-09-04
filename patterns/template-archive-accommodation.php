@@ -25,7 +25,7 @@
  *   - why `dimRatio: 100` is correct against `is-style-hero-banner`
  *   - why the banner content group is flow layout and not constrained
  *   - why media is addressed by its dev URL
- *   - why the breadcrumb bar is not built (it is `sd-enhancements` work)
+ *   - (the breadcrumb bar *is* built here — see below)
  *   - why only one copy of the archive description is rendered
  *
  * ## Values taken from Tour Operator's own settings
@@ -68,29 +68,16 @@
  * Dev already holds the flags: twelve of the twenty-six `accommodation-type`
  * terms are ticked.
  *
- * ⚠️ **Two of those twelve do not render the way live's ten do**, and both are
- * data rather than markup:
+ * Eleven of those twelve render. Luxury Trains (term 1795) is featured and
+ * carries a thumbnail but has a count of 0, so `hideEmpty` drops it — live
+ * drops it too, and no action is wanted. The other ⚠️ this file used to carry,
+ * Africa's Finest (term 1799) having no `thumbnail` and so falling through to
+ * Tour Operator's grey placeholder, is **resolved**: re-measured on dev
+ * 2026-09-04 the term has `thumbnail` 51625, and all twelve featured terms now
+ * have one.
  *
- *   - **Luxury Trains** (term 1795) is featured and carries a thumbnail but has
- *     a count of 0, so `hideEmpty` drops it. Live drops it too. No action.
- *   - **Africa's Finest** (term 1799) is featured, has 19 accommodations and
- *     carries **no `thumbnail` term meta**. Live's template requires a
- *     thumbnail and skips it; `core/post-featured-image` under Tour Operator's
- *     filter falls through to `render_placeholder_image()`
- *     (tour-operator/includes/classes/frontend/class-taxonomy-images.php:73-75)
- *     and draws TO's grey placeholder instead. So this grid renders **eleven**
- *     tiles, one of them a placeholder, until someone either gives that term a
- *     Featured Image or unticks Featured on it. Both are one field on the term
- *     edit screen; neither is a template change, so neither is made here.
- *
- * `perPage: 12` is a ceiling above the twelve featured terms, not a page size —
- * there is no term pagination block, and live pages nothing here either
- * (`disable_archive_pagination` is on in the `accommodation` settings).
- * Alphabetical by name, as the other two grids are; live's order is the stored
- * term order, which no block query exposes.
- *
- * Three columns where live runs two, for the reason recorded on the tours
- * archive: the rebuild's archives share one tile shape and one column count.
+ * The page size, the column count, the crop and the two inert Tour Operator
+ * query markers are all set out on the grid itself, further down this file.
  *
  * ## Where the tiles point
  *
@@ -128,12 +115,12 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
 
-			<!-- wp:heading {"level":1,"className":"is-style-script-accent","fontSize":"800"} -->
-			<h1 class="wp-block-heading is-style-script-accent has-800-font-size"><?php esc_html_e( 'Accommodation', 'sd-theme-2026' ); ?></h1>
+			<!-- wp:heading {"level":1,"className":"is-style-script-accent","fontSize":"800","anchor":"h-accommodation"} -->
+			<h1 class="wp-block-heading is-style-script-accent has-800-font-size" id="h-accommodation"><?php esc_html_e( 'Accommodation', 'sd-theme-2026' ); ?></h1>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontFamily":"heading"} -->
-			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php esc_html_e( 'Africa’s Premium Lodges, Hotels & Safari Camps', 'sd-theme-2026' ); ?></p>
+			<!-- wp:paragraph {"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
+			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--medium)"><?php esc_html_e( 'Africa’s Premium Lodges, Hotels & Safari Camps', 'sd-theme-2026' ); ?></p>
 			<!-- /wp:paragraph -->
 
 		</div>
@@ -144,6 +131,19 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 
 	<?php
 	/*
+	 * The breadcrumb bar, directly under the banner — the same
+	 * `patterns/breadcrumbs.php` the destination and tour singles run, in the
+	 * same position live puts it. The comment on `template-archive-destination.php`
+	 * that calls this `sd-enhancements` work is stale in the same way the note on
+	 * `patterns/breadcrumbs.php` records: filtering what Yoast *puts* in the
+	 * trail is plugin work, but the band it sits in is a strip of theme markup
+	 * around a third-party block, and it deactivates with the theme.
+	 */
+	require __DIR__ . '/breadcrumbs.php';
+	?>
+
+	<?php
+	/*
 	 * The intro band — live's `#accommodation-cta-header`.
 	 *
 	 * The ground is `#f7f5f2`, which is `neutral-200` to the digit and what
@@ -151,21 +151,29 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 	 * archives put their intro on carries this one too. Live's 70px vertical
 	 * padding is that style's spacing-70.
 	 *
-	 * `contentSize: 1130px` on the section rather than `alignwide` on the row:
-	 * live caps this row at 1130px (custom.css:3971), which sits between the
-	 * theme's 900px content measure and its 1440px wide measure, so neither
-	 * alignment expresses it. The two panels are 565px and 550px inside that,
-	 * i.e. an even split, so they are equal columns rather than weighted ones.
+	 * The row is `alignwide`, not the `contentSize: 1130px` this pattern
+	 * launched with. That 1130px was live's cap (custom.css:3971) taken
+	 * literally, and it read as a measure this theme does not otherwise use —
+	 * a row narrower than every other wide row on the page for no reason a
+	 * reader can see. Re-authored on dev 2026-09-04 against the theme's own
+	 * wide measure; the two panels are still an even split, so they are equal
+	 * columns rather than weighted ones.
+	 *
+	 * The columns are top-aligned rather than stretched, and each panel carries
+	 * its own `minHeight: 300`. Stretching made the shorter panel's photograph
+	 * grow to match the taller one, so the pair's height was decided by whichever
+	 * had the longer copy; a floor on both gives live's even pair of plates
+	 * without that coupling.
 	 */
 	?>
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Archive Intro"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained","contentSize":"1130px"}} -->
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Archive Intro"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 	<section class="wp-block-group alignfull is-style-tinted-page-section">
 
-		<!-- wp:columns {"verticalAlignment":"stretch","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
-		<div class="wp-block-columns are-vertically-aligned-stretch">
+		<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
+		<div class="wp-block-columns alignwide">
 
-			<!-- wp:column {"verticalAlignment":"stretch"} -->
-			<div class="wp-block-column is-vertically-aligned-stretch">
+			<!-- wp:column {"verticalAlignment":"top"} -->
+			<div class="wp-block-column is-vertically-aligned-top">
 
 				<?php
 				/*
@@ -189,17 +197,26 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 				 * An `h2`. Live writes an `h3` here and an `h2` in the panel
 				 * beside it; the two panels are siblings under the banner's
 				 * `h1`, so they take the same level.
+				 *
+				 * The heading is `is-style-script-accent` at font-size 700,
+				 * re-authored on dev 2026-09-04. Live sets this in the heading
+				 * face at 24px; the script line is the device the banner and the
+				 * homepage already use for a gold accent heading, and at 700 the
+				 * two panels' headings read as a matched pair across the row
+				 * rather than as one label and one link. The paragraph loses its
+				 * explicit 200 and takes the body size for the same reason —
+				 * three type sizes inside a 400px plate was one too many.
 				 */
 				?>
-				<!-- wp:cover {"url":"<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>","dimRatio":0,"overlayColor":"neutral-800","isUserOverlayColor":true,"contentPosition":"center center","isDark":true,"tagName":"aside","metadata":{"name":"Best Price Guarantee"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained","contentSize":"400px"}} -->
-				<aside class="wp-block-cover" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)"><span aria-hidden="true" class="wp-block-cover__background has-neutral-800-background-color has-background-dim-0 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+				<!-- wp:cover {"url":"<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>","dimRatio":0,"overlayColor":"neutral-800","isUserOverlayColor":true,"minHeight":300,"contentPosition":"center center","tagName":"aside","metadata":{"name":"Best Price Guarantee"},"align":"center","style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|40","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained","contentSize":"400px"}} -->
+				<aside class="wp-block-cover aligncenter" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40);min-height:300px"><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-neutral-800-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
-					<!-- wp:heading {"textAlign":"center","level":2,"style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-500"}}}},"textColor":"accent-500","fontSize":"400","anchor":"h-best-price-guarantee"} -->
-					<h2 class="wp-block-heading has-text-align-center has-accent-500-color has-text-color has-link-color has-400-font-size" id="h-best-price-guarantee"><?php esc_html_e( 'Best Price Guarantee', 'sd-theme-2026' ); ?></h2>
+					<!-- wp:heading {"className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-500"}}},"typography":{"textAlign":"center"}},"textColor":"accent-500","fontSize":"700","anchor":"h-best-price-guarantee"} -->
+					<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-accent-500-color has-text-color has-link-color has-700-font-size" id="h-best-price-guarantee"><?php esc_html_e( 'Best Price Guarantee', 'sd-theme-2026' ); ?></h2>
 					<!-- /wp:heading -->
 
-					<!-- wp:paragraph {"align":"center","textColor":"base","fontFamily":"heading","fontSize":"200"} -->
-					<p class="has-text-align-center has-base-color has-text-color has-heading-font-family has-200-font-size"><?php esc_html_e( 'Booking via us is cheaper than going direct because we have access to the very best available rates at all of Africa’s premium safari lodges, camps and boutique hotels.', 'sd-theme-2026' ); ?></p>
+					<!-- wp:paragraph {"style":{"typography":{"textAlign":"center"}},"textColor":"base","fontFamily":"heading"} -->
+					<p class="has-text-align-center has-base-color has-text-color has-heading-font-family"><?php esc_html_e( 'Booking via us is cheaper than going direct because we have access to the very best available rates at all of Africa’s premium safari lodges, camps and boutique hotels.', 'sd-theme-2026' ); ?></p>
 					<!-- /wp:paragraph -->
 
 				</div></aside>
@@ -208,8 +225,8 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 			</div>
 			<!-- /wp:column -->
 
-			<!-- wp:column {"verticalAlignment":"stretch"} -->
-			<div class="wp-block-column is-vertically-aligned-stretch">
+			<!-- wp:column {"verticalAlignment":"top"} -->
+			<div class="wp-block-column is-vertically-aligned-top">
 
 				<?php
 				/*
@@ -218,14 +235,32 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 				 * photograph, with the heading and the badge in a row rather
 				 * than stacked.
 				 *
-				 * Live wraps the *whole* panel in one `<a href="/specials/">`.
-				 * That is `sdLinkTo` on `core/group`, and `SD\Enhancements\GroupLink`
-				 * extends `core/group` only — a deliberate limit recorded on
-				 * that class — so the link is on the heading instead, which is
-				 * where a keyboard user reaches it either way. The badge is
-				 * decorative and carries an empty `alt`; it advertises the same
-				 * destination the heading names, so linking it too would add a
-				 * second tab stop to the same URL.
+				 * Live wraps the *whole* panel in one `<a href="/specials/">`,
+				 * and so does this now: `sdLinkTo: "custom"` on a group around
+				 * the cover, with `sdLinkUrl` the same URL the heading links to.
+				 * `SD\Enhancements\GroupLink` extends `core/group` only — a
+				 * deliberate limit recorded on that class — which is why the
+				 * group is there at all rather than the attribute sitting on the
+				 * `core/cover`. It tests the rendered panel for a link already
+				 * pointing at the same URL, finds the heading's, and leaves the
+				 * overlay presentational, so the panel gains no second tab stop.
+				 *
+				 * No `sdLinkLabel`. With none set, `GroupLink::label()` falls
+				 * back to the first heading inside the group — "View Current
+				 * Accommodation Specials", which is both the right name for the
+				 * link and already translated through `esc_html_e()` below. A
+				 * literal on the attribute would be neither, since there is no
+				 * way to put a translated string inside a block comment without
+				 * risking the JSON.
+				 *
+				 * The wrapper is **flow** layout, not the constrained layout the editor
+				 * saved. Its only job is to carry the attribute, and a constrained
+				 * group picks up `has-global-padding`, which inset this cover by
+				 * `spacing|20` a side and left the specials panel visibly narrower
+				 * than the guarantee panel beside it. Flow adds nothing.
+				 *
+				 * The badge is decorative and carries an empty `alt`; it
+				 * advertises the same destination the heading names.
 				 *
 				 * `current-accommodation-bg.jpg` and `specials-badge.svg` are
 				 * ported from the child theme's `images/` as theme chrome, not
@@ -240,27 +275,38 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 				 * text: this cover carries no section style, so an unstyled link
 				 * inside it would fall back to the theme's brand link colour
 				 * against a dark photograph.
+				 *
+				 * The content row is `flexWrap: "nowrap"`. Wrapping put the
+				 * badge on its own line at the column width this band now runs
+				 * at, which read as a second element rather than as the plate
+				 * beside the heading.
 				 */
 				?>
-				<!-- wp:cover {"url":"<?php echo esc_url( get_theme_file_uri( 'assets/images/current-accommodation-bg.jpg' ) ); ?>","dimRatio":0,"overlayColor":"neutral-800","isUserOverlayColor":true,"contentPosition":"center center","isDark":true,"tagName":"aside","metadata":{"name":"Accommodation Specials"},"style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|40","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-				<aside class="wp-block-cover" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)"><span aria-hidden="true" class="wp-block-cover__background has-neutral-800-background-color has-background-dim-0 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( get_theme_file_uri( 'assets/images/current-accommodation-bg.jpg' ) ); ?>" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+				<!-- wp:group {"metadata":{"name":"Specials Link"},"layout":{"type":"default"},"sdLinkTo":"custom","sdLinkUrl":"<?php echo esc_url( $sd_specials_archive ); ?>"} -->
+				<div class="wp-block-group">
 
-					<!-- wp:group {"metadata":{"name":"Specials Content"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center","justifyContent":"center"}} -->
-					<div class="wp-block-group">
+					<!-- wp:cover {"url":"<?php echo esc_url( get_theme_file_uri( 'assets/images/current-accommodation-bg.jpg' ) ); ?>","dimRatio":0,"overlayColor":"neutral-800","isUserOverlayColor":true,"minHeight":300,"minHeightUnit":"px","contentPosition":"center center","tagName":"aside","metadata":{"name":"Accommodation Specials"},"align":"center","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|40","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+					<aside class="wp-block-cover aligncenter" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40);min-height:300px"><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( get_theme_file_uri( 'assets/images/current-accommodation-bg.jpg' ) ); ?>" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-neutral-800-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
-						<!-- wp:heading {"level":2,"style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"500","anchor":"h-view-current-accommodation-specials"} -->
-						<h2 class="wp-block-heading has-base-color has-text-color has-link-color has-500-font-size" id="h-view-current-accommodation-specials"><a href="<?php echo esc_url( $sd_specials_archive ); ?>"><?php esc_html_e( 'View Current Accommodation Specials', 'sd-theme-2026' ); ?></a></h2>
-						<!-- /wp:heading -->
+						<!-- wp:group {"metadata":{"name":"Specials Content"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"center"}} -->
+						<div class="wp-block-group">
 
-						<!-- wp:image {"width":"169px","sizeSlug":"full","linkDestination":"none"} -->
-						<figure class="wp-block-image size-full is-resized"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/specials-badge.svg' ) ); ?>" alt="" style="width:169px"/></figure>
-						<!-- /wp:image -->
+							<!-- wp:heading {"className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}},"typography":{"textAlign":"center"}},"textColor":"base","fontSize":"700","anchor":"h-view-current-accommodation-specials"} -->
+							<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-base-color has-text-color has-link-color has-700-font-size" id="h-view-current-accommodation-specials"><a href="<?php echo esc_url( $sd_specials_archive ); ?>"><?php esc_html_e( 'View Current Accommodation Specials', 'sd-theme-2026' ); ?></a></h2>
+							<!-- /wp:heading -->
 
-					</div>
-					<!-- /wp:group -->
+							<!-- wp:image {"width":"169px","sizeSlug":"full","linkDestination":"none"} -->
+							<figure class="wp-block-image size-full is-resized"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/specials-badge.svg' ) ); ?>" alt="" style="width:169px;height:auto"/></figure>
+							<!-- /wp:image -->
 
-				</div></aside>
-				<!-- /wp:cover -->
+						</div>
+						<!-- /wp:group -->
+
+					</div></aside>
+					<!-- /wp:cover -->
+
+				</div>
+				<!-- /wp:group -->
 
 			</div>
 			<!-- /wp:column -->
@@ -280,15 +326,56 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 	 * `core/terms-query` rather than a Query Loop, why the class sits on the
 	 * query rather than on the term template, and what happens when nothing is
 	 * flagged featured.
+	 *
+	 * ## Featured-only is working, and it is the whole of what bounds this grid
+	 *
+	 * `sd-featured-terms-query` is the only constraint, and re-measured on dev
+	 * 2026-09-04 it is doing its job: twelve of the twenty-six
+	 * `accommodation-type` terms carry `featured`, and the page renders
+	 * **eleven** tiles — Luxury Trains (term 1795) is featured but has a count
+	 * of 0, so `hideEmpty` drops it, exactly as live drops it. The ⚠️ this file
+	 * used to carry about Africa's Finest (term 1799) rendering Tour Operator's
+	 * grey placeholder is **resolved**: the term now has `thumbnail` 51625.
+	 * All twelve featured terms have a thumbnail and all twelve are top-level.
+	 *
+	 * `perPage: 33` is a ceiling above the twenty-six terms in the taxonomy, not
+	 * a page size — the featured filter, not the page size, decides what shows,
+	 * and raising the ceiling above the *unfiltered* count means adding a
+	 * thirteenth featured term is a tick on a term and nothing here. There is no
+	 * term pagination block, and live pages nothing here either
+	 * (`disable_archive_pagination` is on in the `accommodation` settings).
+	 * Alphabetical by name, as the other two grids are; live's order is the
+	 * stored term order, which no block query exposes.
+	 *
+	 * ⚠️ `parents-only` and `custom-order` were tried on this query on dev and
+	 * are **inert**, so they are not carried here. Both are Tour Operator query
+	 * markers and its handler allow-lists `core/query` only
+	 * (tour-operator/includes/classes/blocks/class-query-loop.php:288-317) — a
+	 * `core/terms-query` never reaches it. `parents-only` would be a no-op
+	 * anyway, since all twelve featured terms are already `parent = 0`, and
+	 * `custom-order` remains the thing no block query exposes.
+	 *
+	 * ## Two columns, and a 16/9 crop only here
+	 *
+	 * Live runs two columns and so does this, re-authored on dev 2026-09-04 —
+	 * which reverses the note on `template-archive-tour.php` that the rebuild's
+	 * archives share one column count. Eleven type tiles at three-up left a
+	 * ragged last row; at two-up they read as live's pairs.
+	 *
+	 * A square tile is a very tall photograph at half the wide measure, so the
+	 * card is asked for `16/9` here through `$sd_card_aspect_ratio`. That is
+	 * this grid only: the card's default stays square, which is what the tours
+	 * archive and every other grid want. → card-media-overlay-term.php
 	 */
+	$sd_card_aspect_ratio = '16/9';
 	?>
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Accommodation Types"},"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
 	<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
 
-		<!-- wp:terms-query {"termQuery":{"perPage":12,"taxonomy":"accommodation-type","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"align":"wide","className":"sd-featured-terms-query","layout":{"type":"default"}} -->
+		<!-- wp:terms-query {"termQuery":{"perPage":33,"taxonomy":"accommodation-type","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"align":"wide","className":"sd-featured-terms-query","layout":{"type":"default"}} -->
 		<div class="wp-block-terms-query alignwide sd-featured-terms-query">
 
-			<!-- wp:term-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
+			<!-- wp:term-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":2,"minimumColumnWidth":null}} -->
 				<?php require __DIR__ . '/card-media-overlay-term.php'; ?>
 			<!-- /wp:term-template -->
 

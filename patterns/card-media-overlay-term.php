@@ -53,7 +53,7 @@
  * answered in `assets/styles/core-post-featured-image.css`; the measurements and
  * the reason it is a stylesheet are there.
  *
- * ## The crop is square
+ * ## The crop is a parameter, and it defaults to square
  *
  * `aspectRatio: "1"`, authored on dev 2026-08-28 and carried back here, on both
  * this card and its post twin. It replaces the 3/4 portrait the two archives
@@ -61,33 +61,31 @@
  * travel styles), so a portrait tile threw away most of the frame's width, and
  * a square holds a two-line title without the scrim crowding it.
  *
+ * Square stays the default because it is what most grids want. The accommodation
+ * archive is the exception: it runs two columns rather than three, and a square
+ * tile at that width is a very tall photograph, so it asks for `16/9`. That is
+ * expressed as `$sd_card_aspect_ratio`, read once below and defaulted to `"1"`
+ * — an includer sets it immediately before the `require`, and the variable is
+ * undefined (so the default applies) when WordPress buffers this file to
+ * register it as a pattern in its own right. It is deliberately the *only*
+ * parameter: the crop is the one thing that legitimately varies per grid, and
+ * every other difference between callers belongs in the section style.
+ *
  * The scrim's side padding is tighter than its top and bottom — `spacing|20`
  * against `spacing|40` — so a long name like "Beach & Safari Vacations" breaks
- * over two lines rather than three in a square tile. The title is `semi-bold`
- * rather than the `bold` the card style sets, which is the weight authored on
- * dev. Both are this card only; the post twin keeps the even padding and the
- * card style's weight.
+ * over two lines rather than three in a square tile. That is this card only;
+ * the post twin keeps the even padding.
  *
- * That weight is written `var(--wp--custom--font-weight--semi-bold)` and not
- * `var:custom|font-weight|semi-bold`, which is the convention everywhere else in
- * this theme. `core/term-name` is a **dynamic** block, so its `style` object is
- * resolved server-side by the style engine rather than by the editor at save
- * time — and the style engine only expands `var:preset|…`, and only for the
- * properties that declare `css_vars`. `fontWeight` declares none
- * (wp-includes/style-engine/class-wp-style-engine.php:323-327), so the shorthand
- * is dropped without a warning. Measured on local 2026-08-28:
- *
- *   wp_style_engine_get_styles( array( 'typography' => array(
- *       'fontWeight' => 'var:custom|font-weight|semi-bold',
- *       'lineHeight' => 'var:custom|line-height|heading',
- *       'fontSize'   => 'var:preset|font-size|500',
- *   ) ) );
- *   // => 'font-size:var(--wp--preset--font-size--500);'  — the other two gone.
- *
- * `patterns/safari-expert.php` reached the same conclusion for `letterSpacing`
- * on `core/post-title`; this is the same rule, and the `\u002d` escaping is the
- * form the editor round-trips to. It is still a token reference, not a literal
- * 600, so the tokens-over-hardcoding rule holds.
+ * The label's weight is **not** set here. It was `semi-bold` on this card, over
+ * the `bold` the section style set, and both were too heavy for a label sitting
+ * on a photograph. `styles/sections/cards/media-overlay-card.json` now carries
+ * `medium` for the two cards together, so neither card overrides it — which also
+ * retires the `var(--wp--custom--font-weight--…)` escaping this file used to
+ * need. That escaping is still required wherever a **dynamic** block sets a
+ * `var:custom|…` typography value, because the style engine expands only
+ * `var:preset|…` and only for properties declaring `css_vars`
+ * (wp-includes/style-engine/class-wp-style-engine.php:323-327); the measurement
+ * and the surviving case are on `patterns/safari-expert.php`.
  *
  * ## The whole tile is the link
  *
@@ -99,14 +97,19 @@
  * users get the whole photograph.
  */
 
+/*
+ * The crop. `"1"` unless the includer asked for something else — see the note
+ * above on why this is the one parameter this card takes.
+ */
+$sd_card_aspect_ratio = isset( $sd_card_aspect_ratio ) ? $sd_card_aspect_ratio : '1';
 ?>
 <!-- wp:group {"metadata":{"name":"Media Overlay Card"},"className":"is-style-media-overlay-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"},"sdLinkTo":"term"} -->
 <div class="wp-block-group is-style-media-overlay-card">
-	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1"} /-->
+	<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"<?php echo esc_attr( $sd_card_aspect_ratio ); ?>"} /-->
 
 	<!-- wp:group {"metadata":{"name":"Scrim"},"className":"media-overlay-card__scrim","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|20","bottom":"var:preset|spacing|40","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group media-overlay-card__scrim" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--20)">
-		<!-- wp:term-name {"level":3,"isLink":true,"className":"is-style-shadow-text","style":{"typography":{"textAlign":"center","fontWeight":"var(\u002d\u002dwp\u002d\u002dcustom\u002d\u002dfont-weight\u002d\u002dsemi-bold)"}}} /-->
+		<!-- wp:term-name {"level":3,"isLink":true,"className":"is-style-shadow-text","style":{"typography":{"textAlign":"center"}}} /-->
 	</div>
 	<!-- /wp:group -->
 </div>

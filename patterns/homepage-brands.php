@@ -48,6 +48,30 @@
  * an accessible name, and with no list of brands in this file. `thumbnail` is
  * the same meta key live reads, so these are the same logo files.
  *
+ * ## The hover zoom is on the term template, not on the image
+ *
+ * `is-style-image-hover-zoom` looks misplaced on `core/term-template` and is the
+ * only place it works. Setting it on `core/post-featured-image` is what an
+ * author would try — measured on dev 2026-09-04, it registers, it emits CSS,
+ * and it does nothing: Tour Operator builds that `<figure>` with
+ * `get_block_wrapper_attributes()` from inside a `render_block` filter, which
+ * outside a block render of its own returns the *enclosing* block's classes, so
+ * the figure came back as `<figure class="columns-5 wp-block-term-template">`
+ * with no `wp-block-post-featured-image` and no `is-style-*` on it. The
+ * generated selector is `.wp-block-post-featured-image.is-style-image-hover-zoom--N`,
+ * so nothing matched. The class on the term template *does* land on that figure,
+ * because the term template is the block whose attributes leak into it — the same
+ * leak `assets/styles/core-post-featured-image.css` and
+ * `SD\Enhancements\Queries::FEATURED_TERMS_CLASS` are written around, used here
+ * rather than worked around.
+ *
+ * Two consequences worth knowing. The variation is declared for
+ * `core/term-template` in `styles/blocks/media/image-hover-zoom.json` so the
+ * class is real rather than a hand-written helper, which also means its
+ * `overflow: hidden` lands on the `<ul>` Slick initialises on — harmless, and
+ * what a slider track wants anyway. And there is now **one** copy of this CSS in
+ * the page instead of the twenty-two the per-image class produced, one per tile.
+ *
  * That filter could not fire as TO ships it. A block receives only the context
  * keys its own type declares — `WP_Block::__construct()` intersects the
  * available context with `$block_type->uses_context`, class-wp-block.php:163-168
@@ -72,7 +96,7 @@
 
 	<!-- wp:terms-query {"termQuery":{"perPage":21,"taxonomy":"accommodation-brand","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
 	<div class="wp-block-terms-query alignwide is-style-slider-frame lsx-to-slider">
-		<!-- wp:term-template {"className":"columns-5","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":5}} -->
+		<!-- wp:term-template {"className":"columns-5 is-style-image-hover-zoom","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":5}} -->
 			<!-- wp:group {"metadata":{"name":"Brand Logo"},"style":{"spacing":{"blockGap":"0","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center","verticalAlignment":"center"}} -->
 			<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
 				<!-- wp:post-featured-image {"isLink":true,"height":"100px","scale":"contain","sizeSlug":"medium"} /-->
