@@ -525,6 +525,35 @@
 	display: none !important;
 }
 
+/* Slider Frame — the flush variant.
+ *
+ * The review band is edge to edge on live: the quote's dimmed image runs the
+ * full viewport width and butts straight up against the sections above and
+ * below it. Making the query `alignfull` gets the *frame* there, but not the
+ * slide — Tour Operator insets every slide by 25px on all four sides, in two
+ * separate declarations, both `!important`
+ * (tour-operator/build/style.css: `.slick-slide{margin:10px!important;
+ * padding:0!important}` then `.lsx-to-slider .slick-slide{padding:15px!important}`).
+ * That inset is what leaves the white gutters at the sides and the white gap
+ * above and below. It is right for the card shelves — tours, accommodation,
+ * regions — so it can't be unset globally on `.slick-slide`; this zeroes it
+ * only where a shelf asks to be flush.
+ *
+ * !important is unavoidable: both vendor declarations carry it, so nothing
+ * without it can win at any specificity.
+ *
+ * `.slick-list` is included because Slick writes an inline horizontal padding
+ * onto it whenever `centerMode` is on. TO doesn't set `centerMode` today, so
+ * this is a guard against an upstream default change, not a live fix. */
+.sd-slider-flush :is(.slick-list, .slick-track) {
+	padding: 0 !important;
+}
+
+.sd-slider-flush .slick-slide {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
 /* Header rules removed 2026-08-21
    ===========================================================================
    Three blocks went from here, all of them hanging off hooks the header no

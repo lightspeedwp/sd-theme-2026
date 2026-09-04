@@ -504,8 +504,8 @@
 	<!-- wp:group {"metadata":{"name":"Tour Reviews"},"align":"full","className":"lsx-review-related-tour-query-wrapper","layout":{"type":"default"}} -->
 	<div class="wp-block-group alignfull lsx-review-related-tour-query-wrapper">
 
-		<!-- wp:query {"query":{"perPage":6,"pages":0,"offset":0,"postType":"review","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"","inherit":false},"hasCustomClass":true,"align":"full","className":"is-style-slider-frame lsx-to-slider sd-slider-nav-hidden","layout":{"type":"default"}} -->
-		<div class="wp-block-query alignfull is-style-slider-frame lsx-to-slider sd-slider-nav-hidden">
+		<!-- wp:query {"query":{"perPage":6,"pages":0,"offset":0,"postType":"review","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"","inherit":false},"hasCustomClass":true,"align":"full","className":"is-style-slider-frame lsx-to-slider sd-slider-nav-hidden sd-slider-flush","layout":{"type":"default"}} -->
+		<div class="wp-block-query alignfull is-style-slider-frame lsx-to-slider sd-slider-nav-hidden sd-slider-flush">
 			<!-- wp:post-template {"className":"lsx-review-related-tour-query","layout":{"type":"grid","columnCount":1}} -->
 				<!-- wp:pattern {"slug":"sd-theme-2026/card-review-quote"} /-->
 			<!-- /wp:post-template -->

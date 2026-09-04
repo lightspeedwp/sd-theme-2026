@@ -529,6 +529,22 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The Yoast breadcrumb trail renders at font size `200` (Base) instead of inheriting the
+  root `300`.** `assets/styles/yoast-breadcrumbs.css`, attached to `yoast-seo/breadcrumbs`
+  by the new `inc/yoast-breadcrumbs.php`. Only the size is set — family, weight, colour,
+  the separator and the link treatment all continue to inherit the `primary-100` band the
+  `sd-theme-2026/destination-breadcrumbs` pattern places them on.
+
+  The rule is authored CSS rather than JSON because Yoast's block does not call
+  `get_block_wrapper_attributes()`: it renders a bare `<div class="yoast-breadcrumbs">`
+  with no `wp-block-yoast-seo-breadcrumbs` class, so a `theme.json` `styles.blocks` entry
+  would compile to a selector that never appears in the output, and a `styles/**` partial
+  has no block wrapper to attach a variation to. `enqueue_custom_block_styles()` globs
+  `core-*.css` only, so the sheet is registered by its own `inc/` module — the arrangement
+  `functions.php` documents and `inc/mega-menu.php` already follows.
+  `wp_enqueue_block_style()` keeps it lazy: nothing is printed on pages without a trail,
+  and nothing at all while Yoast SEO is inactive, since the block is then unregistered.
+
 - **The Related Reviews band is a full-bleed quote with no carousel nav, on every template
   that carries it.** At Zared's direction 2026-09-03, matching live.
   `patterns/destination-reviews.php`, `patterns/template-single-tour.php` and
@@ -550,12 +566,25 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
     rather than `visibility: hidden`, so the controls are not tab stops; `!important` for
     the same reason the rest of that block needs it — `tour-operator/build/style.css` loads
     after this sheet and reaches (0,4,1).
+  - The query also takes `sd-slider-flush`, which zeroes Tour Operator's per-slide inset.
+    `alignfull` gets the *frame* to the viewport edge but not the slide: TO insets every
+    slide by 25px on all four sides in two separate `!important` declarations
+    (`tour-operator/build/style.css` — `.slick-slide{margin:10px!important;padding:0!important}`,
+    then `.lsx-to-slider .slick-slide{padding:15px!important}`). That inset was the white
+    gutter at the sides and the white gap above and below, left over after the wrapper's
+    own padding went. It is right for the card shelves — tours, accommodation, regions —
+    so it is unset per-shelf rather than globally on `.slick-slide`, and it needs
+    `!important` because both vendor declarations carry it. The cover's own
+    `spacing|80`/`spacing|40` padding stays: that keeps the quote off the edge, while the
+    image and its scrim run the full width.
 
   ⚠️ **On desktop this leaves slides 2..n unreachable.** TO initialises the shelf with
   `draggable: false` and `swipe: false`, so the arrows were the only way through; below
   1228px its responsive settings turn `swipe` back on, so touch still works. Reaching the
   rest on desktop means changing the query (`perPage: 1`, which also stops Slick
-  initialising at all) or TO's options — not this sheet. *(LS-2033)*
+  initialising at all) or TO's options — not this sheet. Autoplay is **not** a way out:
+  `build_slider()` passes `autoplay: false, autoplaySpeed: 0` and exposes no filter, so
+  the shelf does not advance on its own. *(LS-2033)*
 
 - **The Review Quote Card's "Read More" is font-size 300 and flips to brand-500.**
   `styles/sections/cards/review-quote-card.json` asked for
