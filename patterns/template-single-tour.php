@@ -172,6 +172,31 @@
 	 * a tour with no consultant. `sd/safari-expert` reproduces that exactly — it
 	 * renders nothing when it cannot resolve an expert — so there is no
 	 * conditional here either.
+	 *
+	 * **The copy is wrapped, italic, and cut with a Read More** — the same
+	 * composition as `patterns/destination-summary.php`, and for the same
+	 * reason. Live truncates the tour copy to its first paragraph and appends a
+	 * "Read More…" link (sd-lsx-child/assets/js/custom.js:224-275);
+	 * `core/read-more` collapses `core/post-content` to its first block and
+	 * expands it in place on click, so the behaviour is core's and no script of
+	 * ours is required. This file previously routed that truncation to
+	 * `sd-enhancements` on the grounds that it is a JavaScript behaviour over
+	 * post content. That reasoning is superseded: there is a core block for it,
+	 * so it is neither plugin work nor a script.
+	 *
+	 * The outer group's own inline `font-style:italic;font-weight:400`, not the
+	 * `is-style-archive-intro` class, is what makes the copy italic —
+	 * `core/paragraph`'s `selectors.root` is bare `p`, so the archive-intro
+	 * variation compiles to `p.is-style-archive-intro` and can never match an
+	 * ancestor, and here the class sits on `core/post-content`'s wrapper. It is
+	 * kept because it marks the block's role and because it is what the
+	 * destination single carries; the italic and the 400 weight the page shows
+	 * come from inheritance off the group. → the same note in
+	 * `patterns/destination-summary.php`
+	 *
+	 * `post-content`'s `blockGap` is `spacing|20`, tighter than the `spacing|60`
+	 * root default, which is the closer paragraph rhythm the destination single
+	 * uses.
 	 */
 	?>
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Tour Summary"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
@@ -183,7 +208,15 @@
 			<!-- wp:column {"verticalAlignment":"top","style":{"spacing":{"blockGap":"var:preset|spacing|50"}}} -->
 			<div class="wp-block-column is-vertically-aligned-top">
 
-				<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+				<!-- wp:group {"style":{"typography":{"fontStyle":"italic","fontWeight":"400"},"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
+				<div class="wp-block-group" style="font-style:italic;font-weight:400">
+
+					<!-- wp:post-content {"className":"is-style-archive-intro","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} /-->
+
+					<!-- wp:read-more {"content":"Read more...","fontSize":"300"} /-->
+
+				</div>
+				<!-- /wp:group -->
 
 				<?php require __DIR__ . '/safari-expert.php'; ?>
 

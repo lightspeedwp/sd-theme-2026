@@ -1224,16 +1224,37 @@
 	content: none;
 }
 
-/* The night count holds its line. It sits in a constrained group, which is a
-   flex item of the wrapping stay heading and would otherwise be shrunk below
-   its content — long enough lodge names pushed it past the point where
-   "2 Nights" broke mid-word into "2 / Night / s". `flex: 0 0 auto` fixes it at
-   its content width, so the lodge and its destination are what wrap. This is
-   the one part of the wrap behaviour with no block attribute behind it; the
-   two `flexWrap` values it works with are authored in
-   patterns/itinerary-stay.php. */
-.sd-itinerary__stay .itin-title-wrapper {
-	flex: 0 0 auto;
+/* The row is one inline flow, so it breaks on the word rather than on the term.
+
+   Live's `.lsx-to-archive-content` is a plain block whose night-count `h3` is
+   `display: inline` (custom.css:2375-2378), with the lodge and its destination
+   as `<span>`s after it: nothing in the row is a box that can drop whole, so a
+   long lodge name breaks between its own words. The block version was three
+   wrapping flex rows, which made every `itin-<field>-wrapper` an atomic flex
+   item — the lodge dropped whole below the night count, the destination whole
+   below the lodge. The groups are flow layout now (patterns/itinerary-stay.php)
+   and are made inline here.
+
+   The wrappers cannot be flattened away: Tour Operator rewrites
+   `itin-<field>-wrapper` to `hidden itin-<field>-wrapper` to drop an empty
+   field, and its `.lsx-itinerary-wrapper .hidden { display: none }` is (0,2,0)
+   — the same weight this rule would carry without `:not(.hidden)`, decided by
+   source order. The negation puts these at (0,3,0) so an empty field still
+   disappears.
+
+   `display: inline` on the wrappers is also what replaced the `flex: 0 0 auto`
+   that used to pin the night count: there is no flex item left to shrink, so
+   "2 Nights" can no longer be squeezed until it breaks into "2 / Night / s".
+   The spaces between the three terms are the newlines between the wrappers in
+   the serialized markup, collapsed by the inline formatting context — live
+   emits the same single space with `echo ' '` (layout.php:405). */
+.sd-itinerary__stay .itin-title-wrapper:not(.hidden),
+.sd-itinerary__stay .itin-accommodation-wrapper:not(.hidden),
+.sd-itinerary__stay .itinerary-title,
+.sd-itinerary__stay .itinerary-accommodation,
+.sd-itinerary__stay .itinerary-location {
+	display: inline;
+	margin: 0;
 }
 
 /* The comma between the lodge and its destination. It belongs to the lodge's

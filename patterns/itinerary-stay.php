@@ -71,20 +71,40 @@
  * group below carries something different — the `destination_to_tour`
  * connection, the tour's parent destinations, not the stay's.
  *
- * ## Wrapping
+ * ## Wrapping — the row breaks on the word, not on the term
  *
- * Both flex rows here wrap, and that is deliberate rather than a default.
- * They were authored `nowrap` and a long lodge name — "Stanley & Livingstone
- * Boutique Hotel" — broke the row: the night count was squeezed until "2
- * Nights" split mid-word into "2 / Night / s", and the lodge and destination
- * were held apart on one over-long line. `wrap` on the stay heading lets the
- * lodge drop below the night count, and `wrap` on the accommodation wrapper
- * lets the destination drop below the lodge, each still in reading order.
+ * The night count, the lodge and the lodge's destination are **one inline
+ * flow**, so a row too long for its column breaks between words in the middle
+ * of whichever term is crossing the edge. It does not move a whole term to the
+ * next line.
  *
- * The night count is pinned at its content width by
- * `.sd-itinerary__stay .itin-title-wrapper { flex: 0 0 auto }` in
- * assets/styles/core-group.css — there is no block attribute for it, and
- * without it a wrapping row still shrinks the count before it wraps.
+ * That is live's behaviour. `.lsx-to-archive-content` is a plain block and the
+ * night-count `h3` inside it is `display: inline` (custom.css:2375-2378), with
+ * the lodge and destination as `<span>`s after it — nothing there is a box that
+ * can drop as a unit.
+ *
+ * The three rows were previously flex with `flexWrap: wrap`, which is what
+ * produced the term break: each `itin-<field>-wrapper` was an atomic flex item,
+ * so the lodge dropped whole below the night count and the destination dropped
+ * whole below the lodge. They are now flow layout, and the wrappers, the
+ * heading and the two paragraphs are made `display: inline` by
+ * `.sd-itinerary__stay .itin-title-wrapper:not(.hidden)` and its companions in
+ * assets/styles/core-group.css.
+ *
+ * The wrappers stay in the markup even though they now render inline: Tour
+ * Operator rewrites `itin-<field>-wrapper` to `hidden itin-<field>-wrapper` to
+ * drop an empty field, so flattening them would lose that. The `:not(.hidden)`
+ * on each rule is what keeps `display: inline` from out-specifying the
+ * plugin's `display: none`.
+ *
+ * The `flex: 0 0 auto` that used to pin the night count is gone with the flex
+ * rows. It existed because a shrinking flex item broke "2 Nights" mid-word into
+ * "2 / Night / s"; in an inline flow there is no item to shrink and the count
+ * cannot break inside a word.
+ *
+ * The spaces between the three terms are the newlines between the wrappers in
+ * the serialized markup, collapsed by the inline formatting context — the same
+ * single space live's `echo ' '` emits.
  *
  * The comma between the lodge and its destination is **not a block**. It was
  * authored as a paragraph of its own beside the lodge, which made it a separate
@@ -92,8 +112,8 @@
  * edge of the lodge's shrunken box, stranded a line away from the word it
  * belongs to. It is now
  * `.sd-itinerary__stay .itinerary-accommodation::after { content: "," }` in
- * assets/styles/core-group.css, so it is part of the lodge's own inline flow
- * and can neither detach nor begin a line. It also leaves one fewer empty block
+ * assets/styles/core-group.css — live's own device (custom.css:2383), so it is
+ * part of the lodge's own inline flow and can neither detach nor begin a line. It also leaves one fewer empty block
  * in the editor, and it disappears with the lodge when Tour Operator marks
  * `itin-accommodation-wrapper` hidden.
  *
@@ -143,15 +163,17 @@
 
 		<?php
 		/*
-		 * The night count and the lodge line share a row and it wraps — see
-		 * "Wrapping" above. The night count keeps its own `itin-title-wrapper`
-		 * so it can drop out on its own.
+		 * The night count and the lodge line share a row, and the row is one
+		 * inline flow that breaks between words — see "Wrapping" above. Flow
+		 * layout, not flex: flex would make each wrapper an atomic item. The
+		 * night count keeps its own `itin-title-wrapper` so it can drop out on
+		 * its own.
 		 */
 		?>
-		<!-- wp:group {"metadata":{"name":"Stay Heading"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"top"}} -->
+		<!-- wp:group {"metadata":{"name":"Stay Heading"},"layout":{"type":"default"}} -->
 		<div class="wp-block-group">
 
-			<!-- wp:group {"metadata":{"name":"Nights"},"className":"itin-title-wrapper","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
+			<!-- wp:group {"metadata":{"name":"Nights"},"className":"itin-title-wrapper","layout":{"type":"default"}} -->
 			<div class="wp-block-group itin-title-wrapper"><!-- wp:heading {"level":3,"className":"itinerary-title","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","lineHeight":"var:custom|line-height|snug","textTransform":"none","letterSpacing":"var:custom|letter-spacing|none"}},"textColor":"neutral-700","fontSize":"300"} -->
 			<h3 class="wp-block-heading itinerary-title has-neutral-700-color has-text-color has-300-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold);letter-spacing:var(--wp--custom--letter-spacing--none);line-height:var(--wp--custom--line-height--snug);text-transform:none"><?php esc_html_e( '2 Nights', 'sd-theme-2026' ); ?></h3>
 			<!-- /wp:heading --></div>
@@ -165,7 +187,7 @@
 			 * See "The row reads as one sentence" above.
 			 */
 			?>
-			<!-- wp:group {"metadata":{"name":"Lodge"},"className":"itin-accommodation-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|5"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<!-- wp:group {"metadata":{"name":"Lodge"},"className":"itin-accommodation-wrapper","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"layout":{"type":"default"}} -->
 			<div class="wp-block-group itin-accommodation-wrapper has-link-color">
 
 				<!-- wp:paragraph {"metadata":{"name":"Lodge Value"},"className":"itinerary-accommodation","style":{"spacing":{"margin":{"top":"0","bottom":"0"}}},"fontSize":"300"} -->
