@@ -2,10 +2,10 @@
 /**
  * Title: Accommodation Unit
  * Slug: sd-theme-2026/accommodation-unit
- * Description: One unit of an accommodation's rooms band — the unit photograph above a tinted panel carrying the unit name and its description. Repeated once per unit by Tour Operator's accommodation-units binding.
+ * Description: One unit of an accommodation's rooms band — a horizontal tinted row with the unit photograph at the leading third and the unit name and its description beside it. Repeated once per unit by Tour Operator's accommodation-units binding.
  * Categories: sd-theme-2026/tour-operator
  * Keywords: accommodation, unit, room, chalet, tent, villa, suite, lodge
- * Viewport Width: 480
+ * Viewport Width: 900
  * Block Types: core/group
  * Template Types: single
  * Post Types: accommodation
@@ -21,8 +21,8 @@
  * sd-lsx-child/includes/functions.php:683 and measured from
  * /accommodation/chitwa-chitwa-private-game-lodge/ on 2026-08-31, which carries
  * three: Luxury Suite, Charlsy Suite, Chitwa House. Live renders a photograph,
- * an `<h5>` at 23px and the unit description, three across in a Slick carousel
- * (`slidesToShow: 3`).
+ * an `<h5>` at 23px and the unit description as a **horizontal row** — one unit
+ * to a line, the photograph at the leading third and the copy beside it.
  *
  * ## This file is the *repeated unit*, not the band
  *
@@ -98,10 +98,41 @@
  * on an `#f7f5f2` band and the palette resolves both to `neutral-200`; the band
  * in the template is white for that reason, and the note is there.
  *
- * The image runs 2/1. Live's carousel card caps the thumbnail at 180px tall
- * over `padding: 0 0 45%` (custom.css:1874), and the source Tour Operator asks
- * for is `lsx-thumbnail-wide` at 750×350 — 2.14 either way, which 2/1 is the
- * nearest ratio the block serialises.
+ * ## The card is a row, and the row is `core/columns`
+ *
+ * Live's geometry, measured 2026-09-04:
+ *
+ * | | Live | Here |
+ * |---|---|---|
+ * | Card | `display:flex; flex-flow:row nowrap`, `max-width:945px`, centred | `core/columns`, capped by the list's `constrained` layout |
+ * | Photograph | `.rooms-thumbnail-wrap { flex-shrink:0; width:33.333% }` | `core/column` `width: 33.33%` |
+ * | Crop | `padding: 0 0 100%` — square — `background-size: cover` | `aspectRatio: 1/1`, `scale: cover` |
+ * | Copy | `.rooms-info { flex-grow:1; padding: 2.4rem 2.4rem 0 }` | the second `core/column`, padding `spacing|40` |
+ * | Below 767px | `flex-direction: column` | core stacks `core/columns` at 782px |
+ *
+ * `core/columns`, not a flex `core/group`: a fixed-ratio row is what the block
+ * expresses natively — `core/column`'s `width` compiles to `flex-basis` — and
+ * core stacks it on mobile without a media query of ours.
+ * → AGENTS.md, "Structure belongs in markup, not in a `css` field"
+ *
+ * The outer block stays a `core/group` because it has to: `render_units_block()`
+ * checks `$parsed_block['blockName']` against an allow-list of exactly
+ * `core/group` (class-bindings.php:517) before it will repeat anything. So the
+ * group holds the binding and the card style, and the columns inside it hold the
+ * layout.
+ *
+ * No `verticalAlignment` on the columns or on either column. The block library
+ * gives `.wp-block-columns` `align-items: normal`, which is stretch — so the
+ * photograph's column already grows to whatever height the copy beside it sets,
+ * which is live's `.rooms-thumbnail a { min-height: 100% }`. Setting an
+ * alignment would opt out of that. Filling the stretched column is the one part
+ * of this the block cannot express, and it is the two rules `unit-image` carries
+ * in assets/styles/core-image.css.
+ *
+ * Copy is leading-aligned, as live is at every width above 767px
+ * (`.rooms-info { text-align: center }` is inside that breakpoint only, and a
+ * centred override for the stacked card is a bespoke mobile design rather than a
+ * responsive adaptation).
  *
  * An `h3`: the band it sits in is headed by an `h2`.
  */
@@ -110,25 +141,37 @@
 <!-- wp:group {"metadata":{"name":"Accommodation Unit","bindings":{"content":{"source":"lsx/accommodation-units","type":"rooms"}}},"className":"is-style-listing-card-compact","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-listing-card-compact">
 
-	<!-- wp:image {"aspectRatio":"2/1","scale":"cover","linkDestination":"none","className":"unit-image size-large"} -->
-	<figure class="wp-block-image unit-image size-large"><img src="/wp-content/plugins/tour-operator/assets/img/blocks/placeholder.png" alt="" style="aspect-ratio:2/1;object-fit:cover"/></figure>
-	<!-- /wp:image -->
+	<!-- wp:columns {"metadata":{"name":"Unit Row"},"style":{"spacing":{"blockGap":"0"}}} -->
+	<div class="wp-block-columns">
 
-	<!-- wp:group {"metadata":{"name":"Unit Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|30","bottom":"var:preset|spacing|50","left":"var:preset|spacing|30"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group has-200-font-size" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
+		<!-- wp:column {"width":"33.33%"} -->
+		<div class="wp-block-column" style="flex-basis:33.33%">
 
-		<!-- wp:heading {"textAlign":"center","level":3,"className":"unit-title","fontSize":"400"} -->
-		<h3 class="wp-block-heading has-text-align-center unit-title has-400-font-size"><?php esc_html_e( 'Unit Name', 'sd-theme-2026' ); ?></h3>
-		<!-- /wp:heading -->
+			<!-- wp:image {"aspectRatio":"1/1","scale":"cover","linkDestination":"none","className":"unit-image size-large"} -->
+			<figure class="wp-block-image unit-image size-large"><img src="/wp-content/plugins/tour-operator/assets/img/blocks/placeholder.png" alt="" style="aspect-ratio:1/1;object-fit:cover"/></figure>
+			<!-- /wp:image -->
 
-		<!-- wp:group {"metadata":{"name":"Unit Description"},"className":"unit-description-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
-		<div class="wp-block-group unit-description-wrapper"><!-- wp:paragraph {"align":"center","className":"unit-description","style":{"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
-		<p class="has-text-align-center unit-description has-200-font-size" style="line-height:var(--wp--custom--line-height--body)"><?php esc_html_e( 'The description of this unit, as it is entered on the accommodation.', 'sd-theme-2026' ); ?></p>
-		<!-- /wp:paragraph --></div>
-		<!-- /wp:group -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column {"metadata":{"name":"Unit Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
+		<div class="wp-block-column has-200-font-size" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);line-height:var(--wp--custom--line-height--body)">
+
+			<!-- wp:heading {"level":3,"className":"unit-title","fontSize":"400"} -->
+			<h3 class="wp-block-heading unit-title has-400-font-size"><?php esc_html_e( 'Unit Name', 'sd-theme-2026' ); ?></h3>
+			<!-- /wp:heading -->
+
+			<!-- wp:group {"metadata":{"name":"Unit Description"},"className":"unit-description-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-group unit-description-wrapper"><!-- wp:paragraph {"className":"unit-description","style":{"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
+			<p class="unit-description has-200-font-size" style="line-height:var(--wp--custom--line-height--body)"><?php esc_html_e( 'The description of this unit, as it is entered on the accommodation.', 'sd-theme-2026' ); ?></p>
+			<!-- /wp:paragraph --></div>
+			<!-- /wp:group -->
+
+		</div>
+		<!-- /wp:column -->
 
 	</div>
-	<!-- /wp:group -->
+	<!-- /wp:columns -->
 
 </div>
 <!-- /wp:group -->

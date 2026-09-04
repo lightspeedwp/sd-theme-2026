@@ -835,6 +835,71 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The accommodation single's summary copy, guarantee panel, rooms band and tours
+  heading all match the pages they were meant to match.** Four corrections to
+  `patterns/template-single-accommodation.php`, none of them changing the section order.
+
+  **The copy block is now the sibling singles' composition.** It was a bare
+  `core/post-content`; it is now the italic wrapper carrying
+  `is-style-archive-intro` at `blockGap: spacing|20` with a `core/read-more` under it —
+  byte-for-byte what `patterns/destination-summary.php` and
+  `patterns/template-single-tour.php` carry, so all three Tour Operator singles open
+  their copy identically. This supersedes the note routing live's `.more-text`
+  truncation (custom.js:224-275) to the block plugin on this template, on the same
+  grounds it was superseded on the other two: `core/read-more` collapses
+  `core/post-content` to its first block and expands it in place, so it is core's
+  behaviour and neither plugin work nor a script.
+
+  **The Best Price Guarantee panel is `patterns/template-archive-accommodation.php`'s,
+  byte-for-byte.** The archive re-authored it on dev 2026-09-04 — `is-style-script-accent`
+  at font-size 700, `minHeight: 300`, `align: center`, block padding tightened to
+  `spacing|30` top and bottom, and the paragraph dropping its explicit 200 for the body
+  size — and this copy was left on the earlier composition, so the same panel read as two
+  different objects depending on which page you reached it from. ⚠️ The two copies must
+  stay in step; with only two, a `require` is impossible in either direction, because
+  both files are whole templates rather than sections.
+
+  **The rooms band is stacked horizontal rows, which is what live renders.** Measured
+  from `.sd-rooms-wrapper` on 2026-09-04: each unit sits in a `col-md-12`, so one to a
+  row with 30px between them (custom.css:1822), and `.rooms-contents` is
+  `display: flex; flex-flow: row nowrap` at `max-width: 945px` centred, the photograph
+  taking the leading third (`tour-operator/assets/css/style.css:1377`) and the name and
+  copy beside it. The band was a three-across grid on the reading of live's `data-slick`
+  `slidesToShow: 3`; those options are on the container, the
+  `.lsx-to-slider .rooms-contents` rule that would turn the card vertical never takes
+  effect on the page, and the stacked row is what live actually draws. So the "Units
+  List" group becomes a `constrained` stack at `blockGap: spacing|30` and
+  `patterns/accommodation-unit.php` becomes a `core/columns` row inside its bound group —
+  a 33.33% photograph column at `aspectRatio: 1/1` and `scale: cover`, and a body column
+  at `spacing|40` padding with leading-aligned copy. The outer block stays a
+  `core/group` because `render_units_block()` allow-lists exactly that
+  (`class-bindings.php:517`); `core/columns` gets the mobile stack from core at 782px
+  with no media query of ours. Live's literal 945px cap is not carried — the theme's own
+  900px `contentSize` is near enough to be invisible and keeps the band on a measure the
+  theme uses elsewhere, the same call the archive intro's 1130px got.
+
+  Verified on local 2026-09-04 against two seeded units on Xigera Safari Lodge: the
+  binding repeats the group once per unit, both titles and both descriptions substitute,
+  and each card renders as a two-column row. The seeded meta was removed afterwards.
+
+  `assets/styles/core-image.css` gains the one rule the blocks cannot express —
+  `.wp-block-image.unit-image` and its `img` filling the stretched column, which is
+  live's `.rooms-thumbnail a { min-height: 100% }`. A height set by a *sibling* column is
+  not a block attribute, and `!important` is needed because the block library's
+  `.wp-block-image img{height:auto;width:auto}` sits at the same (0,2,0). `aspectRatio`
+  stays on the block: it is live's square crop and it is what the editor shows.
+
+  **The tours shelf heading names the property.** `Tours Featuring {Accommodation}`,
+  through `sd/post-field`'s `title` field and a `prefix` — the same composition the team
+  single and both sibling singles use for every shelf heading. Live composes the
+  accommodation *type* term instead (`layout.php:126-137`, usually "Tours Featuring
+  Lodge") and no source reaches that: a binding replaces a block's whole `content`, and
+  the composed half needs the current post's first term in a taxonomy, which
+  `sd/post-field` does not answer for and `sd/term-meta` cannot, needing a queried term.
+  The property's name is more use to a reader than its category, and live's un-typed
+  fallback string stays as the authored content for when the binding returns null.
+  Verified on local: renders "Tours Featuring Xigera Safari Lodge".
+
 - **The media overlay card's label is `medium`.**
   `styles/sections/cards/media-overlay-card.json` sets
   `elements.heading.typography.fontWeight` to `var:custom|font-weight|medium`, down from
