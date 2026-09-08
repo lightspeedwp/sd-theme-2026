@@ -173,6 +173,8 @@
 	</div></section>
 	<!-- /wp:cover -->
 
+	<?php require __DIR__ . '/breadcrumbs.php'; ?>
+
 	<?php
 	/*
 	 * The summary band.
@@ -537,11 +539,14 @@
 	 * `core/query` and `core/terms-query` only
 	 * (styles/sections/slider-frame.json), and a units repeat is neither.
 	 *
-	 * A `constrained` layout rather than live's literal 945px cap. 945px is a
-	 * measure this theme does not otherwise use, and the default `contentSize`
-	 * is 900px — near enough that the difference is invisible, and it keeps the
-	 * band on the theme's own measure. The same call, for the same reason, as
-	 * the archive intro's 1130px. `blockGap` is `spacing|30`, live's 30px.
+	 * A `constrained` layout rather than live's literal 945px cap, at a
+	 * `contentSize` of 1100px with the list and each card `alignwide` inside it
+	 * — authored in the Site Editor on dev (wp_template 65942) on 2026-09-04 and
+	 * imported here. The band was previously left on the theme's default 900px
+	 * measure on the reading that live's 945px was near enough to be invisible;
+	 * a card that is a photograph beside a paragraph and a Read more reads too
+	 * cramped at that width, and 1100px is the measure that was picked against
+	 * the real content. `blockGap` is `spacing|30`, live's 30px.
 	 *
 	 * `lsx-units-wrapper` is doing two jobs and both are required: it removes
 	 * the band, heading included, on an accommodation with no units
@@ -562,15 +567,15 @@
 	 * conditional — splitting the band by type is a plugin change. → LS-2033
 	 */
 	?>
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Units"},"align":"full","className":"is-style-light-page-section lsx-units-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"rooms"} -->
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Units"},"align":"full","className":"is-style-light-page-section lsx-units-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained","contentSize":"1100px"},"anchor":"rooms"} -->
 	<section class="wp-block-group alignfull is-style-light-page-section lsx-units-wrapper" id="rooms">
 
 		<!-- wp:heading {"textAlign":"center","className":"is-style-section-title","anchor":"h-rooms"} -->
 		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-rooms"><?php esc_html_e( 'Rooms', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 
-		<!-- wp:group {"metadata":{"name":"Units List"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} -->
-		<div class="wp-block-group">
+		<!-- wp:group {"metadata":{"name":"Units List"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group alignwide">
 
 			<?php require __DIR__ . '/accommodation-unit.php'; ?>
 

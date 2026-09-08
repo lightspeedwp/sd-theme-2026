@@ -8,6 +8,38 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The accommodation units band collapses its descriptions.** `patterns/accommodation-unit.php`
+  gains a `core/read-more` beneath the unit description, and `inc/accommodation-units.php`
+  + `assets/js/accommodation-units-read-more.js` supply the behaviour behind it. Tour
+  Operator ships this collapse for itineraries and not for units: measured in
+  `tour-operator/build/custom.js` against TO 2.2 on 2026-09-04, `set_read_more()` only
+  acts on a `.wp-block-read-more` whose parent `.wp-block-group` holds a
+  `.wp-block-post-content`, and `set_read_more_itinerary()` is scoped to
+  `.lsx-itinerary-wrapper` — a unit's `.unit-description` is neither. TO does bind a
+  `preventDefault()` click handler to *every* read-more on a Tour Operator single, so the
+  unit's link was not merely unwired but inert.
+
+  The module mirrors TO's itinerary handler exactly — collapse to the first paragraph,
+  expand in place, retire the link on a description with nothing to collapse — and adds
+  what TO's does not: the anchor loses its `href` and `target`, takes `role="button"`,
+  `tabindex="0"` and `aria-expanded`, answers Enter and Space, and drops core's
+  `Read more: <post title>` screen-reader suffix, which describes a navigation that no
+  longer happens. Nothing is collapsed until the script runs, so with JavaScript off the
+  reader gets the whole description.
+
+  Verified on local against a two-unit fixture on *Xigera Safari Lodge*, driven in
+  headless Chrome: the three-paragraph card renders one paragraph, `Read more`,
+  `aria-expanded="false"`; one click gives three paragraphs, `Read less`,
+  `aria-expanded="true"`; a second returns it. The one-paragraph card hides its link and
+  shows its copy. No console errors. **The real home for this is upstream** — extending
+  TO's own `set_read_more_itinerary()` to `.lsx-units-wrapper` would serve every TO site
+  and delete the module. *(LS-2033)*
+
+- **The accommodation single carries the breadcrumb strip.** `patterns/breadcrumbs.php`
+  is required beneath the banner in `patterns/template-single-accommodation.php`, which
+  is where the destination, region, country and tour singles already put it. It was the
+  only Tour Operator single without one.
+
 - **`templates/taxonomy-accommodation-type.html` is a real template.** It was Tour
   Operator's stub — a three-up grid of featured images and titles. It now references
   `patterns/template-taxonomy-accommodation-type.php`, ported from
@@ -834,6 +866,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- **The accommodation units band is imported from the Site Editor.** Authored on dev
+  (`wp_template` 65942) on 2026-09-04 and brought into
+  `patterns/template-single-accommodation.php` and `patterns/accommodation-unit.php`: the
+  band's `contentSize` goes to **1100px** with the list and each card `alignwide`; the
+  copy column takes `verticalAlignment: center` and holds a vertical flex group, so a
+  short unit's title and copy centre against the square photograph instead of sitting at
+  the top of a tall row; the unit name is centred while the description keeps
+  `justifyContent: left`, so the copy stays leading-aligned as live is above 767px.
+
+  Two things in the DB version were **not** imported. The `id="h-unit-name"` anchor on
+  the unit heading: the card is repeated once per unit by `render_units_block()`, so the
+  id would be emitted two, three or five times on one page — duplicate ids break in-page
+  links and are a validity failure. And the editor's serialisation noise — attribute
+  reordering, `align` migrating into `style.typography.textAlign`, `queryId`,
+  `excludeCurrent`, dev-host URLs, detached-pattern `patternName` metadata — which the
+  authored files express more portably.
 
 - **The accommodation single's summary copy, guarantee panel, rooms band and tours
   heading all match the pages they were meant to match.** Four corrections to
@@ -1673,6 +1722,24 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **The Icon Block instances no longer open as broken blocks in the editor.** Ten
+  `outermost/icon-block` wrappers across seven patterns were authored with
+  `has-icon-color` and no `transform`, which is not what The Icon Block 2.0.0 saves —
+  so the editor flagged each as containing unexpected content and offered to recover it.
+  Read from the plugin's `save()` (`icon-block/build/index.js`): `has-icon-color` is
+  written **only when `iconColorValue` is set**, i.e. for a custom colour — with a
+  palette `iconColor` the class is absent and `has-<slug>-color` carries the colour — and
+  `transform: rotate(0deg) scaleX(1) scaleY(1)` is written **always**, from the rotate and
+  flip controls at their defaults.
+
+  `patterns/card-review-quote.php` was repaired in the Site Editor on dev
+  (`wp_template` 65942, 2026-09-04) and the repair is imported verbatim; the same defect
+  in `patterns/cta-inspired-by-this-property.php`, `patterns/cta-not-sure-where-to-go.php`,
+  `patterns/cta-tell-us-your-trip-ideas.php`, `patterns/header.php`,
+  `patterns/homepage-lets-make-it-happen.php` and `patterns/safari-expert.php` is
+  corrected the same way. The SVGs are untouched — byte-identical before and after,
+  checked by hash.
 
 - **The enquiry modal's Gravity Form is sized against the theme's own controls.**
   `style.css` — a `Gravity Forms in a modal` block scoped to
