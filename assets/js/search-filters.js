@@ -142,7 +142,6 @@
 			target.id = 'sd-facet-panel-' + uid;
 		}
 
-		control.setAttribute( 'role', 'button' );
 		control.setAttribute( 'aria-controls', target.id );
 
 		if ( ! control.hasAttribute( 'tabindex' ) ) {
