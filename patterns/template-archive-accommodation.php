@@ -133,8 +133,7 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 	/*
 	 * The breadcrumb bar, directly under the banner — the same
 	 * `patterns/breadcrumbs.php` the destination and tour singles run, in the
-	 * same position live puts it. The comment on `template-archive-destination.php`
-	 * that calls this `sd-enhancements` work is stale in the same way the note on
+	 * same position live puts it. The distinction the note on
 	 * `patterns/breadcrumbs.php` records: filtering what Yoast *puts* in the
 	 * trail is plugin work, but the band it sits in is a strip of theme markup
 	 * around a third-party block, and it deactivates with the theme.
