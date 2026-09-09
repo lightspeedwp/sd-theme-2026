@@ -47,11 +47,10 @@
  *
  * ## What is deliberately not here
  *
- * **The breadcrumb bar.** Live draws Yoast's breadcrumbs in a 58px `#ece9e3`
- * strip along the bottom of the banner. Breadcrumb output is a filter over a
- * third-party plugin's trail — behaviour, not design — so by the deactivation
- * test it is `sd-enhancements` work and it is not built here. When it lands it
- * goes directly beneath the cover, outside it. → AGENTS.md, theme/plugin boundary
+ * **A banner slider.** Live's wrapper carries `.page-banner.rotating`, but the
+ * destinations archive ships exactly one banner image and the class does
+ * nothing on this page — the rotation is the homepage's, and it is PHP picking
+ * one of eleven images per request rather than a JS slider. Nothing to port.
  *
  * ## Why the banner is composed here and not `hero-page-banner`
  *
@@ -65,11 +64,6 @@
  * image, so `useFeaturedImage` — the reason that pattern is one file rather than
  * four — has nothing to read. Keeping them separate preserves a distinction
  * live actually makes.
- *
- * **A banner slider.** Live's wrapper carries `.page-banner.rotating`, but the
- * destinations archive ships exactly one banner image and the class does
- * nothing on this page — the rotation is the homepage's, and it is PHP picking
- * one of eleven images per request rather than a JS slider. Nothing to port.
  */
 
 /*
@@ -171,6 +165,18 @@
 
 	</div></section>
 	<!-- /wp:cover -->
+
+	<?php
+	/*
+	 * The breadcrumb bar, directly under the banner and outside it — the same
+	 * `patterns/breadcrumbs.php` every other Tour Operator template runs, in the
+	 * position live puts it. Filtering what Yoast *puts* in the trail is plugin
+	 * work and lives in `sd-enhancements`; the band it sits in is a strip of
+	 * theme markup around a third-party block, and it deactivates with the
+	 * theme. → AGENTS.md, theme/plugin boundary
+	 */
+	require __DIR__ . '/breadcrumbs.php';
+	?>
 
 	<?php
 	/*

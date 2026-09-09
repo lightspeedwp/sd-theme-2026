@@ -8,6 +8,125 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **The accommodation single carries the breadcrumb strip.** `patterns/breadcrumbs.php`
+  is required beneath the banner in `patterns/template-single-accommodation.php`, which
+  is where the destination, region, country and tour singles already put it. It was the
+  only Tour Operator single without one.
+
+- **`templates/taxonomy-accommodation-type.html` is a real template.** It was Tour
+  Operator's stub — a three-up grid of featured images and titles. It now references
+  `patterns/template-taxonomy-accommodation-type.php`, ported from
+  https://www.southerndestinations.com/search/accommodation/safari+lodges/ measured in
+  Chrome at 1440 / 992 / 390 on 2026-09-04: the banner carrying the term name, the
+  breadcrumb band, a **25% FacetWP filter rail** and a 75% results column holding a
+  result count, a sort control, the horizontal accommodation rows and a pager. This is
+  the open decision `patterns/template-archive-accommodation.php` recorded — "routing
+  the tiles at the facet search instead is a decision for whoever builds the search
+  line" — taken the other way: the archive's tiles keep pointing at `get_term_link()`
+  and the term archive becomes the results page.
+
+  **The design is ported; the mechanism is rebuilt.** Live's `/search/accommodation/*`
+  is a FacetWP *legacy template* whose stored PHP queries `post_type => 'product'`
+  against the `product_cat` taxonomy and sorts on a `search_price` meta key it writes
+  per request — live's accommodation search runs on **WooCommerce products**, and there
+  is no WooCommerce here. So the page is a Query Loop over `accommodation` with
+  `inherit: true`, filtered by FacetWP through `enableFacetWP: true` on `core/query` —
+  a registered attribute from FacetWP Blocks (Beta) that puts a `facetwp-template` class
+  on the inner `core/post-template`. Verified on local against a two-post fixture: the
+  class lands, and the loop returns only the term's accommodation and none of the six
+  tours.
+
+  **No `core/query-pagination`, and it is not a choice.** `add_facetwp_query_args()`
+  reads FacetWP's own `fwp_paged` argument and writes `page`/`paged` straight onto
+  `$GLOBALS['wp_the_query']`, so core's `/page/N/` links are overridden after they are
+  built. The count, sort and pager are `facetwp/facet` blocks — a **Pager** facet in
+  *Result counts* mode, a **Sort** facet, and a Pager in *Page numbers* mode — rather
+  than the `[facetwp …]` shortcode extras, so every control on the page is a block the
+  Site Editor can see. ⚠️ Those three facets (`results_count`, `sort`, `pager`) must be
+  created in FacetWP → Settings; until they are, `facetwp_display()` returns `''` for an
+  unknown name and each block renders its wrapper and nothing else. That is site data in
+  `wp_options`, not theme code. *(LS-2033)*
+
+  **`core/query-no-results` is live here and nowhere else.** LS-2529 records FacetWP
+  Blocks Beta returning `''` unconditionally from `render_block_core/query-no-results`,
+  which kills the fallback on this theme's non-inheriting loops. Its stated reason — that
+  core prints the content inside `core/post-template` when the query inherits — is true,
+  and this loop inherits, so the message renders.
+
+  ⚠️ **`accommodation_type` is deliberately not one of the facets.** Live can offer it
+  because its search page is not actually scoped: `total_rows` and
+  `total_rows_unfiltered` both return 200 on `/safari+lodges/` *and* on bare
+  `/accommodation/`, and the facet lists 16 types including "Safari Lodges (162)" — the
+  path segment narrows nothing. A term archive narrows the query before FacetWP sees it,
+  so the facet's only possible choice is the term already applied. Offering the type
+  facet alongside results means this cannot be a taxonomy template. *(LS-2033)*
+
+- **FacetWP facets render as dropdowns.** `assets/styles/facetwp-facets.css` and
+  `assets/js/search-filters.js`, wired to the `facetwp/facet` block by the new
+  `inc/facetwp.php` — the stylesheet through `wp_enqueue_block_style()` and the script
+  through `render_block_facetwp/facet`, since there is no block-script counterpart, so
+  neither loads on a page with no facet. Adapted from `kwv-theme-2026`'s
+  `assets/js/shop-filters.js`, with three differences: no MutationObserver is needed
+  (FacetWP refreshes only the *inside* of `.facetwp-facet`, so the block wrapper's
+  attributes survive), the panel opens **over** the results instead of folding the rail
+  open, and outside-click and Escape close it. FacetWP's own `fselect` facet type was
+  not used: facet *type* is site configuration, and `travel_style`, `price` and the
+  `destination_to_*` connections are shared with the tours search, so retyping them
+  would change a page this line does not cover.
+
+  Live diverges twice and is not followed: its facets are Bootstrap accordions with the
+  first force-opened by `lsx-search.js`, and below 768px the rail becomes an off-canvas
+  drawer with Apply/Close controls and `auto_refresh` switched off. That second
+  interaction model is a bespoke mobile design and out of scope; the dropdowns stack.
+
+  FacetWP's PNG checkbox and close icons are replaced with masked glyphs in theme
+  colours — the checked box is a single `fill-rule="evenodd"` mask that knocks the tick
+  *out* of a brand-500 tile, degrading to a solid tile if masks are unsupported.
+  ⚠️ Nothing in the sheet may set `display` on `.facet-wrap`: the blocks plugin adds
+  `.facetwp-hidden` there for a facet with no remaining choices, and that is a single
+  class at (0,1,0) which an author `display` would outrank, resurfacing an empty control.
+
+- **The accommodation archive runs a breadcrumb band under its banner.**
+  `patterns/template-archive-accommodation.php` requires `patterns/breadcrumbs.php`
+  directly beneath the banner cover, the same placement the tour single and the three
+  destination templates use. The file's header had the bar down as `sd-enhancements`
+  work; that reasoning is corrected here for the same reason it was corrected on those
+  templates — filtering what Yoast puts in the trail is plugin work, placing the band is
+  design. `patterns/template-archive-destination.php` still carries the old note and is
+  owed the same fix. *(LS-2033)*
+
+- **The whole specials panel is a link, not just its heading.**
+  `patterns/template-archive-accommodation.php` wraps the Accommodation Specials cover in
+  a flow-layout `core/group` carrying `sdLinkTo: "custom"` and `sdLinkUrl`, which is what
+  live does (`<a>` around the entire plate). `SD\Enhancements\GroupLink` finds the
+  heading's existing link to the same URL, marks it `sd-link-echo` and leaves the overlay
+  presentational — verified on local: one overlay, one echo, so no second tab stop. No
+  `sdLinkLabel`: with none set the module falls back to the first heading inside the
+  group, which is both the right name and already translated. The wrapper is deliberately
+  **flow** rather than the constrained layout the editor saved — constrained picks up
+  `has-global-padding` and inset the cover by `spacing|20` a side, leaving this panel
+  visibly narrower than the guarantee panel beside it.
+
+- **`patterns/card-media-overlay-term.php` takes one parameter: the crop.**
+  `$sd_card_aspect_ratio`, read once with a `'1'` default, so an includer can ask for a
+  different ratio immediately before the `require` and the standalone pattern still
+  registers square. Verified on local: the accommodation archive resolves to `16/9`, the
+  tour and destination archives and the pattern's own registration all resolve to `1`.
+
+- **The brands shelf logos zoom on hover.** `patterns/homepage-brands.php` carries
+  `is-style-image-hover-zoom` on `core/term-template`, and
+  `styles/blocks/media/image-hover-zoom.json` declares `core/term-template` to match. The
+  class does **not** work on `core/post-featured-image` inside a terms query, which is
+  where an author would put it: Tour Operator builds that `<figure>` with
+  `get_block_wrapper_attributes()` from a `render_block` filter, so it comes back as
+  `<figure class="columns-5 wp-block-term-template">` with neither
+  `wp-block-post-featured-image` nor any `is-style-*` on it, and the generated
+  `.wp-block-post-featured-image.is-style-image-hover-zoom--N` selector matches nothing.
+  Measured on dev 2026-09-04: the per-image class emitted twenty-two copies of the CSS and
+  changed no pixel. On the term template it lands on that figure and emits one copy. The
+  same leak `assets/styles/core-post-featured-image.css` and
+  `SD\Enhancements\Queries::FEATURED_TERMS_CLASS` are written around.
+
 - **The breadcrumb band now runs on the tour single too.** `patterns/template-single-tour.php`
   requires `patterns/breadcrumbs.php` directly beneath the banner cover, outside it — the same
   placement as the three destination templates. This corrects a call recorded the other way:
@@ -720,6 +839,235 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- **The accommodation single is imported from the Site Editor, and the safari expert panel
+  is part of it.** The `wp_template` override edited on dev (post 65942, modified
+  2026-09-09 08:26) is folded back into the theme, with each change landing in the pattern
+  that owns it rather than as one flattened template. `patterns/safari-expert.php` is now
+  required beneath the property copy in the summary's left column, which is live's
+  placement; the Trustpilot score rides inside it because live emits `.trust-pilot-box`
+  inside the panel itself, not beside it. The rating box's two inner wrappers become flex
+  — `lsx-accommodation-price-facts-wrapper` vertical and left-aligned,
+  `lsx-rating-wrapper` wrapping — and the bound `Rating Stars` paragraph goes leading-
+  aligned, since the stars are laid out by the group and centring an empty paragraph did
+  nothing. Smaller with them: the rating box gains `has-border-color`, the specials badge
+  gains `height:auto`, `core/gallery` drops its `sizeSlug`, and the root group is renamed
+  "Template: Single Accommodation".
+
+  Composition is deliberately preserved: `require` for the sub-patterns and
+  `<!-- wp:pattern -->` only inside the query loops, per the rule in the template's own
+  header — a nested pattern reference inside a pattern is dropped on front-end render.
+  The editor's copy had every sub-pattern expanded inline, so the import compared the two
+  *semantically* (parsing block-attribute JSON) rather than textually; that is what
+  separated eleven real edits from the editor's re-serialisation — attribute reordering,
+  `\u002d\u002d` escaping, auto-generated heading anchors and the WP 6.9
+  `align` → `style.typography.textAlign` migration. `patterns/safari-expert.php` and
+  `patterns/trustpilot-score.php` needed no change at all.
+
+  **The breadcrumb strip is kept.** The editor's copy had dropped it; the theme keeps
+  `patterns/breadcrumbs.php` on this template, as every other Tour Operator single does.
+
+- **The unit card's geometry follows the editor.** `patterns/accommodation-unit.php` — the
+  photograph column narrows from `33.33%` to `30%`, its crop is `aspectRatio: 1` rather
+  than `1/1`, and the Unit Body column's padding drops from `spacing|40` to `spacing|30`.
+
+### Fixed
+
+- **The claim that live's accommodation single has no safari expert panel was wrong.**
+  `patterns/template-single-accommodation.php` recorded the absence as a design decision,
+  written down so it would not read as an oversight. It was measured from one page.
+  `/accommodation/chitwa-chitwa-private-game-lodge/` really does render no
+  `#safari-expert-box` — but `/accommodation/andbeyond-mnemba-island-lodge/` renders the
+  panel in full, directly after the property copy in the left column.
+
+  The panel is **conditional per accommodation**, not absent from the template:
+  `sd-lsx-child/content-accommodation.php:35-41` gates it on
+  `lsx_to_has_enquiry_contact()`, then branches to `sd_lsx_to_team_member_panel()`
+  (`includes/functions.php:96-200`, resolving the `team_to_<post_type>` connection and
+  falling back to a random `expert-*` from Tour Operator's team options, transient-cached
+  per post) or to `sd_expert_box()` (`:385`) off the `enquiry_contact_*` fields. Chitwa
+  Chitwa satisfies neither. The note is corrected in place and carries the reasoning so
+  the next reader does not re-derive it from a single page. The theme renders the panel
+  unconditionally; data-gating it is an `sd-enhancements` wrapper of the same kind as the
+  rating box's three, not a template concern. *(LS-2033)*
+
+  The equivalent claim on `patterns/template-archive-accommodation.php` was re-measured
+  and **holds** — the accommodation *archive* renders no expert panel and does run
+  `#accommodation-cta-header`. Left as written.
+
+### Removed
+
+- **The accommodation units read-more collapse, before it ever shipped.** The unit
+  description renders whole. `patterns/accommodation-unit.php` loses its
+  `core/read-more`, and the module written to make that block work at all goes with it:
+  `inc/accommodation-units.php`, `assets/js/accommodation-units-read-more.js` and the
+  `require_once` in `functions.php`. The Unreleased entry that introduced them is removed
+  rather than contradicted, since none of it was released.
+
+  Worth keeping for anyone tempted to reintroduce the block: Tour Operator wires two
+  read-more collapses and neither reaches a unit — `set_read_more()` needs a
+  `.wp-block-post-content` in the parent group and `set_read_more_itinerary()` is scoped
+  to `.lsx-itinerary-wrapper` — while TO binds a `preventDefault()` handler to *every*
+  read-more on a Tour Operator single. A bare `core/read-more` here is worse than none.
+  `assets/styles/core-read-more.css` and the read-more rules in
+  `assets/styles/core-group.css` are card-scoped and untouched.
+
+- **Optima: the client's second licence is desktop-only, so the `heading` stack names the
+  licensed family rather than bundling it.** `theme.json`'s `heading` preset becomes
+  `"Optima LT Pro", Optima, Belleza, sans-serif`. MyFonts order **#7491875209386**
+  (7 Sep 2026) delivered *Optima LT Pro* in 12 styles — 400/500/600/700/750/950 plus
+  italics, retiring the old "Bold only" gap — but it ships EULA id `2275`, Monotype's
+  **"Font Software For Desktop"** agreement (v250903), with no webfont kit and no webfont
+  EULA in the archive. Three clauses independently forbid self-hosting: §2 grants only
+  distribution of materials that **do not contain the Font Software embedded**; §4 forbids
+  Derivative Works, which §9 defines to include "binary data in any format into which Font
+  Software may be converted" — i.e. OTF → WOFF2; and §4 forbids "install the Font Software
+  on **any server**". All 12 faces are `fsType 4`.
+
+  So no face is bundled, and nothing about the rendered site changes for visitors. What
+  does change is that a machine holding the family SD paid for now renders **that** cut
+  instead of Apple's system Optima — the licensed family leads the stack. Weight behaviour
+  is identical either way: Linotype splits LT Pro across four CSS families, leaving
+  `Optima LT Pro` with only 400 and 700 (Medium 500 and Black 750 under
+  `Optima LT Pro Medium`, DemiBold 600 under `Optima LT Pro DemiBold`, ExtraBlack 950 under
+  `Optima LT Pro XBlack`), so `h3` at 600 and `h4`/`h5` at 500 resolve exactly as they did
+  before. Adding the sub-families to the stack would not help — CSS takes the first family
+  with any matching face, then the nearest weight inside it. Only real `@font-face` rules
+  give the theme true 500 and 600.
+
+  The webfont drop-in is written and verified against the current theme —
+  `.github/tasks/optima-webfont-kit-dropin-2026-09-09.md` in the workspace: which licence
+  and weights to buy, the four filenames, the one `theme.json` patch (with the reason
+  `Optima` must lead the stack once a `fontFace` exists), where the mandatory Tracking Code
+  belongs, and how to verify it. `assets/fonts/optima-*.woff2` stays `.gitignore`d.
+  *(LS-2641)*
+
+- **Joe Hand is cleared to ship: the pageview cap is accepted, not blocking.** SD reports
+  current traffic of roughly **5,000 pageviews a month** against the JOEBOB Webfont EULA's
+  §1.3 allowance of **10,000 per copy per month**, and has accepted the cap, licensing
+  further copies when traffic approaches it. LS-2642 becomes a monitor rather than a
+  blocker. No code changes — the face was already registered on the `accent` preset and the
+  official 532-glyph webfont build was already installed; this records the decision in
+  `assets/fonts/LICENCES.md`, `.gitignore` and `style.md` §3.4 so the next reader does not
+  re-litigate it. §1.4 (one domain — the `.lightspeedwp.dev` dev host is **not** covered)
+  and §1.5 (no hotlinking or direct download) are unaffected by traffic and stay live, so
+  the file remains untracked and pipeline-delivered. *(LS-2642)*
+
+- **The accommodation units band is imported from the Site Editor.** Authored on dev
+  (`wp_template` 65942) on 2026-09-04 and brought into
+  `patterns/template-single-accommodation.php` and `patterns/accommodation-unit.php`: the
+  band's `contentSize` goes to **1100px** with the list and each card `alignwide`; the
+  copy column takes `verticalAlignment: center` and holds a vertical flex group, so a
+  short unit's title and copy centre against the square photograph instead of sitting at
+  the top of a tall row; the unit name is centred while the description keeps
+  `justifyContent: left`, so the copy stays leading-aligned as live is above 767px.
+
+  Two things in the DB version were **not** imported. The `id="h-unit-name"` anchor on
+  the unit heading: the card is repeated once per unit by `render_units_block()`, so the
+  id would be emitted two, three or five times on one page — duplicate ids break in-page
+  links and are a validity failure. And the editor's serialisation noise — attribute
+  reordering, `align` migrating into `style.typography.textAlign`, `queryId`,
+  `excludeCurrent`, dev-host URLs, detached-pattern `patternName` metadata — which the
+  authored files express more portably.
+
+- **The accommodation single's summary copy, guarantee panel, rooms band and tours
+  heading all match the pages they were meant to match.** Four corrections to
+  `patterns/template-single-accommodation.php`, none of them changing the section order.
+
+  **The copy block is now the sibling singles' composition.** It was a bare
+  `core/post-content`; it is now the italic wrapper carrying
+  `is-style-archive-intro` at `blockGap: spacing|20` with a `core/read-more` under it —
+  byte-for-byte what `patterns/destination-summary.php` and
+  `patterns/template-single-tour.php` carry, so all three Tour Operator singles open
+  their copy identically. This supersedes the note routing live's `.more-text`
+  truncation (custom.js:224-275) to the block plugin on this template, on the same
+  grounds it was superseded on the other two: `core/read-more` collapses
+  `core/post-content` to its first block and expands it in place, so it is core's
+  behaviour and neither plugin work nor a script.
+
+  **The Best Price Guarantee panel is `patterns/template-archive-accommodation.php`'s,
+  byte-for-byte.** The archive re-authored it on dev 2026-09-04 — `is-style-script-accent`
+  at font-size 700, `minHeight: 300`, `align: center`, block padding tightened to
+  `spacing|30` top and bottom, and the paragraph dropping its explicit 200 for the body
+  size — and this copy was left on the earlier composition, so the same panel read as two
+  different objects depending on which page you reached it from. ⚠️ The two copies must
+  stay in step; with only two, a `require` is impossible in either direction, because
+  both files are whole templates rather than sections.
+
+  **The rooms band is stacked horizontal rows, which is what live renders.** Measured
+  from `.sd-rooms-wrapper` on 2026-09-04: each unit sits in a `col-md-12`, so one to a
+  row with 30px between them (custom.css:1822), and `.rooms-contents` is
+  `display: flex; flex-flow: row nowrap` at `max-width: 945px` centred, the photograph
+  taking the leading third (`tour-operator/assets/css/style.css:1377`) and the name and
+  copy beside it. The band was a three-across grid on the reading of live's `data-slick`
+  `slidesToShow: 3`; those options are on the container, the
+  `.lsx-to-slider .rooms-contents` rule that would turn the card vertical never takes
+  effect on the page, and the stacked row is what live actually draws. So the "Units
+  List" group becomes a `constrained` stack at `blockGap: spacing|30` and
+  `patterns/accommodation-unit.php` becomes a `core/columns` row inside its bound group —
+  a 33.33% photograph column at `aspectRatio: 1/1` and `scale: cover`, and a body column
+  at `spacing|40` padding with leading-aligned copy. The outer block stays a
+  `core/group` because `render_units_block()` allow-lists exactly that
+  (`class-bindings.php:517`); `core/columns` gets the mobile stack from core at 782px
+  with no media query of ours. Live's literal 945px cap is not carried — the theme's own
+  900px `contentSize` is near enough to be invisible and keeps the band on a measure the
+  theme uses elsewhere, the same call the archive intro's 1130px got.
+
+  Verified on local 2026-09-04 against two seeded units on Xigera Safari Lodge: the
+  binding repeats the group once per unit, both titles and both descriptions substitute,
+  and each card renders as a two-column row. The seeded meta was removed afterwards.
+
+  `assets/styles/core-image.css` gains the one rule the blocks cannot express —
+  `.wp-block-image.unit-image` and its `img` filling the stretched column, which is
+  live's `.rooms-thumbnail a { min-height: 100% }`. A height set by a *sibling* column is
+  not a block attribute, and `!important` is needed because the block library's
+  `.wp-block-image img{height:auto;width:auto}` sits at the same (0,2,0). `aspectRatio`
+  stays on the block: it is live's square crop and it is what the editor shows.
+
+  **The tours shelf heading names the property.** `Tours Featuring {Accommodation}`,
+  through `sd/post-field`'s `title` field and a `prefix` — the same composition the team
+  single and both sibling singles use for every shelf heading. Live composes the
+  accommodation *type* term instead (`layout.php:126-137`, usually "Tours Featuring
+  Lodge") and no source reaches that: a binding replaces a block's whole `content`, and
+  the composed half needs the current post's first term in a taxonomy, which
+  `sd/post-field` does not answer for and `sd/term-meta` cannot, needing a queried term.
+  The property's name is more use to a reader than its category, and live's un-typed
+  fallback string stays as the authored content for when the binding returns null.
+  Verified on local: renders "Tours Featuring Xigera Safari Lodge".
+
+- **The media overlay card's label is `medium`.**
+  `styles/sections/cards/media-overlay-card.json` sets
+  `elements.heading.typography.fontWeight` to `var:custom|font-weight|medium`, down from
+  `bold`, and both cards stop overriding it — `patterns/card-media-overlay-term.php` drops
+  its `semi-bold`. One weight for the post tile and the term tile, set in one place. This
+  also retires that file's `var(--wp--custom--font-weight--…)` escaping; the dynamic-block
+  rule it worked around is unchanged and still documented on `patterns/safari-expert.php`.
+
+- **The accommodation archive's type grid is two columns with a 16/9 crop, and its intro
+  band runs at the theme's wide measure.** Imported from the Site Editor on dev
+  2026-09-04 (wp_template 65931). Live runs two columns and eleven type tiles at three-up
+  left a ragged last row; a square tile at half the wide measure is a very tall
+  photograph, so this grid alone asks the card for `16/9`. The intro band drops
+  `contentSize: 1130px` for `alignwide` on the row, and its columns are top-aligned with
+  `minHeight: 300` on each panel instead of stretched, so neither panel's height is
+  decided by the other's copy length. `perPage` is raised from 12 to 33 — a ceiling above
+  the *unfiltered* term count, so a thirteenth featured term is a tick on a term and
+  nothing here. Both panel headings become `is-style-script-accent` at font-size 700, and
+  the guarantee paragraph takes the body size.
+
+  ⚠️ Two markers tried on that query on dev are **not** carried: `parents-only` and
+  `custom-order` are Tour Operator query markers whose handler allow-lists `core/query`
+  only (`class-query-loop.php:288-317`), so a `core/terms-query` never reaches them. Both
+  are inert. Re-measured the same day, `sd-featured-terms-query` alone is doing the job:
+  twelve of twenty-six `accommodation-type` terms are featured and the page renders
+  eleven — Luxury Trains has a count of 0 and `hideEmpty` drops it, as live drops it. The
+  standing ⚠️ about Africa's Finest rendering Tour Operator's grey placeholder is
+  **resolved**: term 1799 now has `thumbnail` 51625, and all twelve featured terms have
+  one.
+
+- **The accommodation banner's tagline is `medium`.** `semi-bold` on
+  `patterns/template-archive-accommodation.php` matched the tours archive; the
+  destinations archive already ran `medium` and dev was re-authored to it.
 
 - **The tour summary card fills its column instead of stopping at 497px.**
   `patterns/template-single-tour.php` drops the `contentSize: "497px"` from the Summary
@@ -1460,6 +1808,24 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   "Call Us".
 
 ### Fixed
+
+- **The Icon Block instances no longer open as broken blocks in the editor.** Ten
+  `outermost/icon-block` wrappers across seven patterns were authored with
+  `has-icon-color` and no `transform`, which is not what The Icon Block 2.0.0 saves —
+  so the editor flagged each as containing unexpected content and offered to recover it.
+  Read from the plugin's `save()` (`icon-block/build/index.js`): `has-icon-color` is
+  written **only when `iconColorValue` is set**, i.e. for a custom colour — with a
+  palette `iconColor` the class is absent and `has-<slug>-color` carries the colour — and
+  `transform: rotate(0deg) scaleX(1) scaleY(1)` is written **always**, from the rotate and
+  flip controls at their defaults.
+
+  `patterns/card-review-quote.php` was repaired in the Site Editor on dev
+  (`wp_template` 65942, 2026-09-04) and the repair is imported verbatim; the same defect
+  in `patterns/cta-inspired-by-this-property.php`, `patterns/cta-not-sure-where-to-go.php`,
+  `patterns/cta-tell-us-your-trip-ideas.php`, `patterns/header.php`,
+  `patterns/homepage-lets-make-it-happen.php` and `patterns/safari-expert.php` is
+  corrected the same way. The SVGs are untouched — byte-identical before and after,
+  checked by hash.
 
 - **The enquiry modal's Gravity Form is sized against the theme's own controls.**
   `style.css` — a `Gravity Forms in a modal` block scoped to

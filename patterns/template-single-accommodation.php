@@ -121,7 +121,7 @@
  */
 
 ?>
-<!-- wp:group {"tagName":"main","metadata":{"name":"Accommodation Single"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
+<!-- wp:group {"tagName":"main","metadata":{"name":"Template: Single Accommodation"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
 <main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
 	<?php
@@ -173,6 +173,8 @@
 	</div></section>
 	<!-- /wp:cover -->
 
+	<?php require __DIR__ . '/breadcrumbs.php'; ?>
+
 	<?php
 	/*
 	 * The summary band.
@@ -184,11 +186,67 @@
 	 * 497px; this theme does not — see patterns/template-single-tour.php, "The
 	 * summary band".)
 	 *
-	 * **No safari expert panel.** Both sibling singles carry one beneath the
-	 * copy; live's accommodation single does not — `#safari-expert-box` is
-	 * absent from the measured page, and `sd_single_accommodation_box()` fills
-	 * that column with the rating box and the guarantee panel instead. The
-	 * absence is written down rather than left to look like an oversight.
+	 * **The safari expert panel is carried, beneath the copy** — live's
+	 * placement, and the same place both sibling singles put theirs.
+	 * → patterns/safari-expert.php
+	 *
+	 * ⚠️ **An earlier note here claimed live's accommodation single has no
+	 * safari expert panel. That was wrong** — corrected 2026-09-09. It does.
+	 * The error came from measuring one page: `#safari-expert-box` is absent
+	 * from `/accommodation/chitwa-chitwa-private-game-lodge/`, and its absence
+	 * was read as the template's design rather than as that property's data.
+	 * `/accommodation/andbeyond-mnemba-island-lodge/` draws the panel in full —
+	 * Liesl Matthews' photograph, the "Chat to your safari expert" eyebrow, her
+	 * name, the Call Us dropdown and the Send an Email CTA — directly after the
+	 * property copy in the left column, with the Trustpilot box beneath it.
+	 *
+	 * **The panel is conditional per accommodation**, which is why one page has
+	 * it and the other does not. `sd-lsx-child/content-accommodation.php:35-41`
+	 * gates the whole block on `lsx_to_has_enquiry_contact()`, then branches:
+	 * with a connected team member it calls `sd_lsx_to_team_member_panel()`
+	 * (includes/functions.php:96-200), which resolves the `team_to_<post_type>`
+	 * connection — falling back to a random `expert-*` from Tour Operator's team
+	 * options, transient-cached per post — and emits `#safari-expert-box`;
+	 * without one it calls `sd_expert_box()` (:385), which draws the same shape
+	 * from the `enquiry_contact_*` fields. Chitwa Chitwa satisfies neither, so
+	 * live emits nothing there — not even the `.lsx-to-contact` wrapper.
+	 *
+	 * The Trustpilot score is **part of the panel, not a sibling of it**: live
+	 * emits `.trust-pilot-box` inside both branches (functions.php:186 and
+	 * :411), so it disappears with the panel. That is why it sits inside
+	 * `sd/safari-expert` here rather than beside it.
+	 *
+	 * The theme renders the panel unconditionally. Making it vanish on a
+	 * property with no expert and no enquiry contact is a data-gated wrapper —
+	 * `sd-enhancements` work of the same kind as the rating box's three
+	 * wrappers below, not a template concern. → LS-2033
+	 *
+	 * **The copy is wrapped, italic, and cut with a Read More** — the same
+	 * composition as `patterns/destination-summary.php` and
+	 * `patterns/template-single-tour.php`, and for the same reason. Live
+	 * truncates the property copy to its first paragraph and appends a
+	 * "Read More…" link (sd-lsx-child/assets/js/custom.js:224-275);
+	 * `core/read-more` collapses `core/post-content` to its first block and
+	 * expands it in place on click, so the behaviour is core's and no script of
+	 * ours is required. This template previously carried a bare
+	 * `core/post-content` and routed that truncation to `sd-enhancements`,
+	 * which is superseded on the same grounds as it was on the other two
+	 * singles: there is a core block for it, so it is neither plugin work nor a
+	 * script. The three Tour Operator singles now open their copy identically.
+	 *
+	 * The outer group's own inline `font-style:italic;font-weight:400`, not the
+	 * `is-style-archive-intro` class, is what makes the copy italic —
+	 * `core/paragraph`'s `selectors.root` is bare `p`, so the archive-intro
+	 * variation compiles to `p.is-style-archive-intro` and can never match an
+	 * ancestor, and here the class sits on `core/post-content`'s wrapper. It is
+	 * kept because it marks the block's role and because it is what both
+	 * sibling singles carry; the italic and the 400 weight the page shows come
+	 * from inheritance off the group. → the same note in
+	 * `patterns/destination-summary.php`
+	 *
+	 * `post-content`'s `blockGap` is `spacing|20`, tighter than the `spacing|60`
+	 * root default, which is the closer paragraph rhythm the other two singles
+	 * use.
 	 */
 	?>
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Accommodation Summary"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"summary"} -->
@@ -197,10 +255,20 @@
 		<!-- wp:columns {"verticalAlignment":"top","align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|60"}}}} -->
 		<div class="wp-block-columns alignwide are-vertically-aligned-top">
 
-			<!-- wp:column {"verticalAlignment":"top"} -->
+			<!-- wp:column {"verticalAlignment":"top","style":{"spacing":{"blockGap":"var:preset|spacing|50"}}} -->
 			<div class="wp-block-column is-vertically-aligned-top">
 
-				<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+				<!-- wp:group {"style":{"typography":{"fontStyle":"italic","fontWeight":"var:custom|font-weight|regular"},"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
+				<div class="wp-block-group" style="font-style:italic;font-weight:var(--wp--custom--font-weight--regular)">
+
+					<!-- wp:post-content {"className":"is-style-archive-intro","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} /-->
+
+					<!-- wp:read-more {"content":"<?php esc_attr_e( 'Read more...', 'sd-theme-2026' ); ?>","fontSize":"300"} /-->
+
+				</div>
+				<!-- /wp:group -->
+
+				<?php require __DIR__ . '/safari-expert.php'; ?>
 
 			</div>
 			<!-- /wp:column -->
@@ -242,9 +310,9 @@
 				 */
 				?>
 				<!-- wp:group {"metadata":{"name":"Rating Box"},"className":"lsx-accommodation-price-box-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|30","bottom":"var:preset|spacing|20","left":"var:preset|spacing|30"}},"border":{"color":"var:preset|color|neutral-400","width":"var:custom|border-width|100","style":"solid"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center","verticalAlignment":"center"}} -->
-				<div class="wp-block-group lsx-accommodation-price-box-wrapper" style="border-color:var(--wp--preset--color--neutral-400);border-style:solid;border-width:var(--wp--custom--border-width--100);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--30)">
+				<div class="wp-block-group lsx-accommodation-price-box-wrapper has-border-color" style="border-color:var(--wp--preset--color--neutral-400);border-style:solid;border-width:var(--wp--custom--border-width--100);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--30)">
 
-					<!-- wp:group {"metadata":{"name":"Rating and Price"},"className":"lsx-accommodation-price-facts-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"},"layout":{"selfStretch":"fill","flexSize":null}},"layout":{"type":"constrained"}} -->
+					<!-- wp:group {"metadata":{"name":"Rating and Price"},"className":"lsx-accommodation-price-facts-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"},"layout":{"selfStretch":"fill","flexSize":null}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} -->
 					<div class="wp-block-group lsx-accommodation-price-facts-wrapper">
 
 						<?php
@@ -270,8 +338,18 @@
 						 * paragraph before it. The wrapping group is therefore
 						 * the only stable place to hang alignment or spacing
 						 * from, exactly as the tour single's highlights list.
-						 * Nothing is hung off it today; the note is here so the
-						 * next person does not reach for the paragraph.
+						 * That is what the wrapper's `flex`/`flexWrap: wrap`
+						 * layout now does, set in the Site Editor pass of
+						 * 2026-09-09 — and it is why the paragraph's own
+						 * `textAlign` went to `left` in the same pass: the row
+						 * of stars is laid out by the group, so centring the
+						 * paragraph was only ever centring an empty box.
+						 * Do not reach for the paragraph.
+						 *
+						 * The `Rating and Price` group above became a vertical
+						 * `flex` in that pass too, so the rating stack and the
+						 * price band read as one left-aligned column beside the
+						 * badge rather than as a constrained block.
 						 *
 						 * `lsx-rating-wrapper` is Tour Operator's own class for
 						 * this — the `lsx-tour-operator/rating` "block" is a
@@ -286,15 +364,15 @@
 						 * desktop page this was measured from.
 						 */
 						?>
-						<!-- wp:group {"metadata":{"name":"Rating"},"className":"lsx-rating-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+						<!-- wp:group {"metadata":{"name":"Rating"},"className":"lsx-rating-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
 						<div class="wp-block-group lsx-rating-wrapper">
 
 							<!-- wp:heading {"textAlign":"center","level":2,"metadata":{"name":"Rating Label"},"style":{"typography":{"textTransform":"uppercase","letterSpacing":"var:custom|letter-spacing|heading"}},"fontSize":"300"} -->
 							<h2 class="wp-block-heading has-text-align-center has-300-font-size" style="letter-spacing:var(--wp--custom--letter-spacing--heading);text-transform:uppercase"><?php esc_html_e( 'This property is rated:', 'sd-theme-2026' ); ?></h2>
 							<!-- /wp:heading -->
 
-							<!-- wp:paragraph {"align":"center","metadata":{"name":"Rating Stars","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"rating"}}}},"fontSize":"200"} -->
-							<p class="has-text-align-center has-200-font-size"></p>
+							<!-- wp:paragraph {"metadata":{"name":"Rating Stars","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"rating"}}}},"style":{"typography":{"textAlign":"left"}},"fontSize":"200"} -->
+							<p class="has-text-align-left has-200-font-size"></p>
 							<!-- /wp:paragraph -->
 
 						</div>
@@ -359,7 +437,7 @@
 					?>
 					<!-- wp:group {"metadata":{"name":"Specials Badge"},"className":"lsx-special-to-accommodation-wrapper","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained","contentSize":"150px"}} -->
 					<div class="wp-block-group lsx-special-to-accommodation-wrapper"><!-- wp:image {"width":"150px","sizeSlug":"full","linkDestination":"none"} -->
-					<figure class="wp-block-image size-full is-resized"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/special-badge.svg' ) ); ?>" alt="" style="width:150px"/></figure>
+					<figure class="wp-block-image size-full is-resized"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/special-badge.svg' ) ); ?>" alt="" style="width:150px;height:auto"/></figure>
 					<!-- /wp:image --></div>
 					<!-- /wp:group -->
 
@@ -370,7 +448,19 @@
 				/*
 				 * The Best Price Guarantee panel — live's `#guarantee-cta`
 				 * (custom.css:4000): the brown filigree texture behind a gold
-				 * heading and white running copy, centred, capped at 565px.
+				 * heading and white running copy, centred.
+				 *
+				 * ⚠️ **This is `patterns/template-archive-accommodation.php`'s
+				 * panel, byte-for-byte, and the two must stay in step.** The
+				 * archive re-authored it on dev 2026-09-04 — the script-accent
+				 * heading, the 300px floor, the tighter block padding — and
+				 * this copy was left on the earlier composition, so the same
+				 * panel read as two different objects depending on which page
+				 * you reached it from. The archive's is the settled version and
+				 * it is the one carried here. If the panel ever gains a third
+				 * sibling it earns a pattern of its own; with two, a `require`
+				 * is impossible in either direction, because both files are
+				 * whole templates rather than sections.
 				 *
 				 * A `core/cover` rather than a group with a background image,
 				 * because the ground is an image and `core/group` has no image
@@ -384,20 +474,24 @@
 				 * patterns/why-choose-sd.php and patterns/trustpilot-score.php
 				 * already use — no attachment ID, nothing per-install.
 				 *
+				 * The heading is `is-style-script-accent` at font-size 700, the
+				 * gold-accent device the banner and the homepage already use,
+				 * and the paragraph takes the body size rather than an explicit
+				 * 200 — three type sizes inside a 400px plate was one too many.
 				 * Static copy: live has no field behind either string. An `h2`,
 				 * beside the rating box's `h2` rather than under it — the two
 				 * panels are siblings and either can disappear on its own.
 				 */
 				?>
-				<!-- wp:cover {"url":"<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>","dimRatio":0,"overlayColor":"neutral-800","isUserOverlayColor":true,"contentPosition":"center center","isDark":true,"tagName":"aside","metadata":{"name":"Best Price Guarantee"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained","contentSize":"400px"}} -->
-				<aside class="wp-block-cover" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)"><span aria-hidden="true" class="wp-block-cover__background has-neutral-800-background-color has-background-dim-0 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+				<!-- wp:cover {"url":"<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>","dimRatio":0,"overlayColor":"neutral-800","isUserOverlayColor":true,"minHeight":300,"contentPosition":"center center","tagName":"aside","metadata":{"name":"Best Price Guarantee"},"align":"center","style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|40","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained","contentSize":"400px"}} -->
+				<aside class="wp-block-cover aligncenter" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40);min-height:300px"><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-neutral-800-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
-					<!-- wp:heading {"textAlign":"center","level":2,"style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-500"}}}},"textColor":"accent-500","fontSize":"400","anchor":"h-best-price-guarantee"} -->
-					<h2 class="wp-block-heading has-text-align-center has-accent-500-color has-text-color has-link-color has-400-font-size" id="h-best-price-guarantee"><?php esc_html_e( 'Best Price Guarantee', 'sd-theme-2026' ); ?></h2>
+					<!-- wp:heading {"className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-500"}}},"typography":{"textAlign":"center"}},"textColor":"accent-500","fontSize":"700","anchor":"h-best-price-guarantee"} -->
+					<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-accent-500-color has-text-color has-link-color has-700-font-size" id="h-best-price-guarantee"><?php esc_html_e( 'Best Price Guarantee', 'sd-theme-2026' ); ?></h2>
 					<!-- /wp:heading -->
 
-					<!-- wp:paragraph {"align":"center","textColor":"base","fontFamily":"heading","fontSize":"200"} -->
-					<p class="has-text-align-center has-base-color has-text-color has-heading-font-family has-200-font-size"><?php esc_html_e( 'Booking via us is cheaper than going direct because we have access to the very best available rates at all of Africa’s premium safari lodges, camps and boutique hotels.', 'sd-theme-2026' ); ?></p>
+					<!-- wp:paragraph {"style":{"typography":{"textAlign":"center"}},"textColor":"base","fontFamily":"heading"} -->
+					<p class="has-text-align-center has-base-color has-text-color has-heading-font-family"><?php esc_html_e( 'Booking via us is cheaper than going direct because we have access to the very best available rates at all of Africa’s premium safari lodges, camps and boutique hotels.', 'sd-theme-2026' ); ?></p>
 					<!-- /wp:paragraph -->
 
 				</div></aside>
@@ -445,7 +539,7 @@
 		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-gallery"><?php esc_html_e( 'Gallery', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 
-		<!-- wp:gallery {"columns":3,"linkTo":"media","linkTarget":"_blank","sizeSlug":"large","align":"wide","metadata":{"name":"Accommodation Gallery","bindings":{"content":{"source":"lsx/gallery"}}},"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|10","left":"var:preset|spacing|10"}}}} -->
+		<!-- wp:gallery {"columns":3,"linkTo":"media","linkTarget":"_blank","align":"wide","metadata":{"name":"Accommodation Gallery","bindings":{"content":{"source":"lsx/gallery"}}},"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|10","left":"var:preset|spacing|10"}}}} -->
 		<figure class="wp-block-gallery alignwide has-nested-images columns-3 is-cropped"><!-- wp:image {"linkDestination":"media"} -->
 		<figure class="wp-block-image"><img alt=""/></figure>
 		<!-- /wp:image -->
@@ -468,10 +562,32 @@
 	 *
 	 * The card is patterns/accommodation-unit.php, which carries the
 	 * `lsx/accommodation-units` binding and is what repeats; this group is the
-	 * *list*. Three across, as live's `slidesToShow: 3`, in a grid rather than a
-	 * carousel: Tour Operator's slider extends `core/query` and
-	 * `core/terms-query` only (styles/sections/slider-frame.json), and a units
-	 * repeat is neither. The grid is what the shelf degrades to anyway.
+	 * *list*.
+	 *
+	 * **One card per row, and each card is horizontal.** That is live, measured
+	 * from `.sd-rooms-wrapper` on 2026-09-04: the unit sits in a `col-md-12`, so
+	 * one to a row with 30px between them and none after the last
+	 * (custom.css:1822), and `.rooms-contents` is `display: flex; flex-flow: row
+	 * nowrap` at `max-width: 945px` centred, with the photograph taking the
+	 * leading third (tour-operator/assets/css/style.css:1377) and the name and
+	 * copy beside it. The band was previously a three-across grid on the reading
+	 * of live's `data-slick` `slidesToShow: 3`; the Slick options are on the
+	 * container, the `.lsx-to-slider .rooms-contents` override that would turn
+	 * the card vertical never takes effect on the page, and what live actually
+	 * renders is the stacked horizontal row. This is that.
+	 *
+	 * Tour Operator's slider is not an option here either way: it extends
+	 * `core/query` and `core/terms-query` only
+	 * (styles/sections/slider-frame.json), and a units repeat is neither.
+	 *
+	 * A `constrained` layout rather than live's literal 945px cap, at a
+	 * `contentSize` of 1100px with the list and each card `alignwide` inside it
+	 * — authored in the Site Editor on dev (wp_template 65942) on 2026-09-04 and
+	 * imported here. The band was previously left on the theme's default 900px
+	 * measure on the reading that live's 945px was near enough to be invisible;
+	 * a card that is a photograph beside a paragraph and a Read more reads too
+	 * cramped at that width, and 1100px is the measure that was picked against
+	 * the real content. `blockGap` is `spacing|30`, live's 30px.
 	 *
 	 * `lsx-units-wrapper` is doing two jobs and both are required: it removes
 	 * the band, heading included, on an accommodation with no units
@@ -492,14 +608,14 @@
 	 * conditional — splitting the band by type is a plugin change. → LS-2033
 	 */
 	?>
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Units"},"align":"full","className":"is-style-light-page-section lsx-units-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"rooms"} -->
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Units"},"align":"full","className":"is-style-light-page-section lsx-units-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained","contentSize":"1100px"},"anchor":"rooms"} -->
 	<section class="wp-block-group alignfull is-style-light-page-section lsx-units-wrapper" id="rooms">
 
 		<!-- wp:heading {"textAlign":"center","className":"is-style-section-title","anchor":"h-rooms"} -->
 		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-rooms"><?php esc_html_e( 'Rooms', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 
-		<!-- wp:group {"metadata":{"name":"Units List"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+		<!-- wp:group {"metadata":{"name":"Units List"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group alignwide">
 
 			<?php require __DIR__ . '/accommodation-unit.php'; ?>
@@ -514,18 +630,25 @@
 	/*
 	 * The tours shelf — live's `#tours`.
 	 *
-	 * ⚠️ **The heading is live's fallback branch, not its usual one.**
-	 * `sd_lsx_to_accommodation_single_content_bottom()` composes it as
+	 * **The heading names the property, where live names its type.**
+	 * `sd_lsx_to_accommodation_single_content_bottom()` composes live's as
 	 * `'Tours Featuring ' . $accommodation_type_title`, where the type title is
 	 * the first `accommodation-type` term on the property and
-	 * `'This Accommodation'` when it has none (layout.php:126-137). So live
-	 * usually reads "Tours Featuring Lodge". A binding replaces a block's whole
-	 * `content`, and the composed halves would need a source that returns the
-	 * current post's first term in a taxonomy — `sd/post-field` answers for the
-	 * post title and `sd/term-meta` needs a queried term, so neither reaches it.
-	 * Rather than invent copy, this is live's own string for the un-typed
-	 * branch, verbatim. Composing the type is a small source in
-	 * `sd-enhancements` — plugin work, not a theme conditional. → LS-2033
+	 * `'This Accommodation'` when it has none (layout.php:126-137) — so live
+	 * usually reads "Tours Featuring Lodge". No source reaches that: a binding
+	 * replaces a block's whole `content`, and the composed half would need the
+	 * current post's first term in a taxonomy, which `sd/post-field` does not
+	 * answer for and `sd/term-meta` cannot, needing a queried term.
+	 *
+	 * The property's own name does reach it, through `sd/post-field`'s `title`
+	 * field and a `prefix` — the same composition the team single and both
+	 * sibling singles use for every one of their shelf headings, so this page
+	 * now heads its shelf the way the rest of the theme heads shelves. It reads
+	 * "Tours Featuring Chitwa Chitwa Private Game Lodge", which is more use to
+	 * a reader than live's "Tours Featuring Lodge": it says which property the
+	 * tours below include rather than which category it falls in. The authored
+	 * fallback is live's own un-typed string, verbatim, and it is what renders
+	 * if the binding returns null.
 	 *
 	 * The tile is patterns/card-tour-compact.php, the same card the tour and
 	 * destination singles shelve, so a tour looks the same wherever it appears.
@@ -537,7 +660,7 @@
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Related Tours"},"align":"full","className":"is-style-light-page-section lsx-tour-related-accommodation-query-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"tours"} -->
 	<section class="wp-block-group alignfull is-style-light-page-section lsx-tour-related-accommodation-query-wrapper" id="tours">
 
-		<!-- wp:heading {"textAlign":"center","className":"is-style-section-title","anchor":"h-tours"} -->
+		<!-- wp:heading {"textAlign":"center","metadata":{"name":"Tours Heading","bindings":{"content":{"source":"sd/post-field","args":{"field":"title","prefix":"<?php esc_attr_e( 'Tours Featuring ', 'sd-theme-2026' ); ?>"}}}},"className":"is-style-section-title","anchor":"h-tours"} -->
 		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-tours"><?php esc_html_e( 'Tours Featuring This Accommodation', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 

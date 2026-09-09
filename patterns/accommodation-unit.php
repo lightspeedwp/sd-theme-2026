@@ -2,10 +2,10 @@
 /**
  * Title: Accommodation Unit
  * Slug: sd-theme-2026/accommodation-unit
- * Description: One unit of an accommodation's rooms band — the unit photograph above a tinted panel carrying the unit name and its description. Repeated once per unit by Tour Operator's accommodation-units binding.
+ * Description: One unit of an accommodation's rooms band — a horizontal tinted row with the unit photograph at the leading third and the unit name and its description beside it. Repeated once per unit by Tour Operator's accommodation-units binding.
  * Categories: sd-theme-2026/tour-operator
  * Keywords: accommodation, unit, room, chalet, tent, villa, suite, lodge
- * Viewport Width: 480
+ * Viewport Width: 900
  * Block Types: core/group
  * Template Types: single
  * Post Types: accommodation
@@ -21,8 +21,8 @@
  * sd-lsx-child/includes/functions.php:683 and measured from
  * /accommodation/chitwa-chitwa-private-game-lodge/ on 2026-08-31, which carries
  * three: Luxury Suite, Charlsy Suite, Chitwa House. Live renders a photograph,
- * an `<h5>` at 23px and the unit description, three across in a Slick carousel
- * (`slidesToShow: 3`).
+ * an `<h5>` at 23px and the unit description as a **horizontal row** — one unit
+ * to a line, the photograph at the leading third and the copy beside it.
  *
  * ## This file is the *repeated unit*, not the band
  *
@@ -98,37 +98,126 @@
  * on an `#f7f5f2` band and the palette resolves both to `neutral-200`; the band
  * in the template is white for that reason, and the note is there.
  *
- * The image runs 2/1. Live's carousel card caps the thumbnail at 180px tall
- * over `padding: 0 0 45%` (custom.css:1874), and the source Tour Operator asks
- * for is `lsx-thumbnail-wide` at 750×350 — 2.14 either way, which 2/1 is the
- * nearest ratio the block serialises.
+ * ## The card is a row, and the row is `core/columns`
+ *
+ * Live's geometry, measured 2026-09-04:
+ *
+ * | | Live | Here |
+ * |---|---|---|
+ * | Card | `display:flex; flex-flow:row nowrap`, `max-width:945px`, centred | `core/columns`, capped by the list's `constrained` layout |
+ * | Photograph | `.rooms-thumbnail-wrap { flex-shrink:0; width:33.333% }` | `core/column` `width: 30%` |
+ * | Crop | `padding: 0 0 100%` — square — `background-size: cover` | `aspectRatio: 1`, `scale: cover` |
+ * | Copy | `.rooms-info { flex-grow:1; padding: 2.4rem 2.4rem 0 }` | the second `core/column`, padding `spacing|30` |
+ * | Below 767px | `flex-direction: column` | core stacks `core/columns` at 782px |
+ *
+ * `core/columns`, not a flex `core/group`: a fixed-ratio row is what the block
+ * expresses natively — `core/column`'s `width` compiles to `flex-basis` — and
+ * core stacks it on mobile without a media query of ours.
+ * → AGENTS.md, "Structure belongs in markup, not in a `css` field"
+ *
+ * The outer block stays a `core/group` because it has to: `render_units_block()`
+ * checks `$parsed_block['blockName']` against an allow-list of exactly
+ * `core/group` (class-bindings.php:517) before it will repeat anything. So the
+ * group holds the binding and the card style, and the columns inside it hold the
+ * layout.
+ *
+ * No `verticalAlignment` on `core/columns` itself. The block library gives
+ * `.wp-block-columns` `align-items: normal`, which is stretch — so the
+ * photograph's column grows to whatever height the copy beside it sets, which is
+ * live's `.rooms-thumbnail a { min-height: 100% }`. Setting an alignment on the
+ * columns block would opt out of that. Filling the stretched column is the one
+ * part of this the block cannot express, and it is the two rules `unit-image`
+ * carries in assets/styles/core-image.css.
+ *
+ * The **copy column** does carry `verticalAlignment: center`, and it holds a
+ * vertical flex `core/group` ("Unit Stack") rather than the heading and the
+ * description as bare siblings. That is what centres a short unit's title and
+ * copy against a square photograph instead of letting them sit at the top of a
+ * tall row. `verticalAlignment` on a `core/column` compiles to
+ * `align-self: center` on that column alone, so the sibling photograph column
+ * still stretches. Authored in the Site Editor on dev (wp_template 65942) on
+ * 2026-09-04 and imported here.
+ *
+ * The unit name is centred; the description below it is not — its wrapper keeps
+ * `justifyContent: left`, so the copy stays leading-aligned as live is at every
+ * width above 767px. Centring the title alone is the dev-authored composition
+ * and it is what stops a one-line name reading as though it had been left
+ * behind by the flex column.
+ *
+ * ## No Read more — the unit description is shown whole
+ *
+ * The card once carried a `core/read-more` beneath the description, inside
+ * `unit-description-wrapper`, the same place Tour Operator's own
+ * `patterns/itinerary-list.php` puts one. It was removed in the Site Editor
+ * pass of 2026-09-09 and **the collapse is not coming back** — the unit
+ * description renders in full.
+ *
+ * The whole supporting module went with it: `inc/accommodation-units.php`,
+ * `assets/js/accommodation-units-read-more.js` and the `require_once` in
+ * `functions.php`. Nothing in the theme wires a read-more on this band now, so
+ * do not re-add the block expecting one to work.
+ *
+ * Why it needed a module at all, for anyone tempted to reintroduce it: Tour
+ * Operator's script wires two read-more collapses and neither reaches a unit —
+ * `set_read_more()` only acts on a `.wp-block-read-more` whose parent
+ * `.wp-block-group` contains a `.wp-block-post-content`, and
+ * `set_read_more_itinerary()` is scoped to `.lsx-itinerary-wrapper`
+ * (tour-operator/build/custom.js). Worse, TO binds a `preventDefault()` click
+ * handler to *every* `.single-tour-operator .wp-block-read-more`, so an unwired
+ * one is a dead link rather than a navigation. A bare `core/read-more` here is
+ * therefore worse than none.
+ *
+ * **No `anchor` on the unit heading.** The dev-authored version carried
+ * `id="h-unit-name"`; this card is repeated once per unit by
+ * `render_units_block()`, so that id would be emitted two, three or five times
+ * on one page. Duplicate ids break in-page links and are a validity failure, so
+ * the anchor is deliberately not imported. → AGENTS.md working agreement 5
  *
  * An `h3`: the band it sits in is headed by an `h2`.
  */
 
 ?>
-<!-- wp:group {"metadata":{"name":"Accommodation Unit","bindings":{"content":{"source":"lsx/accommodation-units","type":"rooms"}}},"className":"is-style-listing-card-compact","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
-<div class="wp-block-group is-style-listing-card-compact">
+<!-- wp:group {"metadata":{"name":"Accommodation Unit","bindings":{"content":{"source":"lsx/accommodation-units","type":"rooms"}}},"align":"wide","className":"is-style-listing-card-compact","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
+<div class="wp-block-group alignwide is-style-listing-card-compact">
 
-	<!-- wp:image {"aspectRatio":"2/1","scale":"cover","linkDestination":"none","className":"unit-image size-large"} -->
-	<figure class="wp-block-image unit-image size-large"><img src="/wp-content/plugins/tour-operator/assets/img/blocks/placeholder.png" alt="" style="aspect-ratio:2/1;object-fit:cover"/></figure>
-	<!-- /wp:image -->
+	<!-- wp:columns {"metadata":{"name":"Unit Row"},"style":{"spacing":{"blockGap":"0"}}} -->
+	<div class="wp-block-columns">
 
-	<!-- wp:group {"metadata":{"name":"Unit Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|30","bottom":"var:preset|spacing|50","left":"var:preset|spacing|30"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group has-200-font-size" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
+		<!-- wp:column {"width":"30%"} -->
+		<div class="wp-block-column" style="flex-basis:30%">
 
-		<!-- wp:heading {"textAlign":"center","level":3,"className":"unit-title","fontSize":"400"} -->
-		<h3 class="wp-block-heading has-text-align-center unit-title has-400-font-size"><?php esc_html_e( 'Unit Name', 'sd-theme-2026' ); ?></h3>
-		<!-- /wp:heading -->
+			<!-- wp:image {"aspectRatio":"1","scale":"cover","linkDestination":"none","className":"unit-image size-large"} -->
+			<figure class="wp-block-image unit-image size-large"><img src="/wp-content/plugins/tour-operator/assets/img/blocks/placeholder.png" alt="" style="aspect-ratio:1;object-fit:cover"/></figure>
+			<!-- /wp:image -->
 
-		<!-- wp:group {"metadata":{"name":"Unit Description"},"className":"unit-description-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
-		<div class="wp-block-group unit-description-wrapper"><!-- wp:paragraph {"align":"center","className":"unit-description","style":{"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
-		<p class="has-text-align-center unit-description has-200-font-size" style="line-height:var(--wp--custom--line-height--body)"><?php esc_html_e( 'The description of this unit, as it is entered on the accommodation.', 'sd-theme-2026' ); ?></p>
-		<!-- /wp:paragraph --></div>
-		<!-- /wp:group -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column {"verticalAlignment":"center","metadata":{"name":"Unit Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
+		<div class="wp-block-column is-vertically-aligned-center has-200-font-size" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
+
+			<!-- wp:group {"metadata":{"name":"Unit Stack"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","orientation":"vertical","verticalAlignment":"center"}} -->
+			<div class="wp-block-group">
+
+				<!-- wp:heading {"level":3,"className":"unit-title","style":{"typography":{"textAlign":"center"}},"fontSize":"400"} -->
+				<h3 class="wp-block-heading has-text-align-center unit-title has-400-font-size"><?php esc_html_e( 'Unit Name', 'sd-theme-2026' ); ?></h3>
+				<!-- /wp:heading -->
+
+				<!-- wp:group {"metadata":{"name":"Unit Description"},"className":"unit-description-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
+				<div class="wp-block-group unit-description-wrapper"><!-- wp:paragraph {"className":"unit-description","style":{"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
+				<p class="unit-description has-200-font-size" style="line-height:var(--wp--custom--line-height--body)"><?php esc_html_e( 'The description of this unit, as it is entered on the accommodation.', 'sd-theme-2026' ); ?></p>
+				<!-- /wp:paragraph -->
+</div>
+				<!-- /wp:group -->
+
+			</div>
+			<!-- /wp:group -->
+
+		</div>
+		<!-- /wp:column -->
 
 	</div>
-	<!-- /wp:group -->
+	<!-- /wp:columns -->
 
 </div>
 <!-- /wp:group -->

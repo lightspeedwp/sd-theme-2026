@@ -27,10 +27,11 @@ wp-config.php
 # Commercially-licensed font faces — NOT redistributable via this repo.
 #
 # Joe Hand is licensed for web embedding (JOEBOB graphics Webfont EULA 1.0, licence owner
-# Southern Destinations), but §1.5 forbids direct download/hotlinking and §1.6 forbids
-# transfer or sublicensing — and a repository is a distribution channel. So the face is
-# delivered by the build/deploy pipeline rather than committed. This is about
-# redistribution, not doubt: the rights themselves are confirmed. → assets/fonts/LICENCES.md
+# Southern Destinations) and its §1.3 pageview cap was accepted by the client on
+# 2026-09-09 — but §1.5 forbids direct download/hotlinking and §1.6 forbids transfer or
+# sublicensing, and a repository is a distribution channel. So the face is delivered by
+# the build/deploy pipeline rather than committed. This is about redistribution, not
+# doubt: the rights themselves are confirmed. → assets/fonts/LICENCES.md
 #
 # ⚠️ A fresh clone has 1 unresolved @font-face rule until the pipeline supplies the file.
 # The `accent` family falls back to La Belle Aurore (bundled) and then cursive — degraded,
@@ -40,8 +41,11 @@ wp-config.php
 # public again, history needs rewriting. See CHANGELOG.md → Security.
 #
 # No Optima face is registered or bundled: the three previously here were unlicensed and
-# were removed 2026-08-18. The optima-* pattern is kept so a stray conversion cannot be
-# committed by accident while the self-hosting kit is outstanding. → LS-2641
+# were removed 2026-08-18. SD now holds two *desktop* Optima licences (MyFonts #9528082
+# and #7491875209386) and no webfont licence — the 2026 order's EULA forbids server
+# installation and defines OTF→WOFF2 conversion as a prohibited Derivative Work. The
+# optima-* pattern therefore guards a plausible mistake, not a theoretical one: 12 desktop
+# OTFs sit in the workspace and woff2_compress is installed. → LS-2641
 #
 # The OFL/Apache faces (Open Sans, Belleza, La Belle Aurore) are committed and safe to ship.
 assets/fonts/optima-*.woff2

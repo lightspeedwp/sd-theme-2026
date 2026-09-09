@@ -26,3 +26,31 @@ html .is-layout-flex .wp-block-image {
 .wp-block-image .is-style-rounded img {
 	border-radius: 10px;
 }
+
+/*
+ * Accommodation unit photograph — live's `.rooms-thumbnail a { min-height: 100% }`.
+ *
+ * The rooms band's card is a horizontal row: a square photograph in a 33.33%
+ * `core/column` and the unit's name and copy in the column beside it
+ * (patterns/accommodation-unit.php). `.wp-block-columns` is `align-items: normal`,
+ * so the photograph's column already stretches to whatever height the copy sets —
+ * but the figure and the image inside it do not follow, because the block library
+ * gives `.wp-block-image img` `height: auto; width: auto`. Filling a stretched
+ * column is a height set by a *sibling*, which no block attribute can express, so
+ * it is here rather than in the markup or in the card's style JSON. `aspectRatio`
+ * stays on the block: it is live's square crop and it is what the editor shows.
+ *
+ * `!important` because the block library's rule sits at the same (0,2,0)
+ * specificity and only source order would separate the two.
+ * → AGENTS.md, "Structure belongs in markup, not in a `css` field"
+ */
+.wp-block-image.unit-image {
+	height: 100%;
+	margin: 0;
+}
+
+.wp-block-image.unit-image img {
+	height: 100% !important;
+	object-fit: cover;
+	width: 100% !important;
+}

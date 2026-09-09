@@ -48,6 +48,8 @@
  * an accessible name, and with no list of brands in this file. `thumbnail` is
  * the same meta key live reads, so these are the same logo files.
  *
+ * ## Term context on `core/post-featured-image`
+ *
  * That filter could not fire as TO ships it. A block receives only the context
  * keys its own type declares — `WP_Block::__construct()` intersects the
  * available context with `$block_type->uses_context`, class-wp-block.php:163-168
