@@ -121,7 +121,7 @@
  */
 
 ?>
-<!-- wp:group {"tagName":"main","metadata":{"name":"Accommodation Single"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
+<!-- wp:group {"tagName":"main","metadata":{"name":"Template: Single Accommodation"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
 <main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
 	<?php
@@ -186,11 +186,40 @@
 	 * 497px; this theme does not — see patterns/template-single-tour.php, "The
 	 * summary band".)
 	 *
-	 * **No safari expert panel.** Both sibling singles carry one beneath the
-	 * copy; live's accommodation single does not — `#safari-expert-box` is
-	 * absent from the measured page, and `sd_single_accommodation_box()` fills
-	 * that column with the rating box and the guarantee panel instead. The
-	 * absence is written down rather than left to look like an oversight.
+	 * **The safari expert panel is carried, beneath the copy** — live's
+	 * placement, and the same place both sibling singles put theirs.
+	 * → patterns/safari-expert.php
+	 *
+	 * ⚠️ **An earlier note here claimed live's accommodation single has no
+	 * safari expert panel. That was wrong** — corrected 2026-09-09. It does.
+	 * The error came from measuring one page: `#safari-expert-box` is absent
+	 * from `/accommodation/chitwa-chitwa-private-game-lodge/`, and its absence
+	 * was read as the template's design rather than as that property's data.
+	 * `/accommodation/andbeyond-mnemba-island-lodge/` draws the panel in full —
+	 * Liesl Matthews' photograph, the "Chat to your safari expert" eyebrow, her
+	 * name, the Call Us dropdown and the Send an Email CTA — directly after the
+	 * property copy in the left column, with the Trustpilot box beneath it.
+	 *
+	 * **The panel is conditional per accommodation**, which is why one page has
+	 * it and the other does not. `sd-lsx-child/content-accommodation.php:35-41`
+	 * gates the whole block on `lsx_to_has_enquiry_contact()`, then branches:
+	 * with a connected team member it calls `sd_lsx_to_team_member_panel()`
+	 * (includes/functions.php:96-200), which resolves the `team_to_<post_type>`
+	 * connection — falling back to a random `expert-*` from Tour Operator's team
+	 * options, transient-cached per post — and emits `#safari-expert-box`;
+	 * without one it calls `sd_expert_box()` (:385), which draws the same shape
+	 * from the `enquiry_contact_*` fields. Chitwa Chitwa satisfies neither, so
+	 * live emits nothing there — not even the `.lsx-to-contact` wrapper.
+	 *
+	 * The Trustpilot score is **part of the panel, not a sibling of it**: live
+	 * emits `.trust-pilot-box` inside both branches (functions.php:186 and
+	 * :411), so it disappears with the panel. That is why it sits inside
+	 * `sd/safari-expert` here rather than beside it.
+	 *
+	 * The theme renders the panel unconditionally. Making it vanish on a
+	 * property with no expert and no enquiry contact is a data-gated wrapper —
+	 * `sd-enhancements` work of the same kind as the rating box's three
+	 * wrappers below, not a template concern. → LS-2033
 	 *
 	 * **The copy is wrapped, italic, and cut with a Read More** — the same
 	 * composition as `patterns/destination-summary.php` and
@@ -239,6 +268,8 @@
 				</div>
 				<!-- /wp:group -->
 
+				<?php require __DIR__ . '/safari-expert.php'; ?>
+
 			</div>
 			<!-- /wp:column -->
 
@@ -279,9 +310,9 @@
 				 */
 				?>
 				<!-- wp:group {"metadata":{"name":"Rating Box"},"className":"lsx-accommodation-price-box-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|30","bottom":"var:preset|spacing|20","left":"var:preset|spacing|30"}},"border":{"color":"var:preset|color|neutral-400","width":"var:custom|border-width|100","style":"solid"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center","verticalAlignment":"center"}} -->
-				<div class="wp-block-group lsx-accommodation-price-box-wrapper" style="border-color:var(--wp--preset--color--neutral-400);border-style:solid;border-width:var(--wp--custom--border-width--100);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--30)">
+				<div class="wp-block-group lsx-accommodation-price-box-wrapper has-border-color" style="border-color:var(--wp--preset--color--neutral-400);border-style:solid;border-width:var(--wp--custom--border-width--100);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--30)">
 
-					<!-- wp:group {"metadata":{"name":"Rating and Price"},"className":"lsx-accommodation-price-facts-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"},"layout":{"selfStretch":"fill","flexSize":null}},"layout":{"type":"constrained"}} -->
+					<!-- wp:group {"metadata":{"name":"Rating and Price"},"className":"lsx-accommodation-price-facts-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"},"layout":{"selfStretch":"fill","flexSize":null}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} -->
 					<div class="wp-block-group lsx-accommodation-price-facts-wrapper">
 
 						<?php
@@ -307,8 +338,18 @@
 						 * paragraph before it. The wrapping group is therefore
 						 * the only stable place to hang alignment or spacing
 						 * from, exactly as the tour single's highlights list.
-						 * Nothing is hung off it today; the note is here so the
-						 * next person does not reach for the paragraph.
+						 * That is what the wrapper's `flex`/`flexWrap: wrap`
+						 * layout now does, set in the Site Editor pass of
+						 * 2026-09-09 — and it is why the paragraph's own
+						 * `textAlign` went to `left` in the same pass: the row
+						 * of stars is laid out by the group, so centring the
+						 * paragraph was only ever centring an empty box.
+						 * Do not reach for the paragraph.
+						 *
+						 * The `Rating and Price` group above became a vertical
+						 * `flex` in that pass too, so the rating stack and the
+						 * price band read as one left-aligned column beside the
+						 * badge rather than as a constrained block.
 						 *
 						 * `lsx-rating-wrapper` is Tour Operator's own class for
 						 * this — the `lsx-tour-operator/rating` "block" is a
@@ -323,15 +364,15 @@
 						 * desktop page this was measured from.
 						 */
 						?>
-						<!-- wp:group {"metadata":{"name":"Rating"},"className":"lsx-rating-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+						<!-- wp:group {"metadata":{"name":"Rating"},"className":"lsx-rating-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
 						<div class="wp-block-group lsx-rating-wrapper">
 
 							<!-- wp:heading {"textAlign":"center","level":2,"metadata":{"name":"Rating Label"},"style":{"typography":{"textTransform":"uppercase","letterSpacing":"var:custom|letter-spacing|heading"}},"fontSize":"300"} -->
 							<h2 class="wp-block-heading has-text-align-center has-300-font-size" style="letter-spacing:var(--wp--custom--letter-spacing--heading);text-transform:uppercase"><?php esc_html_e( 'This property is rated:', 'sd-theme-2026' ); ?></h2>
 							<!-- /wp:heading -->
 
-							<!-- wp:paragraph {"align":"center","metadata":{"name":"Rating Stars","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"rating"}}}},"fontSize":"200"} -->
-							<p class="has-text-align-center has-200-font-size"></p>
+							<!-- wp:paragraph {"metadata":{"name":"Rating Stars","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"rating"}}}},"style":{"typography":{"textAlign":"left"}},"fontSize":"200"} -->
+							<p class="has-text-align-left has-200-font-size"></p>
 							<!-- /wp:paragraph -->
 
 						</div>
@@ -396,7 +437,7 @@
 					?>
 					<!-- wp:group {"metadata":{"name":"Specials Badge"},"className":"lsx-special-to-accommodation-wrapper","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained","contentSize":"150px"}} -->
 					<div class="wp-block-group lsx-special-to-accommodation-wrapper"><!-- wp:image {"width":"150px","sizeSlug":"full","linkDestination":"none"} -->
-					<figure class="wp-block-image size-full is-resized"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/special-badge.svg' ) ); ?>" alt="" style="width:150px"/></figure>
+					<figure class="wp-block-image size-full is-resized"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/special-badge.svg' ) ); ?>" alt="" style="width:150px;height:auto"/></figure>
 					<!-- /wp:image --></div>
 					<!-- /wp:group -->
 
@@ -498,7 +539,7 @@
 		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-gallery"><?php esc_html_e( 'Gallery', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 
-		<!-- wp:gallery {"columns":3,"linkTo":"media","linkTarget":"_blank","sizeSlug":"large","align":"wide","metadata":{"name":"Accommodation Gallery","bindings":{"content":{"source":"lsx/gallery"}}},"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|10","left":"var:preset|spacing|10"}}}} -->
+		<!-- wp:gallery {"columns":3,"linkTo":"media","linkTarget":"_blank","align":"wide","metadata":{"name":"Accommodation Gallery","bindings":{"content":{"source":"lsx/gallery"}}},"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|10","left":"var:preset|spacing|10"}}}} -->
 		<figure class="wp-block-gallery alignwide has-nested-images columns-3 is-cropped"><!-- wp:image {"linkDestination":"media"} -->
 		<figure class="wp-block-image"><img alt=""/></figure>
 		<!-- /wp:image -->

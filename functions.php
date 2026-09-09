@@ -241,12 +241,6 @@ require_once get_theme_file_path( 'inc/yoast-breadcrumbs.php' );
 // because there is no `wp_enqueue_block_script()` counterpart.
 require_once get_theme_file_path( 'inc/facetwp.php' );
 
-// Wires the Read more collapse on the accommodation units band. Tour Operator
-// ships the same behaviour for itineraries and not for units, and binds a
-// preventDefault() handler to every read-more on a Tour Operator single — so the
-// unit's link is inert without this. Not expressible in JSON: it is a script.
-require_once get_theme_file_path( 'inc/accommodation-units.php' );
-
 // Answers the plugin's `sd_enh_trustpilot_stars_image` filter with the theme's
 // own rating tile. The plugin exposes the rating as a number and says explicitly
 // that picking the graphic is the theme's job; this is the theme doing that, and

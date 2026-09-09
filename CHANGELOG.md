@@ -8,33 +8,6 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
-- **The accommodation units band collapses its descriptions.** `patterns/accommodation-unit.php`
-  gains a `core/read-more` beneath the unit description, and `inc/accommodation-units.php`
-  + `assets/js/accommodation-units-read-more.js` supply the behaviour behind it. Tour
-  Operator ships this collapse for itineraries and not for units: measured in
-  `tour-operator/build/custom.js` against TO 2.2 on 2026-09-04, `set_read_more()` only
-  acts on a `.wp-block-read-more` whose parent `.wp-block-group` holds a
-  `.wp-block-post-content`, and `set_read_more_itinerary()` is scoped to
-  `.lsx-itinerary-wrapper` — a unit's `.unit-description` is neither. TO does bind a
-  `preventDefault()` click handler to *every* read-more on a Tour Operator single, so the
-  unit's link was not merely unwired but inert.
-
-  The module mirrors TO's itinerary handler exactly — collapse to the first paragraph,
-  expand in place, retire the link on a description with nothing to collapse — and adds
-  what TO's does not: the anchor loses its `href` and `target`, takes `role="button"`,
-  `tabindex="0"` and `aria-expanded`, answers Enter and Space, and drops core's
-  `Read more: <post title>` screen-reader suffix, which describes a navigation that no
-  longer happens. Nothing is collapsed until the script runs, so with JavaScript off the
-  reader gets the whole description.
-
-  Verified on local against a two-unit fixture on *Xigera Safari Lodge*, driven in
-  headless Chrome: the three-paragraph card renders one paragraph, `Read more`,
-  `aria-expanded="false"`; one click gives three paragraphs, `Read less`,
-  `aria-expanded="true"`; a second returns it. The one-paragraph card hides its link and
-  shows its copy. No console errors. **The real home for this is upstream** — extending
-  TO's own `set_read_more_itinerary()` to `.lsx-units-wrapper` would serve every TO site
-  and delete the module. *(LS-2033)*
-
 - **The accommodation single carries the breadcrumb strip.** `patterns/breadcrumbs.php`
   is required beneath the banner in `patterns/template-single-accommodation.php`, which
   is where the destination, region, country and tour singles already put it. It was the
@@ -866,6 +839,119 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- **The accommodation single is imported from the Site Editor, and the safari expert panel
+  is part of it.** The `wp_template` override edited on dev (post 65942, modified
+  2026-09-09 08:26) is folded back into the theme, with each change landing in the pattern
+  that owns it rather than as one flattened template. `patterns/safari-expert.php` is now
+  required beneath the property copy in the summary's left column, which is live's
+  placement; the Trustpilot score rides inside it because live emits `.trust-pilot-box`
+  inside the panel itself, not beside it. The rating box's two inner wrappers become flex
+  — `lsx-accommodation-price-facts-wrapper` vertical and left-aligned,
+  `lsx-rating-wrapper` wrapping — and the bound `Rating Stars` paragraph goes leading-
+  aligned, since the stars are laid out by the group and centring an empty paragraph did
+  nothing. Smaller with them: the rating box gains `has-border-color`, the specials badge
+  gains `height:auto`, `core/gallery` drops its `sizeSlug`, and the root group is renamed
+  "Template: Single Accommodation".
+
+  Composition is deliberately preserved: `require` for the sub-patterns and
+  `<!-- wp:pattern -->` only inside the query loops, per the rule in the template's own
+  header — a nested pattern reference inside a pattern is dropped on front-end render.
+  The editor's copy had every sub-pattern expanded inline, so the import compared the two
+  *semantically* (parsing block-attribute JSON) rather than textually; that is what
+  separated eleven real edits from the editor's re-serialisation — attribute reordering,
+  `\u002d\u002d` escaping, auto-generated heading anchors and the WP 6.9
+  `align` → `style.typography.textAlign` migration. `patterns/safari-expert.php` and
+  `patterns/trustpilot-score.php` needed no change at all.
+
+  **The breadcrumb strip is kept.** The editor's copy had dropped it; the theme keeps
+  `patterns/breadcrumbs.php` on this template, as every other Tour Operator single does.
+
+- **The unit card's geometry follows the editor.** `patterns/accommodation-unit.php` — the
+  photograph column narrows from `33.33%` to `30%`, its crop is `aspectRatio: 1` rather
+  than `1/1`, and the Unit Body column's padding drops from `spacing|40` to `spacing|30`.
+
+### Fixed
+
+- **The claim that live's accommodation single has no safari expert panel was wrong.**
+  `patterns/template-single-accommodation.php` recorded the absence as a design decision,
+  written down so it would not read as an oversight. It was measured from one page.
+  `/accommodation/chitwa-chitwa-private-game-lodge/` really does render no
+  `#safari-expert-box` — but `/accommodation/andbeyond-mnemba-island-lodge/` renders the
+  panel in full, directly after the property copy in the left column.
+
+  The panel is **conditional per accommodation**, not absent from the template:
+  `sd-lsx-child/content-accommodation.php:35-41` gates it on
+  `lsx_to_has_enquiry_contact()`, then branches to `sd_lsx_to_team_member_panel()`
+  (`includes/functions.php:96-200`, resolving the `team_to_<post_type>` connection and
+  falling back to a random `expert-*` from Tour Operator's team options, transient-cached
+  per post) or to `sd_expert_box()` (`:385`) off the `enquiry_contact_*` fields. Chitwa
+  Chitwa satisfies neither. The note is corrected in place and carries the reasoning so
+  the next reader does not re-derive it from a single page. The theme renders the panel
+  unconditionally; data-gating it is an `sd-enhancements` wrapper of the same kind as the
+  rating box's three, not a template concern. *(LS-2033)*
+
+  The equivalent claim on `patterns/template-archive-accommodation.php` was re-measured
+  and **holds** — the accommodation *archive* renders no expert panel and does run
+  `#accommodation-cta-header`. Left as written.
+
+### Removed
+
+- **The accommodation units read-more collapse, before it ever shipped.** The unit
+  description renders whole. `patterns/accommodation-unit.php` loses its
+  `core/read-more`, and the module written to make that block work at all goes with it:
+  `inc/accommodation-units.php`, `assets/js/accommodation-units-read-more.js` and the
+  `require_once` in `functions.php`. The Unreleased entry that introduced them is removed
+  rather than contradicted, since none of it was released.
+
+  Worth keeping for anyone tempted to reintroduce the block: Tour Operator wires two
+  read-more collapses and neither reaches a unit — `set_read_more()` needs a
+  `.wp-block-post-content` in the parent group and `set_read_more_itinerary()` is scoped
+  to `.lsx-itinerary-wrapper` — while TO binds a `preventDefault()` handler to *every*
+  read-more on a Tour Operator single. A bare `core/read-more` here is worse than none.
+  `assets/styles/core-read-more.css` and the read-more rules in
+  `assets/styles/core-group.css` are card-scoped and untouched.
+
+- **Optima: the client's second licence is desktop-only, so the `heading` stack names the
+  licensed family rather than bundling it.** `theme.json`'s `heading` preset becomes
+  `"Optima LT Pro", Optima, Belleza, sans-serif`. MyFonts order **#7491875209386**
+  (7 Sep 2026) delivered *Optima LT Pro* in 12 styles — 400/500/600/700/750/950 plus
+  italics, retiring the old "Bold only" gap — but it ships EULA id `2275`, Monotype's
+  **"Font Software For Desktop"** agreement (v250903), with no webfont kit and no webfont
+  EULA in the archive. Three clauses independently forbid self-hosting: §2 grants only
+  distribution of materials that **do not contain the Font Software embedded**; §4 forbids
+  Derivative Works, which §9 defines to include "binary data in any format into which Font
+  Software may be converted" — i.e. OTF → WOFF2; and §4 forbids "install the Font Software
+  on **any server**". All 12 faces are `fsType 4`.
+
+  So no face is bundled, and nothing about the rendered site changes for visitors. What
+  does change is that a machine holding the family SD paid for now renders **that** cut
+  instead of Apple's system Optima — the licensed family leads the stack. Weight behaviour
+  is identical either way: Linotype splits LT Pro across four CSS families, leaving
+  `Optima LT Pro` with only 400 and 700 (Medium 500 and Black 750 under
+  `Optima LT Pro Medium`, DemiBold 600 under `Optima LT Pro DemiBold`, ExtraBlack 950 under
+  `Optima LT Pro XBlack`), so `h3` at 600 and `h4`/`h5` at 500 resolve exactly as they did
+  before. Adding the sub-families to the stack would not help — CSS takes the first family
+  with any matching face, then the nearest weight inside it. Only real `@font-face` rules
+  give the theme true 500 and 600.
+
+  The webfont drop-in is written and verified against the current theme —
+  `.github/tasks/optima-webfont-kit-dropin-2026-09-09.md` in the workspace: which licence
+  and weights to buy, the four filenames, the one `theme.json` patch (with the reason
+  `Optima` must lead the stack once a `fontFace` exists), where the mandatory Tracking Code
+  belongs, and how to verify it. `assets/fonts/optima-*.woff2` stays `.gitignore`d.
+  *(LS-2641)*
+
+- **Joe Hand is cleared to ship: the pageview cap is accepted, not blocking.** SD reports
+  current traffic of roughly **5,000 pageviews a month** against the JOEBOB Webfont EULA's
+  §1.3 allowance of **10,000 per copy per month**, and has accepted the cap, licensing
+  further copies when traffic approaches it. LS-2642 becomes a monitor rather than a
+  blocker. No code changes — the face was already registered on the `accent` preset and the
+  official 532-glyph webfont build was already installed; this records the decision in
+  `assets/fonts/LICENCES.md`, `.gitignore` and `style.md` §3.4 so the next reader does not
+  re-litigate it. §1.4 (one domain — the `.lightspeedwp.dev` dev host is **not** covered)
+  and §1.5 (no hotlinking or direct download) are unaffected by traffic and stay live, so
+  the file remains untracked and pipeline-delivered. *(LS-2642)*
 
 - **The accommodation units band is imported from the Site Editor.** Authored on dev
   (`wp_template` 65942) on 2026-09-04 and brought into

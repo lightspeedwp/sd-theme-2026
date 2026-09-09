@@ -177,7 +177,7 @@ Slug `300`'s max is `1.20rem` against Figma's 20px — likely a typo for `1.25re
 
 | Role | Live | Figma | `theme.json` (applied) |
 |---|---|---|---|
-| heading | `optimademi_bold, Belleza, sans-serif` | 🔴 `joeHand 3` | ✅ `Optima, Belleza, sans-serif` |
+| heading | `optimademi_bold, Belleza, sans-serif` | 🔴 `joeHand 3` | ✅ `"Optima LT Pro", Optima, Belleza, sans-serif` |
 | body | `Open Sans, sans-serif` | `Open Sans` | ✅ `"Open Sans", …system…, sans-serif` |
 | accent | `Joe Hand, La Belle Aurore, sans-serif` | *(absent)* | ✅ `"Joe Hand", "La Belle Aurore", cursive` |
 | monospace | *(plugin only)* | *(absent)* | `monospace` |
@@ -187,7 +187,7 @@ Slug `300`'s max is `1.20rem` against Figma's 20px — likely a typo for `1.25re
 **Resolved in the theme, 2026-08-12** (decision: use live-measured values now):
 
 - `heading` no longer carries the wrong `Palatino, Georgia, serif` fallback — Optima is a humanist **sans**.
-- The webfont-generator family name `optimademi_bold` is gone. It would have been simply **weight 600–700 of the `Optima` family**, which is the correct way to express it — but no Optima face is bundled at all now, the licence covering desktop use only. See §3.4.
+- The webfont-generator family name `optimademi_bold` is gone. It would have been simply **weight 600–700 of the `Optima` family**, which is the correct way to express it — but no Optima face is bundled at all now, both client licences covering desktop use only. See §3.4.
 - `accent` gained Joe Hand ahead of La Belle Aurore, matching live.
 - An `alternate` preset was briefly added for regular Optima, then **removed**: with the Optima family then registered across four weights, `alternate` resolved to the identical stack as `heading`. Shipping two presets with the same value would repeat exactly the `accent`/`brand` duplication criticised in Figma.
 
@@ -203,45 +203,61 @@ Slug `300`'s max is `1.20rem` against Figma's 20px — likely a typo for `1.25re
 
 Figma declares only `lineHeight/heading 125` and `lineHeight/body 150`; both match. The theme is a superset — keep the extras. Figma silence is not deletion.
 
-### 3.4 Font licensing — resolved for Joe Hand, still blocking for Optima
+### 3.4 Font licensing — resolved for Joe Hand, still blocking for Optima on the web
 
-Client licences supplied **2026-08-18** (`docs/SD Fonts & Licenses/`). Full register:
-**`assets/fonts/LICENCES.md`**.
+Client licences supplied **2026-08-18** (`docs/SD Fonts & Licenses/`) and **2026-09-08**
+(`docs/myfonts_order_7491875209386/`). Full register: **`assets/fonts/LICENCES.md`**.
 
 | Face | Licence | Status |
 |---|---|---|
-| **Joe Hand** | JOEBOB graphics **Webfont** EULA 1.0 | ✅ **Cleared for web embedding.** Capped — see below |
-| **Optima** | Monotype/MyFonts order #9528082 (24 Jul 2018), *Optima Bold* | 🔴 **Still blocked.** Desktop OTF/TTF only; no self-hosting kit; Bold only |
+| **Joe Hand** | JOEBOB graphics **Webfont** EULA 1.0 | ✅ **Cleared and shipping.** Pageview cap accepted 2026-09-09 |
+| **Optima** | MyFonts #9528082 (2018, *Optima Bold*) **+** #7491875209386 (2026, *Optima LT Pro*, 12 styles) — **both desktop** | 🔴 **Still blocked for the web.** No webfont licence, so no self-hosting kit |
 | Open Sans | ✅ Apache 2.0 | Clear |
 | Belleza | ✅ SIL OFL 1.1 | Clear |
 | La Belle Aurore | ✅ SIL OFL 1.1 | Clear |
 
-**Joe Hand cleared.** The installed file is now JOEBOB's **official webfont build**
+**Joe Hand ships.** The installed file is JOEBOB's **official webfont build**
 (`joehand_2_15-webfont.woff2`, 532 glyphs) rather than the 226-glyph copy converted from
-live. Three obligations ride with it: **10,000 pageviews per copy per month** (§1.3 —
-SD's traffic will exceed one copy → LS-2642), **one domain plus 5 subdomains** (§1.4 — the
-`.lightspeedwp.dev` dev host is *not* covered), and **no hotlinking or direct download**
-(§1.5).
+live. Its §1.3 cap is **10,000 pageviews per copy per month**; SD reports roughly **5,000
+pageviews a month** (2026-09-09) and has **accepted the cap**, so LS-2642 becomes a monitor
+rather than a blocker. Two obligations stay live regardless of traffic: **one domain plus 5
+subdomains** (§1.4 — the `.lightspeedwp.dev` dev host is *not* covered) and **no hotlinking
+or direct download** (§1.5).
 
-**Optima is still blocked, on three independent grounds:**
+**Optima: the 2026 purchase is a desktop licence, and it does not unblock the theme.** The
+order ships EULA id `2275` — Monotype **"Font Software For Desktop"** EULA (v250903) — with
+12 OTFs, no webfont kit and no webfont EULA. Three independent clauses close the web door:
 
-1. **No self-hosting kit.** The EULA's website grant covers the *Web Font Software* supplied
-   "in a self-hosting kit"; §3 Restrictions then states *"You may not link to, or put
-   online, Web Font Software not supplied to you in a self-hosting kit."* Only desktop
-   OTF/TTF were delivered. Converting them ourselves also trips *"Modify the Software in
-   any way."*
-2. **Tracking Code is mandatory** on all non-development Websites, and removing it is
-   prohibited. It ships only with the kit.
-3. **Bold only.** The invoice's "2 font styles" are the Pro and Std cuts of the *same* Bold
-   weight. **Optima 400 and 500 are not licensed at all** — and `h4`/`h5` used 500.
+1. **§2** grants install-on-Workstation plus "create, edit, view, print and distribute
+   materials, **provided that the materials do not contain the Font Software embedded**".
+   Serving a WOFF2 is exactly that.
+2. **§4** forbids creating **Derivative Works**, which **§9** defines to include "binary data
+   in any format into which Font Software **may be converted**" — so OTF → WOFF2 is a breach
+   by the agreement's own definition.
+3. **§4** forbids "**Install the Font Software on any server** or in any digital asset
+   management system."
 
-Where it *is* permissive: 250,000 pageviews/month, Development Websites explicitly allowed,
-and SD (not the agency) is the named licence owner, satisfying the per-client clause.
+All 12 faces are `fsType 4` (preview & print embedding only), consistent with that.
 
-**→ Action:** SD downloads the **webfont/self-hosting kit** for Optima Bold from the MyFonts
-account holding #9528082. Under current Software-for-Creatives terms web rights are bundled
-with the purchase, so this is likely a download, not a new purchase — but the 2018 order
-predates those terms, so Monotype should confirm which EULA governs it. → LS-2641
+**What it does buy, and it is worth having:** full-family **desktop** rights — Figma, print,
+mock-ups, and correct local rendering. The old *"Bold only"* gap is gone for design work: SD
+now owns 400/500/600/700/750/950 plus italics on the desktop. So the earlier statement that
+"Optima 400 and 500 are not licensed at all" no longer holds — for desktop.
+
+⚠️ **Linotype splits the family across four CSS families**, so `font-family: "Optima LT Pro"`
+exposes only **400 and 700**: Medium (500) and Black (750) sit under `Optima LT Pro Medium`,
+DemiBold (600) under `Optima LT Pro DemiBold`, ExtraBlack (950) under `Optima LT Pro XBlack`.
+Listing the sub-families in a stack does **not** recover 500 or 600 — CSS picks the first
+family with any matching face, then the nearest weight inside it. Only real `@font-face`
+rules give the theme true 500 and 600, which means the webfont kit.
+
+**→ Action:** SD buys a **Webfont** licence for Optima. At MyFonts that is a separate licence
+type at checkout — not a re-download of a desktop order — and it delivers the self-hosting
+kit: WOFF2 files plus the **Tracking Code**, mandatory on all non-development Websites and
+prohibited from removal. At ~5,000 pageviews/month the smallest tier applies. → LS-2641
+
+The drop-in is written and waiting: `.github/tasks/optima-webfont-kit-dropin-2026-09-09.md`
+in the workspace. Copy four WOFF2s in, apply one `theme.json` patch, done.
 
 #### 🔴 The three Optima faces previously bundled were never licensed
 
@@ -258,9 +274,11 @@ The live site serves an equivalent conversion (`optima-demibold_1-webfont.woff2`
 this exposure **predates the rebuild** and carries over to it.
 
 **Consequence, and it was designed for:** `theme.json` registers no Optima face, but the
-`heading` stack still *names* Optima — so a visitor with Optima installed locally (every
-macOS) renders it, and everyone else resolves to **Belleza**, which is bundled as a real
-face for exactly this eventuality. The design degrades rather than breaks. Substituting a
+`heading` stack still *names* Optima — `"Optima LT Pro", Optima, Belleza, sans-serif` as of
+2026-09-09, so a machine holding the licensed family renders the cut SD paid for, a machine
+with only Apple's system Optima renders that, and everyone else resolves to **Belleza**,
+which is bundled as a real face for exactly this eventuality. Weight behaviour is unchanged
+by the reorder: both families carry Regular and Bold only. The design degrades rather than breaks. Substituting a
 permanent heading face is a **Change-Control Register** item, per the decision already
 recorded here on 2026-08-12.
 

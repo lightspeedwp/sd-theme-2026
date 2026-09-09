@@ -105,9 +105,9 @@
  * | | Live | Here |
  * |---|---|---|
  * | Card | `display:flex; flex-flow:row nowrap`, `max-width:945px`, centred | `core/columns`, capped by the list's `constrained` layout |
- * | Photograph | `.rooms-thumbnail-wrap { flex-shrink:0; width:33.333% }` | `core/column` `width: 33.33%` |
- * | Crop | `padding: 0 0 100%` — square — `background-size: cover` | `aspectRatio: 1/1`, `scale: cover` |
- * | Copy | `.rooms-info { flex-grow:1; padding: 2.4rem 2.4rem 0 }` | the second `core/column`, padding `spacing|40` |
+ * | Photograph | `.rooms-thumbnail-wrap { flex-shrink:0; width:33.333% }` | `core/column` `width: 30%` |
+ * | Crop | `padding: 0 0 100%` — square — `background-size: cover` | `aspectRatio: 1`, `scale: cover` |
+ * | Copy | `.rooms-info { flex-grow:1; padding: 2.4rem 2.4rem 0 }` | the second `core/column`, padding `spacing|30` |
  * | Below 767px | `flex-direction: column` | core stacks `core/columns` at 782px |
  *
  * `core/columns`, not a flex `core/group`: a fixed-ratio row is what the block
@@ -144,21 +144,28 @@
  * and it is what stops a one-line name reading as though it had been left
  * behind by the flex column.
  *
- * ## The Read more
+ * ## No Read more — the unit description is shown whole
  *
- * `core/read-more` beneath the description, inside `unit-description-wrapper`
- * — the same place Tour Operator's own `patterns/itinerary-list.php` puts one
- * inside `itinerary-description-wrapper`.
+ * The card once carried a `core/read-more` beneath the description, inside
+ * `unit-description-wrapper`, the same place Tour Operator's own
+ * `patterns/itinerary-list.php` puts one. It was removed in the Site Editor
+ * pass of 2026-09-09 and **the collapse is not coming back** — the unit
+ * description renders in full.
  *
- * ⚠️ **The block does nothing here on its own.** Tour Operator's script wires
- * two read-more collapses and neither reaches a unit: `set_read_more()` only
- * acts on a `.wp-block-read-more` whose parent `.wp-block-group` contains a
- * `.wp-block-post-content`, and `set_read_more_itinerary()` is scoped to
- * `.lsx-itinerary-wrapper` (tour-operator/build/custom.js). Worse, TO binds a
- * `preventDefault()` click handler to *every* `.single-tour-operator
- * .wp-block-read-more`, so an unwired one is a dead link rather than a
- * navigation. `inc/accommodation-units.php` supplies the missing handler,
- * modelled on TO's itinerary one — see the note in that file.
+ * The whole supporting module went with it: `inc/accommodation-units.php`,
+ * `assets/js/accommodation-units-read-more.js` and the `require_once` in
+ * `functions.php`. Nothing in the theme wires a read-more on this band now, so
+ * do not re-add the block expecting one to work.
+ *
+ * Why it needed a module at all, for anyone tempted to reintroduce it: Tour
+ * Operator's script wires two read-more collapses and neither reaches a unit —
+ * `set_read_more()` only acts on a `.wp-block-read-more` whose parent
+ * `.wp-block-group` contains a `.wp-block-post-content`, and
+ * `set_read_more_itinerary()` is scoped to `.lsx-itinerary-wrapper`
+ * (tour-operator/build/custom.js). Worse, TO binds a `preventDefault()` click
+ * handler to *every* `.single-tour-operator .wp-block-read-more`, so an unwired
+ * one is a dead link rather than a navigation. A bare `core/read-more` here is
+ * therefore worse than none.
  *
  * **No `anchor` on the unit heading.** The dev-authored version carried
  * `id="h-unit-name"`; this card is repeated once per unit by
@@ -176,18 +183,18 @@
 	<!-- wp:columns {"metadata":{"name":"Unit Row"},"style":{"spacing":{"blockGap":"0"}}} -->
 	<div class="wp-block-columns">
 
-		<!-- wp:column {"width":"33.33%"} -->
-		<div class="wp-block-column" style="flex-basis:33.33%">
+		<!-- wp:column {"width":"30%"} -->
+		<div class="wp-block-column" style="flex-basis:30%">
 
-			<!-- wp:image {"aspectRatio":"1/1","scale":"cover","linkDestination":"none","className":"unit-image size-large"} -->
-			<figure class="wp-block-image unit-image size-large"><img src="/wp-content/plugins/tour-operator/assets/img/blocks/placeholder.png" alt="" style="aspect-ratio:1/1;object-fit:cover"/></figure>
+			<!-- wp:image {"aspectRatio":"1","scale":"cover","linkDestination":"none","className":"unit-image size-large"} -->
+			<figure class="wp-block-image unit-image size-large"><img src="/wp-content/plugins/tour-operator/assets/img/blocks/placeholder.png" alt="" style="aspect-ratio:1;object-fit:cover"/></figure>
 			<!-- /wp:image -->
 
 		</div>
 		<!-- /wp:column -->
 
-		<!-- wp:column {"verticalAlignment":"center","metadata":{"name":"Unit Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
-		<div class="wp-block-column is-vertically-aligned-center has-200-font-size" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);line-height:var(--wp--custom--line-height--body)">
+		<!-- wp:column {"verticalAlignment":"center","metadata":{"name":"Unit Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
+		<div class="wp-block-column is-vertically-aligned-center has-200-font-size" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
 
 			<!-- wp:group {"metadata":{"name":"Unit Stack"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","orientation":"vertical","verticalAlignment":"center"}} -->
 			<div class="wp-block-group">
@@ -200,8 +207,7 @@
 				<div class="wp-block-group unit-description-wrapper"><!-- wp:paragraph {"className":"unit-description","style":{"typography":{"lineHeight":"var:custom|line-height|body"}},"fontSize":"200"} -->
 				<p class="unit-description has-200-font-size" style="line-height:var(--wp--custom--line-height--body)"><?php esc_html_e( 'The description of this unit, as it is entered on the accommodation.', 'sd-theme-2026' ); ?></p>
 				<!-- /wp:paragraph -->
-
-				<!-- wp:read-more {"content":"<?php esc_attr_e( 'Read more', 'sd-theme-2026' ); ?>","fontSize":"200"} /--></div>
+</div>
 				<!-- /wp:group -->
 
 			</div>
