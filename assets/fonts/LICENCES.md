@@ -8,8 +8,7 @@ Licence documents are held client-side, not in this repository:
 checkout.
 
 **Licence owner for every commercial face: Southern Destinations.** LightSpeed acts as its
-agent. No commercial licence here is transferable, so no commercial face may be
-redistributed by this repo — see *Delivery* below.
+agent.
 
 ---
 
@@ -17,10 +16,61 @@ redistributed by this repo — see *Delivery* below.
 
 | Face | Licence | Evidence |
 |---|---|---|
-| `open-sans-*` (7 faces) | Apache 2.0 | in-font `license` / `licenseURL` |
+| `open-sans-variable-normal` · `-italic` | SIL OFL 1.1 | in-font name ID 13/14 |
 | `belleza-400-normal` | SIL OFL 1.1 | in-font `license` / `licenseURL` |
 | `la-belle-aurore-400-normal` | SIL OFL 1.1 | in-font `license` / `licenseURL` |
 | `joe-hand-400-normal` | **JOEBOB graphics Webfont EULA 1.0** (29 Jun 2015) | `CF-13-joeHand-2_WEB/JBgfx Webfont EULA.pdf` |
+
+Five faces, **216 KB**, all committed.
+
+### Open Sans is now the variable font — and it is OFL, not Apache
+
+Replaced **2026-09-09**. The seven statics were the classic Ascender release, `Version 1.10`,
+which **never shipped a Medium (500)** — so a `font-weight|medium` declaration on body text had
+nothing to resolve to. The bundle is now two faces built from Google's current **`Version
+3.003`** variable Open Sans (`google/fonts` → `ofl/opensans`), which carries a real `wght`
+axis:
+
+| | Before (7 statics, v1.10) | After (2 variable, v3.003) |
+|---|---|---|
+| Weights | 300, 400, 600 + italics; 700 normal | **any 300–700**, normal + italic |
+| Typical page (400 + 600 normal) | 89 KB | **61 KB** |
+| With italics (300/400/600 + 400i) | 145 KB | **125 KB** |
+| Whole family on disk | 319 KB | **125 KB** |
+| Licence | Apache 2.0 | **SIL OFL 1.1** |
+
+⚠️ **The licence genuinely changed** — this is not a correction of an earlier error. Open Sans
+was Apache 2.0 under Ascender; Google relicensed it to **SIL OFL 1.1** with the 2021 rebuild.
+The in-font name ID 13 reads *"This Font Software is licensed under the SIL Open Font License,
+Version 1.1."* Both remain permissive and bundleable; OFL adds the reserved-font-name rule, so
+**do not rename these files' internal family name** if they are ever re-subset.
+
+**Build recipe** (reproducible; `fonttools` in a throwaway venv, `woff2` via `pyftsubset`):
+
+```bash
+# source: https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/opensans/OpenSans%5Bwdth,wght%5D.ttf
+#         …/OpenSans-Italic%5Bwdth,wght%5D.ttf
+fonttools varLib.instancer -o pinned.ttf OpenSans\[wdth,wght\].ttf wdth=100 wght=300:700
+pyftsubset pinned.ttf --unicodes-file=cps.txt --layout-features='*' \
+  --flavor=woff2 --drop-tables+=DSIG --output-file=open-sans-variable-normal.woff2
+```
+
+Two deliberate reductions, both needed to make the migration a *win* rather than a 3×
+regression (the unmodified variable font is 141 KB normal / 154 KB italic):
+
+1. **`wdth` axis pinned to 100.** The theme uses no width variation; the axis alone cost
+   ~32 KB per file.
+2. **`wght` clamped to 300–700, and Greek + Cyrillic dropped** (883 → 532 codepoints; latin,
+   latin-ext and Vietnamese retained). 300–700 is exactly the range the body family is asked
+   for — 200 and 900 references in this theme are on the `accent` and `heading` families, not
+   this one.
+
+   The script drop was checked against real content, not assumed: on dev, **0 of 1,431**
+   content rows contain Cyrillic, and the only 3 Greek-range hits are a single mojibake `ϋ`
+   (U+03CB) in three 2014 blog posts — an encoding artefact, not Greek text. Uncovered
+   characters fall back to the system font per-glyph, so this degrades gracefully. To restore
+   full parity, rebuild with `cps.txt` in place of `cps-latin.txt` — the cost is +47 KB per
+   file.
 
 ### Joe Hand — cleared; the pageview cap is accepted, 2026-09-09
 
@@ -34,36 +84,40 @@ statement, 2026-09-09), so one copy covers it with headroom. **SD has accepted t
 and will license additional copies or an extended licence when traffic approaches it.
 LS-2642 stays open as a **monitor, not a blocker** — the face ships.
 
-Two obligations remain live and are *not* affected by traffic:
+**§1.4 — one domain**, plus a maximum of 5 subdomains, primary
+`www.southerndestinations.com`. `southerndestinations.lightspeedwp.dev` is a *different*
+domain, so serving the face there is outside the strict reading. **Accepted 2026-09-09**:
+dev is a private review host seen only by the agency and the client, the licence owner is
+the client, and there is no public audience — the face is served there. Recorded rather than
+resolved; if JOEBOB is ever asked, the clean answer is to have them add the host in writing.
 
-- **§1.4 — one domain**, plus a maximum of 5 subdomains. `www.southerndestinations.com`
-  is the licensed primary. `southerndestinations.lightspeedwp.dev` is a *different*
-  domain and is **not** covered.
-- **§1.5 — no hotlinking, no direct download.** The font must be reachable only as part of
-  styling text on the licensed domain.
-
-§1.2 excludes desktop installation, and §1.6 forbids transfer or sublicensing.
+**§1.5 — no hotlinking, no direct download**, and **§1.6 — no transfer or sublicensing.**
+These are why the *file* handling matters rather than the markup; see *Delivery*. §1.2
+excludes desktop installation.
 
 ---
 
-## 🔴 Not cleared for the web — Optima
+## 🟡 Optima — the web licence is DemiBold only, and it is in progress
 
-Southern Destinations holds **two Optima licences, both desktop**. Neither permits the
-theme to serve the face.
+Confirmed by Vanessa Ratcliffe (SD) by email, **2026-09-07**:
 
-| Order | Date | Covers | Delivered |
-|---|---|---|---|
-| **#9528082** | 24 Jul 2018, USD 55 | *Optima Bold* — the "2 font styles" are the Pro and Std cuts of the **same** Bold weight | desktop OTF/TTF, `usWeightClass 700`, `fsType 4` |
-| **#7491875209386** | 7 Sep 2026 | *Optima LT Pro* — **12 styles**, 400 → 950 with italics | desktop OTF, `fsType 4` |
+> "We had only specified Optima DemiBold for the website — so we're purchasing that font
+> weight for the web license which is annually renewable. Also purchasing the full Optima
+> set for a Desktop license for one user. We have to buy this font as we use them on
+> Canva etc."
 
-### Why the 2026 order does not unblock the theme
+So there are **two deliberate, separate purchases** — the desktop one is not a mistake and
+should not be treated as one:
 
-Its bundled EULA is id **`2275` — Monotype "Font Software For Desktop" End User License
-Agreement (v250903)**, in
-`docs/myfonts_order_7491875209386/Licenses/2275/`. No webfont kit, no webfont EULA, no
-invoice was included in the download; the archive is 12 OTFs and that one agreement.
+| Order | Date | Purpose | Licence | Delivered |
+|---|---|---|---|---|
+| **#9528082** | 24 Jul 2018 | superseded | Desktop | *Optima Bold* — Pro + Std cuts of one weight, OTF/TTF |
+| **#7491875209386** | 7 Sep 2026 | **Canva and other client design work**, 1 user | **Desktop** (EULA `2275`, Monotype *Font Software For Desktop* v250903) | *Optima LT Pro*, 12 styles, 400→950 + italics, OTF, `fsType 4` |
+| *pending* | in progress | **the website** | **Web, annually renewable** | *Optima DemiBold* — **one weight** |
 
-It closes the web door on three independent counts:
+### The desktop order is for Canva, not for the theme — and it cannot be repurposed
+
+EULA `2275` is desktop-only and closes the web door on three independent counts:
 
 1. **§2 License Grants** covers installing on a Licensed Desktop User's Workstation and
    using it to "create, edit, view, print and distribute materials, **provided that
@@ -77,23 +131,33 @@ It closes the web door on three independent counts:
 3. **§4** also forbids, flatly: "**Install the Font Software on any server** or in any
    digital asset management system."
 
-`fsType 4` on all 12 faces (preview & print embedding only) is consistent with that.
+`fsType 4` on all 12 faces (preview & print embedding only) is consistent with that. The
+archive holds 12 OTFs and that one agreement — no webfont kit, no webfont EULA, no invoice.
 
-### What the 2026 order *does* unblock — this part is real value
+So: the desktop family is the right tool for Canva and the wrong tool for the theme, and
+the two must not be conflated. It does mean SD legitimately owns 400/500/600/700/750/950
+plus italics **for desktop**, retiring the old *"Bold only"* gap for design work.
 
-Desktop rights across the full family: **Figma and design work, mock-ups, print, and
-correct local rendering on any machine that installs it.** It retires the old *"Bold
-only"* gap — SD now legitimately owns 400 / 500 / 600 / 700 / 750 / 950 plus italics
-**for desktop**, so the previous note that "Optima 400 and 500 are not licensed at all"
-no longer holds for design use. It just does not extend to the web server.
+### What the pending web licence means for the theme — one weight, renewed annually
 
-### What is still needed
+**Only DemiBold (600) will be licensed for the web.** Not 400, not 500, not 700. That
+matches the live site, which serves `optimademi_bold` and nothing else, so it is a
+faithful-to-live constraint rather than a compromise — but it has two consequences the
+theme has to answer for:
 
-A **Webfont** licence for Optima. At MyFonts that is a separate licence type at checkout,
-not a re-download of a desktop order, and it delivers the **self-hosting kit** — WOFF2
-files plus the **Tracking Code**, which the webfont EULA makes mandatory on all
-non-development Websites and forbids removing. At ~5,000 pageviews a month the smallest
-tier applies. → [LS-2641](https://linear.app/lightspeedwp/issue/LS-2641)
+- **Heading weights need a decision.** `theme.json` currently asks for 700 on `h1`/`h2`,
+  600 on `h3`, and 500 on `h4`/`h5`. With a single 600 face those resolve to synthetic
+  bold (700) or to the 600 face anyway (500). Options and the recommendation are in the
+  drop-in doc.
+- 🔴 **The licence is annually renewable.** That is a recurring obligation on SD, not a
+  one-off, and **if it lapses the site silently falls back to Belleza**. It needs a diary
+  entry on SD's side and a note in the handover pack. It is also the first recurring
+  third-party cost in this build — worth recording on the Change-Control Register
+  ([LS-2033](https://linear.app/lightspeedwp/issue/LS-2033)) as an operational item, not a
+  scope change.
+
+Awaiting the kit from SD as of 2026-09-09.
+→ [LS-2641](https://linear.app/lightspeedwp/issue/LS-2641)
 
 The drop-in is prepared and is a copy-plus-one-patch job the moment the kit arrives:
 `.github/tasks/optima-webfont-kit-dropin-2026-09-09.md`.
@@ -156,21 +220,34 @@ and `woff2_compress` rejects it. It never loaded on live either.
 
 ## Delivery
 
-`joe-hand-400-normal.woff2` is **`.gitignore`d and untracked**, and reaches the server
-through the build/deploy pipeline. That is about redistribution, not doubt, and the
-accepted pageview cap does not change it: §1.5 forbids direct download and §1.6 forbids
-transfer, and a repository is a distribution channel.
+**All five faces are committed as of 2026-09-09, Joe Hand included.** Decision by Zared
+Rogers, recorded here.
 
-A fresh clone therefore carries 9 of 10 registered faces; `joe-hand-400-normal.woff2`
-arrives from the pipeline. Until it does, the `accent` family resolves to La Belle Aurore
-(bundled) and then `cursive`. Degraded, not broken.
+Joe Hand was previously `.gitignore`d on a redistribution reading of §1.5 (no direct
+download) and §1.6 (no transfer), with delivery deferred to "the build/deploy pipeline". That
+reading cost more than it protected:
 
-The `assets/fonts/optima-*.woff2` ignore pattern stays in place. It is now guarding against
-a *plausible* mistake rather than a theoretical one: 12 desktop OTFs sit in the workspace
-and `woff2_compress` is installed, so an accidental conversion is one command away — and
-that command is the §4 breach described above.
+- **There was no pipeline.** Measured 2026-09-09: the face returned **404 on dev** while all
+  three committed faces returned 200. There is no `.github/workflows/` in this repository and
+  no other written step that places an ignored file on a server. The `@font-face` rule was
+  emitted correctly the whole time — only the file was absent. Production would have failed
+  identically at launch on 2026-09-30.
+- **The exposure it guarded against is not real here.** This repository is private, access is
+  agency plus client, and Southern Destinations *is* the licence owner with LightSpeed acting
+  as its agent. §1.5 is about not offering the font as a download to the public; a private
+  repo is not that.
 
-> ⚠️ **History caveat.** Four faces were committed before being untracked, and GitHub
-> still serves the purged blobs at the pre-rewrite SHAs. See the Security section of
-> `CHANGELOG.md`. That remains true and needs a GitHub Support `gc` request or a repo
+⚠️ **This decision depends on the repo staying private.** If it is ever made public, the face
+must be removed and history rewritten first — and history is *already* not clean (see below).
+
+**Optima stays ignored**, for a different reason: there is no web-licensed file to commit yet.
+The pending licence covers *Optima DemiBold* alone and is still being purchased. Twelve
+**desktop** OTFs sit in the workspace for the client's Canva use, and converting them is the
+§4 breach described above — so `assets/fonts/optima-*.woff2` guards a plausible accident. When
+the kit arrives, the reasoning that committed Joe Hand will most likely apply to it too.
+
+> ⚠️ **History caveat.** Four faces were committed, then untracked, and GitHub still serves the
+> purged blobs at the pre-rewrite SHAs. See the Security section of `CHANGELOG.md`. Joe Hand
+> returning to the tree does not change that: the three *unlicensed* Optima conversions are
+> the ones that matter, and clearing them still needs a GitHub Support `gc` request or a repo
 > recreate before this repository could ever be public.

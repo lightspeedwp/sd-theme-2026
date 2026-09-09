@@ -912,35 +912,46 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `assets/styles/core-read-more.css` and the read-more rules in
   `assets/styles/core-group.css` are card-scoped and untouched.
 
-- **Optima: the client's second licence is desktop-only, so the `heading` stack names the
-  licensed family rather than bundling it.** `theme.json`'s `heading` preset becomes
-  `"Optima LT Pro", Optima, Belleza, sans-serif`. MyFonts order **#7491875209386**
-  (7 Sep 2026) delivered *Optima LT Pro* in 12 styles — 400/500/600/700/750/950 plus
-  italics, retiring the old "Bold only" gap — but it ships EULA id `2275`, Monotype's
-  **"Font Software For Desktop"** agreement (v250903), with no webfont kit and no webfont
-  EULA in the archive. Three clauses independently forbid self-hosting: §2 grants only
-  distribution of materials that **do not contain the Font Software embedded**; §4 forbids
+- **Optima: the `heading` stack names the licensed family; the web licence is DemiBold
+  alone.** `theme.json`'s `heading` preset becomes
+  `"Optima LT Pro", Optima, Belleza, sans-serif`. SD confirmed the shape of this by email
+  on **2026-09-07**: the 12-style *Optima LT Pro* order (#7491875209386, 7 Sep 2026) is a
+  **Desktop licence for one user, bought for Canva and other client design work** — a
+  deliberate purchase, correct for its purpose — while the **website** gets a separate
+  **Web licence for *Optima DemiBold* only, annually renewable**, still in progress.
+
+  The desktop order cannot be repurposed for the theme. Its EULA (`2275`, Monotype *Font
+  Software For Desktop* v250903) blocks web use three times over: §2 grants only
+  distribution of materials that **do not contain the Font Software embedded**; §4 bars
   Derivative Works, which §9 defines to include "binary data in any format into which Font
-  Software may be converted" — i.e. OTF → WOFF2; and §4 forbids "install the Font Software
-  on **any server**". All 12 faces are `fsType 4`.
+  Software may be converted" — i.e. OTF → WOFF2; and §4 bars "install the Font Software on
+  **any server**". All 12 faces are `fsType 4`. It does retire the old "Bold only" gap for
+  **desktop** work: SD now owns 400/500/600/700/750/950 plus italics in Figma, Canva and
+  print.
 
-  So no face is bundled, and nothing about the rendered site changes for visitors. What
-  does change is that a machine holding the family SD paid for now renders **that** cut
-  instead of Apple's system Optima — the licensed family leads the stack. Weight behaviour
-  is identical either way: Linotype splits LT Pro across four CSS families, leaving
-  `Optima LT Pro` with only 400 and 700 (Medium 500 and Black 750 under
-  `Optima LT Pro Medium`, DemiBold 600 under `Optima LT Pro DemiBold`, ExtraBlack 950 under
-  `Optima LT Pro XBlack`), so `h3` at 600 and `h4`/`h5` at 500 resolve exactly as they did
-  before. Adding the sub-families to the stack would not help — CSS takes the first family
-  with any matching face, then the nearest weight inside it. Only real `@font-face` rules
-  give the theme true 500 and 600.
+  Nothing about the rendered site changes for visitors. What changes is that a machine
+  holding the family SD paid for renders **that** cut rather than Apple's system Optima.
+  Weight behaviour is identical either way: Linotype splits LT Pro across four CSS families,
+  leaving `Optima LT Pro` with only 400 and 700 (Medium 500 and Black 750 under `Optima LT
+  Pro Medium`, DemiBold 600 under `Optima LT Pro DemiBold`, ExtraBlack 950 under `Optima LT
+  Pro XBlack`), so `h3` at 600 and `h4`/`h5` at 500 resolve exactly as before. Adding the
+  sub-families to the stack would not help — CSS takes the first family with any matching
+  face, then the nearest weight inside it.
 
-  The webfont drop-in is written and verified against the current theme —
-  `.github/tasks/optima-webfont-kit-dropin-2026-09-09.md` in the workspace: which licence
-  and weights to buy, the four filenames, the one `theme.json` patch (with the reason
-  `Optima` must lead the stack once a `fontFace` exists), where the mandatory Tracking Code
-  belongs, and how to verify it. `assets/fonts/optima-*.woff2` stays `.gitignore`d.
-  *(LS-2641)*
+  🔴 **Two obligations are new and neither is a code change.** The web licence is
+  **annually renewable**, so a lapse drops headings back to Belleza silently — it needs a
+  diary entry on SD's side and a line in the handover pack. And because only **DemiBold**
+  is licensed, `h1`/`h2` (700) and `h4`/`h5` (500) will have to come down to 600 when the
+  kit lands, or browsers will synthesise bold over the 600 outline. Live has always served
+  `optimademi_bold` alone, so uniform DemiBold headings are faithful to the design being
+  preserved — but it is a visible change and wants review before it ships.
+
+  The drop-in is written and verified against the current theme —
+  `.github/tasks/optima-webfont-kit-dropin-2026-09-09.md` in the workspace: what to check
+  on arrival, the one filename, the one `theme.json` patch (with the reason `Optima` must
+  lead the stack once a `fontFace` exists), the four heading weights, where the mandatory
+  Tracking Code belongs, and how to verify. `assets/fonts/optima-*.woff2` stays
+  `.gitignore`d. *(LS-2641)*
 
 - **Joe Hand is cleared to ship: the pageview cap is accepted, not blocking.** SD reports
   current traffic of roughly **5,000 pageviews a month** against the JOEBOB Webfont EULA's
@@ -950,8 +961,80 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   official 532-glyph webfont build was already installed; this records the decision in
   `assets/fonts/LICENCES.md`, `.gitignore` and `style.md` §3.4 so the next reader does not
   re-litigate it. §1.4 (one domain — the `.lightspeedwp.dev` dev host is **not** covered)
-  and §1.5 (no hotlinking or direct download) are unaffected by traffic and stay live, so
-  the file remains untracked and pipeline-delivered. *(LS-2642)*
+  and §1.5 (no hotlinking or direct download) are unaffected by traffic and stay live. The
+  face is now **committed** rather than pipeline-delivered — see the entry below. *(LS-2642)*
+
+- **Open Sans becomes a variable font: 7 static faces → 2, and a real 500 finally exists.**
+  `styles.blocks.core/query-pagination.elements.link` asks for `var:custom|font-weight|medium`
+  against the body family, and no 500 face was registered — so CSS matching, which searches
+  below the requested weight before above it, rendered those links at **400**. They had been
+  reading regular where they were specified medium.
+
+  There was no 500 to add. The bundled faces were the classic Ascender static release,
+  **`Version 1.10`** (`uniqueID: 1.10;1ASC;OpenSans-Regular`, 938 glyphs), and **that release
+  shipped 300/400/600/700/800 with no Medium at all** — a 500 exists only in the 2021-onward
+  variable rebuild, which is a redrawn cut. So the family moved wholesale rather than gaining a
+  mismatched face: `assets/fonts/open-sans-{300,400,600}-{normal,italic}.woff2` and
+  `open-sans-700-normal.woff2` are replaced by `open-sans-variable-normal.woff2` and
+  `open-sans-variable-italic.woff2`, built from Google's current **`Version 3.003`**
+  (`google/fonts` → `ofl/opensans`) and registered with `"fontWeight": "300 700"`. WordPress
+  emits that descriptor verbatim — verified on local, `font-weight:300 700` in the
+  `wp-fonts-local` block — so every weight the body family asks for is now a real interpolated
+  instance. The pagination link keeps `medium` and renders a true 500.
+
+  | | Before (7 statics, v1.10) | After (2 variable, v3.003) |
+  |---|---|---|
+  | Weights available | 300, 400, 600 + italics; 700 normal | **any 300–700**, normal + italic |
+  | Typical page (400 + 600 normal) | 89 KB | **61 KB** |
+  | With italics (300/400/600 + 400i) | 145 KB | **125 KB** |
+  | Whole family on disk | 319 KB | **125 KB** |
+  | Requests, two-weight page | 2 | 1 |
+
+  **The unmodified variable font would have been a 3× per-page regression** — 141 KB normal and
+  154 KB italic — so two reductions were necessary and both are recorded with a reproducible
+  recipe in `assets/fonts/LICENCES.md`: the **`wdth` axis is pinned to 100** (unused by this
+  theme, ~32 KB per file on its own), and **`wght` is clamped to 300–700 with Greek and
+  Cyrillic dropped** (883 → 532 codepoints; latin, latin-ext and Vietnamese kept). 300–700 is
+  exactly the range the body family is asked for — the theme's 200 and 900 references are on
+  the `accent` and `heading` families.
+
+  The script drop was measured, not assumed: on dev, **0 of 1,431** content rows contain
+  Cyrillic, and the only 3 Greek-range hits are a single mojibake `ϋ` (U+03CB) in three 2014
+  blog posts. Uncovered characters fall back per-glyph to the system font. A full-parity
+  rebuild costs +47 KB per file and is one flag change.
+
+  ⚠️ **The licence changed with the font, and it is a real change rather than a corrected
+  error.** Open Sans was **Apache 2.0** under Ascender; Google relicensed the 2021 rebuild to
+  **SIL OFL 1.1** (in-font name ID 13). Both are permissive and bundleable, but OFL adds the
+  reserved-font-name rule — do not rename the internal family name if these are ever re-subset.
+  `LICENCES.md`, `style.md` §3.4/§3.7 and `DESIGN.md` all updated. *(LS-2019)*
+
+- **Joe Hand is committed; the "build/deploy pipeline" that was supposed to deliver it never
+  existed.** Measured on dev, 2026-09-09: `assets/fonts/joe-hand-400-normal.woff2` returned
+  **404** while `open-sans-400-normal`, `belleza-400-normal` and `la-belle-aurore-400-normal`
+  all returned **200**. The `@font-face` rule was emitted correctly in dev's `wp-fonts-local`
+  block the whole time, so nothing was wrong with the theme — the file simply was not there.
+  The three that worked arrived with the repo; the ignored one had nothing to bring it, because
+  there is no `.github/workflows/` in this repository and no other written step that places an
+  ignored file on a server. **Production would have failed identically at launch on
+  2026-09-30.**
+
+  `assets/fonts/joe-hand-*.woff2` is removed from `.gitignore` and the face is committed. The
+  ignore rule was a redistribution reading of JOEBOB §1.5 (no direct download) and §1.6 (no
+  transfer) — but those clauses are about not offering the font for public download and not
+  transferring the licence, and a private repository whose access is agency plus client, for a
+  client who *is* the licence owner, is neither. §1.4's one-domain reading does leave
+  `southerndestinations.lightspeedwp.dev` outside strict scope; that is **accepted and
+  recorded** rather than resolved, dev being a private review host with no public audience. If
+  it ever needs resolving, JOEBOB adds the host in writing.
+
+  ⚠️ **This depends on the repository staying private.** Public means removing the face and
+  rewriting history first — and history is already not clean; see Security.
+
+  **Optima does not inherit the fix.** `assets/fonts/optima-*.woff2` stays ignored because no
+  web-licensed file exists yet, and there the pattern guards against a stray conversion of the
+  twelve desktop-licensed OTFs sitting in the workspace. Revisit when the kit arrives.
+  *(LS-2642)*
 
 - **The accommodation units band is imported from the Site Editor.** Authored on dev
   (`wp_template` 65942) on 2026-09-04 and brought into
