@@ -251,6 +251,8 @@ recognise the name if you meet it in the Site Editor.
 | **Template: Tours Archive** | The tours landing page |
 | **Template: Accommodation Archive** | The accommodation landing page |
 | **Template: Team Archive** | The team landing page — *Meet the Team* |
+| **Template: Brands Landing** | The *Brands* page — the grid of lodge-operator logos. Attached by the page's slug, so renaming the page to anything other than `brands` detaches it. |
+| **Template: Accommodation Brand Taxonomy** | A single brand's page — its story, its logo, and its accommodation. One template for all twenty-one brands. |
 | **Template: Single Team Member** | A consultant's own page |
 | **Template: Blog Landing (News)** | The news index |
 | **Template: Category** | Category archives |

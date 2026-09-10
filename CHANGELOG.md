@@ -8,6 +8,73 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🏷️ **The Brands landing and the single-brand archive.** LS-2018 (line 8, Lodge / Brand).
+  Two templates, both bound to theme files rather than to Site Editor layouts:
+  `templates/page-brands.html` (core resolves it by the page slug `brands`, dev 52337) and
+  `templates/taxonomy-accommodation-brand.html`, which replaces the generic stub that was
+  standing in for it. Their markup is `patterns/template-page-brands.php` and
+  `patterns/template-taxonomy-accommodation-brand.php`.
+
+  **The plugin side already existed and is used, not rebuilt.** LS-2528 shipped
+  `SD\Enhancements\BrandEndpoints` (the `brand/{brand}/{region}/` rewrite and the region
+  resolver), the `sd/brand-regions` tab strip and `Queries::bound_brand_archive()`;
+  `sd/term-image`'s own render.php says the brands grid "stays a theme pattern". This is
+  that grid, and the templates around it. Nothing in sd-enhancements was touched.
+
+  **The landing** is a `core/terms-query` over `accommodation-brand`, four across, with
+  `sd/term-image` as the logo — so all twenty-one brands come from the taxonomy and there is
+  no list in the theme to keep in sync. ⚠️ It reads `sd_thumbnail`, where
+  `patterns/homepage-brands.php` reads Tour Operator's `thumbnail` through
+  `core/post-featured-image`. Two pages, two meta keys; if the logos ever disagree, that is
+  why. → flagged on LS-2033, not resolved here.
+
+  **The single brand departs from live in four asked-for ways**: the filters come out of the
+  intro and into the results rail, the intro splits into the brand's story beside its logo
+  (8/4, top-aligned), the story collapses behind a Read more, and the results are
+  `patterns/card-accommodation-list.php` — the horizontal row the accommodation-type archive
+  already uses. The facet set is live's four (keyword, Destinations, Specials, Types), and
+  **Types belongs here** where the type archive deliberately dropped it: this archive is
+  scoped by brand, so the facet still has choices to offer.
+
+  **The Read more needed a script, and it is strict progressive enhancement.**
+  `core/read-more` was not available: it renders a link to a *post* permalink and there is no
+  post on a taxonomy archive, and `core/term-description` emits the whole description in one
+  dynamic block, so there is no first block to collapse to. `assets/js/intro-collapse.js`
+  measures the text **unclamped** — a clamped `-webkit-box` reports the same `scrollHeight`
+  and `clientHeight` and would always say "no overflow" — and adds `.is-enhanced` only once
+  it has confirmed the text overflows. JavaScript off, or a short description, gets the full
+  story and **no button at all**, which is also live's behaviour. ⚠️ `CLAMP_LINES` in the
+  script must stay in step with `-webkit-line-clamp` in the stylesheet; the value cannot be
+  read back reliably across browsers.
+
+  **`is-style-archive-intro` could not be reused on this block**, and the reason is the one
+  `patterns/destination-summary.php` and `patterns/template-taxonomy-accommodation-type.php`
+  both hit: the variation is registered for `core/paragraph`, whose `selectors.root` is a
+  bare `p`, so it compiles to `p.is-style-archive-intro` and can never match
+  `core/term-description`'s `<div>`. New `assets/styles/core-term-description.css` carries
+  the italic, size, leading and drop cap instead — picked up by
+  `enqueue_custom_block_styles()`' `core-*` scan, so the filename is the wiring. Adding the
+  block to that JSON's `blockTypes` was the other route and was not taken: one variation
+  compiling against two `selectors.root` values is how a shared style quietly stops matching
+  one of them.
+
+  **Two new `inc/` modules**, both following `inc/facetwp.php`: `inc/brand-regions.php`
+  enqueues `assets/styles/sd-brand-regions.css` against `sd/brand-regions` (a non-core
+  block, so outside the `core-*` scan), and `inc/intro-collapse.php` enqueues the collapse
+  script against `core/term-description` and localises its "Read less" label —
+  `core/button` saves a fixed `<a>`, so a `data-label-expanded` written into the pattern
+  would fail block validation the moment the template was opened.
+
+  ⚠️ **The region tabs are links, not `core/tabs`, and two things about them are open.**
+  WordPress 7.1 does ship `core/tabs` and it was the asked-for block; it is not used because
+  a brand's regions are derived per brand (so the panels cannot be authored into one
+  template) and because `brand/{brand}/{region}/` is, in the plugin's own words,
+  "launch-critical: it feeds the redirect map" — `core/tabs` switches panels on one URL.
+  Separately, **nothing yet narrows the query by the active region**: grepped across
+  sd-enhancements 2026-09-10, the only readers of the `endpoint` query var are the resolver
+  and the tab strip, so today every tab returns the same rows. Both are plugin work, written
+  up in `.github/tasks/brand-region-tabs-core-tabs-conversion-2026-09-10.md`.
+
 - 🔤 **Optima ships. The `heading` preset finally has a real face.** Vanessa Ratcliffe (SD)
   sent the Monotype self-hosting kit on **2026-09-10** — `docs/DS Optima DemiBold/`, MyFonts
   build 3867246 — closing the gap that has stood since 2026-08-18, when the three previously
