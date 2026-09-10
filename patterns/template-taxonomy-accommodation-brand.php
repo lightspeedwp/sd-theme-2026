@@ -433,7 +433,7 @@
 					</div>
 					<!-- /wp:group -->
 
-					<!-- wp:facetwp/facet {"facetName":"sort","facetLabel":"Sort By","facetType":"sort","hasHeader":false,"className":"sd-search-sort"} /-->
+					<!-- wp:facetwp/facet {"facetName":"sort_","facetLabel":"Sort","facetType":"sort","hasHeader":false,"className":"sd-search-sort"} /-->
 
 				</div>
 				<!-- /wp:group -->
