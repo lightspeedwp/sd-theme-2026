@@ -443,7 +443,18 @@
 				{
 					"name": "Heading",
 					"slug": "heading",
-					"fontFamily": "\"Optima LT Pro\", Optima, Belleza, sans-serif"
+					"fontFamily": "Optima, \"Optima LT Pro\", Belleza, sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Optima",
+							"fontWeight": "600",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/optima-600-normal.woff2"
+							]
+						}
+					]
 				},
 				{
 					"name": "Belleza",
@@ -1077,7 +1088,7 @@
 				"typography": {
 					"fontSize": "var:preset|font-size|700",
 					"lineHeight": "var:custom|line-height|heading",
-					"fontWeight": "var:custom|font-weight|bold",
+					"fontWeight": "var:custom|font-weight|semi-bold",
 					"letterSpacing": "var:custom|letter-spacing|heading"
 				}
 			},
@@ -1085,7 +1096,7 @@
 				"typography": {
 					"fontSize": "var:preset|font-size|500",
 					"lineHeight": "var:custom|line-height|heading",
-					"fontWeight": "var:custom|font-weight|bold",
+					"fontWeight": "var:custom|font-weight|semi-bold",
 					"letterSpacing": "var:custom|letter-spacing|heading",
 					"textTransform": "uppercase"
 				}
@@ -1102,7 +1113,7 @@
 				"typography": {
 					"fontSize": "var:preset|font-size|300",
 					"lineHeight": "var:custom|line-height|button",
-					"fontWeight": "var:custom|font-weight|medium",
+					"fontWeight": "var:custom|font-weight|semi-bold",
 					"letterSpacing": "var:custom|letter-spacing|heading"
 				}
 			},
@@ -1110,7 +1121,7 @@
 				"typography": {
 					"fontSize": "var:preset|font-size|200",
 					"lineHeight": "var:custom|line-height|button",
-					"fontWeight": "var:custom|font-weight|medium",
+					"fontWeight": "var:custom|font-weight|semi-bold",
 					"letterSpacing": "var:custom|letter-spacing|heading"
 				}
 			},

@@ -8,6 +8,87 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🔤 **Optima ships. The `heading` preset finally has a real face.** Vanessa Ratcliffe (SD)
+  sent the Monotype self-hosting kit on **2026-09-10** — `docs/DS Optima DemiBold/`, MyFonts
+  build 3867246 — closing the gap that has stood since 2026-08-18, when the three previously
+  bundled Optima faces were removed as unlicensed. Applied per the prepared drop-in,
+  `.github/tasks/optima-webfont-kit-dropin-2026-09-09.md`, taking **option A**.
+
+  **The face.** `assets/fonts/optima-600-normal.woff2`, 32 KB, the kit's `font.woff2`
+  renamed to the theme's `<family>-<weight>-<style>` convention. `fc-scan` reads it as
+  family `Optima LT Pro`, subfamily `SemiBold` / `Demi Bold`, PostScript
+  `OptimaLTPro-DemiBold`, `usWeightClass 600`, foundry `MONO` — the same cut as the licensed
+  desktop OTF, so `600` is the right number in the filename. The WOFF sibling is not
+  bundled; every other face here is WOFF2-only and has been for years.
+
+  **It is a different binary from live, and a better one.** Live serves
+  `optima-demibold_1-webfont.woff2` under the CSS family `optimademi_bold`; `fc-scan` reads
+  *that* as `Optima Demi Bold` — the Adobe Systems 1995 cut, one of the three faces removed
+  here in August for `fsType 4`. Same design, properly licensed source. Verified by
+  downloading both and comparing metadata and SHA-256, 2026-09-10.
+
+  **`theme.json` — the stack reorders, and that is not cosmetic.** `heading` becomes
+  `Optima, "Optima LT Pro", Belleza, sans-serif`, previously `"Optima LT Pro"` first.
+  `WP_Font_Face_Resolver::convert_font_face_properties()` overwrites a `fontFace`'s own
+  `fontFamily` with the **first name in its preset's stack** — the bug already documented in
+  `style.md` §3.7 — so leaving `"Optima LT Pro"` in front would have emitted
+  `@font-face{font-family:"Optima LT Pro"}` and, on a design machine with the twelve desktop
+  OTFs installed, been shadowed by a locally-installed family of that exact name carrying
+  only 400 and 700. The served family has to be named first. `"Optima LT Pro"` stays as the
+  second entry, where it still earns its place on those same machines.
+
+  **Heading weights levelled to 600 — this is a visible change on every template.** One
+  licensed weight cannot honestly serve four. `h1` and `h2` asked for 700, `h4` and `h5` for
+  500; 700 against a lone 600 face means **synthetic emboldening**, which on Optima's
+  modulated humanist strokes reads as smeared. All four are now
+  `var:custom|font-weight|semi-bold`. `h3` and `core/button` were already 600 and are
+  untouched, and **body text does not move — that is Open Sans.** Live has only ever served
+  one Optima cut, so uniform DemiBold headings are *faithful to the design being preserved*,
+  not a compromise; hierarchy is carried by size, letter-spacing and case, as it is there.
+  Option B — declaring the single file across `"fontWeight": "400 700"` — would have reached
+  the same pixels with no `theme.json` edits, and was rejected: it hides a licence-shaped
+  constraint inside a font descriptor where nobody will find it, and this constraint is
+  renewed annually. Chose the version that stays visible.
+
+  `h6` sets no weight and inherits 400. With only a 600 face registered it renders the 600
+  outline anyway — harmless, and left alone because the drop-in scoped four elements, but it
+  is now the one heading token that does not describe what is drawn.
+
+  **The drop-in scoped four elements; a sweep found ten more overrides that would have
+  reintroduced the fault.** `theme.json`'s element styles are only the floor — blocks and
+  style variations override them, and a `theme.json`-only fix would have left synthetic bold
+  on most of the site's most visible headings. Every heading-family declaration above 600 is
+  now 600:
+
+  | File | Was |
+  |---|---|
+  | `styles/blocks/heading/section-title.json` | `bold` — the live `.lsx-title`, the most repeated device in the design |
+  | `styles/blocks/heading/section-title-left.json` | `bold` |
+  | `styles/sections/cards/team-archive-card.json` → `elements/heading` | `bold` |
+  | `styles/sections/cards/team-member-card.json` → `elements/heading` | `bold` |
+  | `patterns/hero-page-banner.php` `core/post-title` | **`black`** (900) |
+  | `patterns/template-page-archive.php` `core/query-title` | **`black`** |
+  | `patterns/template-page-centered.php` `core/post-title` | **`black`** |
+  | `patterns/template-page-right-sidebar.php` `core/post-title` | **`black`** |
+  | `patterns/template-page-search.php` `core/query-title` | **`black`** |
+  | `patterns/template-page-404.php` `core/heading` ×2 + `core/button` | `black`, `bold`, `bold` |
+  | `patterns/template-single-post.php` `core/post-title`, `core/post-author-name` | `bold` |
+
+  The `black` cases were the worst of them: 900 against a 600 outline is the heaviest
+  synthetic smear a browser will draw, and five of the six page-level banner titles were
+  set that way. `core/button` inherits the heading family from `styles.elements.button`
+  (already 600), so the 404's local `bold` override was in scope too.
+
+  **Nothing else moved.** No font-family reference changed anywhere — all 62 go through
+  `var:preset|font-family|heading`, which is why the preset was built that way — and no
+  body-family weight was touched: Open Sans is a variable face registered `300 700`, so its
+  700s are real. `phpcs --standard=WordPress` clean on all seven patterns.
+
+  🟡 **Left alone, and worth a separate look:** `patterns/homepage-hero.php` sets
+  `core/heading` to **700 on the `accent` family**, where only a Joe Hand 400 face is
+  registered — so that heading is synthetically emboldened too. Different typeface,
+  different licence, not an Optima question. Flagged, not fixed.
+
 - **The accommodation single carries the breadcrumb strip.** `patterns/breadcrumbs.php`
   is required beneath the banner in `patterns/template-single-accommodation.php`, which
   is where the destination, region, country and tour singles already put it. It was the
@@ -840,6 +921,27 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **`assets/fonts/optima-*.woff2` is no longer `.gitignore`d — the licensed face is
+  committed.** The rule existed for one reason: no web-licensed file existed, so the pattern
+  guarded against someone converting the twelve desktop OTFs. The kit's arrival on
+  **2026-09-10** retired that reason. Committing it follows the Joe Hand precedent set on
+  2026-09-09 for the same reasons — Monotype's webfont transfer restrictions read much like
+  JOEBOB's, this repository is private, access is agency plus client, and the client is the
+  licence owner — with the added evidence that leaving a face ignored is exactly what made
+  Joe Hand **404 on dev** while every committed face returned 200. There is no
+  `.github/workflows/` here and no other written step that places an ignored file on a
+  server.
+
+  One thing does **not** carry over from Joe Hand: Monotype's webfont terms explicitly exempt
+  Development Websites, where JOEBOB's have no such carve-out. Optima on
+  `southerndestinations.lightspeedwp.dev` is unambiguously fine.
+
+  ⚠️ **Two standing conditions**, both recorded in `.gitignore` next to the rule: this depends
+  on the repository staying private — if it is ever made public both commercial faces come
+  out and history is rewritten first — and if the annual licence lapses the file must be
+  **removed**, not merely left in place. The twelve desktop OTFs in
+  `docs/myfonts_order_7491875209386/` stay unusable here; converting them is a §4 breach.
+
 - **The accommodation single is imported from the Site Editor, and the safari expert panel
   is part of it.** The `wp_template` override edited on dev (post 65942, modified
   2026-09-09 08:26) is folded back into the theme, with each change landing in the pattern
@@ -952,6 +1054,12 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   lead the stack once a `fontFace` exists), the four heading weights, where the mandatory
   Tracking Code belongs, and how to verify. `assets/fonts/optima-*.woff2` stays
   `.gitignore`d. *(LS-2641)*
+
+  > **Superseded 2026-09-10** — the kit arrived and was applied. The stack now leads with
+  > `Optima`, the face is registered and committed, the four heading weights came down to
+  > 600, and the ignore rule is gone. See the Optima entry under **Added**. The two
+  > obligations above survive: the licence is still annually renewable, and the Tracking
+  > Code is still owed by SD.
 
 - **Joe Hand is cleared to ship: the pageview cap is accepted, not blocking.** SD reports
   current traffic of roughly **5,000 pageviews a month** against the JOEBOB Webfont EULA's

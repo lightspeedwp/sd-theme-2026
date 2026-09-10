@@ -66,7 +66,7 @@
 		<p class="has-text-align-center has-heading-font-family has-300-font-size" style="margin-bottom:var(--wp--preset--spacing--10);font-weight:var(--wp--custom--font-weight--semi-bold);letter-spacing:var(--wp--custom--letter-spacing--wide);text-transform:uppercase"><?php esc_html_e( 'About Us', 'sd-theme-2026' ); ?></p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:post-title {"textAlign":"center","level":1,"metadata":{"name":"Page Title"},"style":{"typography":{"fontWeight":"var:custom|font-weight|black","lineHeight":"var:custom|line-height|heading","textTransform":"uppercase"}},"fontFamily":"heading","fontSize":"700"} /-->
+		<!-- wp:post-title {"textAlign":"center","level":1,"metadata":{"name":"Page Title"},"style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","lineHeight":"var:custom|line-height|heading","textTransform":"uppercase"}},"fontFamily":"heading","fontSize":"700"} /-->
 
 	</div>
 </div>

@@ -27,7 +27,7 @@ $sd_news_url = get_option( 'page_for_posts' )
 <!-- /wp:paragraph -->
 
 <!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical"}} -->
-<div class="wp-block-group alignwide"><!-- wp:post-title {"level":1,"align":"wide","style":{"typography":{"fontWeight":"var:custom|font-weight|bold","lineHeight":"var:custom|line-height|heading","textTransform":"uppercase","letterSpacing":"1px"}},"textColor":"contrast","fontSize":"600","fontFamily":"heading"} /-->
+<div class="wp-block-group alignwide"><!-- wp:post-title {"level":1,"align":"wide","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","lineHeight":"var:custom|line-height|heading","textTransform":"uppercase","letterSpacing":"1px"}},"textColor":"contrast","fontSize":"600","fontFamily":"heading"} /-->
 
 <!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}},"style":{"typography":{"fontStyle":"normal","fontWeight":"var:custom|font-weight|regular","textTransform":"uppercase"},"border":{"left":{"width":"0px","style":"none"}},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|5"}}},"textColor":"neutral-700","fontSize":"200"} /--></div>
 <!-- /wp:group -->
@@ -38,7 +38,7 @@ $sd_news_url = get_option( 'page_for_posts' )
 <div class="wp-block-group"><!-- wp:avatar {"size":60,"style":{"border":{"radius":"100px"}}} /-->
 
 <!-- wp:group {"metadata":{"name":"Author"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group"><!-- wp:post-author-name {"style":{"typography":{"fontWeight":"var:custom|font-weight|bold","lineHeight":"var:custom|line-height|snug","textTransform":"uppercase"}},"textColor":"contrast","fontSize":"200","fontFamily":"heading"} /--></div>
+<div class="wp-block-group"><!-- wp:post-author-name {"style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","lineHeight":"var:custom|line-height|snug","textTransform":"uppercase"}},"textColor":"contrast","fontSize":"200","fontFamily":"heading"} /--></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></div>

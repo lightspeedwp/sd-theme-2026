@@ -20,8 +20,9 @@ agent.
 | `belleza-400-normal` | SIL OFL 1.1 | in-font `license` / `licenseURL` |
 | `la-belle-aurore-400-normal` | SIL OFL 1.1 | in-font `license` / `licenseURL` |
 | `joe-hand-400-normal` | **JOEBOB graphics Webfont EULA 1.0** (29 Jun 2015) | `CF-13-joeHand-2_WEB/JBgfx Webfont EULA.pdf` |
+| `optima-600-normal` | **Monotype webfont licence**, DemiBold only, annually renewable | `docs/DS Optima DemiBold/` kit, MyFonts build 3867246 |
 
-Five faces, **216 KB**, all committed.
+Six faces, **236 KB**, all committed.
 
 ### Open Sans is now the variable font — and it is OFL, not Apache
 
@@ -97,7 +98,7 @@ excludes desktop installation.
 
 ---
 
-## 🟡 Optima — the web licence is DemiBold only, and it is in progress
+## Optima — cleared 2026-09-10; DemiBold only, annually renewable
 
 Confirmed by Vanessa Ratcliffe (SD) by email, **2026-09-07**:
 
@@ -113,7 +114,7 @@ should not be treated as one:
 |---|---|---|---|---|
 | **#9528082** | 24 Jul 2018 | superseded | Desktop | *Optima Bold* — Pro + Std cuts of one weight, OTF/TTF |
 | **#7491875209386** | 7 Sep 2026 | **Canva and other client design work**, 1 user | **Desktop** (EULA `2275`, Monotype *Font Software For Desktop* v250903) | *Optima LT Pro*, 12 styles, 400→950 + italics, OTF, `fsType 4` |
-| *pending* | in progress | **the website** | **Web, annually renewable** | *Optima DemiBold* — **one weight** |
+| *kit received 2026-09-10* | — | **the website** | **Web, annually renewable** | *Optima LT Pro DemiBold* — **one weight**, WOFF2 + WOFF |
 
 ### The desktop order is for Canva, not for the theme — and it cannot be repurposed
 
@@ -138,29 +139,40 @@ So: the desktop family is the right tool for Canva and the wrong tool for the th
 the two must not be conflated. It does mean SD legitimately owns 400/500/600/700/750/950
 plus italics **for desktop**, retiring the old *"Bold only"* gap for design work.
 
-### What the pending web licence means for the theme — one weight, renewed annually
+### What the web licence means for the theme — one weight, renewed annually
 
-**Only DemiBold (600) will be licensed for the web.** Not 400, not 500, not 700. That
-matches the live site, which serves `optimademi_bold` and nothing else, so it is a
-faithful-to-live constraint rather than a compromise — but it has two consequences the
-theme has to answer for:
+**Only DemiBold (600) is licensed for the web.** Not 400, not 500, not 700. That matches
+the live site, which serves an Optima Demi Bold and nothing else, so it is a
+faithful-to-live constraint rather than a compromise — but it had two consequences the
+theme has now answered for:
 
-- **Heading weights need a decision.** `theme.json` currently asks for 700 on `h1`/`h2`,
-  600 on `h3`, and 500 on `h4`/`h5`. With a single 600 face those resolve to synthetic
-  bold (700) or to the 600 face anyway (500). Options and the recommendation are in the
-  drop-in doc.
+- **Heading weights were levelled to 600.** `theme.json` previously asked for 700 on
+  `h1`/`h2`, 600 on `h3`, and 500 on `h4`/`h5`. A single 600 face cannot serve those
+  honestly — 700 would be synthetically emboldened, which on Optima's modulated humanist
+  strokes reads as smeared. `h1`, `h2`, `h4` and `h5` are now
+  `var:custom|font-weight|semi-bold`, so **no synthetic weight is produced anywhere** and
+  the weight tokens tell the truth about what is served. Heading hierarchy is carried by
+  size, letter-spacing and case, as it is on live. (`h6` sets no weight and inherits 400;
+  with only a 600 face registered it renders the 600 outline. Harmless, but it is the one
+  remaining token that does not describe what is drawn.)
 - 🔴 **The licence is annually renewable.** That is a recurring obligation on SD, not a
-  one-off, and **if it lapses the site silently falls back to Belleza**. It needs a diary
-  entry on SD's side and a note in the handover pack. It is also the first recurring
-  third-party cost in this build — worth recording on the Change-Control Register
+  one-off, and **if it lapses the face must be removed and headings fall back to Belleza**.
+  It needs a diary entry on SD's side and a note in the handover pack. It is also the first
+  recurring third-party cost in this build — worth recording on the Change-Control Register
   ([LS-2033](https://linear.app/lightspeedwp/issue/LS-2033)) as an operational item, not a
   scope change.
 
-Awaiting the kit from SD as of 2026-09-09.
+Kit received from SD **2026-09-10** and applied the same day, following
+`.github/tasks/optima-webfont-kit-dropin-2026-09-09.md` → option A.
 → [LS-2641](https://linear.app/lightspeedwp/issue/LS-2641)
 
-The drop-in is prepared and is a copy-plus-one-patch job the moment the kit arrives:
-`.github/tasks/optima-webfont-kit-dropin-2026-09-09.md`.
+🟡 **Two licence artefacts did not arrive with the kit and are still outstanding:** the
+*webfont* EULA itself (only the desktop EULA `2275` is in the workspace) and the **Tracking
+Code** that Monotype's webfont terms require on non-development sites. The kit is also
+stamped `MyFonts Webfont Build ID 3867246, 2020-12-16` — a 2020 build, which does not match
+a September 2026 purchase and may mean an older kit was forwarded. **Ask SD for the webfont
+order confirmation, its EULA, the Tracking Code snippet and the pageview tier** before
+production launch. None of this blocks dev.
 
 ### Family naming is fragmented — read this before hand-writing any Optima CSS
 
@@ -180,20 +192,31 @@ Adding the sub-families to a CSS stack does **not** recover 500 or 600: CSS reso
 first family in the list that has *any* matching face, then picks the nearest weight within
 it. Only real `@font-face` rules — i.e. the webfont kit — give the theme true 500 and 600.
 
-### What the theme does instead
+### What the theme does
 
-`theme.json` registers **no Optima face**. The `heading` stack *names* it —
-`"Optima LT Pro", Optima, Belleza, sans-serif` — so a machine with the licensed family
-installed renders the licensed cut, a machine with only Apple's system Optima renders
-that, and everyone else resolves to **Belleza**, which is registered as a real face for
-exactly this reason. The design degrades rather than breaks.
+`theme.json` registers **one real Optima face** on the `heading` preset:
 
-`"Optima LT Pro"` leads the stack as of 2026-09-09: now that SD owns the family for
-desktop, their own staff and the design machines render the cut they paid for rather than
-Apple's. Rendering is unchanged for every visitor who does not have it installed, and for
-macOS visitors the two cuts are the same design. Weight behaviour is unchanged too — both
-families carry Regular and Bold only, so `h3` (600) and `h4`/`h5` (500) resolve exactly as
-they did before.
+| | |
+|---|---|
+| File | `assets/fonts/optima-600-normal.woff2` (32 KB) |
+| Source | `docs/DS Optima DemiBold/font.woff2`, renamed to the theme's convention |
+| In-font identity | family `Optima LT Pro`, subfamily `SemiBold` / `Demi Bold`, PostScript `OptimaLTPro-DemiBold`, `usWeightClass 600`, foundry `MONO` |
+| Registered as | `@font-face { font-family: Optima; font-weight: 600; font-display: swap }` |
+| Stack | `Optima, "Optima LT Pro", Belleza, sans-serif` |
+
+**`Optima` leads the stack deliberately.** WordPress overwrites a `fontFace`'s
+`fontFamily` with the first name in its preset's stack, so leaving `"Optima LT Pro"` first
+would rename the `@font-face` rule to `Optima LT Pro` — where, on a macOS design machine
+with the desktop OTFs installed, it would be shadowed by a locally-installed family of the
+same name that carries only 400 and 700. The served family therefore has to be named
+first, and `"Optima LT Pro"` demotes to a fallback, which is still useful: the design
+machines have it. Belleza remains the real registered fallback, so a lapsed licence or a
+404 degrades rather than breaks. → `style.md` §3.7
+
+**This is the same design as live, but a different and better cut.** Live serves a face
+whose internal name is `Optima Demi Bold` (Adobe Systems, 1995) under the CSS family
+`optimademi_bold`; the licensed kit is Monotype's `OptimaLTPro-DemiBold`. Verified by
+`fc-scan` on both files, 2026-09-10 — they are not the same binary.
 
 Substituting a permanent heading face is a **Change-Control Register** item, per the
 decision recorded on 2026-08-12.
@@ -240,11 +263,26 @@ reading cost more than it protected:
 ⚠️ **This decision depends on the repo staying private.** If it is ever made public, the face
 must be removed and history rewritten first — and history is *already* not clean (see below).
 
-**Optima stays ignored**, for a different reason: there is no web-licensed file to commit yet.
-The pending licence covers *Optima DemiBold* alone and is still being purchased. Twelve
-**desktop** OTFs sit in the workspace for the client's Canva use, and converting them is the
-§4 breach described above — so `assets/fonts/optima-*.woff2` guards a plausible accident. When
-the kit arrives, the reasoning that committed Joe Hand will most likely apply to it too.
+**Optima is now committed too**, as of 2026-09-10, on exactly that reasoning. The
+`assets/fonts/optima-*.woff2` ignore rule has been removed: it existed because no
+web-licensed file existed, and the kit's arrival retired that reason. Monotype's webfont
+transfer restrictions read much like JOEBOB's, and the same answer applies — private repo,
+agency-plus-client access, the client is the licence owner — with the added evidence that
+ignoring a face is precisely what made Joe Hand 404 on dev.
+
+One thing does **not** carry over from Joe Hand: Monotype's webfont terms explicitly exempt
+Development Websites, where JOEBOB's have no such carve-out. Serving Optima on
+`southerndestinations.lightspeedwp.dev` is therefore unambiguously fine, and the Tracking
+Code should be suppressed there once it is supplied.
+
+The twelve **desktop** OTFs in `docs/myfonts_order_7491875209386/` remain unusable here:
+converting them is the §4 breach described above. Never convert them — the licensed WOFF2
+already ships.
+
+⚠️ **Both commercial faces now depend on the repo staying private**, and Optima adds a second
+condition: **if the annual licence lapses, the file must be removed**, not merely left in
+place. A deploy check of `curl -I` on both font URLs belongs on the release checklist — that
+one check would have caught the Joe Hand gap on day one.
 
 > ⚠️ **History caveat.** Four faces were committed, then untracked, and GitHub still serves the
 > purged blobs at the pre-rewrite SHAs. See the Security section of `CHANGELOG.md`. Joe Hand

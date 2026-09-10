@@ -36,15 +36,23 @@ wp-config.php
 # ⚠️ That decision depends on the repo staying private. If it is ever made public, this face
 # must come out and history must be rewritten first. See CHANGELOG.md → Security.
 #
-# Optima is still ignored, and for a different reason: no web-licensed file exists yet. The
-# web licence covers *Optima DemiBold* alone and is still being purchased (SD, 2026-09-07).
-# Twelve DESKTOP OTFs sit in the workspace for the client's Canva use, and their EULA forbids
-# server installation and defines OTF→WOFF2 conversion as a Derivative Work — so this pattern
-# guards a plausible accident, not a theoretical one. Revisit it when the kit arrives; the
-# same reasoning that committed Joe Hand will probably apply. → LS-2641
+# Optima IS committed, as of 2026-09-10, on exactly the reasoning above. SD's web licence
+# covers *Optima DemiBold* alone (annually renewable) and the kit arrived that day; the
+# single face it licenses ships as assets/fonts/optima-600-normal.woff2. The Monotype
+# webfont EULA's transfer restrictions read like JOEBOB's, and the same answer applies —
+# private repo, agency + client access, the client is the licence owner — with the added
+# point that ignoring it is what made Joe Hand 404 on dev. → LS-2641
+#
+# ⚠️ Same condition as Joe Hand: this depends on the repo staying private. If it is ever made
+# public, this face must come out and history must be rewritten first.
+#
+# ⚠️ The licence is ANNUALLY RENEWABLE. If it lapses the file must be removed, not merely
+# left in place — headings then fall back to Belleza. Diarised on SD's side; noted on LS-2033.
+#
+# The twelve DESKTOP OTFs in docs/ remain unusable here: that EULA forbids server
+# installation and defines OTF→WOFF2 conversion as a Derivative Work. Never convert them.
 #
 # The OFL/Apache faces (Open Sans, Belleza, La Belle Aurore) are committed and safe to ship.
-assets/fonts/optima-*.woff2
 
 # Test artefacts
 tests/**/test-results/
