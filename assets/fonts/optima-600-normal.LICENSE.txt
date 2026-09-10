@@ -1,0 +1,30 @@
+Licence notice for optima-600-normal.woff2
+==========================================
+
+Reproduced verbatim from the MyFonts self-hosting kit supplied by Southern
+Destinations on 2026-09-10 (`docs/DS Optima DemiBold/MyWebfontsKit.css`). This
+is the notice the kit requires be carried with the font; it is also printed
+into every page's <head> by `font_licence_notice()` in functions.php.
+
+Do not edit the text between the markers. It is the licence, not documentation.
+
+--- BEGIN VERBATIM NOTICE ---
+/**
+ * @license
+ * MyFonts Webfont Build ID 3867246, 2020-12-16T11:57:38-0500
+ * 
+ * The fonts listed in this notice are subject to the End User License
+ * Agreement(s) entered into by the website owner. All other parties are 
+ * explicitly restricted from using the Licensed Webfonts(s).
+ * 
+ * You may obtain a valid license at the URLs below.
+ * 
+ * Webfont: Optima Pro Demi Bold by Zapf Alphabets
+ * URL: https://www.myfonts.com/collections/zapf-alphabets-foundry
+ 
+ * © 2026 MyFonts Inc. */
+--- END VERBATIM NOTICE ---
+
+Licence owner: Southern Destinations. LightSpeed acts as its agent.
+Web licence covers Optima DemiBold only, and is ANNUALLY RENEWABLE.
+Register and full reasoning: LICENCES.md in this directory.

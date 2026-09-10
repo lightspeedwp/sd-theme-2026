@@ -166,13 +166,37 @@ Kit received from SD **2026-09-10** and applied the same day, following
 `.github/tasks/optima-webfont-kit-dropin-2026-09-09.md` → option A.
 → [LS-2641](https://linear.app/lightspeedwp/issue/LS-2641)
 
-🟡 **Two licence artefacts did not arrive with the kit and are still outstanding:** the
-*webfont* EULA itself (only the desktop EULA `2275` is in the workspace) and the **Tracking
-Code** that Monotype's webfont terms require on non-development sites. The kit is also
-stamped `MyFonts Webfont Build ID 3867246, 2020-12-16` — a 2020 build, which does not match
-a September 2026 purchase and may mean an older kit was forwarded. **Ask SD for the webfont
-order confirmation, its EULA, the Tracking Code snippet and the pageview tier** before
-production launch. None of this blocks dev.
+### The kit's licence obligation is a notice, not a tracking script
+
+Reading `StartHere.html` in full settled a question the drop-in doc had left open. This is a
+**MyFonts self-hosting kit**, and its instructions are three steps: upload the kit, link
+`MyWebfontsKit.css` from the `<head>` of every page, assign the family in CSS. **There is no
+Tracking Code, counter script or beacon anywhere in it** — that belongs to Monotype's
+*hosted* web-font service, which this is not. Nothing is owed on that front and nothing is
+waiting to be installed.
+
+What the kit *does* carry is an `@license` block, and the instruction that it travel in the
+`<head>`. Two places now reproduce it verbatim:
+
+| Where | What |
+|---|---|
+| `functions.php` → `font_licence_notice()` on `wp_head` (priority 1) | Prints the notice into every page, byte-identical to the kit |
+| `assets/fonts/optima-600-normal.LICENSE.txt` | The same text, sitting beside the font it covers |
+
+**`MyWebfontsKit.css` itself is deliberately not shipped or enqueued.** It is the kit's way
+of getting an `@font-face` and the notice onto a page at once, and this theme already has the
+`@font-face` from `theme.json`. Linking it as well would fetch the same file a second time
+under a second family name — `OptimaProDemiBold`, which nothing here references — and its
+relative `webFonts/OptimaProDemiBold/…` paths do not exist in this theme, so it would 404 on
+top. The obligation is the notice; the notice is served. The pristine kit stays in
+`docs/DS Optima DemiBold/` as the licence artefact.
+
+🟡 **Still genuinely outstanding, and all of it sits with SD:** the *webfont* EULA itself
+(only the desktop EULA `2275` is in the workspace), the invoice, and the pageview tier. The
+kit is also stamped `MyFonts Webfont Build ID 3867246, 2020-12-16` — a 2020 build, which does
+not match a September 2026 purchase and may mean an older kit was forwarded. **Ask SD for the
+webfont order confirmation, its EULA and the pageview tier** before production launch. None
+of it blocks dev.
 
 ### Family naming is fragmented — read this before hand-writing any Optima CSS
 

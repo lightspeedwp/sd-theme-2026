@@ -198,6 +198,46 @@ add_action( 'wp_head', __NAMESPACE__ . '\is_paginated' );
 
 
 /**
+ * Print the MyFonts licence notice for the bundled Optima face.
+ *
+ * The self-hosting kit for Optima Pro Demi Bold ships an `@license` block and
+ * asks that it appear in the `head` of every page that serves the font. The
+ * kit's own instructions deliver that by linking its `MyWebfontsKit.css`; this
+ * theme cannot, because `theme.json` already registers the face and WordPress
+ * emits the `@font-face` rule itself. Linking the kit stylesheet as well would
+ * load the same file a second time under a second family name
+ * (`OptimaProDemiBold`) that nothing here references, and its relative
+ * `webFonts/…` paths do not exist in this theme. So the notice is printed
+ * directly instead — same obligation, no duplicate download.
+ *
+ * The text is reproduced verbatim and must not be edited or minified. The same
+ * notice is kept beside the font as `assets/fonts/optima-600-normal.LICENSE.txt`.
+ *
+ * This is design-layer, not business logic: the obligation exists only because
+ * this theme serves that font file. Deactivate the theme and it goes with it.
+ */
+function font_licence_notice() {
+	echo "<!--\n",
+		"/**\n",
+		" * @license\n",
+		" * MyFonts Webfont Build ID 3867246, 2020-12-16T11:57:38-0500\n",
+		" *\n",
+		" * The fonts listed in this notice are subject to the End User License\n",
+		" * Agreement(s) entered into by the website owner. All other parties are\n",
+		" * explicitly restricted from using the Licensed Webfonts(s).\n",
+		" *\n",
+		" * You may obtain a valid license at the URLs below.\n",
+		" *\n",
+		" * Webfont: Optima Pro Demi Bold by Zapf Alphabets\n",
+		" * URL: https://www.myfonts.com/collections/zapf-alphabets-foundry\n",
+		" *\n",
+		" * \u{00A9} 2026 MyFonts Inc. */\n",
+		"-->\n";
+}
+add_action( 'wp_head', __NAMESPACE__ . '\font_licence_notice', 1 );
+
+
+/**
  * Add a Sidebar template part area.
  *
  * @param array $areas Registered template part areas.

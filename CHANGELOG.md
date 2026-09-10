@@ -84,6 +84,35 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   body-family weight was touched: Open Sans is a variable face registered `300 700`, so its
   700s are real. `phpcs --standard=WordPress` clean on all seven patterns.
 
+  **The kit's licence notice is served on `wp_head`, and there is no Tracking Code to
+  install.** Reading the kit's `StartHere.html` in full corrected an assumption the drop-in
+  doc carried: this is a MyFonts **self-hosting** kit, and its instructions are three steps —
+  upload the kit, link `MyWebfontsKit.css` from the `<head>` of every page, assign the family
+  in CSS. **No tracking script, counter or beacon appears anywhere in it.** Those belong to
+  Monotype's *hosted* web-font service, which this is not. So §3 of the drop-in is void,
+  nothing is owed on that front, and nothing goes into `sd-enhancements`.
+
+  The real obligation is the `@license` block, and the instruction that it travel in the
+  `<head>`. `font_licence_notice()` in `functions.php` prints it on `wp_head` at **priority
+  1**, ahead of the stylesheet link, reproducing the kit's text **byte for byte** — verified
+  by diffing the emitted markup against `MyWebfontsKit.css`. A second copy sits beside the
+  font it covers as `assets/fonts/optima-600-normal.LICENSE.txt`, so the licence cannot be
+  separated from the file by a careless copy.
+
+  **`MyWebfontsKit.css` is deliberately neither shipped nor enqueued**, which is the one
+  place this departs from the kit's literal instructions and does so on purpose. That
+  stylesheet exists to put an `@font-face` *and* the notice on a page together;
+  `theme.json` already supplies the `@font-face`. Linking it as well would fetch the same
+  32 KB a second time under a second family name — `OptimaProDemiBold`, which nothing in this
+  theme references — and its relative `webFonts/OptimaProDemiBold/…` paths do not exist here,
+  so it would 404 on top of the duplication. Same obligation discharged, no dead stylesheet
+  and no wasted request. The pristine kit stays in `docs/DS Optima DemiBold/`.
+
+  **It stays in the theme, not the plugin.** The notice is owed *because this theme serves
+  that font file*; deactivate the theme and both the file and the obligation go with it. That
+  is the deactivation test answering "theme", and it is the same reason the face itself lives
+  in `assets/fonts/`. `php -l` and `phpcs --standard=WordPress` clean.
+
   🟡 **Left alone, and worth a separate look:** `patterns/homepage-hero.php` sets
   `core/heading` to **700 on the `accent` family**, where only a Joe Hand 400 face is
   registered — so that heading is synthetically emboldened too. Different typeface,

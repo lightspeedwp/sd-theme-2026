@@ -211,7 +211,7 @@ Client licences supplied **2026-08-18** (`docs/SD Fonts & Licenses/`) and **2026
 | Face | Licence | Status |
 |---|---|---|
 | **Joe Hand** | JOEBOB graphics **Webfont** EULA 1.0 | ✅ **Cleared.** Cap accepted 2026-09-09 — but the file **404s on dev**, see below |
-| **Optima** | Desktop: #9528082 (2018) + #7491875209386 (2026, 12 styles, **for Canva**). Web: *Optima DemiBold*, one weight, **annually renewable** | ✅ **Cleared 2026-09-10** — kit received, `optima-600-normal.woff2` bundled and committed. 🟡 Webfont EULA + Tracking Code still outstanding |
+| **Optima** | Desktop: #9528082 (2018) + #7491875209386 (2026, 12 styles, **for Canva**). Web: *Optima DemiBold*, one weight, **annually renewable** | ✅ **Cleared 2026-09-10** — kit received, `optima-600-normal.woff2` bundled and committed, licence notice served on `wp_head`. 🟡 Webfont EULA + pageview tier still outstanding |
 | Open Sans | ✅ SIL OFL 1.1 (variable, v3.003 — relicensed from Apache 2.0 in 2021) | Clear |
 | Belleza | ✅ SIL OFL 1.1 | Clear |
 | La Belle Aurore | ✅ SIL OFL 1.1 | Clear |
@@ -268,14 +268,24 @@ file, one `theme.json` patch, four heading weights. The kit's WOFF2 is genuine M
 desktop OTF and a *different, cleaner* binary than the Adobe-1995 conversion live serves —
 both verified by `fc-scan`.
 
-🟡 **Still outstanding, and none of it blocks dev:** the kit shipped **without the webfont
-EULA** (only the desktop EULA `2275` is in the workspace) and **without the Tracking Code**
-that Monotype's webfont terms require on non-development sites. Its build stamp also reads
-`MyFonts Webfont Build ID 3867246, 2020-12-16` — a 2020 build, which does not match a
-September 2026 purchase. **Ask SD for the webfont order confirmation, its EULA, the Tracking
-Code snippet and the pageview tier** before production launch. When the Tracking Code
-arrives it belongs in **`sd-enhancements`** on `wp_head`, gated to
-`wp_get_environment_type() === 'production'` — it is a third-party obligation, not styling.
+**The licence obligation is a notice, and it is served.** `StartHere.html` describes a
+**self-hosting** kit: upload it, link `MyWebfontsKit.css` from the `<head>` of every page,
+assign the family. **No Tracking Code, counter or beacon exists in this kit** — those belong
+to Monotype's *hosted* service. The `@license` block is the whole obligation, and
+`font_licence_notice()` in `functions.php` prints it verbatim on `wp_head` at priority 1,
+with a copy beside the font at `assets/fonts/optima-600-normal.LICENSE.txt`.
+
+`MyWebfontsKit.css` is **not** shipped or enqueued: `theme.json` already emits the
+`@font-face`, so linking the kit stylesheet would double-fetch the file under a second,
+unreferenced family name (`OptimaProDemiBold`) whose relative `webFonts/…` paths 404 in this
+theme. The notice is design-layer, not business logic — the obligation exists only because
+this theme serves the file — so it stays in `functions.php` rather than `sd-enhancements`.
+
+🟡 **Still outstanding, none of it blocking dev:** the kit shipped **without the webfont
+EULA** (only the desktop EULA `2275` is in the workspace), without the invoice, and without a
+stated pageview tier. Its build stamp also reads `MyFonts Webfont Build ID 3867246,
+2020-12-16` — a 2020 build, which does not match a September 2026 purchase. **Ask SD for the
+webfont order confirmation, its EULA and the pageview tier** before production launch.
 → LS-2641
 
 #### Joe Hand 404'd on dev — fixed 2026-09-09 by committing the face
