@@ -19,7 +19,7 @@
 <main class="wp-block-group alignfull" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
 
 	<!-- wp:heading {"textAlign":"center","level":1,"fontFamily":"heading","fontSize":"800","textColor":"brand-500","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","lineHeight":"var:custom|line-height|heading","textTransform":"uppercase"},"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
-	<h1 class="wp-block-heading has-text-align-center has-brand-500-color has-text-color has-heading-font-family has-800-font-size" style="margin-top:0;margin-bottom:0;font-weight:var(--wp--custom--font-weight--black);line-height:var(--wp--custom--line-height--heading);text-transform:uppercase">404</h1>
+	<h1 class="wp-block-heading has-text-align-center has-brand-500-color has-text-color has-heading-font-family has-800-font-size" style="margin-top:0;margin-bottom:0;font-weight:var(--wp--custom--font-weight--semi-bold);line-height:var(--wp--custom--line-height--heading);text-transform:uppercase">404</h1>
 	<!-- /wp:heading -->
 
 	<!-- wp:heading {"textAlign":"center","level":2,"fontFamily":"heading","fontSize":"500","textColor":"contrast","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","textTransform":"uppercase"},"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
