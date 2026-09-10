@@ -1,4 +1,4 @@
-/* FacetWP facets — the search filter bar
+/* FacetWP facets — the search filter rail
    ---------------------------------------------
    Attached to `facetwp/facet` by inc/facetwp.php, so it prints only on the
    templates that render a facet.
@@ -16,28 +16,82 @@
      - `:hover` / `:focus-visible` flips        → the css field strips them
      - `::before` checkbox and chevron glyphs   → any rule with `content:` is
                                                   dropped whole
-     - the `@media` collapse to a stacked bar   → the query is unwrapped and its
-                                                  rules promoted to
-                                                  unconditional ones
+     - the `:has()` / `:not()` structural gates → the css field's sanitiser has
+                                                  no reliable handling for them
 
    So the whole file is authored CSS by necessity, which is the arrangement
    inc/README.md names FacetWP for explicitly.
 
-   ## The dropdown contract
+   ## What live looks like, measured
 
-   `.sd-search-filters` is the theme's wrapper, set on the filter bar in
-   patterns/template-taxonomy-accommodation-type.php. assets/js/search-filters.js
-   adds `.sd-filters-collapsible` to it once it runs, marks every facet block
-   that has a heading with `.sd-facet-dropdown`, and toggles `.sd-filter-open`.
-   Everything below the "dropdown behaviour" heading is gated on those classes,
-   so with no JS the facets render as plain open lists.
+   The design reference is live's **FacetWP search page**, not a term archive:
+   `/search/accommodation/africa's+finest/`, measured in Chrome at 1440 on
+   2026-09-10. Live has no term-archive results page — every accommodation
+   listing on the site is that one search template with a different query
+   string, and giving the taxonomy its own results page is a change this rebuild
+   makes. So the *styling* comes from the search page and the *template* does
+   not.
 
-   ⚠️ **Never set `display` on `.facet-wrap`.** When a facet has no choices left
-   for the current result set, `facetwp-blocks-beta/assets/js/front.js` adds
-   `.facetwp-hidden` to the *block wrapper*, and the plugin's front.css hides it
-   with `.facetwp-hidden{display:none}` — a single class at (0,1,0). Any author
+   | Element                | Live                                        | Token here |
+   |------------------------|---------------------------------------------|------------|
+   | Facet plate            | `#F7F5F2`, 15px 12px, 3px apart, radius 0   | `neutral-200`, `spacing|20`, `blockGap: spacing|5` |
+   | "Refine by"            | `#ECE9E3` plate, 22px, uppercase            | `neutral-200`, `400`, the `h2` element's own uppercase |
+   | Facet heading          | 22px `#60483B`, sentence case, margin 0     | `400`, `neutral-700` |
+   | Chevron                | FontAwesome 15px `#C1BDB4`, hover `#f7ae00` | masked SVG, `neutral-400` → `accent-500` |
+   | Heading ↔ list gap     | 20px                                        | `spacing|20` |
+   | Choice                 | Open Sans 15px/24px `#4C5250`, 5px apart    | `200`, `line-height|body`, `neutral-700`, `spacing|5` |
+   | Choice glyph           | `square-o` 18px, `check-square` when checked| masked SVG box, brand-500 fill when checked |
+   | Count                  | `(42)` inline, same size and colour         | inline, `neutral-500` |
+   | Keyword box            | white, 1px `#E4E4E4`, radius 0, 50px, 25px below | `base`, `neutral-300`, `border-radius|0`, `spacing|30` below |
+
+   `#60483B` (headings) and `#4C5250` (body copy) both map to `neutral-700` —
+   style.md §2.2 settles that, and records why: the two are close enough in
+   weight that live reads as one colour. `#ECE9E3` and `#F7F5F2` likewise both
+   land on `neutral-200`, so live's four-percent step between the "Refine by"
+   plate and the facet plates is not reproduced; the `h2`'s uppercase is what
+   separates them here.
+
+   ## The fold contract
+
+   `.sd-search-filters` is the theme's wrapper, set on the filter rail in
+   patterns/template-taxonomy-accommodation-type.php and
+   patterns/template-taxonomy-accommodation-brand.php.
+   assets/js/search-filters.js adds `.sd-filters-collapsible` to it once it
+   runs, marks every facet block that has a heading with `.sd-facet-fold`, and
+   toggles `.sd-filter-open`. Everything below the "fold behaviour" heading is
+   gated on those classes, so with no JS the facets render as plain open lists
+   inside their plates.
+
+   **The panel folds in flow — it does not overlay.** Opening a facet pushes the
+   facets below it down the rail, which is what live does (Bootstrap `.collapse`
+   on `#collapse-<facet>`) and what `kwv-theme-2026` does on its shop filters.
+   An earlier revision of this file opened the panel as an absolutely-positioned
+   dropdown over the results; that was a design decision, not a port, and it was
+   reverted on 2026-09-10 in favour of live's behaviour. Three things follow
+   from the fold and are deliberate:
+
+     - **more than one facet may be open at once** — nothing overlaps, so there
+       is no reason to close a sibling;
+     - **an outside click does not close anything**, and neither does Escape —
+       both only exist to get out from under an overlay;
+     - **the first facet opens on load**, as live's `lsx-search.js` force-opens
+       its first `.collapse`.
+
+   The fold itself is a grid row-collapse rather than `display: none`, because
+   the panel has to keep its width while shut: noUiSlider computes handle
+   positions from the rendered width and lands them all at zero if it
+   initialises inside a box that has none. `minmax(0, 0fr)` — not a bare `0fr`,
+   which floors at the content's own height.
+
+   ⚠️ **`display: grid` on `.facet-wrap` must stay gated on
+   `:not(.facetwp-hidden)`.** When a facet has no choices left for the current
+   result set, `facetwp-blocks-beta/assets/js/front.js` adds `.facetwp-hidden`
+   to the *block wrapper*, and the plugin's front.css hides it with
+   `.facetwp-hidden{display:none}` — a single class at (0,1,0). Any author
    `display` on `.facet-wrap` outranks it and would resurface the empty facet as
-   a live-looking control over nothing. The same trap is recorded on
+   a live-looking control over nothing. Excluding the hidden wrappers from the
+   match, rather than re-asserting `display: none` at a higher specificity,
+   keeps this independent of rule ordering. The same trap is recorded on
    kwv-theme-2026's shop-filter sheet, where WooCommerce's `[hidden]` does it.
 --------------------------------------------- */
 
@@ -46,10 +100,8 @@
    ============================================ */
 
 /* FacetWP ships `.facetwp-facet{margin-bottom:40px}`. The rail's rhythm is the
-   `blockGap` on the pattern's column instead, per the theme's spacing contract —
-   the parent owns the gap and its children carry no margin. Left in place it
-   also stacked 40px under a panel that is absolutely positioned and therefore
-   out of flow, which put a phantom gap between every control. */
+   `blockGap` on the pattern's group instead, per the theme's spacing contract —
+   the parent owns the gap and its children carry no margin. */
 .sd-search-filters .facetwp-facet {
 	margin-bottom: 0;
 }
@@ -58,112 +110,163 @@
 	min-width: 0;   /* let a long facet label shrink rather than stretch the rail */
 }
 
-/* ============================================
-   The control — a facet heading styled as a select box
+/* "Refine by" — live's `h3.facetwp-filter-title`, a plate of its own leading
+   the stack. `margin: 0` because the rail's `blockGap` owns the 3px gap to the
+   first facet; the uppercase comes from theme.json's `h2` element. */
+.sd-search-filters > .wp-block-heading {
+	margin: 0;
+	padding: var(--wp--preset--spacing--20);
+	background-color: var(--wp--preset--color--neutral-200);
+	color: var(--wp--preset--color--neutral-700);
+}
 
-   Not gated on the collapsible class: without JS this still reads as the
-   facet's label, just without the chevron and the click target.
+/* The facet plate. Every facet that carries a heading gets one — which is
+   exactly the set that folds, and the test works without JS. The keyword box
+   and the selection chips have no heading and so stay unplated, as they are on
+   live. */
+.sd-search-filters .facet-wrap:has( > .wp-block-heading ) {
+	padding: var(--wp--preset--spacing--20);
+	background-color: var(--wp--preset--color--neutral-200);
+}
+
+/* Live sets 25px under the keyword box, where the rest of the rail is 3px
+   apart. The facet block wrapper is what carries it, not the input. */
+.sd-search-filters .facet-wrap:has( > .facetwp-type-search ) {
+	margin-block-end: var(--wp--preset--spacing--30);
+}
+
+/* ============================================
+   The control — the facet heading
+
+   Not gated on the collapsible class: without JS this is still the facet's
+   label, just without the chevron and the click target.
    ============================================ */
 
-.sd-search-filters .sd-facet-dropdown > .wp-block-heading {
+.sd-search-filters .facet-wrap:has( > .wp-block-heading ) > .wp-block-heading {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--wp--preset--spacing--10);
 	width: 100%;
 	margin: 0;
-	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
-	background-color: var(--wp--preset--color--base);
 	color: var(--wp--preset--color--neutral-700);
-	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-400);
-	border-radius: var(--wp--preset--border-radius--100);
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--200);
-	font-weight: var(--wp--custom--font-weight--semi-bold);
-	line-height: var(--wp--custom--line-height--button);
 
-	/* theme.json uppercases every heading; a facet name reads better cased —
-	   the same correction kwv-theme-2026 makes on its filter headings. */
+	/* theme.json uppercases `h2`; a facet name reads better cased, and the
+	   headings in the rail are `h3` — this holds the intent if one is ever
+	   promoted. The same correction kwv-theme-2026 makes on its filter
+	   headings. */
 	text-transform: none;
 	letter-spacing: var(--wp--custom--letter-spacing--none);
+}
+
+.sd-filters-collapsible .sd-facet-fold > .wp-block-heading {
 	cursor: pointer;
 	user-select: none;
-	transition: border-color 0.25s ease, color 0.25s ease;
 }
 
-.sd-search-filters .sd-facet-dropdown > .wp-block-heading:hover,
-.sd-search-filters .sd-facet-dropdown.sd-filter-open > .wp-block-heading {
-	border-color: var(--wp--preset--color--brand-500);
-	color: var(--wp--preset--color--brand-600);
-}
-
-.sd-search-filters .sd-facet-dropdown > .wp-block-heading:focus-visible {
+.sd-search-filters .sd-facet-fold > .wp-block-heading:focus-visible {
 	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-500);
 	outline-offset: 2px;
 }
 
 /* The chevron. A masked pseudo-element rather than a border triangle so it
-   tints with `currentColor` and rotates cleanly on open. */
-.sd-search-filters .sd-facet-dropdown > .wp-block-heading::after {
+   tints with a token and rotates cleanly on open. Live tints only the chevron
+   on hover and leaves the heading alone; that is followed.
+
+   ⚠️ The box is much larger than the mark it draws. The path spans y 6.6→16.5
+   of a 24-unit viewBox, so the visible chevron is ~41% of the box height: at
+   `2rem` the box is 32px and the mark reads about 13 × 23px, which also fills
+   the 32.4px heading row exactly. Sized up from `0.7em` and darkened from
+   `neutral-400` to `neutral-700` — the heading's own colour — on 2026-09-10,
+   because at live's weight it was too faint to read as a control. Live's is a
+   15px `#C1BDB4` FontAwesome glyph; this is the one place the rail is
+   deliberately stronger than live, since live's own chevron sits on a plate
+   that also has a pointer-cursor button around it and this one does not.
+
+   ⚠️ **`rem`, not `em`, and the sort control below must match.** The two
+   chevrons sit in different type contexts — this heading is `400` (24px), the
+   sort's `<select>` wrapper inherits the body `300` (19.2px) — so the same
+   `em` value resolved to 33.6px here and 26.9px there. Measured on dev
+   2026-09-10. Keep both at `2rem`. */
+.sd-filters-collapsible .sd-facet-fold > .wp-block-heading::after {
 	content: "";
 	flex: none;
-	inline-size: 0.7em;
-	block-size: 0.7em;
-	background-color: currentColor;
-	transition: transform 0.25s ease;
+	inline-size: 2rem;
+	block-size: 2rem;
+	background-color: var(--wp--preset--color--neutral-700);
+	transition: transform 0.25s ease, background-color 0.25s ease;
 	-webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%2016.5%203.5%208l1.4-1.4L12%2013.7l7.1-7.1L20.5%208z'/%3E%3C/svg%3E") center / contain no-repeat;
 	mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%2016.5%203.5%208l1.4-1.4L12%2013.7l7.1-7.1L20.5%208z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
-.sd-search-filters .sd-facet-dropdown.sd-filter-open > .wp-block-heading::after {
+.sd-filters-collapsible .sd-facet-fold > .wp-block-heading:hover::after,
+.sd-filters-collapsible .sd-facet-fold > .wp-block-heading:focus-visible::after {
+	background-color: var(--wp--preset--color--brand-600);
+}
+
+.sd-filters-collapsible .sd-facet-fold.sd-filter-open > .wp-block-heading::after {
 	transform: rotate(180deg);
 }
 
 /* ============================================
-   Dropdown behaviour — JS present only
+   Fold behaviour — JS present only
+
+   The panel slides on `max-block-size`. The heading stays in normal flow and
+   is not part of anything that animates, which is the whole point.
+
+   ## Why not the grid row-collapse
+
+   It was `display: grid` + `grid-template-rows: auto minmax(0, 1fr)` →
+   `minmax(0, 0fr)`, the device kwv-theme-2026 uses. **It bounced the heading.**
+   Measured on dev at 1440 on 2026-09-10, sampling `getBoundingClientRect()`
+   every frame across a real click on the "Specials" control: the heading's own
+   box went 32.39 → 34.69 → 42.44 → **44.06** → 40.86 → 37.27 → 34.48 → 32.86 →
+   32.39px, an **11.9px swing** over 8 frames, and the two tracks converged
+   toward each other mid-flight (37.20 / 37.75) before snapping back. That is
+   Chrome interpolating the *whole* track list: it cannot interpolate `auto`, so
+   the heading's track is treated as flexible for the duration and takes a share
+   of a container height that is itself mid-transition. With the heading
+   vertically centred in that box, the title visibly rides up and down.
+
+   The same measurement on this rule set returns a swing of **0.00px** across 32
+   frames, with the panel still animating to its full height. It only reproduces
+   through a real click, not a programmatic `classList.add` — so if this is ever
+   revisited, drive it from a click.
+
+   ⚠️ Because nothing here sets `display` on `.facet-wrap` any more, the
+   `:not(.facetwp-hidden)` guard the grid version needed is gone. **Do not
+   reintroduce a `display` on `.facet-wrap`** without it — the note at the head
+   of the file explains what it costs.
    ============================================ */
 
-.sd-filters-collapsible .sd-facet-dropdown {
-	position: relative;
+/* The panel. `overflow: hidden` is what clips the fold, and it keeps the box
+   full-width while shut, which noUiSlider needs: it computes handle positions
+   from the rendered width and lands them all at zero if it initialises in a box
+   that has none.
+
+   No padding here. With `border-box` sizing a `max-block-size: 0` box still
+   renders its padding, which would leave a sliver under every closed heading —
+   so live's 20px heading-to-list gap is a margin on the panel's first child
+   instead, where this `overflow` clips it away. */
+.sd-filters-collapsible .sd-facet-fold > .facetwp-facet {
+	overflow: hidden;
+	max-block-size: 0;
+	transition: max-block-size 0.25s ease;
 }
 
-/* The panel. Absolute, so opening a facet covers the results rather than
-   pushing them down the page — the difference between a dropdown and the fold
-   kwv-theme-2026 uses in its sidebar.
-
-   `z-index: 30` sits above the result cards and below the sticky header, which
-   style.css:214 puts at 100. */
-.sd-filters-collapsible .sd-facet-dropdown > .facetwp-facet {
-	position: absolute;
-	z-index: 30;
-	inset-inline-start: 0;
-	inset-block-start: calc(100% + var(--wp--preset--spacing--5));
-	min-inline-size: 100%;
-	max-inline-size: min(22rem, 90vw);
-	max-block-size: 20rem;
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	padding: var(--wp--preset--spacing--20);
-	background-color: var(--wp--preset--color--base);
-	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-400);
-	border-radius: var(--wp--preset--border-radius--100);
-	box-shadow: var(--wp--preset--shadow--200);
+.sd-filters-collapsible .sd-facet-fold.sd-filter-open > .facetwp-facet {
+	/* ⚠️ A cap, not a height — `max-block-size: none` is not animatable from 0.
+	   The panel renders at `min(content, cap)`, so a short list opens quickly
+	   and only the closing edge of a tall one uses the full 0.25s. `100vh` is
+	   far above any facet list this page can produce: the facets carry FacetWP's
+	   soft limit, so a long taxonomy collapses behind "See N more" rather than
+	   running on. A list that did exceed the cap would be clipped silently, so
+	   raise the cap rather than removing the soft limit. */
+	max-block-size: 100vh;
 }
 
-/* Closed. `visibility` rather than `display` keeps the panel measurable, which
-   the price slider needs — noUiSlider computes handle positions from the
-   rendered width and lands them all at zero if it initialises inside a
-   `display:none` box. */
-.sd-filters-collapsible .sd-facet-dropdown:not(.sd-filter-open) > .facetwp-facet {
-	visibility: hidden;
-	opacity: 0;
-	pointer-events: none;
-}
-
-.sd-filters-collapsible .sd-facet-dropdown.sd-filter-open > .facetwp-facet {
-	visibility: visible;
-	opacity: 1;
-	pointer-events: auto;
+.sd-filters-collapsible .sd-facet-fold > .facetwp-facet > :first-child {
+	margin-block-start: var(--wp--preset--spacing--20);
 }
 
 /* ============================================
@@ -179,7 +282,6 @@
 	align-items: flex-start;
 	gap: var(--wp--preset--spacing--10);
 	margin-bottom: 0;
-	padding: var(--wp--preset--spacing--5) 0;
 	padding-left: 0;   /* clears front.css's 20px runway for the PNG */
 	background: none;  /* drops the PNG itself */
 	color: var(--wp--preset--color--neutral-700);
@@ -188,10 +290,18 @@
 	transition: color 0.25s ease;
 }
 
+/* Live's 5px between choices, as a sibling margin rather than per-row padding —
+   which keeps each row at live's 24px and the rhythm off the first and last. */
+.sd-search-filters .facetwp-checkbox + .facetwp-checkbox {
+	margin-block-start: var(--wp--preset--spacing--5);
+}
+
+/* ⚠️ No colour or weight change on the checked row. Live marks a checked choice
+   by its glyph alone; an earlier revision here also flipped the label to
+   brand-600 semi-bold, which read as a second kind of emphasis. Only the PNG is
+   dropped. */
 .sd-search-filters .facetwp-checkbox.checked {
-	background-image: none;   /* and the checked PNG */
-	color: var(--wp--preset--color--brand-600);
-	font-weight: var(--wp--custom--font-weight--semi-bold);
+	background-image: none;
 }
 
 .sd-search-filters .facetwp-checkbox:not(.disabled):hover {
@@ -223,10 +333,10 @@
    The mask SVG is a single `fill-rule="evenodd"` path: an opaque 24×24 square
    with the checkmark as a second closed subpath, which evenodd turns into a
    hole. So the mask hides the tick and shows everything else, and the box's
-   brand-500 ground reads as a brand tile with the panel's white showing
-   through the tick. A plain two-path mask would be opaque everywhere and do
-   nothing at all. If the mask is ever unsupported the box degrades to a solid
-   brand-500 tile, which still reads as checked. */
+   brand-500 ground reads as a brand tile with the plate's tint showing through
+   the tick. A plain two-path mask would be opaque everywhere and do nothing at
+   all. If the mask is ever unsupported the box degrades to a solid brand-500
+   tile, which still reads as checked. */
 .sd-search-filters .facetwp-checkbox.checked::before {
 	background-color: var(--wp--preset--color--brand-500);
 	border-color: var(--wp--preset--color--brand-500);
@@ -238,11 +348,11 @@
 	padding-right: 0;   /* the flex gap owns the spacing now */
 }
 
-/* The result count beside each choice. */
+/* The result count beside each choice. Live writes it inline, straight after
+   the term name — `Botswana (42)` — not ranged right, so no `auto` margin. The
+   parentheses are the facet's own count format, not content added here. */
 .sd-search-filters .facetwp-counter {
-	margin-inline-start: auto;
 	color: var(--wp--preset--color--neutral-500);
-	font-size: var(--wp--preset--font-size--100);
 	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
 }
@@ -288,9 +398,29 @@
    The keyword search facet
 
    `search_accommodation` is a `search` facet running SearchWP's
-   `swp_accommodation_engine`. It is authored without a heading, so it is never
-   a dropdown — it sits open in the bar as the leading control.
+   `swp_accommodation_engine`. It is authored without a heading, so it never
+   folds — it sits open at the head of the rail as the leading control, on the
+   section's own ground rather than a plate, as it is on live.
    ============================================ */
+
+/* The field's own metrics, named once. The submit button is a square the height
+   of the field, so its width *and* the input's trailing clearance both derive
+   from the same three numbers — the input's line box, its vertical padding and
+   its borders. Naming it here rather than writing two lengths keeps them from
+   drifting: change the input's padding or size below and the button follows.
+
+   ⚠️ Not a spacing token. `spacing|50` was the input's `padding-right` until
+   2026-09-10 and it was wrong for this job: the spacing scale is a viewport
+   clamp (33px → 50px) while the button's width tracks the field's height, which
+   barely moves. At 390px the clamp gave 33px against a ~44px button, so the
+   keyword text ran under it. */
+.sd-search-filters .facetwp-type-search {
+	--sd-search-button-size: calc(
+		var(--wp--preset--font-size--200) * var(--wp--custom--line-height--button)
+		+ var(--wp--preset--spacing--10) * 2
+		+ var(--wp--custom--border-width--100) * 2
+	);
+}
 
 .sd-search-filters .facetwp-type-search .facetwp-input-wrap {
 	display: block;
@@ -299,13 +429,13 @@
 
 .sd-search-filters .facetwp-facet input.facetwp-search {
 	width: 100%;
-	min-width: 0;   /* clears front.css's 240px floor so the bar can shrink */
+	min-width: 0;   /* clears front.css's 240px floor so the rail can shrink */
 	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
-	padding-right: var(--wp--preset--spacing--50);
+	padding-inline-end: calc( var(--sd-search-button-size) + var(--wp--preset--spacing--10) );
 	background-color: var(--wp--preset--color--base);
 	color: var(--wp--preset--color--neutral-700);
-	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-400);
-	border-radius: var(--wp--preset--border-radius--100);
+	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-300);
+	border-radius: var(--wp--preset--border-radius--0);
 	font-family: var(--wp--preset--font-family--body);
 	font-size: var(--wp--preset--font-size--200);
 	line-height: var(--wp--custom--line-height--button);
@@ -314,6 +444,85 @@
 .sd-search-filters .facetwp-facet input.facetwp-search:focus-visible {
 	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-500);
 	outline-offset: 2px;
+}
+
+/* The submit affordance — FacetWP's `<i class="facetwp-icon">`, drawn as a
+   brand button on the trailing edge of the field.
+
+   ## What is being overridden, and by whom
+
+   Three sheets already style this element and they load in this order:
+
+     1. `facetwp/assets/css/front.css` — `.facetwp-icon` absolute, `right: 0`,
+        `height: 100%`, `opacity: .5`, and a `::before` 30px wide carrying
+        `images/icon-search.png` at `background-size: 20px 20px`.
+     2. `tour-operator/build/style.css` — **Tour Operator 2.2 ships FacetWP
+        styling of its own**: `.facetwp-icon{background:#a29f9f;padding:0 4px}`
+        with `:hover{background-color:#4f4f4f}`. That grey pill is what was on
+        the page before this rule.
+     3. this file.
+
+   TO's selectors are single-class (0,1,0) and these are (0,2,0), so the
+   override needs no `!important` — unlike the sort control below, where TO
+   carries one. → `.claude/skills/wp-thirdparty-markup-styling`
+
+   ## The three glyph states
+
+   FacetWP swaps the PNG on `::before` by adding `.f-reset` (a cross, once the
+   field has a query) or `.f-loading` (a spinner, mid-refresh) to the icon. The
+   PNG is a raw asset in the plugin's grey that no token can reach, so all three
+   are redrawn as masks here — a masked glyph inherits `background-color` and so
+   takes `base` against the brand ground. Leaving any state unmasked would show
+   the plugin's grey PNG on a brand-600 tile.
+
+   ⚠️ **This is a mouse affordance, not a second control.** FacetWP renders an
+   `<i>` with a click handler — not a `<button>` — so it is not focusable and
+   cannot be reached by keyboard. That is acceptable here only because the facet
+   filters on Enter in the field itself (its `auto_refresh` is off), so the
+   keyboard path is complete without it. If FacetWP ever stops binding Enter,
+   this needs a real button, which is plugin work rather than a style. */
+.sd-search-filters .facetwp-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	inset-inline-end: 0;
+
+	/* `block-size: 100%` comes from the plugin, and `--sd-search-button-size` is
+	   the field's own height computed from the same tokens the input uses — so
+	   the button is square without either number being written twice. */
+	inline-size: var(--sd-search-button-size);
+	padding: 0;
+	background-color: var(--wp--preset--color--brand-600);
+	opacity: 1;   /* clears front.css's 0.5 */
+	transition: background-color 0.25s ease;
+}
+
+.sd-search-filters .facetwp-icon:hover {
+	background-color: var(--wp--preset--color--brand-700);
+}
+
+.sd-search-filters .facetwp-icon::before {
+	content: "";
+	display: block;
+	inline-size: 1.15rem;
+	block-size: 1.15rem;
+	background: none;   /* drops icon-search.png */
+	background-color: var(--wp--preset--color--base);
+	-webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M15.5%2014h-.8l-.3-.3a6.5%206.5%200%201%200-.7.7l.3.3v.8l5%205%201.5-1.5-5-5zm-6%200a4.5%204.5%200%201%201%200-9%204.5%204.5%200%200%201%200%209z'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M15.5%2014h-.8l-.3-.3a6.5%206.5%200%201%200-.7.7l.3.3v.8l5%205%201.5-1.5-5-5zm-6%200a4.5%204.5%200%201%201%200-9%204.5%204.5%200%200%201%200%209z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.sd-search-filters .facetwp-icon.f-reset::before {
+	-webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M18.3%207.1%2016.9%205.7%2012%2010.6%207.1%205.7%205.7%207.1l4.9%204.9-4.9%204.9%201.4%201.4%204.9-4.9%204.9%204.9%201.4-1.4-4.9-4.9z'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M18.3%207.1%2016.9%205.7%2012%2010.6%207.1%205.7%205.7%207.1l4.9%204.9-4.9%204.9%201.4%201.4%204.9-4.9%204.9%204.9%201.4-1.4-4.9-4.9z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* `animation: spin 700ms infinite linear` is FacetWP's own, set on this same
+   pseudo-element, so the arc below inherits the rotation and only the mark has
+   to be replaced. */
+.sd-search-filters .facetwp-icon.f-loading::before {
+	-webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%202a10%2010%200%201%200%2010%2010h-2.5A7.5%207.5%200%201%201%2012%204.5z'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%202a10%2010%200%201%200%2010%2010h-2.5A7.5%207.5%200%201%201%2012%204.5z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 /* ============================================
@@ -368,11 +577,32 @@
 /* ============================================
    Selected-filter chips
 
-   The `user_selections` facet, authored below the bar. FacetWP renders a
-   `<ul class="facetwp-selections">` of one `<li>` per facet, each holding the
-   facet's label and a `.facetwp-selection-value` per active choice, with the
-   plugin's own close icon as a background image.
+   The `user_selections` facet, authored at the foot of the rail. FacetWP
+   renders a `<ul class="facetwp-selections">` of one `<li>` per facet, each
+   holding the facet's label and a `.facetwp-selection-value` per active choice,
+   with the plugin's own close icon as a background image.
+
+   Live renders none of this — `.facetwp-selections` is absent from the
+   delivered HTML before and after filtering — so the chips are additive, and
+   the pattern says why. They sit off the plate stack, so they take their own
+   margin rather than the rail's 3px `blockGap`.
    ============================================ */
+
+/* Scoped through the rail rather than set on `.sd-search-selections` alone:
+   core's `blockGap` compiles to `.wp-container-‹hash› > *{margin-block-start}`
+   at (0,1,0), so a single-class rule here would be decided by source order.
+   (0,2,0) wins in both environments. → AGENTS.md, "blockGap is the exception". */
+.sd-search-filters .sd-search-selections {
+	margin-block-start: var(--wp--preset--spacing--20);
+}
+
+/* Tour Operator 2.2's `build/style.css` caps this at `.facetwp-selections
+   {max-width:27%}` — sized for a full-width toolbar, not for a 25% rail, where
+   it leaves each chip about 70px to wrap inside. (0,2,0) against TO's (0,1,0),
+   so specificity settles it. */
+.sd-search-selections .facetwp-selections {
+	max-width: none;
+}
 
 .sd-search-selections .facetwp-selections {
 	display: flex;
@@ -471,41 +701,99 @@
 	line-height: var(--wp--custom--line-height--heading);
 }
 
-/* The sort control. The Sort *facet* renders a bare `<select>` with no class at
-   all (`facetwp/includes/facets/sort.php:34`) — the `.facetwp-sort-select` class
-   on live comes from the sort *extra*, a different code path — so this targets
-   the element. Given the same box as the facet controls so the two read as one
-   system. `appearance: none` plus a chevron, because a UA-drawn select arrow
-   cannot be tokenised. */
-.sd-search-sort select {
+/* The sort control.
+
+   The Sort *facet* renders a bare `<select>` with no class at all
+   (`facetwp/includes/facets/sort.php:34`) — the `.facetwp-sort-select` class on
+   live comes from the sort *extra*, a different code path — so this targets the
+   element. Given the same box as the rail's controls so the two read as one
+   system.
+
+   ## Why every declaration here is scoped through `.facetwp-facet`
+
+   **Tour Operator 2.2 ships its own FacetWP styling** in
+   `tour-operator/build/style.css`, and `.facetwp-facet select` is the heaviest
+   rule in it: `appearance: none`, a `background` *shorthand* carrying a
+   hard-coded `fill='black'` chevron, `border-radius: 4px`, `cursor: default`,
+   `padding: 12px 22px 12px 12px`, and `border: 1px solid #757575 !important`.
+   Measured on dev 2026-09-10: at (0,2,0) it ties with a bare
+   `.sd-search-sort select`, and TO's sheet loads *after* this block style, so
+   **source order handed TO the whole control** — the select was rendering in
+   black Open Sans at 19.2px with a grey 4px-radius box and a black arrow, none
+   of it token-derived. (TO's own `font-family` and `font-size` there reference
+   `--wp--preset--font-family--primary` and `--wp--preset--font-size--x-small`,
+   neither of which exists in this theme, so those two declarations resolved to
+   nothing and the select simply inherited.)
+
+   Adding `.facetwp-facet` to the selector puts these at (0,3,0), which wins on
+   specificity rather than on load order. The **border is the one exception**:
+   `!important` beats any specificity, so the resting border and its hover
+   partner have to answer with `!important` of their own. Those two declarations
+   are the only ones in this file that carry it.
+   → `.claude/skills/wp-thirdparty-markup-styling`
+
+   The chevron is the rail's, not a `background-image`: TO sets `background` as
+   a shorthand, so an author `background-image` on the select is a fight over
+   one longhand of a property TO rewrites wholesale. It is drawn as a masked
+   `::after` on the facet wrapper instead — the same SVG, size and token as the
+   facet headings above, which is what makes the two controls read as one
+   family. `pointer-events: none` so the select still takes the click.
+   ============================================ */
+
+.sd-search-sort .facetwp-facet {
+	position: relative;
+	display: inline-block;
+}
+
+.sd-search-sort .facetwp-facet select {
 	appearance: none;
+	inline-size: 100%;
+	min-inline-size: 10rem;   /* live's 160px */
 	max-inline-size: 100%;
 	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
-	padding-right: var(--wp--preset--spacing--50);
+	padding-right: var(--wp--preset--spacing--60);
+	background: none;   /* drops TO's shorthand, chevron and all */
 	background-color: var(--wp--preset--color--base);
-	background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%2016.5%203.5%208l1.4-1.4L12%2013.7l7.1-7.1L20.5%208z'/%3E%3C/svg%3E");
-	background-repeat: no-repeat;
-	background-position: right var(--wp--preset--spacing--20) center;
-	background-size: 0.7em 0.7em;
 	color: var(--wp--preset--color--neutral-700);
-	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-400);
-	border-radius: var(--wp--preset--border-radius--100);
-	font-family: var(--wp--preset--font-family--heading);
+	border-radius: var(--wp--preset--border-radius--0);
+	font-family: var(--wp--preset--font-family--body);
 	font-size: var(--wp--preset--font-size--200);
-	font-weight: var(--wp--custom--font-weight--semi-bold);
+	font-weight: var(--wp--custom--font-weight--regular);
 	line-height: var(--wp--custom--line-height--button);
 	cursor: pointer;
-	transition: border-color 0.25s ease, color 0.25s ease;
+	transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+
+	/* The only `!important` in this file, and it is answering one. See above. */
+	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-400) !important;
 }
 
-.sd-search-sort select:hover {
-	border-color: var(--wp--preset--color--brand-500);
-	color: var(--wp--preset--color--brand-600);
+/* Live's `.styledSelect:hover` tints the ground rather than the text. */
+.sd-search-sort .facetwp-facet select:hover {
+	background-color: var(--wp--preset--color--neutral-200);
+	border-color: var(--wp--preset--color--brand-500) !important;
 }
 
-.sd-search-sort select:focus-visible {
+.sd-search-sort .facetwp-facet select:focus-visible {
 	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-500);
 	outline-offset: 2px;
+}
+
+.sd-search-sort .facetwp-facet::after {
+	content: "";
+	position: absolute;
+	inset-inline-end: var(--wp--preset--spacing--20);
+	inset-block-start: 50%;
+
+	/* `2rem`, matching the facet headings' chevron exactly. Not `em`: this
+	   wrapper inherits the body `300` where the headings are `400`, so an `em`
+	   value would draw two different chevrons. */
+	inline-size: 2rem;
+	block-size: 2rem;
+	transform: translateY(-50%);
+	background-color: var(--wp--preset--color--neutral-700);
+	pointer-events: none;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%2016.5%203.5%208l1.4-1.4L12%2013.7l7.1-7.1L20.5%208z'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%2016.5%203.5%208l1.4-1.4L12%2013.7l7.1-7.1L20.5%208z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 /* ============================================
@@ -562,29 +850,4 @@
 
 .sd-search-pager .facetwp-page.dots {
 	border-color: transparent;
-}
-
-/* ============================================
-   Narrow viewports
-
-   Core stacks `core/columns` on its own at 781px, so the rail becomes a
-   full-width block above the results with no media query of ours. The one thing
-   that does have to change is the panel: at full width there is no neighbouring
-   results column left for it to overlay, so it stops being capped at 22rem and
-   is allowed to run taller instead.
-
-   Live diverges here and is not followed: below 768px it moves the whole
-   sidebar into an off-canvas drawer behind a "Filters" button, with Apply and
-   Close controls, and sets `FWP.auto_refresh = false` so nothing filters until
-   Apply is pressed (`lsx-search.js`, `mobile_filters()`). That is a second
-   interaction model and a bespoke mobile design — explicitly outside scope —
-   so the dropdowns simply stack.
-   ============================================ */
-
-@media (max-width: 781px) {
-
-	.sd-filters-collapsible .sd-facet-dropdown > .facetwp-facet {
-		max-inline-size: 100%;
-		max-block-size: 60vh;
-	}
 }

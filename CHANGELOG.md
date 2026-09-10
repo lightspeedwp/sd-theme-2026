@@ -8,6 +8,73 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🏷️ **The Brands landing and the single-brand archive.** LS-2018 (line 8, Lodge / Brand).
+  Two templates, both bound to theme files rather than to Site Editor layouts:
+  `templates/page-brands.html` (core resolves it by the page slug `brands`, dev 52337) and
+  `templates/taxonomy-accommodation-brand.html`, which replaces the generic stub that was
+  standing in for it. Their markup is `patterns/template-page-brands.php` and
+  `patterns/template-taxonomy-accommodation-brand.php`.
+
+  **The plugin side already existed and is used, not rebuilt.** LS-2528 shipped
+  `SD\Enhancements\BrandEndpoints` (the `brand/{brand}/{region}/` rewrite and the region
+  resolver), the `sd/brand-regions` tab strip and `Queries::bound_brand_archive()`;
+  `sd/term-image`'s own render.php says the brands grid "stays a theme pattern". This is
+  that grid, and the templates around it. Nothing in sd-enhancements was touched.
+
+  **The landing** is a `core/terms-query` over `accommodation-brand`, four across, with
+  `sd/term-image` as the logo — so all twenty-one brands come from the taxonomy and there is
+  no list in the theme to keep in sync. ⚠️ It reads `sd_thumbnail`, where
+  `patterns/homepage-brands.php` reads Tour Operator's `thumbnail` through
+  `core/post-featured-image`. Two pages, two meta keys; if the logos ever disagree, that is
+  why. → flagged on LS-2033, not resolved here.
+
+  **The single brand departs from live in four asked-for ways**: the filters come out of the
+  intro and into the results rail, the intro splits into the brand's story beside its logo
+  (8/4, top-aligned), the story collapses behind a Read more, and the results are
+  `patterns/card-accommodation-list.php` — the horizontal row the accommodation-type archive
+  already uses. The facet set is live's four (keyword, Destinations, Specials, Types), and
+  **Types belongs here** where the type archive deliberately dropped it: this archive is
+  scoped by brand, so the facet still has choices to offer.
+
+  **The Read more needed a script, and it is strict progressive enhancement.**
+  `core/read-more` was not available: it renders a link to a *post* permalink and there is no
+  post on a taxonomy archive, and `core/term-description` emits the whole description in one
+  dynamic block, so there is no first block to collapse to. `assets/js/intro-collapse.js`
+  measures the text **unclamped** — a clamped `-webkit-box` reports the same `scrollHeight`
+  and `clientHeight` and would always say "no overflow" — and adds `.is-enhanced` only once
+  it has confirmed the text overflows. JavaScript off, or a short description, gets the full
+  story and **no button at all**, which is also live's behaviour. ⚠️ `CLAMP_LINES` in the
+  script must stay in step with `-webkit-line-clamp` in the stylesheet; the value cannot be
+  read back reliably across browsers.
+
+  **`is-style-archive-intro` could not be reused on this block**, and the reason is the one
+  `patterns/destination-summary.php` and `patterns/template-taxonomy-accommodation-type.php`
+  both hit: the variation is registered for `core/paragraph`, whose `selectors.root` is a
+  bare `p`, so it compiles to `p.is-style-archive-intro` and can never match
+  `core/term-description`'s `<div>`. New `assets/styles/core-term-description.css` carries
+  the italic, size, leading and drop cap instead — picked up by
+  `enqueue_custom_block_styles()`' `core-*` scan, so the filename is the wiring. Adding the
+  block to that JSON's `blockTypes` was the other route and was not taken: one variation
+  compiling against two `selectors.root` values is how a shared style quietly stops matching
+  one of them.
+
+  **Two new `inc/` modules**, both following `inc/facetwp.php`: `inc/brand-regions.php`
+  enqueues `assets/styles/sd-brand-regions.css` against `sd/brand-regions` (a non-core
+  block, so outside the `core-*` scan), and `inc/intro-collapse.php` enqueues the collapse
+  script against `core/term-description` and localises its "Read less" label —
+  `core/button` saves a fixed `<a>`, so a `data-label-expanded` written into the pattern
+  would fail block validation the moment the template was opened.
+
+  ⚠️ **The region tabs are links, not `core/tabs`, and two things about them are open.**
+  WordPress 7.1 does ship `core/tabs` and it was the asked-for block; it is not used because
+  a brand's regions are derived per brand (so the panels cannot be authored into one
+  template) and because `brand/{brand}/{region}/` is, in the plugin's own words,
+  "launch-critical: it feeds the redirect map" — `core/tabs` switches panels on one URL.
+  Separately, **nothing yet narrows the query by the active region**: grepped across
+  sd-enhancements 2026-09-10, the only readers of the `endpoint` query var are the resolver
+  and the tab strip, so today every tab returns the same rows. Both are plugin work, written
+  up in `.github/tasks/brand-region-tabs-core-tabs-conversion-2026-09-10.md`.
+
 - 🔤 **Optima ships. The `heading` preset finally has a real face.** Vanessa Ratcliffe (SD)
   sent the Monotype self-hosting kit on **2026-09-10** — `docs/DS Optima DemiBold/`, MyFonts
   build 3867246 — closing the gap that has stood since 2026-08-18, when the three previously
@@ -949,6 +1016,231 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are under Fixed below. *(LS-2019, item 9)*
 
 ### Changed
+
+- 🎨 **The brand ramp turns red below 600 instead of going back to brown.** LS-2018.
+  `theme.json`: `brand-700` `#624411` → **`#9E451E`**, `brand-800` `#32240B` →
+  **`#531608`**, `brand-900` `#040301` → **`#0F0000`**.
+
+  `brand-600` was changed to `#BC5B18` earlier in the build — a redder, lighter step than
+  the `#9B6111` it replaced. The three below it were still on the old trajectory, and in
+  OKLCH the ramp's hue was **reversing**: 100→600 rotates cleanly 84.6° → 81.4° → 78.2° →
+  71.8° → 66.5° → 49.2°, then 700–900 turned back up to 76.1° → 79.5° → 90.9° while chroma
+  collapsed from 0.145 to 0.012. A hue heading back toward yellow with no chroma left is the
+  definition of brown, which is what the dark end read as.
+
+  The new values continue the rotation toward red and hold near pure red's hue rather than
+  overshooting into magenta — 42° → 34° → 29° (sRGB red is 29.2° in OKLCH) — at 85% of the
+  in-gamut chroma for each lightness. Lightness is respaced to the theme's **own hover
+  step**: `brand-500` → `brand-600` is 8.3 OKLCH points, and `brand-600` → `brand-700` is now
+  8.0, where it was 17.0. That matters because `brand-700` is the search button's hover
+  against a `brand-600` rest, and a 17-point drop read as a different button rather than the
+  same one hovered.
+
+  **Contrast checked, not assumed.** `brand-700` is 6.32:1 on `base` and 5.81:1 on
+  `neutral-200` (AA at both), against 8.92:1 before — it is used as link-hover text on
+  `styles/sections/cards/blog-card.json` and as the facet toggle's hover in the rail, and
+  both still pass. `brand-800` and `brand-900` are referenced nowhere but `theme.json`.
+
+  ⚠️ **Figma is now behind on three values.** DESIGN.md makes the Design System file
+  authoritative for `theme.json` variables, and this is a hand-edit against that — as the
+  `brand-600` change before it was. The ramp needs pushing back into Figma, and style.md §2.2
+  reads `brand-700` as a brown; neither is updated here.
+
+- 🔧 **Tour Operator 2.2 ships FacetWP styling of its own, and it was winning.** LS-2018.
+  Found while styling the sort control: `tour-operator/build/style.css` carries
+  `.facetwp-facet select`, `.facetwp-icon`, `.facetwp-facet input.facetwp-search`,
+  `.facetwp-selections` and `button.facetwp-reset`. Measured on dev 2026-09-10 — the sheet
+  loads **after** the theme's `facetwp-facets.css`, so at equal specificity source order
+  handed TO the control.
+
+  The sort select was the visible casualty: black text in the body font at 19.2px, a grey
+  4px-radius box, `cursor: default`, and a hard-coded `fill='black'` chevron, none of it
+  token-derived. (TO's own `font-family` and `font-size` there point at
+  `--wp--preset--font-family--primary` and `--wp--preset--font-size--x-small`, which this
+  theme does not define, so those two resolved to nothing and the select inherited.) Every
+  rule in the theme's sort and search sections is now scoped through `.facetwp-facet`, which
+  wins at (0,2,1) on specificity rather than on load order. **`border` is the exception** —
+  TO sets it `!important`, and `!important` beats any specificity, so the resting border and
+  its hover partner answer with `!important` of their own. Those two are the only
+  `!important` declarations in the file. TO's `.facetwp-selections{max-width:27%}` is also
+  overridden: sized for a full-width toolbar, it left each chip ~70px in a 25% rail.
+  → `.claude/skills/wp-thirdparty-markup-styling`
+
+- 🔍 **Second pass on the facet rail: the fold no longer bounces, and the search and sort are
+  styled.** LS-2018. `assets/styles/facetwp-facets.css`,
+  `styles/blocks/heading/script-accent.json`, and the rail markup in both taxonomy patterns.
+
+  **The fold bounced the heading, and the grid row-collapse was why.** Sampling
+  `getBoundingClientRect()` every frame across a real click on dev at 1440: the heading's own
+  box went 32.39 → 42.44 → **44.06** → 37.27 → 32.39px, an **11.9px swing**, with the two
+  grid tracks converging (37.20 / 37.75) before snapping back. Chrome cannot interpolate
+  `auto`, so for the duration of the transition the heading's track is treated as flexible
+  and takes a share of a container height that is itself mid-flight; with the title
+  vertically centred in that box it rides up and down. The panel now slides on
+  `max-block-size` with the heading in normal flow, outside anything animated — the same
+  measurement returns a **0.00px swing** over 32 frames. ⚠️ It only reproduces through a real
+  click, not a programmatic `classList.add`; drive it from a click if this is ever revisited.
+  The `:not(.facetwp-hidden)` guard the grid version needed is gone with the `display` that
+  required it.
+
+  **The chevron is bigger and darker** — `0.7em` → `2rem`, `neutral-400` → `neutral-700`,
+  the heading's own colour, and hover moves to `brand-600`. At live's weight it was too faint
+  to read as a control. ⚠️ `rem`, not `em`, and the sort control matches it: the two sit in
+  different type contexts (`400` here, the inherited body `300` there), so the same `em`
+  value drew 33.6px in the rail and 26.9px in the toolbar.
+
+  **The keyword box moved above "Refine by"** and its submit affordance is now a `brand-600`
+  button with a `brand-700` hover. Searching re-queries the set where everything under the
+  heading narrows it, so the heading now labels only what it actually governs. FacetWP's
+  `<i class="facetwp-icon">` is drawn as a square the height of the field, with its three
+  glyph states (magnifier, `.f-reset` cross, `.f-loading` spinner) all redrawn as masks —
+  leaving any one unmasked would show the plugin's grey PNG on a brand ground. The button's
+  width and the input's trailing clearance both come from one
+  `--sd-search-button-size` calc off the field's own metrics: `spacing|50` was the input's
+  `padding-right` and it was the wrong tool, because the spacing scale is a viewport clamp
+  (33px → 50px) while the button tracks the field's height, so at 390px the text ran under
+  it. Verified square with clearance at both 1706px and 390px. ⚠️ FacetWP renders an `<i>`
+  with a click handler, not a `<button>`, so it is not focusable — acceptable only because
+  the facet filters on Enter in the field itself.
+
+- 🏷️ **`is-style-script-accent` was inert on the results-page `h1`.** LS-2018.
+  `styles/blocks/heading/script-accent.json` gains `core/query-title`.
+
+  The class was on the block and doing nothing: the accommodation-type and -brand templates
+  render their title from the queried term, and core only emits a variation's numbered class
+  for the block types it is **registered** against. The tell is in the delivered HTML — every
+  working script-accent heading carries `is-style-script-accent--49`, `--50` and so on beside
+  the base class, and this one carried the base class alone. The variation's own description
+  already spelled out the trap for `core/post-title`; `core/query-title` is the same trap, one
+  block later.
+
+- 🔍 **The facet filters fold in flow instead of opening over the results, and the rail is
+  restyled off live.** LS-2018 (line 8, Lodge / Brand). Four files:
+  `assets/styles/facetwp-facets.css`, `assets/js/search-filters.js` and the rail markup in
+  `patterns/template-taxonomy-accommodation-type.php` and
+  `patterns/template-taxonomy-accommodation-brand.php`.
+
+  **The dropdown is gone.** Opening a facet used to reveal an absolutely-positioned panel
+  over the result cards at `z-index: 30`, with one facet open at a time, an outside-click
+  close and an Escape handler. Live's facets are Bootstrap `.collapse` accordions: opening
+  one **pushes the facets below it down the rail**, several may be open at once, and there is
+  no outside-click or Escape because nothing is ever covered. All three of those followed
+  from the overlay, and all three are gone with it. The fold is the grid row-collapse
+  `kwv-theme-2026` uses — `grid-template-rows: auto minmax(0, 1fr)` → `minmax(0, 0fr)`, not
+  `display: none`, because noUiSlider lands every handle at zero if it initialises in a box
+  with no width. The first facet now opens on load, as live's `lsx-search.js` force-opens its
+  first `.collapse`.
+
+  **The styling is measured off the search page, not off a term archive.** Live has no
+  term-archive results page — `/accommodation-type/lodge/` renders through LSX's generic
+  archive, and every real accommodation listing on the site is one FacetWP search template
+  with a different query string. Giving the taxonomy its own results page is a change this
+  rebuild makes, so the reference for *how the rail looks* is
+  `/search/accommodation/africa's+finest/`, measured in Chrome at 1440 on 2026-09-10. The
+  full table of measurements and their tokens is at the head of the stylesheet. The visible
+  changes: each facet with a heading is now a **`neutral-200` plate** 3px from its
+  neighbours (rail `blockGap` `spacing|20` → `spacing|5`), "Refine by" is a plate of the same
+  kind, and the heading is live's plain brown title with a chevron ranged right —
+  `neutral-400`, hover `accent-500` — instead of the bordered white select box it was
+  imitating. Facet headings go `200` → `400`, live's 22px against the 16px they were.
+
+  `#60483B` and `#4C5250` both map to `neutral-700`, and `#ECE9E3` and `#F7F5F2` both to
+  `neutral-200`, per style.md §2.2 — so live's four-percent step between the "Refine by"
+  plate and the facet plates is not reproduced; the `h2`'s own uppercase separates them
+  instead.
+
+  **Two smaller corrections to match live.** The result count beside each choice sits inline
+  after the term name (`Botswana (42)`) rather than ranged right, and a checked choice is no
+  longer recoloured to `brand-600` semi-bold — live marks it by the tick alone, and the
+  second emphasis read as a different kind of state. Choices now take live's 5px sibling
+  rhythm rather than per-row padding, which also keeps each row at live's 24px.
+
+  ⚠️ **`display: grid` on `.facet-wrap` is gated on `:not(.facetwp-hidden)`** and must stay
+  that way. When a facet runs out of choices, `facetwp-blocks-beta`'s front.js adds
+  `.facetwp-hidden` to the block wrapper and the plugin hides it at (0,1,0); an unguarded
+  author `display` outranks that and resurfaces the empty facet as a live-looking control
+  over nothing. Same trap as kwv-theme-2026's shop-filter sheet.
+
+  ⚠️ **Both templates have Site Editor overrides on dev** (`wp_template` 65946 and 65945), so
+  the two *markup* changes — the rail `blockGap` and the heading sizes — do not reach the dev
+  front end until those rows are reconciled. The stylesheet and the script are theme files
+  and take effect immediately. → `wp-db-override-reconciliation`
+
+- 🌅 **The banner scrim is 0% — every `is-style-hero-banner` photograph now runs at full
+  brightness.** `styles/sections/hero-banner.json`: the `color-mix()` alpha on
+  `.wp-block-cover__background` goes from `45%` to `0%`. One number, one file, twelve
+  banners.
+
+  **Live does this, and it is explicit about it.** `sd-lsx-child/assets/css/custom.css`
+  carries `body:not(.home) #lsx-banner .page-banner-wrap .page-banner .page-banner-image:after
+  { background-color: transparent; }` — the overlay is cleared on every inner page and kept
+  only on the homepage. Measured on `/accommodation/` 2026-09-10.
+
+  The alpha stays inside the `color-mix()` rather than being deleted, so putting a scrim
+  back is that one number again — which is also why every banner pattern keeps
+  `dimRatio: 100`. Core's dim classes are an `opacity` on the overlay span; 100 makes the
+  span fully opaque so the style is the single source of the scrim's alpha. Nothing in the
+  patterns changed, and the four Tour Operator singles that were already unscrimmed
+  (`dimRatio: 0`, 2026-08-28) render identically either way.
+
+  ⚠️ **`base` type now sits on an undimmed photograph on all twelve.** That trade-off was
+  already accepted for the singles in August, so this is consistent rather than new — but
+  live does not run white-on-photo on inner pages at all: it puts the title and tagline on
+  an opaque `#ece9e3` plate in `#cc7f16` and `#60483b`, which is why it can afford a bright
+  image. If a banner title fails contrast, that plate is the fix live already ships. →
+  flagged, not adopted.
+
+  `patterns/card-review-quote.php` keeps its own neutral-900 scrim. Its header used to
+  justify it by pointing at the banner's — "the same one at the same weight, so the two read
+  as one family" — and that pairing no longer holds; the note now says why the card keeps a
+  floor where the banner drops one. `patterns/template-archive-destination.php`, the
+  canonical banner comment the other six point at, records the change and the live
+  measurement.
+
+- 🏨 **The horizontal accommodation row was reworked, and the accommodation-type archive
+  caught up with it.** Both reconciled from the Site Editor on dev 2026-09-10
+  (`wp_template` 65946, `/accommodation-type/africas-finest/`) rather than authored here.
+
+  **`patterns/card-accommodation-list.php`** — five deltas, and the file is now
+  byte-identical to the row in that template: the card ground is `neutral-200` with the meta
+  panel on `neutral-100`, so the strip reads as a plate *on* the card rather than the only
+  tinted thing in the row (live measures #f6f3f0 with the strip on #f0ebe5 — this pair, the
+  right way round); the thumbnail is **30%** and **square**, not 25% at 4/3, which stops a
+  portrait lodge photograph being cropped to a letterbox; the meta panel moved *inside* the
+  content column as a nested 65/35 split, which is what lets it stretch to the copy's height
+  and inset itself from the card edge — a third top-level column could only ever run the full
+  height of the row, thumbnail included; the excerpt is 45 words in its own group; and
+  `core/read-more` is gone, because the whole title is already a link to the same URL.
+  The card's `margin-bottom` went with it — the row gap is the enclosing
+  `core/post-template`'s `blockGap`, and a margin here doubled it.
+
+  ⚠️ **The card is shared with `patterns/template-taxonomy-accommodation-brand.php`**, so
+  the brand term archive picks the new row up too. That template's own `wp_template` row
+  (65945) still carries the *old* card inline and will keep rendering it on dev until the
+  override is reset or re-saved.
+
+  **`patterns/template-taxonomy-accommodation-type.php`** — the Best Price Guarantee /
+  specials band is now carried above the results, reversing the "not repeated here" note in
+  this file's header: live has the pair on this page as well as on the archive, and the type
+  page is a child of the archive that opens with it. `core/term-description` came out (a
+  second standfirst under the new band pushed the list a long way down, and twenty-four of
+  the twenty-six terms had nothing to show there). The results region is
+  `is-style-light-page-section`, which owns the ground and the rhythm the hand-set
+  `spacing|70`/`spacing|80` padding used to; the loop pages at 12; and the Destinations and
+  Specials facet headings carry anchors.
+
+  ⚠️ **The sort facet is `sort_`, with the trailing underscore.** `sort` is reserved —
+  FacetWP will not save a facet under it — so a block pointing at `sort` renders nothing at
+  all. This file pointed at `sort` since it was written.
+
+  **Two differences from the DB are deliberately not imported.** The banner's `dimRatio` is
+  kept at **100**: the editor has it at 0, and `has-background-dim-0` compiles to
+  `opacity: 0` on `.wp-block-cover__background`
+  (`wp-includes/blocks/cover/style.min.css`), which removes the scrim outright — the
+  `!important` background-colour in `styles/sections/hero-banner.json` cannot bring it back,
+  and the banner's `base`-coloured title would sit on an unmuted photograph. And the empty
+  `core/paragraph` between the "Results" heading and the count facet is dropped as an
+  editing artefact. Both → flagged for a ruling, not silently resolved.
 
 - **`assets/fonts/optima-*.woff2` is no longer `.gitignore`d — the licensed face is
   committed.** The rule existed for one reason: no web-licensed file existed, so the pattern

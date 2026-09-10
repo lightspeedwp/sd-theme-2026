@@ -176,17 +176,17 @@
 				{
 					"name": "Brand 700",
 					"slug": "brand-700",
-					"color": "#624411"
+					"color": "#9E451E"
 				},
 				{
 					"name": "Brand 800",
 					"slug": "brand-800",
-					"color": "#32240B"
+					"color": "#531608"
 				},
 				{
 					"name": "Brand 900",
 					"slug": "brand-900",
-					"color": "#040301"
+					"color": "#0F0000"
 				},
 				{
 					"slug": "accent-100",

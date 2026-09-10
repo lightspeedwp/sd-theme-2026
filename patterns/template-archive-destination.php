@@ -87,14 +87,31 @@
 	 * The banner.
 	 *
 	 * `is-style-hero-banner` owns the ground: the 454px floor, the vertical
-	 * padding, the neutral-900 scrim at 45% and the base type and link colours.
-	 * Only the photograph and the composition are here.
+	 * padding, the scrim and the base type and link colours. Only the
+	 * photograph and the composition are here.
+	 *
+	 * ⚠️ **The scrim is 0% as of 2026-09-10 — the photograph runs at full
+	 * brightness.** It was neutral-900 at 45%. Live dims only the homepage and
+	 * explicitly clears the overlay on every inner page
+	 * (`sd-lsx-child/assets/css/custom.css`:
+	 * `body:not(.home) … .page-banner-image:after { background-color: transparent }`),
+	 * so bright is what live does and what was asked for. The alpha lives in
+	 * one place — the `color-mix()` in `styles/sections/hero-banner.json` — and
+	 * putting a scrim back is that one number.
+	 *
+	 * ⚠️ **`base` type now sits on an undimmed photograph.** The same trade-off
+	 * was already taken on the Tour Operator singles on 2026-08-28, so this is
+	 * consistent rather than new — but live does not carry white-on-photo on
+	 * inner pages at all: it puts the title and tagline on an opaque #ece9e3
+	 * plate in #cc7f16 and #60483b. If a banner title ever fails contrast, that
+	 * plate is the fix live already ships. → flagged, not adopted here.
 	 *
 	 * `dimRatio: 100`, which looks wrong and is not. Core's dim classes are an
-	 * `opacity` on `.wp-block-cover__background`, and the section style already
-	 * carries the scrim's alpha inside a `color-mix()` — so any dim below 100
-	 * multiplies the two and the scrim lands at roughly half its intended
-	 * weight. 100 lets the style be the single source of the scrim.
+	 * `opacity` on `.wp-block-cover__background`, and the section style carries
+	 * the scrim's alpha inside a `color-mix()` — so any dim below 100 would
+	 * multiply the two and the style would stop being the single source of the
+	 * scrim. 100 keeps it the only place the alpha is set, which is what makes
+	 * the change above a one-line change.
 	 *
 	 * The photograph is decorative: `alt=""`. It is a mood shot behind the page
 	 * title, it is not referred to by the copy, and naming it would put a

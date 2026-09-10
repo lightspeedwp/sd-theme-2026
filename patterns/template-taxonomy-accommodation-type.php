@@ -2,9 +2,9 @@
 /**
  * Title: Template: Accommodation Type Taxonomy
  * Slug: sd-theme-2026/template-taxonomy-accommodation-type
- * Description: The accommodation-type results page — the photographic banner carrying the term name, the breadcrumb strip, a FacetWP filter sidebar of dropdowns, and the horizontal accommodation rows behind a result count, a sort control and a FacetWP pager.
+ * Description: The accommodation-type results page — the photographic banner carrying the term name, the breadcrumb strip, the two-panel Best Price Guarantee and specials band, and the horizontal accommodation rows behind a FacetWP filter sidebar, a result count, a sort control and a FacetWP pager, closing on the value band.
  * Categories: hidden
- * Keywords: accommodation, type, taxonomy, search, results, facetwp, facets, filters, dropdown, sidebar
+ * Keywords: accommodation, type, taxonomy, search, results, facetwp, facets, filters, fold, sidebar
  * Block Types: core/query
  * Template Types: taxonomy
  * Post Types: wp_template
@@ -80,13 +80,15 @@
  *    banner, and consistency across the rebuild's templates is worth more than
  *    matching one page's nesting.
  *
- * 4. **`#accommodation-cta-header` is not repeated here.** Live puts the Best
- *    Price Guarantee / Specials pair on this page as well as on the
- *    accommodation archive. It is authored inline in
- *    `patterns/template-archive-accommodation.php` rather than as a shared
- *    pattern, so reproducing it would mean a third copy to keep in step for a
- *    band that pushes the first result below the fold. A results page shows
- *    results. → flagged, not silently dropped.
+ * 4. ~~`#accommodation-cta-header` is not repeated here.~~ **It is, as of
+ *    2026-09-10.** This was recorded as a deliberate omission — live puts the
+ *    Best Price Guarantee / Specials pair on this page as well as on the
+ *    accommodation archive, and carrying it meant a second copy of markup that
+ *    is authored inline in `patterns/template-archive-accommodation.php` for a
+ *    band that pushes the first result down the page. Reversed in the Site
+ *    Editor: live has it, the type page is a child of the archive that opens
+ *    with it, and matching live won over saving the duplication. The `⚠️` on
+ *    the band below records what taking it out again would cost.
  *
  * ## The facet set, and the one facet that cannot work here
  *
@@ -103,7 +105,7 @@
  * (162)" among them — the path segment does not narrow the base query at all.
  * A term archive does narrow it, before FacetWP ever sees the query, so the
  * facet's only possible choice here is the term the visitor is already on. A
- * dropdown offering one pre-applied option reads as broken. The term does that
+ * filter offering one pre-applied option reads as broken. The term does that
  * job and is named in the `h1`; broadening to another type is the accommodation
  * archive's grid of tiles, one level up.
  *
@@ -133,7 +135,7 @@
  * ⚠️ **Three facets must exist before this page is complete.** Until they do,
  * `facetwp_display()` returns an empty string for a name it cannot find
  * (`class-display.php:75`), so each block renders its wrapper and nothing else
- * — no notice, no fatal. The dropdown script also requires a `.facetwp-facet`
+ * — no notice, no fatal. The fold script also requires a `.facetwp-facet`
  * child before it will fit a control, so a missing facet never gets one it
  * cannot open.
  *
@@ -171,20 +173,40 @@
  *     labels are inverted — its `price_asc` is labelled "Price (Highest)" — so
  *     set these deliberately rather than transcribing them.
  *
- * ## The dropdowns are the one thing live does differently
+ * ## The facets fold, as live's do
  *
- * Live's facets are **Bootstrap accordions** at every breakpoint, collapsed by
- * default with the first force-opened by `lsx-search.js`, and below 768px the
- * whole sidebar becomes an off-canvas drawer behind a "Filters" button with
- * Apply / Close controls. What is built here is a **dropdown** — the panel opens
- * over the results instead of pushing the sidebar open — because that is what
- * was asked for, and it is the same device `kwv-theme-2026` already carries on
- * its shop filters. The behaviour is `assets/js/search-filters.js` and
+ * Live's facets are **Bootstrap accordions** at every breakpoint — collapsed by
+ * default, the first force-opened by `lsx-search.js`, several allowed open at
+ * once, and opening one pushes the facets below it down the rail. That is what
+ * is built here, and the styling is measured off live's own search page.
+ *
+ * ⚠️ It was a **dropdown** until 2026-09-10 — an absolutely-positioned panel
+ * opening over the results, borrowed from `kwv-theme-2026`'s shop filters. That
+ * was a design decision rather than a port, and it was reverted: a panel that
+ * covers the facets below it is not what live does, and this is a rebuild. The
+ * behaviour is `assets/js/search-filters.js` and
  * `assets/styles/facetwp-facets.css`; both files carry their own reasoning,
- * including why FacetWP's native `fselect` facet type was not used instead.
- * Switching to live's fold is a change to those two files, not to this one.
+ * including the measured token map and why FacetWP's native `fselect` facet
+ * type was not used instead. **Nothing about the fold lives in this file** — it
+ * is those two files plus the `blockGap` and heading sizes on the rail below.
+ *
+ * The one thing live does that is **not** followed is the mobile drawer: below
+ * 768px live moves the whole sidebar off-canvas behind a "Filters" button with
+ * Apply and Close controls and sets `FWP.auto_refresh = false`. That is a
+ * second interaction model and a bespoke mobile design — explicitly outside
+ * scope — so core stacks the columns at 781px and the plates simply run
+ * full-width.
  */
 
+// get_post_type_archive_link() returns false when the Special post type is not
+// registered — TO Specials deactivated, or a context where its post types have
+// not been declared. Falling back to live's literal path keeps the panel
+// pointing somewhere real rather than emitting href="".
+$sd_specials_archive = get_post_type_archive_link( 'special' );
+
+if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
+	$sd_specials_archive = home_url( '/specials/' );
+}
 ?>
 
 <!-- wp:group {"tagName":"main","metadata":{"name":"Accommodation Type Results"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
@@ -236,30 +258,115 @@
 	require __DIR__ . '/breadcrumbs.php';
 	?>
 
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Results"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|50","padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--80)">
+	<?php
+	/*
+	 * The Best Price Guarantee and specials band, added in the Site Editor on
+	 * dev 2026-09-10 (wp_template 65946) and imported here.
+	 *
+	 * It is the same pair of plates `patterns/template-archive-accommodation.php`
+	 * opens with — the type page is a child of that archive, so it inherits the
+	 * archive's promise band above the results rather than dropping the reader
+	 * straight onto a filtered list. All the reasoning for the pair lives in
+	 * that file: why the columns are top-aligned with a `minHeight` floor on
+	 * each panel rather than stretched, why the specials plate is a
+	 * `sdLinkTo`-wrapped group rather than a linked cover, and why
+	 * `specials-badge.svg` is authored at a fixed 169px.
+	 *
+	 * ⚠️ Duplicated markup, not a `require`. The two templates name the section
+	 * differently — "Archive Intro" there, "Intro" here — which is what the
+	 * editor's list view shows, and both names are what is authored in their
+	 * respective `wp_template` rows. Extracting a shared partial would have to
+	 * pick one. If the band ever needs a third placement, that is the point to
+	 * settle the name and pull it out.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Intro"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull is-style-tinted-page-section">
+
+		<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
+		<div class="wp-block-columns alignwide">
+
+			<!-- wp:column {"verticalAlignment":"top"} -->
+			<div class="wp-block-column is-vertically-aligned-top">
+
+				<!-- wp:cover {"url":"<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>","dimRatio":0,"overlayColor":"neutral-800","isUserOverlayColor":true,"minHeight":300,"contentPosition":"center center","tagName":"aside","metadata":{"name":"Best Price Guarantee"},"align":"center","style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|40","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained","contentSize":"400px"}} -->
+				<aside class="wp-block-cover aligncenter" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40);min-height:300px"><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( get_theme_file_uri( 'assets/images/guarantee-bg.jpg' ) ); ?>" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-neutral-800-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
+
+					<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-500"}}}},"textColor":"accent-500","fontSize":"700","anchor":"h-best-price-guarantee"} -->
+					<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-accent-500-color has-text-color has-link-color has-700-font-size" id="h-best-price-guarantee"><?php esc_html_e( 'Best Price Guarantee', 'sd-theme-2026' ); ?></h2>
+					<!-- /wp:heading -->
+
+					<!-- wp:paragraph {"align":"center","textColor":"base","fontFamily":"heading"} -->
+					<p class="has-text-align-center has-base-color has-text-color has-heading-font-family"><?php esc_html_e( 'Booking via us is cheaper than going direct because we have access to the very best available rates at all of Africa’s premium safari lodges, camps and boutique hotels.', 'sd-theme-2026' ); ?></p>
+					<!-- /wp:paragraph -->
+
+				</div></aside>
+				<!-- /wp:cover -->
+
+			</div>
+			<!-- /wp:column -->
+
+			<!-- wp:column {"verticalAlignment":"top"} -->
+			<div class="wp-block-column is-vertically-aligned-top">
+
+				<!-- wp:group {"metadata":{"name":"Specials Link"},"layout":{"type":"default"},"sdLinkTo":"custom","sdLinkUrl":"<?php echo esc_url( $sd_specials_archive ); ?>"} -->
+				<div class="wp-block-group">
+
+					<!-- wp:cover {"url":"<?php echo esc_url( get_theme_file_uri( 'assets/images/current-accommodation-bg.jpg' ) ); ?>","dimRatio":0,"overlayColor":"neutral-800","isUserOverlayColor":true,"minHeight":300,"minHeightUnit":"px","contentPosition":"center center","tagName":"aside","metadata":{"name":"Accommodation Specials"},"align":"center","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|40","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+					<aside class="wp-block-cover aligncenter" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40);min-height:300px"><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( get_theme_file_uri( 'assets/images/current-accommodation-bg.jpg' ) ); ?>" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-neutral-800-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
+
+						<!-- wp:group {"metadata":{"name":"Specials Content"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"center"}} -->
+						<div class="wp-block-group">
+
+							<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","fontSize":"700","anchor":"h-view-current-accommodation-specials"} -->
+							<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-base-color has-text-color has-link-color has-700-font-size" id="h-view-current-accommodation-specials"><a href="<?php echo esc_url( $sd_specials_archive ); ?>"><?php esc_html_e( 'View Current Accommodation Specials', 'sd-theme-2026' ); ?></a></h2>
+							<!-- /wp:heading -->
+
+							<!-- wp:image {"width":"169px","sizeSlug":"full","linkDestination":"none"} -->
+							<figure class="wp-block-image size-full is-resized"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/specials-badge.svg' ) ); ?>" alt="" style="width:169px;height:auto"/></figure>
+							<!-- /wp:image -->
+
+						</div>
+						<!-- /wp:group -->
+
+					</div></aside>
+					<!-- /wp:cover -->
+
+				</div>
+				<!-- /wp:group -->
+
+			</div>
+			<!-- /wp:column -->
+
+		</div>
+		<!-- /wp:columns -->
+
+	</section>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The results region. `is-style-light-page-section` owns the ground and the
+	 * vertical rhythm as of 2026-09-10 — the hand-set `spacing|70` / `spacing|80`
+	 * padding and the `spacing|50` `blockGap` that used to sit here were removed
+	 * in the editor once the section style was applied, because the style
+	 * carries both and the two were fighting.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Results"},"align":"full","className":"is-style-light-page-section","layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull is-style-light-page-section">
 
 		<?php
 		/*
-		 * `core/term-description` leads the region and renders nothing at all
-		 * when the term has no description — which most of the twenty-six do
-		 * not. Only the terms that carry one get a standfirst; the rest close
-		 * the gap. Live has no editorial term description on this page at all,
-		 * so this is additive: a term archive should be able to introduce
-		 * itself.
-		 *
-		 * ⚠️ Not `is-style-archive-intro`. That variation is registered for
-		 * `core/paragraph` only (`styles/blocks/paragraph/archive-intro.json`),
-		 * so on this block the class would render with nothing behind it. The
-		 * colour and size are set as attributes instead, which is what
-		 * `patterns/template-page-archive.php` already does for the same block.
-		 * Both are safe on a dynamic block: `var:preset|color|…` and
-		 * `var:preset|font-size|…` are the two families the server-side style
-		 * engine does expand.
+		 * ⚠️ No `core/term-description`. The block led this region until
+		 * 2026-09-10, when it was removed in the editor: the promise band now
+		 * sits between the banner and the results, so a second standfirst on
+		 * the handful of terms that carry a description pushed the list a long
+		 * way down the page for no gain. Twenty-four of the twenty-six terms
+		 * had nothing to show there anyway, and live has no editorial term
+		 * description on this page at all.
 		 */
 		?>
-		<!-- wp:term-description {"align":"wide","textColor":"neutral-700","fontSize":"300"} /-->
-
 		<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
 		<div class="wp-block-columns alignwide">
 
@@ -269,7 +376,7 @@
 			 * of 1140, so 25%.
 			 *
 			 * `sd-search-filters` is the hook both the stylesheet and the
-			 * script key off. **Renaming it silently disables the dropdowns**,
+			 * script key off. **Renaming it silently disables the folds**,
 			 * because the script's container selector and every gated rule in
 			 * the stylesheet are written against it.
 			 *
@@ -293,26 +400,36 @@
 			<!-- wp:column {"width":"25%"} -->
 			<div class="wp-block-column" style="flex-basis:25%">
 
-			<!-- wp:group {"tagName":"aside","metadata":{"name":"Filter Rail"},"className":"sd-search-filters","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"default"}} -->
+			<!-- wp:group {"tagName":"aside","metadata":{"name":"Filter Rail"},"className":"sd-search-filters","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
 			<aside class="wp-block-group sd-search-filters">
+
+				<?php
+				/*
+				 * The keyword box **above** "Refine by", not under it.
+				 *
+				 * Searching is not refining: the field re-queries the whole
+				 * result set, where every control below it narrows what the
+				 * query returned. Putting it above the heading says that, and
+				 * leaves the `h2` heading only the things it actually labels.
+				 * Moved here on 2026-09-10; it sat under the heading before.
+				 *
+				 * `hasHeader: false` is what keeps it out of the fold
+				 * treatment: the script's section test requires a heading, so a
+				 * headerless facet stays open and usable — and unplated, as
+				 * live's keyword box is. Its placeholder and its
+				 * `auto_refresh: no` (it filters on Enter, not per keystroke)
+				 * are the facet's own FacetWP settings, not theme strings —
+				 * which is why there is no copy to translate here. The Enter
+				 * binding is also what makes the brand button drawn on the
+				 * field's trailing edge a mouse convenience rather than the only
+				 * way to submit; the stylesheet carries that note.
+				 */
+				?>
+				<!-- wp:facetwp/facet {"facetName":"search_accommodation","facetLabel":"Search","facetType":"search","hasHeader":false} /-->
 
 				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
 				<h2 class="wp-block-heading has-400-font-size" id="h-refine-by"><?php esc_html_e( 'Refine by', 'sd-theme-2026' ); ?></h2>
 				<!-- /wp:heading -->
-
-				<?php
-				/*
-				 * The keyword box, leading the rail as it does on live.
-				 *
-				 * `hasHeader: false` is what keeps it out of the dropdown
-				 * treatment: the script's section test requires a heading, so a
-				 * headerless facet stays open and usable. Its placeholder and
-				 * its `auto_refresh: no` (it filters on Enter, not per
-				 * keystroke) are the facet's own FacetWP settings, not theme
-				 * strings — which is why there is no copy to translate here.
-				 */
-				?>
-				<!-- wp:facetwp/facet {"facetName":"search_accommodation","facetLabel":"Search","facetType":"search","hasHeader":false} /-->
 
 				<?php
 				/*
@@ -346,14 +463,14 @@
 				 */
 				?>
 				<!-- wp:facetwp/facet {"facetName":"destination_to_accommodation","facetLabel":"Destinations","facetType":"checkboxes","hasHeader":true,"hideOnEmpty":true} -->
-					<!-- wp:heading {"level":3,"fontSize":"200"} -->
-					<h3 class="wp-block-heading has-200-font-size"><?php esc_html_e( 'Destinations', 'sd-theme-2026' ); ?></h3>
+					<!-- wp:heading {"level":3,"fontSize":"400","anchor":"h-destinations"} -->
+					<h3 class="wp-block-heading has-400-font-size" id="h-destinations"><?php esc_html_e( 'Destinations', 'sd-theme-2026' ); ?></h3>
 					<!-- /wp:heading -->
 				<!-- /wp:facetwp/facet -->
 
 				<!-- wp:facetwp/facet {"facetName":"specials_to_accommodation","facetLabel":"Specials","facetType":"checkboxes","hasHeader":true,"hideOnEmpty":true} -->
-					<!-- wp:heading {"level":3,"fontSize":"200"} -->
-					<h3 class="wp-block-heading has-200-font-size"><?php esc_html_e( 'Specials', 'sd-theme-2026' ); ?></h3>
+					<!-- wp:heading {"level":3,"fontSize":"400","anchor":"h-specials"} -->
+					<h3 class="wp-block-heading has-400-font-size" id="h-specials"><?php esc_html_e( 'Specials', 'sd-theme-2026' ); ?></h3>
 					<!-- /wp:heading -->
 				<!-- /wp:facetwp/facet -->
 
@@ -364,9 +481,9 @@
 				 * and `lsx-search.js` carries a `clearFacets()` whose
 				 * `clear-facets` control never appears — so this is additive.
 				 *
-				 * It is worth adding precisely because the facets are dropdowns
-				 * here: with the panels shut, the chips are the only thing that
-				 * shows what is currently applied, and each one removes its own
+				 * It is worth adding precisely because the facets fold shut:
+				 * with a panel closed, the chips are the only thing that shows
+				 * what is currently applied, and each one removes its own
 				 * filter. `user_selections` needs no FacetWP configuration —
 				 * the block's render.php special-cases the name and calls
 				 * `facetwp_display( 'selections' )` — and it renders nothing
@@ -459,9 +576,14 @@
 					 * `.facetwp-sort-select` class seen on live belongs to the
 					 * `sort` *extra*, which is a different code path. The
 					 * stylesheet targets the element, not that class.
+					 *
+					 * ⚠️ The facet's name is **`sort_`**, with the trailing
+					 * underscore. `sort` is reserved — FacetWP will not save a
+					 * facet under it — so the one registered on dev is `sort_`,
+					 * and a block pointing at `sort` renders nothing at all.
 					 */
 					?>
-					<!-- wp:facetwp/facet {"facetName":"sort","facetLabel":"Sort By","facetType":"sort","hasHeader":false,"className":"sd-search-sort"} /-->
+					<!-- wp:facetwp/facet {"facetName":"sort_","facetLabel":"Sort","facetType":"sort","hasHeader":false,"className":"sd-search-sort"} /-->
 
 				</div>
 				<!-- /wp:group -->
@@ -494,7 +616,7 @@
 				 * round.
 				 */
 				?>
-				<!-- wp:query {"queryId":0,"query":{"pages":0,"offset":0,"postType":"accommodation","order":"asc","orderBy":"title","author":"","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[]},"enableFacetWP":true,"layout":{"type":"default"}} -->
+				<!-- wp:query {"queryId":0,"query":{"pages":0,"offset":0,"postType":"accommodation","order":"asc","orderBy":"title","author":"","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[],"perPage":12,"excludeCurrent":null},"enableFacetWP":true,"layout":{"type":"default"}} -->
 				<div class="wp-block-query">
 
 					<?php

@@ -1,0 +1,120 @@
+/**
+ * core/term-description — the archive-intro treatment, and the Read more collapse.
+ *
+ * Auto-enqueued for `core/term-description` by `enqueue_custom_block_styles()`'
+ * `core-*` scan; the filename is the wiring.
+ *
+ * This file exists because the archive-intro look could not be expressed as a
+ * block style variation on this block. `styles/blocks/paragraph/archive-intro.json`
+ * registers `is-style-archive-intro` for `core/paragraph` only, and
+ * `core/paragraph`'s `selectors.root` is a bare `p`
+ * (wp-includes/blocks/paragraph/block.json), so the variation compiles to a
+ * `p.is-style-archive-intro` rule that can only ever match a `<p>` carrying the
+ * class itself. `core/term-description` renders a `<div>` wrapper with the
+ * description's own paragraphs inside it, so that rule can never reach it —
+ * the class on the block in `patterns/template-taxonomy-accommodation-brand.php`
+ * marks the block's role, and these rules do the work.
+ *
+ * Adding `core/term-description` to that JSON's `blockTypes` was the other
+ * route and was not taken: the two blocks want the same *look* but not the same
+ * *box*, the drop cap below is already CSS rather than JSON for its own
+ * reasons, and one variation compiling against two `selectors.root` values is
+ * how a shared style quietly stops matching one of them.
+ *
+ * @package sd-theme-2026
+ */
+
+/*
+ * The standfirst itself, mirroring styles/blocks/paragraph/archive-intro.json
+ * value for value so the two read identically on the page. The italic is set
+ * on the wrapper and inherited by the description's paragraphs; `font-size`
+ * is not set as a block attribute in the pattern as well, because two sources
+ * for one value is how they drift apart.
+ */
+.wp-block-term-description.is-style-archive-intro {
+	font-size: var(--wp--preset--font-size--300);
+	font-style: italic;
+	line-height: var(--wp--custom--line-height--body);
+}
+
+/*
+ * The drop cap. Identical to the paragraph's — see assets/styles/core-paragraph.css
+ * for the measurement, why it is CSS rather than the block style's `css` field,
+ * why `::first-letter` and not `:first-letter`, and why `initial-letter` is
+ * unusable. Gated at the same 900px, for the same reason: a 55px letter floated
+ * beside a narrow measure leaves one or two words per line next to it.
+ *
+ * `> :first-child` because the cap has to land on the first *paragraph* inside
+ * the wrapper. `get_the_archive_description()` runs its content through
+ * `wpautop()`, so the block's own box has no direct text of its own for
+ * `::first-letter` to attach to.
+ */
+@media (min-width: 900px) {
+
+	.wp-block-term-description.is-style-archive-intro > :first-child::first-letter {
+		float: left;
+		margin-block-start: 0.9rem;
+		margin-inline-end: 0.3rem;
+		color: var(--wp--preset--color--brand-500);
+		font-family: var(--wp--preset--font-family--heading);
+		font-size: 3.4375rem;
+		font-style: normal;
+		line-height: 1.75rem;
+	}
+}
+
+/*
+ * The Read more collapse.
+ *
+ * `assets/js/intro-collapse.js` carries the behaviour and the reasoning for why
+ * this is a script at all rather than `core/read-more`. The contract between
+ * the two files, and the pattern that names them:
+ *
+ *   - `.sd-intro-collapse`            the container, written in the pattern;
+ *   - `.sd-intro-collapse__text`      the description to clamp;
+ *   - `.sd-intro-collapse__toggle`    the button;
+ *   - `.is-enhanced`                  added by the script *only* once it has
+ *                                     confirmed the text actually overflows;
+ *   - `.is-expanded`                  added by the script while open.
+ *
+ * ⚠️ Everything below is gated behind `.is-enhanced`. Nothing here may apply
+ * without it: with JavaScript off, or on a description short enough not to need
+ * clamping, the reader must get the whole story and no dead control. That is
+ * also live's behaviour — live has no Read more on this page at all.
+ *
+ * ⚠️ The button is hidden with `display: none` rather than `[hidden]` or
+ * `visibility`, and the script's overflow test runs against the *unclamped*
+ * text, so the measurement is not taken through a collapsed box.
+ */
+.sd-intro-collapse__actions {
+	display: none;
+}
+
+.sd-intro-collapse.is-enhanced .sd-intro-collapse__actions {
+	display: flex;
+}
+
+/*
+ * Six lines is the clamp. `-webkit-line-clamp` with `-webkit-box` is still the
+ * only form Safari and Firefox both honour; the unprefixed `line-clamp` is not
+ * yet safe to rely on alone, so both are declared and the prefixed one wins
+ * where it has to.
+ *
+ * The drop cap and the clamp coexist: a floated `::first-letter` inside a
+ * `-webkit-box` is laid out before the clamp is applied, so the cap survives
+ * the collapse.
+ */
+.sd-intro-collapse.is-enhanced .sd-intro-collapse__text {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 6;
+	line-clamp: 6;
+}
+
+.sd-intro-collapse.is-enhanced.is-expanded .sd-intro-collapse__text {
+	display: block;
+	overflow: visible;
+	-webkit-line-clamp: unset;
+	line-clamp: unset;
+}

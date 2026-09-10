@@ -1,0 +1,93 @@
+/**
+ * sd/brand-regions — the region tab strip on a brand archive.
+ *
+ * Enqueued by inc/brand-regions.php rather than by the `core-*` scan in
+ * functions.php: that scan maps `core-<block>.css` to `core/<block>` and only
+ * core blocks participate. Sheets for non-core blocks are enqueued by their own
+ * modules in `inc/`, which is what `facetwp-facets.css` and
+ * `ollie-mega-menu.css` already do.
+ *
+ * ## What the block renders
+ *
+ * `sd-enhancements-2026/blocks/brand-regions/render.php`, a `<nav>` with an
+ * accessible name around a plain list:
+ *
+ *   <nav class="wp-block-sd-brand-regions sd-brand-regions" aria-label="Regions">
+ *     <ul class="sd-brand-regions__list">
+ *       <li class="sd-brand-region botswana-tab is-current"><a aria-current="page">…</a></li>
+ *
+ * The per-region class (`botswana-tab`) is the child theme's, carried over so
+ * an existing per-region override keeps working; nothing here styles it.
+ *
+ * ⚠️ **These are links, not a `core/tabs` widget.** Each one is a distinct URL
+ * — `brand/{brand}/{region}/`, the rewrite `SD\Enhancements\BrandEndpoints`
+ * registers — so the strip is styled to *look* like a tab row while behaving
+ * like navigation. Do not add `role="tab"`, `aria-selected` or roving tabindex
+ * to it: the ARIA tabs pattern promises a panel that swaps in place without a
+ * navigation, and these do navigate. The active item is marked with
+ * `aria-current="page"`, which is the correct signal for a link.
+ *
+ * @package sd-theme-2026
+ */
+
+/*
+ * The rail the tabs sit on. A bottom border the active tab overlaps, which is
+ * the usual way a tab row reads without the items needing a box each.
+ */
+.sd-brand-regions__list {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0;
+	padding: 0;
+	border-bottom: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-300);
+	gap: var(--wp--preset--spacing--20);
+	list-style: none;
+}
+
+.sd-brand-region {
+	margin: 0;
+}
+
+.sd-brand-region a {
+	display: block;
+	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
+	border-bottom: var(--wp--custom--border-width--300) solid transparent;
+	color: var(--wp--preset--color--neutral-700);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--200);
+	font-weight: var(--wp--custom--font-weight--medium);
+	line-height: var(--wp--custom--line-height--body);
+	text-decoration: none;
+}
+
+/*
+ * `-1px` pulls the item's own border onto the rail's, so the active tab reads
+ * as joined to the panel below rather than as a second line beneath it.
+ */
+.sd-brand-region a {
+	margin-bottom: -1px;
+}
+
+.sd-brand-region a:hover,
+.sd-brand-region a:focus-visible {
+	border-bottom-color: var(--wp--preset--color--neutral-400);
+	color: var(--wp--preset--color--contrast);
+}
+
+/*
+ * The active tab, keyed off `aria-current` rather than off the `is-current`
+ * class the block also writes. Both are present; using the attribute keeps the
+ * visual state and the assistive state from being able to disagree — if one is
+ * ever dropped, the tab stops looking active instead of looking active while
+ * announcing nothing.
+ */
+.sd-brand-region a[aria-current="page"] {
+	border-bottom-color: var(--wp--preset--color--brand-500);
+	color: var(--wp--preset--color--brand-600);
+}
+
+/*
+ * Live's strip scrolls rather than wraps on a phone. It wraps here: the rail is
+ * three or four short place names, a horizontal scroller hides the ones past
+ * the edge with no affordance, and a wrapped second line costs one row.
+ */

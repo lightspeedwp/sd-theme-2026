@@ -281,6 +281,16 @@ require_once get_theme_file_path( 'inc/yoast-breadcrumbs.php' );
 // because there is no `wp_enqueue_block_script()` counterpart.
 require_once get_theme_file_path( 'inc/facetwp.php' );
 
+// Styles sd/brand-regions, the brand archive's region tab strip. A non-core
+// block, so it is outside enqueue_custom_block_styles()' core-* scan.
+require_once get_theme_file_path( 'inc/brand-regions.php' );
+
+// Carries the Read more script for core/term-description on the brand archive.
+// The stylesheet is picked up by the core-* scan; only the script and its
+// localised label need a module, because there is no
+// `wp_enqueue_block_script()` counterpart to wp_enqueue_block_style().
+require_once get_theme_file_path( 'inc/intro-collapse.php' );
+
 // Answers the plugin's `sd_enh_trustpilot_stars_image` filter with the theme's
 // own rating tile. The plugin exposes the rating as a number and says explicitly
 // that picking the graphic is the theme's job; this is the theme doing that, and
