@@ -1017,6 +1017,103 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 🎨 **The brand ramp turns red below 600 instead of going back to brown.** LS-2018.
+  `theme.json`: `brand-700` `#624411` → **`#9E451E`**, `brand-800` `#32240B` →
+  **`#531608`**, `brand-900` `#040301` → **`#0F0000`**.
+
+  `brand-600` was changed to `#BC5B18` earlier in the build — a redder, lighter step than
+  the `#9B6111` it replaced. The three below it were still on the old trajectory, and in
+  OKLCH the ramp's hue was **reversing**: 100→600 rotates cleanly 84.6° → 81.4° → 78.2° →
+  71.8° → 66.5° → 49.2°, then 700–900 turned back up to 76.1° → 79.5° → 90.9° while chroma
+  collapsed from 0.145 to 0.012. A hue heading back toward yellow with no chroma left is the
+  definition of brown, which is what the dark end read as.
+
+  The new values continue the rotation toward red and hold near pure red's hue rather than
+  overshooting into magenta — 42° → 34° → 29° (sRGB red is 29.2° in OKLCH) — at 85% of the
+  in-gamut chroma for each lightness. Lightness is respaced to the theme's **own hover
+  step**: `brand-500` → `brand-600` is 8.3 OKLCH points, and `brand-600` → `brand-700` is now
+  8.0, where it was 17.0. That matters because `brand-700` is the search button's hover
+  against a `brand-600` rest, and a 17-point drop read as a different button rather than the
+  same one hovered.
+
+  **Contrast checked, not assumed.** `brand-700` is 6.32:1 on `base` and 5.81:1 on
+  `neutral-200` (AA at both), against 8.92:1 before — it is used as link-hover text on
+  `styles/sections/cards/blog-card.json` and as the facet toggle's hover in the rail, and
+  both still pass. `brand-800` and `brand-900` are referenced nowhere but `theme.json`.
+
+  ⚠️ **Figma is now behind on three values.** DESIGN.md makes the Design System file
+  authoritative for `theme.json` variables, and this is a hand-edit against that — as the
+  `brand-600` change before it was. The ramp needs pushing back into Figma, and style.md §2.2
+  reads `brand-700` as a brown; neither is updated here.
+
+- 🔧 **Tour Operator 2.2 ships FacetWP styling of its own, and it was winning.** LS-2018.
+  Found while styling the sort control: `tour-operator/build/style.css` carries
+  `.facetwp-facet select`, `.facetwp-icon`, `.facetwp-facet input.facetwp-search`,
+  `.facetwp-selections` and `button.facetwp-reset`. Measured on dev 2026-09-10 — the sheet
+  loads **after** the theme's `facetwp-facets.css`, so at equal specificity source order
+  handed TO the control.
+
+  The sort select was the visible casualty: black text in the body font at 19.2px, a grey
+  4px-radius box, `cursor: default`, and a hard-coded `fill='black'` chevron, none of it
+  token-derived. (TO's own `font-family` and `font-size` there point at
+  `--wp--preset--font-family--primary` and `--wp--preset--font-size--x-small`, which this
+  theme does not define, so those two resolved to nothing and the select inherited.) Every
+  rule in the theme's sort and search sections is now scoped through `.facetwp-facet`, which
+  wins at (0,2,1) on specificity rather than on load order. **`border` is the exception** —
+  TO sets it `!important`, and `!important` beats any specificity, so the resting border and
+  its hover partner answer with `!important` of their own. Those two are the only
+  `!important` declarations in the file. TO's `.facetwp-selections{max-width:27%}` is also
+  overridden: sized for a full-width toolbar, it left each chip ~70px in a 25% rail.
+  → `.claude/skills/wp-thirdparty-markup-styling`
+
+- 🔍 **Second pass on the facet rail: the fold no longer bounces, and the search and sort are
+  styled.** LS-2018. `assets/styles/facetwp-facets.css`,
+  `styles/blocks/heading/script-accent.json`, and the rail markup in both taxonomy patterns.
+
+  **The fold bounced the heading, and the grid row-collapse was why.** Sampling
+  `getBoundingClientRect()` every frame across a real click on dev at 1440: the heading's own
+  box went 32.39 → 42.44 → **44.06** → 37.27 → 32.39px, an **11.9px swing**, with the two
+  grid tracks converging (37.20 / 37.75) before snapping back. Chrome cannot interpolate
+  `auto`, so for the duration of the transition the heading's track is treated as flexible
+  and takes a share of a container height that is itself mid-flight; with the title
+  vertically centred in that box it rides up and down. The panel now slides on
+  `max-block-size` with the heading in normal flow, outside anything animated — the same
+  measurement returns a **0.00px swing** over 32 frames. ⚠️ It only reproduces through a real
+  click, not a programmatic `classList.add`; drive it from a click if this is ever revisited.
+  The `:not(.facetwp-hidden)` guard the grid version needed is gone with the `display` that
+  required it.
+
+  **The chevron is bigger and darker** — `0.7em` → `2rem`, `neutral-400` → `neutral-700`,
+  the heading's own colour, and hover moves to `brand-600`. At live's weight it was too faint
+  to read as a control. ⚠️ `rem`, not `em`, and the sort control matches it: the two sit in
+  different type contexts (`400` here, the inherited body `300` there), so the same `em`
+  value drew 33.6px in the rail and 26.9px in the toolbar.
+
+  **The keyword box moved above "Refine by"** and its submit affordance is now a `brand-600`
+  button with a `brand-700` hover. Searching re-queries the set where everything under the
+  heading narrows it, so the heading now labels only what it actually governs. FacetWP's
+  `<i class="facetwp-icon">` is drawn as a square the height of the field, with its three
+  glyph states (magnifier, `.f-reset` cross, `.f-loading` spinner) all redrawn as masks —
+  leaving any one unmasked would show the plugin's grey PNG on a brand ground. The button's
+  width and the input's trailing clearance both come from one
+  `--sd-search-button-size` calc off the field's own metrics: `spacing|50` was the input's
+  `padding-right` and it was the wrong tool, because the spacing scale is a viewport clamp
+  (33px → 50px) while the button tracks the field's height, so at 390px the text ran under
+  it. Verified square with clearance at both 1706px and 390px. ⚠️ FacetWP renders an `<i>`
+  with a click handler, not a `<button>`, so it is not focusable — acceptable only because
+  the facet filters on Enter in the field itself.
+
+- 🏷️ **`is-style-script-accent` was inert on the results-page `h1`.** LS-2018.
+  `styles/blocks/heading/script-accent.json` gains `core/query-title`.
+
+  The class was on the block and doing nothing: the accommodation-type and -brand templates
+  render their title from the queried term, and core only emits a variation's numbered class
+  for the block types it is **registered** against. The tell is in the delivered HTML — every
+  working script-accent heading carries `is-style-script-accent--49`, `--50` and so on beside
+  the base class, and this one carried the base class alone. The variation's own description
+  already spelled out the trap for `core/post-title`; `core/query-title` is the same trap, one
+  block later.
+
 - 🔍 **The facet filters fold in flow instead of opening over the results, and the rail is
   restyled off live.** LS-2018 (line 8, Lodge / Brand). Four files:
   `assets/styles/facetwp-facets.css`, `assets/js/search-filters.js` and the rail markup in

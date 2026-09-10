@@ -403,24 +403,33 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 			<!-- wp:group {"tagName":"aside","metadata":{"name":"Filter Rail"},"className":"sd-search-filters","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
 			<aside class="wp-block-group sd-search-filters">
 
-				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
-				<h2 class="wp-block-heading has-400-font-size" id="h-refine-by"><?php esc_html_e( 'Refine by', 'sd-theme-2026' ); ?></h2>
-				<!-- /wp:heading -->
-
 				<?php
 				/*
-				 * The keyword box, leading the rail as it does on live.
+				 * The keyword box **above** "Refine by", not under it.
+				 *
+				 * Searching is not refining: the field re-queries the whole
+				 * result set, where every control below it narrows what the
+				 * query returned. Putting it above the heading says that, and
+				 * leaves the `h2` heading only the things it actually labels.
+				 * Moved here on 2026-09-10; it sat under the heading before.
 				 *
 				 * `hasHeader: false` is what keeps it out of the fold
 				 * treatment: the script's section test requires a heading, so a
 				 * headerless facet stays open and usable — and unplated, as
-				 * live's keyword box is. Its placeholder and
-				 * its `auto_refresh: no` (it filters on Enter, not per
-				 * keystroke) are the facet's own FacetWP settings, not theme
-				 * strings — which is why there is no copy to translate here.
+				 * live's keyword box is. Its placeholder and its
+				 * `auto_refresh: no` (it filters on Enter, not per keystroke)
+				 * are the facet's own FacetWP settings, not theme strings —
+				 * which is why there is no copy to translate here. The Enter
+				 * binding is also what makes the brand button drawn on the
+				 * field's trailing edge a mouse convenience rather than the only
+				 * way to submit; the stylesheet carries that note.
 				 */
 				?>
 				<!-- wp:facetwp/facet {"facetName":"search_accommodation","facetLabel":"Search","facetType":"search","hasHeader":false} /-->
+
+				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
+				<h2 class="wp-block-heading has-400-font-size" id="h-refine-by"><?php esc_html_e( 'Refine by', 'sd-theme-2026' ); ?></h2>
+				<!-- /wp:heading -->
 
 				<?php
 				/*

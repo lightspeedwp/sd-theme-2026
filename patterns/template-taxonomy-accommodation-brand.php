@@ -318,19 +318,24 @@
 			<!-- wp:group {"tagName":"aside","metadata":{"name":"Filter Rail"},"className":"sd-search-filters","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
 			<aside class="wp-block-group sd-search-filters">
 
-				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
-				<h2 class="wp-block-heading has-400-font-size" id="h-refine-by"><?php esc_html_e( 'Refine by', 'sd-theme-2026' ); ?></h2>
-				<!-- /wp:heading -->
-
 				<?php
 				/*
-				 * The keyword box. `hasHeader: false` keeps it out of the
-				 * fold treatment — the script's section test requires a
-				 * heading, so a headerless facet stays open and usable, and
-				 * unplated, as live's keyword box is.
+				 * The keyword box **above** "Refine by", as on the
+				 * accommodation-type page — searching re-queries the set, where
+				 * everything below the heading narrows it. That file carries the
+				 * reasoning in full.
+				 *
+				 * `hasHeader: false` keeps it out of the fold treatment: the
+				 * script's section test requires a heading, so a headerless
+				 * facet stays open and usable, and unplated, as live's keyword
+				 * box is.
 				 */
 				?>
 				<!-- wp:facetwp/facet {"facetName":"search_accommodation","facetLabel":"Search","facetType":"search","hasHeader":false} /-->
+
+				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
+				<h2 class="wp-block-heading has-400-font-size" id="h-refine-by"><?php esc_html_e( 'Refine by', 'sd-theme-2026' ); ?></h2>
+				<!-- /wp:heading -->
 
 				<?php
 				/*
