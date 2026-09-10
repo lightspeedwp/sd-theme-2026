@@ -26,7 +26,7 @@
  * ## Why this belongs in the theme
  *
  * It is presentation and nothing else: the facets' colours, type and the
- * dropdown affordance. What the facets *are* — their names, types, data sources
+ * fold affordance. What the facets *are* — their names, types, data sources
  * and operators — is FacetWP configuration in `wp_options.facetwp_settings`,
  * and the search engine behind the keyword facet is SearchWP's. None of that is
  * here, and none of it should be: deactivating this theme must leave the search
@@ -67,7 +67,7 @@ function enqueue_facetwp_facet_style() {
 add_action( 'init', __NAMESPACE__ . '\\enqueue_facetwp_facet_style' );
 
 /**
- * Enqueue the dropdown script when a facet is rendered.
+ * Enqueue the fold script when a facet is rendered.
  *
  * There is no script counterpart to `wp_enqueue_block_style()`, so the enqueue
  * is hooked to the block's own render and runs at most once per request. That

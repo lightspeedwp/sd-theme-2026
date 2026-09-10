@@ -315,7 +315,7 @@
 			<!-- wp:column {"width":"25%"} -->
 			<div class="wp-block-column" style="flex-basis:25%">
 
-			<!-- wp:group {"tagName":"aside","metadata":{"name":"Filter Rail"},"className":"sd-search-filters","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"default"}} -->
+			<!-- wp:group {"tagName":"aside","metadata":{"name":"Filter Rail"},"className":"sd-search-filters","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
 			<aside class="wp-block-group sd-search-filters">
 
 				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
@@ -325,8 +325,9 @@
 				<?php
 				/*
 				 * The keyword box. `hasHeader: false` keeps it out of the
-				 * dropdown treatment — the script's section test requires a
-				 * heading, so a headerless facet stays open and usable.
+				 * fold treatment — the script's section test requires a
+				 * heading, so a headerless facet stays open and usable, and
+				 * unplated, as live's keyword box is.
 				 */
 				?>
 				<!-- wp:facetwp/facet {"facetName":"search_accommodation","facetLabel":"Search","facetType":"search","hasHeader":false} /-->
@@ -351,14 +352,14 @@
 				 */
 				?>
 				<!-- wp:facetwp/facet {"facetName":"destination_to_accommodation","facetLabel":"Destinations","facetType":"checkboxes","hasHeader":true,"hideOnEmpty":true} -->
-					<!-- wp:heading {"level":3,"fontSize":"200"} -->
-					<h3 class="wp-block-heading has-200-font-size"><?php esc_html_e( 'Destinations', 'sd-theme-2026' ); ?></h3>
+					<!-- wp:heading {"level":3,"fontSize":"400"} -->
+					<h3 class="wp-block-heading has-400-font-size"><?php esc_html_e( 'Destinations', 'sd-theme-2026' ); ?></h3>
 					<!-- /wp:heading -->
 				<!-- /wp:facetwp/facet -->
 
 				<!-- wp:facetwp/facet {"facetName":"specials_to_accommodation","facetLabel":"Specials","facetType":"checkboxes","hasHeader":true,"hideOnEmpty":true} -->
-					<!-- wp:heading {"level":3,"fontSize":"200"} -->
-					<h3 class="wp-block-heading has-200-font-size"><?php esc_html_e( 'Specials', 'sd-theme-2026' ); ?></h3>
+					<!-- wp:heading {"level":3,"fontSize":"400"} -->
+					<h3 class="wp-block-heading has-400-font-size"><?php esc_html_e( 'Specials', 'sd-theme-2026' ); ?></h3>
 					<!-- /wp:heading -->
 				<!-- /wp:facetwp/facet -->
 
@@ -371,8 +372,8 @@
 				 */
 				?>
 				<!-- wp:facetwp/facet {"facetName":"accommodation_type","facetLabel":"Types","facetType":"checkboxes","hasHeader":true,"hideOnEmpty":true} -->
-					<!-- wp:heading {"level":3,"fontSize":"200"} -->
-					<h3 class="wp-block-heading has-200-font-size"><?php esc_html_e( 'Types', 'sd-theme-2026' ); ?></h3>
+					<!-- wp:heading {"level":3,"fontSize":"400"} -->
+					<h3 class="wp-block-heading has-400-font-size"><?php esc_html_e( 'Types', 'sd-theme-2026' ); ?></h3>
 					<!-- /wp:heading -->
 				<!-- /wp:facetwp/facet -->
 

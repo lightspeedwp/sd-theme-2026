@@ -1,10 +1,10 @@
 /**
- * SD search filters — FacetWP facets as dropdowns.
+ * SD search filters — FacetWP facets as in-flow folds.
  *
  * Turns each `facetwp/facet` block inside `.sd-search-filters` into a
  * disclosure: the facet's heading becomes the control, and the facet itself
- * becomes a panel that opens over the page rather than pushing it. Presentation
- * (the absolute panel, the chevron, the scroll cap) lives in
+ * becomes a panel that folds open in flow, pushing the facets below it down the
+ * rail. Presentation (the plate, the grid row-collapse, the chevron) lives in
  * assets/styles/facetwp-facets.css; this script only toggles state classes and
  * wires the accessibility contract.
  *
@@ -12,22 +12,21 @@
  *
  * FacetWP ships a facet type that is already a dropdown — `fselect`, a
  * `<select multiple>` upgraded into `.fs-wrap` markup by
- * `facetwp/assets/vendor/fSelect`. It was not taken, for one reason: facet
+ * `facetwp/assets/vendor/fSelect`. It was not taken, for two reasons. Facet
  * *type* is site configuration (`wp_options.facetwp_settings`), not theme, and
  * every facet on this page is shared with the tours search — `travel_style`,
- * `price` and the `destination_to_*` connections all appear on both. Retyping
- * them to `fselect` changes a page this line item does not cover. Styling the
- * `checkboxes` facets FacetWP already renders keeps the change inside the
- * theme, which is where the boundary test puts it.
- *
- * If the facets are ever retyped to `fselect`, this file and its stylesheet
- * become dead and should be deleted rather than left to fight fSelect's own JS.
+ * `price` and the `destination_to_*` connections all appear on both, so
+ * retyping them changes a page this line item does not cover. And `fselect` is
+ * a dropdown, which is not what live does: live's facets are Bootstrap
+ * `.collapse` accordions that push the rail open. Styling the `checkboxes`
+ * facets FacetWP already renders keeps the change inside the theme, which is
+ * where the boundary test puts it, and lets the fold match live.
  *
  * ## What this had to do differently from the KWV original
  *
  * Adapted from `kwv-theme-2026/assets/js/shop-filters.js`, which does the same
- * job for WooCommerce's Product Filters. Three differences, all of them because
- * FacetWP is not the Interactivity API:
+ * job for WooCommerce's Product Filters. Two differences, both because FacetWP
+ * is not the Interactivity API:
  *
  *  1. **No MutationObserver.** WooCommerce re-renders the whole filter region
  *     on every change and wipes injected attributes. FacetWP refreshes only the
@@ -36,12 +35,20 @@
  *     this script marks up survives every refresh untouched. The one thing that
  *     does need re-running is the empty-facet check, and FacetWP announces that
  *     itself — see `facetwp-loaded` below.
- *  2. **It is a dropdown, not a fold.** KWV's sections push the page open with
- *     a grid row-collapse. These open over it, so only one may be open at a
- *     time and outside-click and Escape have to close it.
- *  3. **Closed by default, both environments.** KWV also defaults closed, but
- *     there it is a preference; here it is the whole point — a facet that is
- *     open by default is not a dropdown.
+ *  2. **The first fold opens on load.** KWV defaults every section closed.
+ *     Live's `lsx-search.js` force-opens its first `.collapse`, so the rail
+ *     never arrives as a stack of shut headings, and that is followed here.
+ *
+ * ## Why there is no outside-click and no Escape handler
+ *
+ * There was, until 2026-09-10, when the panel stopped being an
+ * absolutely-positioned dropdown over the results and became live's in-flow
+ * fold. Both handlers — and the close-the-siblings call in `toggle()` — existed
+ * only to get the visitor out from under an overlay. A fold covers nothing, so
+ * closing on an outside click would take away a list the visitor is still
+ * reading, and **more than one facet may be open at once**, which is also what
+ * live allows (its collapses carry no `data-parent`). The stylesheet's header
+ * records the same three consequences from the CSS side.
  *
  * `facetwp-loaded` is a native `CustomEvent` with `bubbles: true` — FacetWP's
  * own `fUtil.trigger()` dispatches it that way
@@ -49,8 +56,9 @@
  * dependency is needed to listen for it.
  *
  * Progressive enhancement: the container only gets `sd-filters-collapsible`
- * (which the CSS gates the dropdown behaviour on) once this runs, so with no JS
- * every facet renders as a plain open list and stays fully usable.
+ * (which the CSS gates the fold behaviour on) once this runs, so with no JS
+ * every facet renders as a plain open list inside its plate and stays fully
+ * usable.
  *
  * @package sd-theme-2026
  */
@@ -59,14 +67,15 @@
 
 	var CONTAINER = '.sd-search-filters';
 	var READY_CLASS = 'sd-filters-collapsible';
+	var FOLD = 'sd-facet-fold';
 	var OPEN = 'sd-filter-open';
 
-	// A dropdown is a facet block that has its own heading to hang the control
-	// on. The `hasHeader` attribute is what puts one there, so the facets
-	// authored without a header — the keyword search, the sort, the reset and
-	// the selected-filter chips — fail this test and stay permanently visible.
-	// That is deliberate: it is the template that decides which facets are
-	// dropdowns, by giving them a heading or not.
+	// A fold is a facet block that has its own heading to hang the control on.
+	// The `hasHeader` attribute is what puts one there, so the facets authored
+	// without a header — the keyword search, the sort, the reset and the
+	// selected-filter chips — fail this test and stay permanently visible. That
+	// is deliberate: it is the template that decides which facets fold, by
+	// giving them a heading or not.
 	var SECTION = '.facet-wrap';
 
 	var uid = 0;
@@ -86,15 +95,15 @@
 	}
 
 	/**
-	 * Is this facet block one we turn into a dropdown?
+	 * Is this facet block one we turn into a fold?
 	 *
 	 * Both halves must be present: a heading to click and a facet to reveal.
 	 * A facet FacetWP has hidden as empty is excluded — `.facetwp-hidden` is
 	 * `display:none` in the plugin's own front.css and the block's front.js
-	 * adds it whenever `num_choices` for the facet drops to zero, so opening
-	 * one would reveal an empty panel under a live-looking control.
+	 * adds it whenever `num_choices` for the facet drops to zero, so folding
+	 * one open would reveal an empty panel under a live-looking control.
 	 */
-	function isDropdown( section ) {
+	function isFold( section ) {
 		return !! heading( section ) &&
 			!! panel( section ) &&
 			! section.classList.contains( 'facetwp-hidden' );
@@ -110,32 +119,26 @@
 		}
 	}
 
-	function closeAll( except ) {
-		var open = document.querySelectorAll( CONTAINER + ' ' + SECTION + '.' + OPEN );
-
-		Array.prototype.forEach.call( open, function ( section ) {
-			if ( section !== except ) {
-				setState( section, false );
-			}
-		} );
-	}
-
 	/**
 	 * Give one facet block its control semantics.
 	 *
 	 * Idempotent — re-running it on an already-enhanced block resets nothing,
 	 * which is what lets `facetwp-loaded` call it again after a refresh has
 	 * revealed a facet that was previously hidden as empty.
+	 *
+	 * @param {Element} section   The `.facet-wrap` block wrapper.
+	 * @param {boolean} openFirst Open this one if nothing in its rail is open
+	 *                            yet — live's force-open of the leading facet.
 	 */
-	function enhance( section ) {
+	function enhance( section, openFirst ) {
 		var control = heading( section );
 		var target = panel( section );
 
-		if ( ! isDropdown( section ) ) {
+		if ( ! isFold( section ) ) {
 			return;
 		}
 
-		section.classList.add( 'sd-facet-dropdown' );
+		section.classList.add( FOLD );
 
 		if ( ! target.id ) {
 			uid += 1;
@@ -148,28 +151,51 @@
 			control.setAttribute( 'tabindex', '0' );
 		}
 
-		// Closed unless this block is already open — so a refresh that re-runs
-		// this does not shut a dropdown the visitor is filtering inside.
-		setState( section, section.classList.contains( OPEN ) );
+		// Keep whatever state this block already has — so a refresh that
+		// re-runs this does not shut a fold the visitor is filtering inside.
+		setState( section, section.classList.contains( OPEN ) || !! openFirst );
 	}
 
+	/**
+	 * Enhance every facet block in one rail.
+	 *
+	 * The first fold is opened only when nothing in the rail is open already.
+	 * On load that is live's behaviour; after a refresh it means a rail whose
+	 * only open facet has just been hidden as empty still shows one list rather
+	 * than collapsing to a stack of shut headings.
+	 *
+	 * @param {Element} root The `.sd-search-filters` container.
+	 */
 	function enhanceAll( root ) {
-		Array.prototype.forEach.call( root.querySelectorAll( SECTION ), enhance );
+		var sections = root.querySelectorAll( SECTION );
+		var hasOpen = !! root.querySelector( SECTION + '.' + OPEN );
+		var opened = false;
+
+		Array.prototype.forEach.call( sections, function ( section ) {
+			var openThis = ! hasOpen && ! opened && isFold( section );
+
+			enhance( section, openThis );
+
+			if ( openThis ) {
+				opened = true;
+			}
+		} );
 	}
 
 	function toggle( section ) {
-		var isOpen = section.classList.contains( OPEN );
-
-		// One at a time: these panels overlap the page and each other.
-		closeAll( section );
-		setState( section, ! isOpen );
+		// No `closeAll()`. The panels fold in flow and overlap nothing, so
+		// there is no reason to shut a sibling — and live allows several open.
+		setState( section, ! section.classList.contains( OPEN ) );
 	}
 
 	/**
 	 * The facet block whose *heading* an event came from.
 	 *
 	 * Returns null for an event inside the panel, so ticking a checkbox never
-	 * closes the dropdown it was ticked in.
+	 * closes the fold it was ticked in.
+	 *
+	 * @param {Event} event A delegated click or keydown.
+	 * @return {Element|null} The `.facet-wrap` to toggle, or null.
 	 */
 	function sectionFromEvent( event ) {
 		if ( ! event.target || ! event.target.closest ) {
@@ -184,7 +210,7 @@
 
 		var section = control.closest( SECTION );
 
-		return section && heading( section ) === control && isDropdown( section )
+		return section && heading( section ) === control && isFold( section )
 			? section
 			: null;
 	}
@@ -216,35 +242,10 @@
 			if ( section ) {
 				event.preventDefault();
 				toggle( section );
-				return;
-			}
-
-			// A click anywhere outside an open panel closes it — but not one
-			// inside a panel, which is how a checkbox list is used.
-			if ( ! event.target.closest || ! event.target.closest( SECTION + '.' + OPEN ) ) {
-				closeAll( null );
 			}
 		} );
 
 		document.addEventListener( 'keydown', function ( event ) {
-			if ( 'Escape' === event.key ) {
-				var inside = event.target.closest && event.target.closest( SECTION + '.' + OPEN );
-
-				closeAll( null );
-
-				// Send focus back to the control that opened the panel, rather
-				// than leaving it on a checkbox that is now display:none.
-				if ( inside ) {
-					var control = heading( inside );
-
-					if ( control ) {
-						control.focus();
-					}
-				}
-
-				return;
-			}
-
 			if ( 'Enter' !== event.key && ' ' !== event.key && 'Spacebar' !== event.key ) {
 				return;
 			}

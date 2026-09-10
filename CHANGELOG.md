@@ -1017,6 +1017,134 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 🔍 **The facet filters fold in flow instead of opening over the results, and the rail is
+  restyled off live.** LS-2018 (line 8, Lodge / Brand). Four files:
+  `assets/styles/facetwp-facets.css`, `assets/js/search-filters.js` and the rail markup in
+  `patterns/template-taxonomy-accommodation-type.php` and
+  `patterns/template-taxonomy-accommodation-brand.php`.
+
+  **The dropdown is gone.** Opening a facet used to reveal an absolutely-positioned panel
+  over the result cards at `z-index: 30`, with one facet open at a time, an outside-click
+  close and an Escape handler. Live's facets are Bootstrap `.collapse` accordions: opening
+  one **pushes the facets below it down the rail**, several may be open at once, and there is
+  no outside-click or Escape because nothing is ever covered. All three of those followed
+  from the overlay, and all three are gone with it. The fold is the grid row-collapse
+  `kwv-theme-2026` uses — `grid-template-rows: auto minmax(0, 1fr)` → `minmax(0, 0fr)`, not
+  `display: none`, because noUiSlider lands every handle at zero if it initialises in a box
+  with no width. The first facet now opens on load, as live's `lsx-search.js` force-opens its
+  first `.collapse`.
+
+  **The styling is measured off the search page, not off a term archive.** Live has no
+  term-archive results page — `/accommodation-type/lodge/` renders through LSX's generic
+  archive, and every real accommodation listing on the site is one FacetWP search template
+  with a different query string. Giving the taxonomy its own results page is a change this
+  rebuild makes, so the reference for *how the rail looks* is
+  `/search/accommodation/africa's+finest/`, measured in Chrome at 1440 on 2026-09-10. The
+  full table of measurements and their tokens is at the head of the stylesheet. The visible
+  changes: each facet with a heading is now a **`neutral-200` plate** 3px from its
+  neighbours (rail `blockGap` `spacing|20` → `spacing|5`), "Refine by" is a plate of the same
+  kind, and the heading is live's plain brown title with a chevron ranged right —
+  `neutral-400`, hover `accent-500` — instead of the bordered white select box it was
+  imitating. Facet headings go `200` → `400`, live's 22px against the 16px they were.
+
+  `#60483B` and `#4C5250` both map to `neutral-700`, and `#ECE9E3` and `#F7F5F2` both to
+  `neutral-200`, per style.md §2.2 — so live's four-percent step between the "Refine by"
+  plate and the facet plates is not reproduced; the `h2`'s own uppercase separates them
+  instead.
+
+  **Two smaller corrections to match live.** The result count beside each choice sits inline
+  after the term name (`Botswana (42)`) rather than ranged right, and a checked choice is no
+  longer recoloured to `brand-600` semi-bold — live marks it by the tick alone, and the
+  second emphasis read as a different kind of state. Choices now take live's 5px sibling
+  rhythm rather than per-row padding, which also keeps each row at live's 24px.
+
+  ⚠️ **`display: grid` on `.facet-wrap` is gated on `:not(.facetwp-hidden)`** and must stay
+  that way. When a facet runs out of choices, `facetwp-blocks-beta`'s front.js adds
+  `.facetwp-hidden` to the block wrapper and the plugin hides it at (0,1,0); an unguarded
+  author `display` outranks that and resurfaces the empty facet as a live-looking control
+  over nothing. Same trap as kwv-theme-2026's shop-filter sheet.
+
+  ⚠️ **Both templates have Site Editor overrides on dev** (`wp_template` 65946 and 65945), so
+  the two *markup* changes — the rail `blockGap` and the heading sizes — do not reach the dev
+  front end until those rows are reconciled. The stylesheet and the script are theme files
+  and take effect immediately. → `wp-db-override-reconciliation`
+
+- 🌅 **The banner scrim is 0% — every `is-style-hero-banner` photograph now runs at full
+  brightness.** `styles/sections/hero-banner.json`: the `color-mix()` alpha on
+  `.wp-block-cover__background` goes from `45%` to `0%`. One number, one file, twelve
+  banners.
+
+  **Live does this, and it is explicit about it.** `sd-lsx-child/assets/css/custom.css`
+  carries `body:not(.home) #lsx-banner .page-banner-wrap .page-banner .page-banner-image:after
+  { background-color: transparent; }` — the overlay is cleared on every inner page and kept
+  only on the homepage. Measured on `/accommodation/` 2026-09-10.
+
+  The alpha stays inside the `color-mix()` rather than being deleted, so putting a scrim
+  back is that one number again — which is also why every banner pattern keeps
+  `dimRatio: 100`. Core's dim classes are an `opacity` on the overlay span; 100 makes the
+  span fully opaque so the style is the single source of the scrim's alpha. Nothing in the
+  patterns changed, and the four Tour Operator singles that were already unscrimmed
+  (`dimRatio: 0`, 2026-08-28) render identically either way.
+
+  ⚠️ **`base` type now sits on an undimmed photograph on all twelve.** That trade-off was
+  already accepted for the singles in August, so this is consistent rather than new — but
+  live does not run white-on-photo on inner pages at all: it puts the title and tagline on
+  an opaque `#ece9e3` plate in `#cc7f16` and `#60483b`, which is why it can afford a bright
+  image. If a banner title fails contrast, that plate is the fix live already ships. →
+  flagged, not adopted.
+
+  `patterns/card-review-quote.php` keeps its own neutral-900 scrim. Its header used to
+  justify it by pointing at the banner's — "the same one at the same weight, so the two read
+  as one family" — and that pairing no longer holds; the note now says why the card keeps a
+  floor where the banner drops one. `patterns/template-archive-destination.php`, the
+  canonical banner comment the other six point at, records the change and the live
+  measurement.
+
+- 🏨 **The horizontal accommodation row was reworked, and the accommodation-type archive
+  caught up with it.** Both reconciled from the Site Editor on dev 2026-09-10
+  (`wp_template` 65946, `/accommodation-type/africas-finest/`) rather than authored here.
+
+  **`patterns/card-accommodation-list.php`** — five deltas, and the file is now
+  byte-identical to the row in that template: the card ground is `neutral-200` with the meta
+  panel on `neutral-100`, so the strip reads as a plate *on* the card rather than the only
+  tinted thing in the row (live measures #f6f3f0 with the strip on #f0ebe5 — this pair, the
+  right way round); the thumbnail is **30%** and **square**, not 25% at 4/3, which stops a
+  portrait lodge photograph being cropped to a letterbox; the meta panel moved *inside* the
+  content column as a nested 65/35 split, which is what lets it stretch to the copy's height
+  and inset itself from the card edge — a third top-level column could only ever run the full
+  height of the row, thumbnail included; the excerpt is 45 words in its own group; and
+  `core/read-more` is gone, because the whole title is already a link to the same URL.
+  The card's `margin-bottom` went with it — the row gap is the enclosing
+  `core/post-template`'s `blockGap`, and a margin here doubled it.
+
+  ⚠️ **The card is shared with `patterns/template-taxonomy-accommodation-brand.php`**, so
+  the brand term archive picks the new row up too. That template's own `wp_template` row
+  (65945) still carries the *old* card inline and will keep rendering it on dev until the
+  override is reset or re-saved.
+
+  **`patterns/template-taxonomy-accommodation-type.php`** — the Best Price Guarantee /
+  specials band is now carried above the results, reversing the "not repeated here" note in
+  this file's header: live has the pair on this page as well as on the archive, and the type
+  page is a child of the archive that opens with it. `core/term-description` came out (a
+  second standfirst under the new band pushed the list a long way down, and twenty-four of
+  the twenty-six terms had nothing to show there). The results region is
+  `is-style-light-page-section`, which owns the ground and the rhythm the hand-set
+  `spacing|70`/`spacing|80` padding used to; the loop pages at 12; and the Destinations and
+  Specials facet headings carry anchors.
+
+  ⚠️ **The sort facet is `sort_`, with the trailing underscore.** `sort` is reserved —
+  FacetWP will not save a facet under it — so a block pointing at `sort` renders nothing at
+  all. This file pointed at `sort` since it was written.
+
+  **Two differences from the DB are deliberately not imported.** The banner's `dimRatio` is
+  kept at **100**: the editor has it at 0, and `has-background-dim-0` compiles to
+  `opacity: 0` on `.wp-block-cover__background`
+  (`wp-includes/blocks/cover/style.min.css`), which removes the scrim outright — the
+  `!important` background-colour in `styles/sections/hero-banner.json` cannot bring it back,
+  and the banner's `base`-coloured title would sit on an unmuted photograph. And the empty
+  `core/paragraph` between the "Results" heading and the count facet is dropped as an
+  editing artefact. Both → flagged for a ruling, not silently resolved.
+
 - **`assets/fonts/optima-*.woff2` is no longer `.gitignore`d — the licensed face is
   committed.** The rule existed for one reason: no web-licensed file existed, so the pattern
   guarded against someone converting the twelve desktop OTFs. The kit's arrival on

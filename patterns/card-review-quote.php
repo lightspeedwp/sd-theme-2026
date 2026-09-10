@@ -33,9 +33,15 @@
  * Live sets white type directly on the photograph with no overlay. It survives
  * on the three reviews connected to this tour because all three photographs
  * happen to be dark, but it is white-on-photo with no floor — a light image
- * puts the headline at 1:1. The theme's own banner answers this with a
- * neutral-900 scrim (styles/sections/hero-banner.json) and this card uses the
- * same one at the same weight, so the two read as one family.
+ * puts the headline at 1:1. This card answers it with a neutral-900 scrim of
+ * its own.
+ *
+ * ⚠️ It used to be the *same* scrim the banner carried, at the same weight, so
+ * the two read as one family. `styles/sections/hero-banner.json` went to 0% on
+ * 2026-09-10 — live runs its inner-page banners bright — so the pairing no
+ * longer holds. This card keeps its floor: unlike the banner, nothing here
+ * offers a fallback if a light photograph turns up, and the review headline is
+ * body copy rather than a display title.
  *
  * That is the a11y line in AGENTS.md working agreement 5, not a redesign: the
  * composition, the crop, the type and every colour are live's.
