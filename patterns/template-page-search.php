@@ -21,7 +21,7 @@
 
 	<!-- wp:group {"metadata":{"name":"Search Header"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group">
-		<!-- wp:query-title {"type":"search","level":1,"fontFamily":"heading","fontSize":"700","textColor":"contrast","style":{"typography":{"fontWeight":"var:custom|font-weight|black","lineHeight":"var:custom|line-height|heading","textTransform":"uppercase"}}} /-->
+		<!-- wp:query-title {"type":"search","level":1,"fontFamily":"heading","fontSize":"700","textColor":"contrast","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","lineHeight":"var:custom|line-height|heading","textTransform":"uppercase"}}} /-->
 
 		<!-- wp:search {"label":"<?php echo esc_attr_x( 'Search', 'search form label', 'sd-theme-2026' ); ?>","showLabel":false,"placeholder":"<?php echo esc_attr_x( 'Search the site…', 'search form placeholder', 'sd-theme-2026' ); ?>","buttonText":"<?php echo esc_attr_x( 'Search', 'search form button', 'sd-theme-2026' ); ?>","buttonPosition":"button-inside"} /-->
 	</div>
