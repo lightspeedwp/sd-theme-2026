@@ -193,7 +193,7 @@
 		button.addEventListener( 'click', toggleState );
 
 		button.addEventListener( 'keydown', function ( event ) {
-			if ( ' ' === event.key || 'Spacebar' === event.key ) {
+			if ( 'Enter' === event.key || ' ' === event.key || 'Spacebar' === event.key ) {
 				toggleState( event );
 			}
 		} );
