@@ -8,6 +8,38 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🗺️ **The team member map on the single team member template.** LS-2020 (line 10, Team /
+  Safari Expert). `patterns/template-single-team.php` now carries live's `#map` — "Places
+  {name} has visited" — between the gallery and the tours shelf, which is exactly where the
+  file's own docblock said it would go when the block landed. Nothing else on the template
+  changed.
+
+  **The block is `sd/team-map` from `sd-enhancements`, not Tour Operator's
+  `lsx-tour-operator/google-map`.** The destination summary composes that variation by hand
+  in forty lines; this section is three, because the block emits the plate, the `.lsx-map`
+  data carrier and the marker data itself. It has to: on TO 2.2 the `lsx/map` binding cannot
+  answer for a team member — `lsx_to_has_map()` has no `team` case, its `default` branch
+  wants the post's own coordinates, which a person does not have, and `lsx_to_map()`
+  discards its own output. All three are answered in the plugin.
+
+  **The heading is the theme's, like every other heading here** — `sd/post-field` with
+  `format: first-name`, `prefix` `"Places "` and `suffix` `" has visited"`, so this file
+  owns the standing halves and their translation. `lsx-location-wrapper` on the section
+  drops the band, heading included, when `lsx_to_has_map()` is false.
+
+  **Hidden on phones, because live hides it on phones.** `custom.css:2642-2647` puts `#map`
+  in a `max-width: 767px` display-none beside the tour, destination and accommodation maps.
+  That is a Block Visibility `small` control, not a CSS hide — and `small` is that
+  breakpoint exactly, `@media (max-width: 767.98px)` off the 768px `medium` setting.
+
+  Verified on local 2026-09-11 against a seeded team member: band, plate, `.lsx-map` and two
+  `map-data` marker nodes render, plate and `.lsx-map` are siblings inside one
+  `.lsx-location-wrapper`, the hide class lands server-side, and the heading composes to
+  "Places Liesl has visited". With the connection meta removed the whole band disappears.
+  The fixture was reverted. ⚠️ **Not yet seen in a browser**: local has no Google Maps API
+  key, so the Google tiles themselves are unproven — that needs dev, which has the key and
+  the real connections.
+
 - 🏷️ **The Brands landing and the single-brand archive.** LS-2018 (line 8, Lodge / Brand).
   Two templates, both bound to theme files rather than to Site Editor layouts:
   `templates/page-brands.html` (core resolves it by the page slug `brands`, dev 52337) and
