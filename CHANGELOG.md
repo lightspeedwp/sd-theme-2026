@@ -40,6 +40,37 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   key, so the Google tiles themselves are unproven — that needs dev, which has the key and
   the real connections.
 
+- 🔗 **The team map's plate label styled as a link.** `assets/styles/sd-team-map.css`,
+  attached to `sd/team-map` by `inc/team-map.php` — the same arrangement
+  `inc/brand-regions.php` uses for the other sd-enhancements block the theme dresses.
+
+  The plugin ships a neutral dark pill as a standing default and says in its own
+  stylesheet header that "colour and type are the theme's". This unwinds the pill —
+  background, padding and radius all go — and leaves a link: all caps in the heading
+  face at font-size 300, semi-bold, letter-spacing wide, `neutral-800` turning
+  `brand-600` on hover and focus. Zared's call, 2026-09-11; live leaves the LSX plate
+  label unstyled, so there is no measurement behind this one.
+
+  **Two classes deep on purpose.** The plugin's rules are single-class, and two block
+  stylesheets on the same block have no guaranteed order, so
+  `.sd-team-map .sd-team-map__plate-action` wins on specificity rather than on luck. No
+  `!important`. (Measured order happens to favour the theme anyway — the plugin's sheet
+  enqueues first.)
+
+  **Not theme.json.** `styles.blocks` reaches the block wrapper, and `elements.link`
+  would catch every `<a>` inside it — including the ones Google writes into the marker
+  info windows once the map has drawn. The plate label needs a selector.
+
+  The hover colour is the whole affordance now the pill is gone, so `:focus-visible`
+  carries it too, the UA outline is left in place, and the transition moved from
+  `background-color` to `color`. Contrast is comfortable because of what the plate
+  photograph is — Tour Operator's placeholder is a washed-out world map, pale sea and
+  cream land; a darker plate image would need a scrim, not a different colour.
+
+  Verified on local 2026-09-11: all eight tokens resolve against the generated global
+  stylesheet with no orphaned refs, and the sheet is absent before the block renders and
+  enqueued after. ⚠️ **Not yet seen in a browser** — the local server was not running.
+
 - 🏷️ **The Brands landing and the single-brand archive.** LS-2018 (line 8, Lodge / Brand).
   Two templates, both bound to theme files rather than to Site Editor layouts:
   `templates/page-brands.html` (core resolves it by the page slug `brands`, dev 52337) and

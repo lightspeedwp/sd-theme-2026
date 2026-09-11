@@ -285,6 +285,12 @@ require_once get_theme_file_path( 'inc/facetwp.php' );
 // block, so it is outside enqueue_custom_block_styles()' core-* scan.
 require_once get_theme_file_path( 'inc/brand-regions.php' );
 
+// Styles the plate label on sd/team-map, the team single's cluster map. A
+// non-core block, so it is outside enqueue_custom_block_styles()' core-* scan;
+// and the target is an element inside the block addressed by its own class, so
+// theme.json cannot reach it without also catching the marker info windows.
+require_once get_theme_file_path( 'inc/team-map.php' );
+
 // Carries the Read more script for core/term-description on the brand archive.
 // The stylesheet is picked up by the core-* scan; only the script and its
 // localised label need a module, because there is no

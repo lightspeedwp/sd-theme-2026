@@ -1,0 +1,90 @@
+/**
+ * sd/team-map — the plate label on the team member map.
+ *
+ * Enqueued by inc/team-map.php rather than by the `core-*` scan in
+ * functions.php: that scan maps `core-<block>.css` to `core/<block>` and only
+ * core blocks participate. Sheets for non-core blocks are enqueued by their own
+ * modules in `inc/`, which is what `sd-brand-regions.css`, `facetwp-facets.css`
+ * and `ollie-mega-menu.css` already do.
+ *
+ * ## Why the theme styles a plugin block's label
+ *
+ * `sd-enhancements-2026/blocks/team-map/style.css` says so in its own header:
+ * "Colour and type are the theme's; every selector here is available to it."
+ * That sheet is structural — it gives the plate a canvas, hides the `.lsx-map`
+ * data carrier, and pulls the label once Google has drawn — and it ships a
+ * neutral dark pill as a standing default so the block is never unstyled on a
+ * site without this theme. This file is the design layer over it.
+ *
+ * The plate markup, from that block's render.php:
+ *
+ *   <div class="lsx-map-preview sd-team-map__plate" style="height:…;background-image:…">
+ *     <a class="sd-team-map__plate-action" href="#" role="button">Click to display the map</a>
+ *
+ * ⚠️ **Two classes deep, deliberately.** The plugin's rules are single-class
+ * (0,1,0) and there is no guaranteed order between two block stylesheets
+ * attached to the same block, so matching its specificity would make the
+ * result depend on enqueue order. `.sd-team-map .sd-team-map__plate-action`
+ * is (0,2,0) and wins either way. Nothing here uses `!important`.
+ *
+ * ## The look
+ *
+ * A link, not a button: all caps in the heading face, `neutral-800` turning
+ * `brand-600`. Zared's call, 2026-09-11 — live leaves the LSX plate label
+ * unstyled, so there is no measurement behind this one, unlike most of the
+ * theme. The dark pill the plugin ships is unwound here rather than tuned:
+ * background, padding and radius all go, which is what "only a link" means.
+ *
+ * It reads against the plate photograph because of what that photograph is —
+ * Tour Operator's `placeholder-map-1920x656.jpg` is a washed-out world map,
+ * pale blue sea and cream land, so `neutral-800` (#382E25) sits on it with
+ * room to spare. That is a fact about this specific asset: if the plate image
+ * is ever swapped for a darker one, the label needs revisiting, and a scrim
+ * rather than a colour change is the fix.
+ *
+ * @package sd-theme-2026
+ */
+
+/*
+ * Unwind the plugin's pill. The positioning above it — absolute, centred on
+ * the plate — is the plugin's and is left alone: the label has to sit on the
+ * canvas, and that is structural, not decorative.
+ */
+.sd-team-map .sd-team-map__plate-action {
+	padding: 0;
+	border-radius: 0;
+	background: none;
+	color: var(--wp--preset--color--neutral-800);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--300);
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+	line-height: var(--wp--custom--line-height--button);
+	text-transform: uppercase;
+	letter-spacing: var(--wp--custom--letter-spacing--wide);
+	text-decoration: none;
+}
+
+/*
+ * The hover is the whole affordance now that the pill is gone, so `:focus-visible`
+ * carries it too — a keyboard user gets the same signal as a mouse one. The UA
+ * outline is deliberately not suppressed; `outline-offset` just lifts it off the
+ * glyphs so it stays legible over the map behind it.
+ */
+.sd-team-map .sd-team-map__plate-action:hover,
+.sd-team-map .sd-team-map__plate-action:focus-visible {
+	color: var(--wp--preset--color--brand-600);
+}
+
+.sd-team-map .sd-team-map__plate-action:focus-visible {
+	outline-offset: var(--wp--preset--spacing--5);
+}
+
+/*
+ * The plugin transitions `background-color`, which no longer changes. Colour is
+ * what moves here, so that is what eases — and only where motion is welcome.
+ */
+@media (prefers-reduced-motion: no-preference) {
+	.sd-team-map .sd-team-map__plate-action {
+		transition: color 150ms ease-in-out;
+	}
+}
