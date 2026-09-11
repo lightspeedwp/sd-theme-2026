@@ -6,6 +6,39 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+
+- 🖼️ **All four gallery bands now use `sd/gallery` instead of the `lsx/gallery` placeholder.**
+  LS-2023 (line 13, Gallery Implementation).
+
+  `patterns/template-single-team.php`, `patterns/template-single-accommodation.php`,
+  `patterns/template-single-tour.php` and `patterns/destination-gallery.php`. Each was a
+  `core/gallery` carrying Tour Operator's `lsx/gallery` binding plus three empty `core/image`
+  blocks that existed only to give the editor something to show; each is now one self-closing
+  `wp:sd/gallery`. The ⚠️ "this is the placeholder pass, not the gallery build" note that
+  stood in all four is gone — this is the gallery build.
+
+  What changes on the page: live's actual layout. Two tiles across the top row, three across
+  the second, a `+N more` overlay on the fifth, and a lightbox over the whole set — where the
+  binding rendered every image in a flat grid with no `srcset` and no `alt`. The block is
+  `sd-enhancements`' (`blocks/gallery/`), and it carries its own grid, tile box and overlay
+  CSS because those three are load-bearing rather than decorative.
+
+  **No theme CSS was added.** The block ships the rules that hold the layout up and leaves
+  colour, type, radius and the lightbox chrome to the theme; nothing in `styles/**` or
+  `assets/styles/` needed to change for this. If the gallery should pick up theme spacing, the
+  hook is `--sd-gallery-gap` (4px, live's gutter) and the tile shape is `--sd-gallery-ratio`.
+
+  **`lsx-gallery-wrapper` still collapses the band.** `maybe_hide_varitaion()` reads the
+  `gallery` meta directly and does not care which block sits inside, so a post with no gallery
+  still loses the section and its heading. Verified on all four patterns.
+
+  ⚠️ **One visual decision to confirm:** the tiles default to **3:2**, matching Tour
+  Operator's `lsx-to-gallery` 900×600 crop so a tile does not crop an already-cropped file
+  twice. Live's Envira config asks for 4:3 but has never actually rendered it — its gallery is
+  broken in production (the tile box collapses to 4px; the diagnosis is in the block's
+  `render.php`). If 4:3 is wanted, it is one select in the block's Settings panel.
+
 ### Added
 
 - 🧭 **Breadcrumbs on both team templates, and the dev Site Editor changes imported.**
