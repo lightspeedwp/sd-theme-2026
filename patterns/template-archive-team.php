@@ -64,12 +64,19 @@
  * ### The role term IDs are resolved here, not written down
  *
  * `core/query`'s `taxQuery` holds **term IDs** — core runs the values through
- * `intval()` (`wp-includes/blocks.php:2912`), so a slug is silently dropped and
+ * `intval()` (`wp-includes/blocks.php:2928`), so a slug is silently dropped and
  * the section renders the whole roster. Local, dev and live do not share term
  * IDs, so a literal ID in this file would be wrong in two environments out of
  * three. The IDs are looked up from their slugs below instead: a guarded
  * runtime lookup with a fallback, which is the one thing a pattern may hold in
  * a variable. → AGENTS.md, "Patterns follow core's form"
+ *
+ * The shape is `{"include":{"role":[id]}}`, which is what the editor writes on
+ * WP 7.1 and what this file was reserialised to on the 2026-09-11 import. The
+ * older `{"role":[id]}` form still works — `build_query_vars_from_query_block()`
+ * keeps a back-compat branch for it (blocks.php:2907) — so the change is a
+ * no-op at render time and is carried only to stop the editor rewriting the
+ * file every time somebody opens it.
  *
  * The fallback is **-1, not 0**. Core's `array_filter( array_map( 'intval', … ) )`
  * strips a `0` and leaves `terms` empty, and an empty `terms` clause is dropped
@@ -96,18 +103,13 @@
  *
  * ## What is deliberately not here
  *
- * **The breadcrumb bar.** Live draws Yoast's trail in a strip along the bottom
- * of the banner ("About Us / Meet The Team"). Breadcrumb output is a filter over
- * a third-party plugin's trail — behaviour, not design — so by the deactivation
- * test it is `sd-enhancements` work. LS-2020 item 10.7 carries it.
- * → AGENTS.md, theme/plugin boundary
- *
  * **A tinted intro band.** The destinations and tours archives put their
  * standfirst on `neutral-200` beside the safari expert panel, because live's
  * `.lsx-to-archive-header-tour` does. The team archive's description is in
  * `.lsx-to-archive-header` *without* the `-tour` suffix — it sits on white,
- * left-aligned, roman, at 15px, with no expert panel and no drop cap. Measured;
- * that is why it is a plain paragraph and not `is-style-archive-intro`.
+ * with no expert panel and no drop cap. Measured; that is why it is a plain
+ * paragraph on the page ground and not `is-style-archive-intro`. Its alignment
+ * and size are no longer live's — see the note on the block itself.
  *
  * **The "Not sure where to go" CTA is here even though live's team page has
  * none.** Live closes on the value band alone; its `#footer-cta` hero unit is
@@ -199,6 +201,21 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 
 	<?php
 	/*
+	 * The breadcrumb bar, directly under the banner — the same
+	 * `patterns/breadcrumbs.php` every other archive and single in this theme
+	 * runs, in the same position live puts it. The distinction the note on
+	 * `patterns/breadcrumbs.php` records: filtering what Yoast *puts* in the
+	 * trail is plugin work, but the band it sits in is a strip of theme markup
+	 * around a third-party block, and it deactivates with the theme. This file
+	 * used to record the opposite under "deliberately not here"; that note
+	 * predated the 2026-09-03 decision and has been removed rather than left to
+	 * contradict it.
+	 */
+	require __DIR__ . '/breadcrumbs.php';
+	?>
+
+	<?php
+	/*
 	 * The page body: the standfirst, then the three role sections.
 	 *
 	 * `blockGap` at spacing|100 is the space between one section's last row and
@@ -214,9 +231,16 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 
 		<?php
 		/*
-		 * The standfirst. Live's `.lsx-to-archive-description`, measured at
-		 * 15px roman on white, left-aligned, ending in two `<br>`s that are
-		 * markup noise and are not carried.
+		 * The standfirst. Live's `.lsx-to-archive-description`, ending in two
+		 * `<br>`s that are markup noise and are not carried.
+		 *
+		 * ⚠️ **Centred in a 1100px measure, which is a departure from live.**
+		 * Live runs it left-aligned and roman at 15px; this is centred at
+		 * font-size 300 inside an `Intro` group constrained to 1100px. Authored
+		 * in the Site Editor on dev 2026-09-11 (wp_template 65947) and imported
+		 * here — Zared's call, not a measurement. The group exists to hold the
+		 * measure: the section's own `constrained` layout is the theme's
+		 * content width, and the standfirst wanted a narrower one.
 		 *
 		 * On live this is a Tour Operator *setting*, not post content — there
 		 * is no block for it in TO 2.2 — so it is authored here, verbatim.
@@ -226,9 +250,15 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 		 * the value; until then, editing it means editing the template.
 		 */
 		?>
-		<!-- wp:paragraph {"align":"wide","fontSize":"200"} -->
-		<p class="alignwide has-200-font-size"><?php esc_html_e( 'We have been in the wonderful world of travel for 28 years this year and can proudly say that thanks mainly to a rich collection of past clients, staff, suppliers, friends and family, we are well established, respected and unblemished. We started small on solid foundations of passion for our country and dedication to client service.', 'sd-theme-2026' ); ?></p>
-		<!-- /wp:paragraph -->
+		<!-- wp:group {"metadata":{"name":"Intro"},"align":"wide","layout":{"type":"constrained","contentSize":"1100px"}} -->
+		<div class="wp-block-group alignwide">
+
+			<!-- wp:paragraph {"align":"wide","className":"is-style-default","style":{"typography":{"textAlign":"center"}},"fontSize":"300"} -->
+			<p class="has-text-align-center alignwide is-style-default has-300-font-size"><?php esc_html_e( 'We have been in the wonderful world of travel for 28 years this year and can proudly say that thanks mainly to a rich collection of past clients, staff, suppliers, friends and family, we are well established, respected and unblemished. We started small on solid foundations of passion for our country and dedication to client service.', 'sd-theme-2026' ); ?></p>
+			<!-- /wp:paragraph -->
+
+		</div>
+		<!-- /wp:group -->
 
 		<?php
 		/*
@@ -285,7 +315,7 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 			<h2 class="wp-block-heading has-text-align-center is-style-section-title"><?php esc_html_e( 'Management Team', 'sd-theme-2026' ); ?></h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:query {"queryId":0,"query":{"perPage":100,"pages":0,"offset":0,"postType":"team","order":"asc","orderBy":"menu_order","search":"","exclude":[],"sticky":"","inherit":false,"taxQuery":{"role":[<?php echo (int) $sd_role_management; ?>]},"parents":[]},"align":"wide","layout":{"type":"default"}} -->
+			<!-- wp:query {"queryId":0,"query":{"perPage":100,"pages":0,"offset":0,"postType":"team","order":"asc","orderBy":"menu_order","search":"","exclude":[],"sticky":"","inherit":false,"parents":[],"taxQuery":{"include":{"role":[<?php echo (int) $sd_role_management; ?>]}}},"align":"wide","layout":{"type":"default"}} -->
 			<div class="wp-block-query alignwide">
 
 				<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
@@ -311,7 +341,7 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 			<h2 class="wp-block-heading has-text-align-center is-style-section-title"><?php esc_html_e( 'Consultants', 'sd-theme-2026' ); ?></h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:query {"queryId":0,"query":{"perPage":100,"pages":0,"offset":0,"postType":"team","order":"asc","orderBy":"menu_order","search":"","exclude":[],"sticky":"","inherit":false,"taxQuery":{"role":[<?php echo (int) $sd_role_consultants; ?>]},"parents":[]},"align":"wide","layout":{"type":"default"}} -->
+			<!-- wp:query {"queryId":0,"query":{"perPage":100,"pages":0,"offset":0,"postType":"team","order":"asc","orderBy":"menu_order","search":"","exclude":[],"sticky":"","inherit":false,"parents":[],"taxQuery":{"include":{"role":[<?php echo (int) $sd_role_consultants; ?>]}}},"align":"wide","layout":{"type":"default"}} -->
 			<div class="wp-block-query alignwide">
 
 				<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
@@ -337,7 +367,7 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 			<h2 class="wp-block-heading has-text-align-center is-style-section-title"><?php esc_html_e( 'Support Team', 'sd-theme-2026' ); ?></h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:query {"queryId":0,"query":{"perPage":100,"pages":0,"offset":0,"postType":"team","order":"asc","orderBy":"menu_order","search":"","exclude":[],"sticky":"","inherit":false,"taxQuery":{"role":[<?php echo (int) $sd_role_support; ?>]},"parents":[]},"align":"wide","layout":{"type":"default"}} -->
+			<!-- wp:query {"queryId":0,"query":{"perPage":100,"pages":0,"offset":0,"postType":"team","order":"asc","orderBy":"menu_order","search":"","exclude":[],"sticky":"","inherit":false,"parents":[],"taxQuery":{"include":{"role":[<?php echo (int) $sd_role_support; ?>]}}},"align":"wide","layout":{"type":"default"}} -->
 			<div class="wp-block-query alignwide">
 
 				<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->

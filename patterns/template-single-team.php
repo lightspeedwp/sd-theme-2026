@@ -93,12 +93,6 @@
  *
  * ## What this template does not carry, and why
  *
- * - **The breadcrumb bar.** Live draws Yoast's trail along the bottom of the
- *   banner ("Home / About Us — Meet The Team / Camille Rowe"). Breadcrumb output
- *   is a filter over a third-party plugin's trail — behaviour, not design — so
- *   it is `sd-enhancements` work, and the team post type's parent-link handling
- *   is called out separately as item 10.7. Same decision, same place, as
- *   patterns/template-archive-team.php and every other single in this theme.
  * - **The socials, the phone and the email as a contact block.** `to-team`'s own
  *   `single-team.html` puts `role`, `contact_email`, `contact_number` and five
  *   social links in a boxed panel beside the bio. Live renders none of it on the
@@ -177,6 +171,26 @@
 
 	</div></section>
 	<!-- /wp:cover -->
+
+	<?php
+	/*
+	 * The breadcrumb bar, directly under the banner — the same
+	 * `patterns/breadcrumbs.php` every other single in this theme runs, in the
+	 * same position live puts it. The distinction the note on
+	 * `patterns/breadcrumbs.php` records: filtering what Yoast *puts* in the
+	 * trail is plugin work, but the band it sits in is a strip of theme markup
+	 * around a third-party block, and it deactivates with the theme. This file
+	 * used to record the opposite under "What this template does not carry";
+	 * that note predated the 2026-09-03 decision and has been removed rather
+	 * than left to contradict it.
+	 *
+	 * ⚠️ The trail's *contents* on a team member are still outstanding — Yoast
+	 * builds it from `post_parent`, and the team post type's parent-link
+	 * handling is LS-2020 item 10.7, in `sd-enhancements`. The band renders
+	 * either way; what it says is that item's business.
+	 */
+	require __DIR__ . '/breadcrumbs.php';
+	?>
 
 	<?php
 	/*

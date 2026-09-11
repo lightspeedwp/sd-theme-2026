@@ -8,6 +8,47 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🧭 **Breadcrumbs on both team templates, and the dev Site Editor changes imported.**
+  LS-2020 (line 10, Team / Safari Expert). `patterns/template-archive-team.php` and
+  `patterns/template-single-team.php`.
+
+  **Breadcrumbs.** `require __DIR__ . '/breadcrumbs.php'` directly under the banner on
+  both, the same placement every other archive and single in this theme uses. Both files
+  used to record the opposite — the archive under "What is deliberately not here", the
+  single under "What this template does not carry". Those notes predated the 2026-09-03
+  decision recorded in `patterns/breadcrumbs.php` — placing the block is design, filtering
+  what Yoast puts in the trail stays plugin work — so they have been removed rather than
+  left to contradict it. The team post type's parent-link handling, which decides what the
+  trail actually *says* on a member, remains LS-2020 item 10.7 in `sd-enhancements`; the
+  band renders either way.
+
+  **Imported from dev** (`wp_template` 65947, modified 2026-09-11 13:11). One real edit:
+  the standfirst is now centred at font-size 300 inside an `Intro` group constrained to
+  1100px, where it was a plain left-aligned `alignwide` paragraph at 200. That is a
+  departure from live, which runs it left-aligned and roman at 15px — Zared's call, and
+  noted as such on the block so the next reader does not "correct" it back.
+
+  **What was deliberately not imported.** The editor's copy hard-codes the `role` term
+  IDs (1810 / 1699 / 1811), which are dev's. This file resolves them from their slugs at
+  runtime with a `-1` fallback precisely because local, dev and live do not share term
+  IDs, so importing them verbatim would have broken two environments out of three. The
+  runtime lookup stands. Also dropped: the editor's `patternName` / `description` /
+  `categories` expansion metadata, and its loss of the banner cover's `alt=""` and
+  `dimRatio`.
+
+  **Reserialised, no-op:** `taxQuery` moved to WP 7.1's `{"include":{"role":[id]}}` shape.
+  Core keeps a back-compat branch for the old form (`blocks.php:2907`), so this changes
+  nothing at render time — it stops the editor rewriting the file on every open.
+
+  `patterns/card-team.php`, `why-choose-sd.php` and `cta-not-sure-where-to-go.php` were
+  byte-identical to their inline expansions on dev, so all three stay `require`d.
+
+  Verified on local 2026-09-11: the pattern parses, sections land in order (Banner →
+  Breadcrumbs → Team → Intro → the three role sections), and
+  `build_query_vars_from_query_block()` still reads the new shape into a real `tax_query`.
+  ⚠️ **The dev DB override is still in place** — it must not be cleared until this theme
+  file is deployed there, or dev falls back to a stale template.
+
 - 🗺️ **The team member map on the single team member template.** LS-2020 (line 10, Team /
   Safari Expert). `patterns/template-single-team.php` now carries live's `#map` — "Places
   {name} has visited" — between the gallery and the tours shelf, which is exactly where the
@@ -47,7 +88,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   The plugin ships a neutral dark pill as a standing default and says in its own
   stylesheet header that "colour and type are the theme's". This unwinds the pill —
   background, padding and radius all go — and leaves a link: all caps in the heading
-  face at font-size 300, semi-bold, letter-spacing wide, `neutral-800` turning
+  face at font-size 400, semi-bold, letter-spacing wide, `neutral-800` turning
   `brand-600` on hover and focus. Zared's call, 2026-09-11; live leaves the LSX plate
   label unstyled, so there is no measurement behind this one.
 
