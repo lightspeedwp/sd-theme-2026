@@ -1400,6 +1400,24 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- 🔗 **Three absolute dev-host URLs in `patterns/header.php` made portable.** LS-2020.
+  The Trustpilot wordmark, the five-star tile and the "Get in touch" button pointed at
+  `https://southerndestinations.lightspeedwp.dev/…` literally. The two images are **theme
+  assets**, so they now resolve through `get_theme_file_uri()`, and the link through
+  `home_url()` — the form the other eighteen asset references and eleven links in
+  `patterns/` already use. They resolved on dev only because dev is the host they named.
+
+  **Uploads URLs are untouched, and deliberately so.** This file's "Uploads URLs are the
+  exception" rule stands: they are written literally because go-live runs a find-and-replace
+  over the dev host, and the attachment IDs beside them tie the markup to dev regardless.
+  The forty-six `wp-content/uploads/…` URLs across twelve other patterns are that convention
+  working as intended, not a defect — they were counted as one only because the first sweep
+  matched on the host and not on what followed it.
+
+  The header badge stays a **static five-star image**, which is what live has and Zared's
+  call. It is not bound to `sd/trustpilot`, so it reads five stars whatever the real score
+  is — and its `alt` says so too. Wiring it is deferred, not forgotten.
+
 - **The claim that live's accommodation single has no safari expert panel was wrong.**
   `patterns/template-single-accommodation.php` recorded the absence as a design decision,
   written down so it would not read as an oversight. It was measured from one page.
