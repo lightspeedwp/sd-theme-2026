@@ -8,6 +8,110 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🧭 **Breadcrumbs on both team templates, and the dev Site Editor changes imported.**
+  LS-2020 (line 10, Team / Safari Expert). `patterns/template-archive-team.php` and
+  `patterns/template-single-team.php`.
+
+  **Breadcrumbs.** `require __DIR__ . '/breadcrumbs.php'` directly under the banner on
+  both, the same placement every other archive and single in this theme uses. Both files
+  used to record the opposite — the archive under "What is deliberately not here", the
+  single under "What this template does not carry". Those notes predated the 2026-09-03
+  decision recorded in `patterns/breadcrumbs.php` — placing the block is design, filtering
+  what Yoast puts in the trail stays plugin work — so they have been removed rather than
+  left to contradict it. The team post type's parent-link handling, which decides what the
+  trail actually *says* on a member, remains LS-2020 item 10.7 in `sd-enhancements`; the
+  band renders either way.
+
+  **Imported from dev** (`wp_template` 65947, modified 2026-09-11 13:11). One real edit:
+  the standfirst is now centred at font-size 300 inside an `Intro` group constrained to
+  1100px, where it was a plain left-aligned `alignwide` paragraph at 200. That is a
+  departure from live, which runs it left-aligned and roman at 15px — Zared's call, and
+  noted as such on the block so the next reader does not "correct" it back.
+
+  **What was deliberately not imported.** The editor's copy hard-codes the `role` term
+  IDs (1810 / 1699 / 1811), which are dev's. This file resolves them from their slugs at
+  runtime with a `-1` fallback precisely because local, dev and live do not share term
+  IDs, so importing them verbatim would have broken two environments out of three. The
+  runtime lookup stands. Also dropped: the editor's `patternName` / `description` /
+  `categories` expansion metadata, and its loss of the banner cover's `alt=""` and
+  `dimRatio`.
+
+  **Reserialised, no-op:** `taxQuery` moved to WP 7.1's `{"include":{"role":[id]}}` shape.
+  Core keeps a back-compat branch for the old form (`blocks.php:2907`), so this changes
+  nothing at render time — it stops the editor rewriting the file on every open.
+
+  `patterns/card-team.php`, `why-choose-sd.php` and `cta-not-sure-where-to-go.php` were
+  byte-identical to their inline expansions on dev, so all three stay `require`d.
+
+  Verified on local 2026-09-11: the pattern parses, sections land in order (Banner →
+  Breadcrumbs → Team → Intro → the three role sections), and
+  `build_query_vars_from_query_block()` still reads the new shape into a real `tax_query`.
+  ⚠️ **The dev DB override is still in place** — it must not be cleared until this theme
+  file is deployed there, or dev falls back to a stale template.
+
+- 🗺️ **The team member map on the single team member template.** LS-2020 (line 10, Team /
+  Safari Expert). `patterns/template-single-team.php` now carries live's `#map` — "Places
+  {name} has visited" — between the gallery and the tours shelf, which is exactly where the
+  file's own docblock said it would go when the block landed. Nothing else on the template
+  changed.
+
+  **The block is `sd/team-map` from `sd-enhancements`, not Tour Operator's
+  `lsx-tour-operator/google-map`.** The destination summary composes that variation by hand
+  in forty lines; this section is three, because the block emits the plate, the `.lsx-map`
+  data carrier and the marker data itself. It has to: on TO 2.2 the `lsx/map` binding cannot
+  answer for a team member — `lsx_to_has_map()` has no `team` case, its `default` branch
+  wants the post's own coordinates, which a person does not have, and `lsx_to_map()`
+  discards its own output. All three are answered in the plugin.
+
+  **The heading is the theme's, like every other heading here** — `sd/post-field` with
+  `format: first-name`, `prefix` `"Places "` and `suffix` `" has visited"`, so this file
+  owns the standing halves and their translation. `lsx-location-wrapper` on the section
+  drops the band, heading included, when `lsx_to_has_map()` is false.
+
+  **Hidden on phones, because live hides it on phones.** `custom.css:2642-2647` puts `#map`
+  in a `max-width: 767px` display-none beside the tour, destination and accommodation maps.
+  That is a Block Visibility `small` control, not a CSS hide — and `small` is that
+  breakpoint exactly, `@media (max-width: 767.98px)` off the 768px `medium` setting.
+
+  Verified on local 2026-09-11 against a seeded team member: band, plate, `.lsx-map` and two
+  `map-data` marker nodes render, plate and `.lsx-map` are siblings inside one
+  `.lsx-location-wrapper`, the hide class lands server-side, and the heading composes to
+  "Places Liesl has visited". With the connection meta removed the whole band disappears.
+  The fixture was reverted. ⚠️ **Not yet seen in a browser**: local has no Google Maps API
+  key, so the Google tiles themselves are unproven — that needs dev, which has the key and
+  the real connections.
+
+- 🔗 **The team map's plate label styled as a link.** `assets/styles/sd-team-map.css`,
+  attached to `sd/team-map` by `inc/team-map.php` — the same arrangement
+  `inc/brand-regions.php` uses for the other sd-enhancements block the theme dresses.
+
+  The plugin ships a neutral dark pill as a standing default and says in its own
+  stylesheet header that "colour and type are the theme's". This unwinds the pill —
+  background, padding and radius all go — and leaves a link: all caps in the heading
+  face at font-size 400, semi-bold, letter-spacing wide, `neutral-800` turning
+  `brand-600` on hover and focus. Zared's call, 2026-09-11; live leaves the LSX plate
+  label unstyled, so there is no measurement behind this one.
+
+  **Two classes deep on purpose.** The plugin's rules are single-class, and two block
+  stylesheets on the same block have no guaranteed order, so
+  `.sd-team-map .sd-team-map__plate-action` wins on specificity rather than on luck. No
+  `!important`. (Measured order happens to favour the theme anyway — the plugin's sheet
+  enqueues first.)
+
+  **Not theme.json.** `styles.blocks` reaches the block wrapper, and `elements.link`
+  would catch every `<a>` inside it — including the ones Google writes into the marker
+  info windows once the map has drawn. The plate label needs a selector.
+
+  The hover colour is the whole affordance now the pill is gone, so `:focus-visible`
+  carries it too, the UA outline is left in place, and the transition moved from
+  `background-color` to `color`. Contrast is comfortable because of what the plate
+  photograph is — Tour Operator's placeholder is a washed-out world map, pale sea and
+  cream land; a darker plate image would need a scrim, not a different colour.
+
+  Verified on local 2026-09-11: all eight tokens resolve against the generated global
+  stylesheet with no orphaned refs, and the sheet is absent before the block renders and
+  enqueued after. ⚠️ **Not yet seen in a browser** — the local server was not running.
+
 - 🏷️ **The Brands landing and the single-brand archive.** LS-2018 (line 8, Lodge / Brand).
   Two templates, both bound to theme files rather than to Site Editor layouts:
   `templates/page-brands.html` (core resolves it by the page slug `brands`, dev 52337) and
@@ -1295,6 +1399,24 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   than `1/1`, and the Unit Body column's padding drops from `spacing|40` to `spacing|30`.
 
 ### Fixed
+
+- 🔗 **Three absolute dev-host URLs in `patterns/header.php` made portable.** LS-2020.
+  The Trustpilot wordmark, the five-star tile and the "Get in touch" button pointed at
+  `https://southerndestinations.lightspeedwp.dev/…` literally. The two images are **theme
+  assets**, so they now resolve through `get_theme_file_uri()`, and the link through
+  `home_url()` — the form the other eighteen asset references and eleven links in
+  `patterns/` already use. They resolved on dev only because dev is the host they named.
+
+  **Uploads URLs are untouched, and deliberately so.** This file's "Uploads URLs are the
+  exception" rule stands: they are written literally because go-live runs a find-and-replace
+  over the dev host, and the attachment IDs beside them tie the markup to dev regardless.
+  The forty-six `wp-content/uploads/…` URLs across twelve other patterns are that convention
+  working as intended, not a defect — they were counted as one only because the first sweep
+  matched on the host and not on what followed it.
+
+  The header badge stays a **static five-star image**, which is what live has and Zared's
+  call. It is not bound to `sd/trustpilot`, so it reads five stars whatever the real score
+  is — and its `alt` says so too. Wiring it is deferred, not forgotten.
 
 - **The claim that live's accommodation single has no safari expert panel was wrong.**
   `patterns/template-single-accommodation.php` recorded the absence as a design decision,

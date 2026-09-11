@@ -21,12 +21,12 @@
  * and checked against the same member on dev (post 41452), which carries every
  * field the page reads.
  *
- * Live renders six sections in this order, and so does this file:
+ * Live renders seven sections in this order, and so does this file:
  *
  *     #summary      the bio beside the portrait, on the tinted band
  *     #feedback     the Trustpilot badge and three reviews
  *     #gallery      the member's own photographs
- *     #map          "Places {name} has visited"      → not here, see below
+ *     #map          "Places {name} has visited"
  *     #tours        connected tours
  *     #destination  connected destinations
  *     #posts        connected blog posts
@@ -93,24 +93,6 @@
  *
  * ## What this template does not carry, and why
  *
- * - **The map.** Live's `#map` is "Places {name} has visited" — a Google
- *   *cluster* map built from marker data for the member's 60 connected
- *   accommodations (`accommodation_to_team`), behind a click-to-load
- *   placeholder. It is not reachable from here. Tour Operator's `lsx/map`
- *   binding answers for two types only, `wetu` and `google`
- *   (class-bindings.php:940-969), and its `google` branch calls `lsx_to_map()`,
- *   which reads the post's own `location` meta — a single point, which a team
- *   member does not have. The cluster is the **Team Member Map block**, and it
- *   is its own task: LS-2020 items 10.4 and 17.7 both name it, built in the
- *   plugin. When it lands it goes directly between the gallery and the tours
- *   shelf, in a `<section id="map">`, and nothing else here changes.
- *   → AGENTS.md, theme/plugin boundary
- * - **The breadcrumb bar.** Live draws Yoast's trail along the bottom of the
- *   banner ("Home / About Us — Meet The Team / Camille Rowe"). Breadcrumb output
- *   is a filter over a third-party plugin's trail — behaviour, not design — so
- *   it is `sd-enhancements` work, and the team post type's parent-link handling
- *   is called out separately as item 10.7. Same decision, same place, as
- *   patterns/template-archive-team.php and every other single in this theme.
  * - **The socials, the phone and the email as a contact block.** `to-team`'s own
  *   `single-team.html` puts `role`, `contact_email`, `contact_number` and five
  *   social links in a boxed panel beside the bio. Live renders none of it on the
@@ -189,6 +171,26 @@
 
 	</div></section>
 	<!-- /wp:cover -->
+
+	<?php
+	/*
+	 * The breadcrumb bar, directly under the banner — the same
+	 * `patterns/breadcrumbs.php` every other single in this theme runs, in the
+	 * same position live puts it. The distinction the note on
+	 * `patterns/breadcrumbs.php` records: filtering what Yoast *puts* in the
+	 * trail is plugin work, but the band it sits in is a strip of theme markup
+	 * around a third-party block, and it deactivates with the theme. This file
+	 * used to record the opposite under "What this template does not carry";
+	 * that note predated the 2026-09-03 decision and has been removed rather
+	 * than left to contradict it.
+	 *
+	 * ⚠️ The trail's *contents* on a team member are still outstanding — Yoast
+	 * builds it from `post_parent`, and the team post type's parent-link
+	 * handling is LS-2020 item 10.7, in `sd-enhancements`. The band renders
+	 * either way; what it says is that item's business.
+	 */
+	require __DIR__ . '/breadcrumbs.php';
+	?>
 
 	<?php
 	/*
@@ -439,6 +441,57 @@
 		<figure class="wp-block-image"><img alt=""/></figure>
 		<!-- /wp:image --></figure>
 		<!-- /wp:gallery -->
+
+	</section>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The map — live's `#map`, "Places Camille has visited".
+	 *
+	 * The cluster map of the accommodation the member has visited, behind a
+	 * click-to-load plate. `sd/team-map` from `sd-enhancements`, not Tour
+	 * Operator's `lsx-tour-operator/google-map` variation the destination
+	 * summary composes by hand: three separate things on TO 2.2 stand between a
+	 * team single and a map — `lsx_to_has_map()` has no `team` case, its
+	 * `default` branch wants the post's own coordinates, which a person does
+	 * not have, and `lsx_to_map()` discards its own output — so the `lsx/map`
+	 * binding renders empty here. The block answers all three in the plugin,
+	 * and it emits the plate, the `.lsx-map` data carrier and the marker data
+	 * itself, which is why this section is three lines where
+	 * patterns/destination-summary.php is forty.
+	 *
+	 * `lsx-location-wrapper` drops the band, heading included, when
+	 * `lsx_to_has_map()` is false — `maybe_hide_varitaion()`, the `'location'`
+	 * branch (class-query-loop.php:213) — which is the member with no
+	 * plottable connection, maps switched off in Tour Operator's settings, or
+	 * no Google Maps API key. The block's own wrapper carries the class too,
+	 * because maps.js reaches the plate through it; the two nest harmlessly,
+	 * since maps.js walks to the nearest matching ancestor.
+	 *
+	 * The heading lives here rather than in the block, like every other heading
+	 * on this template — composed from the member's first name, and this file
+	 * owns the standing halves and their translation.
+	 *
+	 * **Hidden on phones, because live hides it on phones.** custom.css:2642-2647
+	 * puts `#map` in a `@media (max-width: 767px) { display: none }` beside
+	 * `#tour-map`, `#destination-map` and `#accommodation-map` — a deliberate
+	 * decision about a cluster map on a small screen, not an oversight. Block
+	 * Visibility's `small` is that breakpoint and not approximately it: in basic
+	 * mode it emits `@media (max-width: 767.98px)` off the `medium` setting,
+	 * which is 768px (block-visibility/includes/frontend/visibility-tests/screen-size.php:226-232).
+	 * A control rather than a CSS hide, which is the theme's standing rule for
+	 * responsive show/hide — same as patterns/homepage-safari-gurus.php.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Map"},"align":"full","className":"is-style-light-page-section lsx-location-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"map","blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
+	<section class="wp-block-group alignfull is-style-light-page-section lsx-location-wrapper" id="map">
+
+		<!-- wp:heading {"textAlign":"center","metadata":{"name":"Map Heading","bindings":{"content":{"source":"sd/post-field","args":{"field":"title","format":"first-name","prefix":"<?php esc_attr_e( 'Places ', 'sd-theme-2026' ); ?>","suffix":"<?php esc_attr_e( ' has visited', 'sd-theme-2026' ); ?>"}}}},"className":"is-style-section-title","anchor":"h-map"} -->
+		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-map"><?php esc_html_e( 'Places visited', 'sd-theme-2026' ); ?></h2>
+		<!-- /wp:heading -->
+
+		<!-- wp:sd/team-map {"align":"wide"} /-->
 
 	</section>
 	<!-- /wp:group -->
