@@ -45,3 +45,33 @@
 		line-height: 1.75rem;
 	}
 }
+
+
+/* The Trustpilot review extract, clamped to three lines
+   ===========================================================================
+   Live cuts the body to ten words in PHP (`wp_trim_words( $review->text, 10 )`,
+   sd-lsx-child/includes/shortcodes.php:22) and appends an ellipsis. Three
+   reviews of very different lengths then still produce three cards of very
+   different heights, because ten words is not a number of lines.
+
+   Clamping instead cuts at the rendered measure, so the three cards in the row
+   agree at every width, and the full review stays in the markup for anyone
+   reading it with CSS off. `sd/trustpilot-review` hands over the whole body —
+   the plugin stores it whole — so nothing upstream needs to know this happens.
+
+   ⚠️ Not in a block-style `css` field and not in the pattern: the declaration
+   needs `display: -webkit-box`, which overrides the paragraph's own display, and
+   `-webkit-box-orient` is dropped by the `css` field's sanitiser along with the
+   rest of the vendor-prefixed property set.
+
+   `-webkit-line-clamp` first and `line-clamp` after it: the standard property is
+   still the newer of the two and the prefixed one is what every current engine
+   actually reads, so the unprefixed line is the forward declaration rather than
+   the working one. Both need the `-webkit-box` display to take effect. */
+.sd-trustpilot-review__text {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+}

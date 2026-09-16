@@ -48,8 +48,12 @@
  * on the paragraph below, and it would then underline the words too.
  *
  * Sizes are this theme's, not live's: live caps every child at `max-height:25px`
- * and 12px text, and the badge here runs at the sizes established on dev —
- * font-size 100, a 160px star tile and a 132px mark. Zared's call, 2026-09-16.
+ * and 12px text, and the badge here runs at the sizes established on dev — a
+ * 160px star tile, a 132px mark and font-size 100 on the count. The band word is
+ * font-size **300**, three steps above the rest of the badge, because it is the
+ * rating stated in words and live's own 12px is a consequence of that badge
+ * being a one-line strip rather than a judgement about the word. Zared's call,
+ * 2026-09-16.
  *
  * ## Everything else is patterns/trustpilot-score.php's, including its reasons
  *
@@ -68,8 +72,8 @@
 <div class="wp-block-group sd-trustpilot sd-trustpilot--stacked">
 
 	<?php /* Live's `.tp-wording`, order 1 — hidden in the default row, shown and set to 600 here. */ ?>
-	<!-- wp:paragraph {"metadata":{"name":"Rating word","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"wording"}}}},"className":"sd-trustpilot__wording","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"100"} -->
-	<p class="sd-trustpilot__wording has-100-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php echo esc_html_x( 'Excellent', 'Trustpilot rating band', 'sd-theme-2026' ); ?></p>
+	<!-- wp:paragraph {"metadata":{"name":"Rating word","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"wording"}}}},"className":"sd-trustpilot__wording","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"300"} -->
+	<p class="sd-trustpilot__wording has-300-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php echo esc_html_x( 'Excellent', 'Trustpilot rating band', 'sd-theme-2026' ); ?></p>
 	<!-- /wp:paragraph -->
 
 	<?php /* Live's `.tp-review-stars`, order 2. Bound on `url`; decorative, because the rating is in the text above and below it. */ ?>

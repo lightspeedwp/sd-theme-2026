@@ -33,6 +33,29 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **The Trustpilot review card carries stars and a linked headline, and clamps the
+  extract.** LS-2020 (line 10). `patterns/card-trustpilot-review.php`,
+  `assets/styles/core-paragraph.css`. Needs `sd-enhancements` at the matching revision —
+  it adds the two source keys below.
+
+  The star tile is back on the card, beside the date in a flex row, at 110px — live's
+  `.tb-review-box img` is 40% of a ~300px box. It binds `sd/trustpilot-review`'s new
+  `stars_image`, which is **that review's** rating rather than the company's, so a 4½-star
+  review draws the 4½-star tile. Decorative: the date beside it is the labelled content.
+
+  The headline is live's link again — an anchor to the company review page, arriving inside
+  the bound value via the source's new `link` arg, because a binding replaces a block's
+  whole `content` and `core/heading` has no bindable `href`. Core `wp_kses_post()`s
+  rich-text replacements, so this is a supported route rather than a way round escaping.
+  Hover is `brand-600` against live's `#cc7f16`, set as `elements.link` on the heading so
+  it travels with the block.
+
+  The extract is clamped to **three lines** in CSS. Live throws the rest of the review away
+  in PHP at ten words; ten words is not a number of lines, so three reviews of different
+  lengths gave three cards of different heights. The clamp cuts at the rendered measure and
+  leaves the whole review in the markup. Not in a block-style `css` field: it needs
+  `display:-webkit-box`, and the sanitiser drops `-webkit-box-orient`.
+
 - **The team single's Trustpilot badge is stacked, matching live.** LS-2020 (line 10).
   New `patterns/trustpilot-score-stacked.php`; `patterns/template-single-team.php` requires
   it in place of `patterns/trustpilot-score.php`.
