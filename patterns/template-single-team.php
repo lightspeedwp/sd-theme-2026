@@ -254,9 +254,17 @@
 				 * rendered whole — this template has no `.more-text` collapse to
 				 * reproduce, unlike the tour and destination singles, because
 				 * custom.js only truncates `.entry-content` on those.
+				 *
+				 * The gap between the bio's own paragraphs is set here rather
+				 * than left to the root `blockGap`: `core/post-content` is a
+				 * layout container whose children are authored copy, and at the
+				 * root gap the bio read as a stack of separate statements
+				 * instead of one passage. `M` is the same step the meta rows
+				 * above it use. A `blockGap` belongs on the block markup and
+				 * never in a variation JSON — see AGENTS.md.
 				 */
 				?>
-				<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+				<!-- wp:post-content {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} /-->
 
 				<?php
 				/*
@@ -384,9 +392,43 @@
 			<!-- wp:column {"verticalAlignment":"top","width":"75%"} -->
 			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:75%">
 
-				<!-- wp:sd/trustpilot-reviews {"metadata":{"name":"Trustpilot Reviews"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
-					<!-- wp:pattern {"slug":"sd-theme-2026/card-trustpilot-review"} /-->
-				<!-- /wp:sd/trustpilot-reviews -->
+				<?php
+				/*
+				 * The frame, not the track. Slick appends its arrows and its dot
+				 * row to the *parent* of the element it initialises — see
+				 * assets/js/review-slider.js — and styles/sections/slider-frame.json
+				 * positions both against that parent's edges, which is why this
+				 * group exists and why `is-style-slider-frame` is on it rather
+				 * than on the reviews block. It is the same shape the three
+				 * shelves further down the page have, where `core/query` is the
+				 * frame and `core/post-template` the track.
+				 *
+				 * Live slides this row only below 767px
+				 * (sd-lsx-child/assets/js/custom.js:358) and leaves it a static
+				 * flex row above; the shelves' responsive curve is used instead,
+				 * at Zared's direction 2026-09-16, so the reviews are not the one
+				 * row on the page with its own behaviour. Desktop is unchanged
+				 * either way — three reviews in three slots is what live draws.
+				 */
+				?>
+				<!-- wp:group {"metadata":{"name":"Reviews Slider"},"className":"sd-review-slider is-style-slider-frame","style":{"spacing":{"blockGap":"0","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"default"}} -->
+				<div class="wp-block-group sd-review-slider is-style-slider-frame" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+
+					<?php
+					/*
+					 * The grid is the no-JS presentation and the desktop layout
+					 * both — three across, which is live's row. The script
+					 * removes `is-layout-grid` only at the point Slick takes
+					 * over, so a page with no jQuery, no Slick or no JavaScript
+					 * still renders the finished row.
+					 */
+					?>
+					<!-- wp:sd/trustpilot-reviews {"metadata":{"name":"Trustpilot Reviews"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+						<!-- wp:pattern {"slug":"sd-theme-2026/card-trustpilot-review"} /-->
+					<!-- /wp:sd/trustpilot-reviews -->
+
+				</div>
+				<!-- /wp:group -->
 
 			</div>
 			<!-- /wp:column -->

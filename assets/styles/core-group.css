@@ -596,6 +596,51 @@
 	height: 100%;
 }
 
+/**
+ * Review Slider — the Trustpilot row on the team single.
+ *
+ * The frame is `core/group.sd-review-slider.is-style-slider-frame` and the
+ * track is `sd/trustpilot-reviews` inside it; assets/js/review-slider.js hands
+ * the track to Slick. Everything above that is keyed to `.is-style-slider-frame`
+ * already applies — the `.slick-list` clip relief and the dot row both come for
+ * free. Two things do not, and they are here rather than in a block-style JSON
+ * because both target Slick's own generated markup, which no `styles` object
+ * can reach.
+ *
+ * 1. **The gutter.** Tour Operator insets every slide by 15px, but its selector
+ *    is `.wp-block-query.lsx-to-slider .slick-slide`
+ *    (tour-operator/build/style.css) and this frame is neither a query block nor
+ *    an `lsx-to-slider` — nothing here is TO's slider. So the row would go
+ *    edge-to-edge: the block's own `blockGap` is a grid gap, and the script
+ *    removes `is-layout-grid` at the moment Slick takes over. Half the gap on
+ *    each side reproduces it, from the same token the block authors, so the two
+ *    presentations measure the same. `!important` is not needed — nothing else
+ *    reaches this selector.
+ * 2. **Equal height.** Slick sizes the track to the tallest slide and leaves the
+ *    rest at their own height, so a short review left a strip of section ground
+ *    under its card. Same flex-track recipe as `.sd-slider-flush` above; Slick's
+ *    inline widths on track and slides survive it untouched. It matters more
+ *    here than on the card shelves because review length is a Trustpilot
+ *    author's, not an editor's.
+ *
+ * No arrow rules: the script runs this row without arrows at every width, and
+ * why is documented there.
+ */
+.sd-review-slider .slick-slide {
+	padding-inline: calc(var(--wp--preset--spacing--40) / 2);
+	height: auto;
+}
+
+.sd-review-slider .slick-track {
+	display: flex;
+	align-items: stretch;
+}
+
+.sd-review-slider .slick-slide > div,
+.sd-review-slider .slick-slide > div > * {
+	height: 100%;
+}
+
 /* Header rules removed 2026-08-21
    ===========================================================================
    Three blocks went from here, all of them hanging off hooks the header no

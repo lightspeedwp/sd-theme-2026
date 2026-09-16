@@ -8,6 +8,79 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- ⭐ **The team single's Trustpilot review row is a carousel.** LS-2020 (line 10, Team /
+  Safari Expert). `patterns/template-single-team.php`, `inc/review-slider.php`,
+  `assets/js/review-slider.js`, `assets/styles/core-group.css`, `functions.php`.
+
+  `sd/trustpilot-reviews` is now wrapped in a `core/group` carrying
+  `sd-review-slider is-style-slider-frame` — the frame, because Slick appends its dot row to
+  the *parent* of the element it initialises and `styles/sections/slider-frame.json` positions
+  that row against the parent's edges. Same shape as the three shelves below it on the same
+  page, where `core/query` is the frame and `core/post-template` the track.
+
+  **It is not Tour Operator's initialiser.** TO's selector is
+  `.lsx-to-slider .wp-block-post-template` / `.wp-block-term-template`, and the reviews block
+  is neither — it is a repeater over a cached API response. Giving it a core class to be
+  picked up would drag core's post-template CSS onto it and claim a query loop that is not
+  there, so it keeps its own class and the theme initialises it with TO's settings: 3 up →
+  2 at ≤1028 → 1 at ≤782, dots and swipe.
+
+  **No arrows, at any width** — the one place the settings depart from the shelves.
+  `Trustpilot::REVIEW_COUNT` caps the cache at three and the desktop row shows three, so an
+  arrow could never move anything; and the frame's arrows sit outside its own edges, which on
+  a 75% column would put the left one on top of the score badge beside it.
+
+  ⚠️ **Live slides this row only below 767px** (`sd-lsx-child/assets/js/custom.js:358`) and
+  leaves it a static flex row above. The shelves' responsive curve is used instead, at Zared's
+  direction 2026-09-16, so the reviews are not the one row on the page with their own
+  behaviour. Desktop is unchanged either way — three reviews in three slots is what live draws.
+
+  Progressive enhancement throughout: the pattern authors the block as a three-column grid,
+  which is the finished desktop layout on its own, and `is-layout-grid` comes off only at the
+  point Slick takes over. No JavaScript, no jQuery or no Tour Operator leaves the row correct.
+
+- 📏 **Tour and blog card meta now render at one size — base.**
+  `patterns/card-tour-compact.php`, `patterns/card-post-grid.php`.
+
+  The tour card's meta rows were rendering at three different sizes. The cause is
+  `theme.json`'s `styles.blocks.core/paragraph.fontSize` of `300`: a block-level global style
+  is not inheritance, so it lands on every `core/paragraph` and beats the Body group's
+  `has-200-font-size` outright. The three paragraph rows came out at 300 while
+  `core/post-terms` — a `<div>`, with no block style of its own — inherited 200 and the
+  excerpt carried an explicit 200. Every row now carries an explicit `200`.
+
+  ⚠️ **Those explicit sizes are load-bearing, not redundant.** Remove one and that row goes
+  straight back to 300.
+
+  The blog card's date and category rows moved `100` → `200` for the same reason of one
+  size per card, and every meta row on both cards takes a 2px `padding-block` — Zared's
+  measurement — which settles "days" against the number beside it and puts the whole meta
+  block on one rhythm.
+
+- 📐 **The team single's bio sets its own paragraph gap.**
+  `patterns/template-single-team.php`. `core/post-content` carries
+  `blockGap: var:preset|spacing|30` (M) rather than falling to the root gap, which read as a
+  stack of separate statements instead of one passage. On the markup, never in a variation
+  JSON — see AGENTS.md.
+
+### Fixed
+
+- ⏳ **A tour with no duration no longer renders "Duration: days".**
+  `patterns/card-tour-compact.php`. The Duration group carries `lsx-duration-wrapper`, which
+  is Tour Operator's hook rather than a styling class: `Query_Loop::maybe_hide_varitaion()`
+  (`class-query-loop.php:96`) filters `render_block`, matches `(lsx|facts)-<key>-wrapper` on a
+  `core/group` or `core/paragraph`, and returns an empty string when that key's post meta is
+  empty.
+
+  It is on the **group**, deliberately. Tour Operator prepends the prefix with no test on the
+  value, so an empty duration rendered `<p><strong>Duration:</strong> </p>` next to a live
+  "days". The paragraph is not `:empty`, so the card style's `p:empty` rule cannot reach it —
+  only hiding the group takes the value and the "days" together.
+
+  Measured against Luxury Honeymoon Adventure (dev, 57936), whose `duration` meta is `""`,
+  and verified locally by blanking and restoring a tour's duration: the group and its "days"
+  both disappear, and both return.
+
 - 🖼️ **All four gallery bands now use `sd/gallery` instead of the `lsx/gallery` placeholder.**
   LS-2023 (line 13, Gallery Implementation).
 

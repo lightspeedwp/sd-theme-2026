@@ -302,3 +302,8 @@ require_once get_theme_file_path( 'inc/intro-collapse.php' );
 // that picking the graphic is the theme's job; this is the theme doing that, and
 // it is the only place that knows where the tiles live.
 require_once get_theme_file_path( 'inc/trustpilot.php' );
+
+// Carries the carousel script for the team single's Trustpilot review row. Same
+// lazy contract as intro-collapse above: the slide styling rides the core-* scan
+// on assets/styles/core-group.css, so only the script needs a module.
+require_once get_theme_file_path( 'inc/review-slider.php' );
