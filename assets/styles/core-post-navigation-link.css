@@ -94,7 +94,7 @@
 	box-sizing: border-box;
 	inline-size: var(--sd-post-nav-chevron-size);
 	block-size: var(--sd-post-nav-chevron-size);
-	background-color: currentColor;
+	background-color: var(--wp--preset--color--brand-500);
 	transition: background-color 150ms ease;
 	-webkit-mask-position: center;
 	mask-position: center;
