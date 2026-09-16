@@ -20,6 +20,7 @@
 .sd-post-nav .post-navigation-link__label {
 	display: block;
 	color: var(--wp--preset--color--brand-600);
+   font-size: var(--wp--preset--font-size--200);
    margin-bottom: var(--wp--preset--spacing--5);
 }
 
@@ -27,7 +28,7 @@
 	color: var(--wp--preset--color--neutral-800);
 	font-weight: var(--wp--custom--font-weight--semi-bold);
 	line-height: var(--wp--custom--line-height--snug);
-   font-size: var(--wp--preset--font-size--400);
+   font-size: var(--wp--preset--font-size--300);
    font-family: var(--wp--preset--font-family--heading);
 	text-decoration: none;
 }
