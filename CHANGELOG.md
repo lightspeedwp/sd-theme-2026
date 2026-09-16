@@ -8,6 +8,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 📂 **The blog category archive, rebuilt from the live site.** LS-2022 (line 12, Blog
+  Templates and Related Posts). `patterns/template-category.php`, used by
+  `templates/category.html`.
+
+  `/category/rwanda/` and its siblings now render as live renders them: a photographic banner
+  carrying the category name, the breadcrumb strip, a *Back To Blog* link, the list of post
+  rows with pagination, and the *Why choose Southern Destinations* value band. It is the blog
+  landing with the intro band taken out and the back-link put in, and it shares the blog
+  landing's post row (`card-post-list.php`) so the two pages agree.
+
+  **The heading is the category itself**, rendered from the queried term rather than authored,
+  so every category gets its own title with no per-term template. Live prints the same string
+  twice — once visibly in the banner as the bare term name, once hidden as "Category: Rwanda";
+  the visible one is reproduced and the hidden Tour Operator artefact is dropped, as it was on
+  the team and destinations archives.
+
+  **The loop inherits the main query**, so the category's own pagination and Settings →
+  Reading govern it and nothing about publishing or categorising changes — task 12.5.
+
+  ⚠️ **The banner photograph is the same on every category.** Live sets a banner image per
+  category — Rwanda draws a gorilla-trekking shot — and a `core/cover` takes a fixed URL, so
+  following the term needs a block binding over the term's banner meta. That is
+  `sd-enhancements` work, not theme work. Until it exists the banner carries the same
+  photograph the blog landing uses, and switching it to a binding later is a change to one
+  block.
+
 - 📰 **The blog landing page, built from the live site.** LS-2022 (line 12, Blog Templates
   and Related Posts). `templates/home.html`, `patterns/template-home-blog.php` and
   `patterns/blog-categories.php`.
@@ -77,6 +103,16 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   **Template: Blog Landing** alongside the new `templates/home.html`.
 
 ### Changed
+
+- 🧹 **Removed the inherited "News" archive layout from the category template.** LS-2022
+  (line 12). `patterns/template-category.php`.
+
+  The category template had been running the KWV base theme's news archive — a dark cover
+  hero over a sticky `core/categories` sidebar in a 90/20 column pair. Southern Destinations'
+  category pages have none of that: no sidebar, no dark hero, no categories list. It was
+  carried across with the theme architecture and never measured against this site, the same
+  way `template-index-news` was on the blog landing, and it is replaced rather than left
+  standing as a second, contradictory blog archive.
 
 - ✍️ **The blog post row and landing page, as authored in the Site Editor.** LS-2022
   (line 12). `patterns/card-post-list.php` and `patterns/template-home-blog.php`, imported
