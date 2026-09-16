@@ -119,11 +119,19 @@
  * white. Measured, not assumed: nothing in custom.css tints `#feedback`,
  * `#gallery`, `#tours`, `#destination` or `#posts` on this template.
  *
- * `require`, not `<!-- wp:pattern -->`, for the score badge and the closing
- * band — a nested pattern reference inside another *pattern* is dropped on
- * front-end render while still resolving under a WP-CLI `do_blocks()` test.
- * References inside a *query loop* are fine, which is why the three card
- * patterns below are still written as references.
+ * `require`, not `<!-- wp:pattern -->`, for the score badge, the review card
+ * and the closing band — a nested pattern reference inside another *pattern* is
+ * dropped on front-end render while still resolving under a WP-CLI
+ * `do_blocks()` test.
+ *
+ * References inside a `core/query` loop are fine, which is why the three card
+ * patterns below are still written as references: `core/post-template` sets
+ * `$GLOBALS['post']` for each row, and the core blocks in those cards read the
+ * global post, so losing the block *context* across `render_block_core_pattern()`
+ * costs them nothing. A reference inside `sd/trustpilot-reviews` is **not** fine
+ * for exactly that reason inverted — a review is not a post, so the only route
+ * in is the context, and the context is what the reference throws away. That
+ * cost three empty cards on dev until 2026-09-16; the detail is at the block.
  * → .claude/skills/wp-pattern-runtime-pitfalls
  */
 
@@ -377,13 +385,20 @@
 
 				<?php
 				/*
-				 * Live's `#tb-horizon-review` inside the row — the same badge
-				 * the header and the Why Choose band carry, and the company's
+				 * Live's `#tb-horizon-review` inside the row, and the company's
 				 * score rather than the consultant's, because `sd/trustpilot`
-				 * reads the business unit. `require`, not a nested pattern
-				 * reference.
+				 * reads the business unit.
+				 *
+				 * The *stacked* badge, not patterns/trustpilot-score.php: live
+				 * re-orders and re-labels the badge for this one placement
+				 * (sd-lsx-child/assets/css/custom.css:4348) — band word, stars,
+				 * "Based on N reviews", mark — and drops the TrustScore figure.
+				 * The file it points at carries the full comparison.
+				 *
+				 * `require`, not a nested pattern reference. See the reviews
+				 * block below for what that costs when it is got wrong.
 				 */
-				require __DIR__ . '/trustpilot-score.php';
+				require __DIR__ . '/trustpilot-score-stacked.php';
 				?>
 
 			</div>
@@ -424,7 +439,30 @@
 					 */
 					?>
 					<!-- wp:sd/trustpilot-reviews {"metadata":{"name":"Trustpilot Reviews"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
-						<!-- wp:pattern {"slug":"sd-theme-2026/card-trustpilot-review"} /-->
+					<?php
+					/*
+					 * ⚠️ **`require`, never `<!-- wp:pattern ... /-->` here.** The
+					 * card was a nested pattern reference until 2026-09-16 and
+					 * the row rendered three structurally perfect, completely
+					 * empty cards on dev — right classes, right count, no date,
+					 * no headline, no text, no name.
+					 *
+					 * `render_block_core_pattern()` (wp-includes/blocks/pattern.php)
+					 * takes no `$block` argument and ends in `do_blocks( $content )`,
+					 * which builds a fresh block tree with an **empty available
+					 * context**. So `sd/trustpilot-reviews` handed each repeat its
+					 * `sdTrustpilotIndex`, `core/pattern` threw it away, and every
+					 * `sd/trustpilot-review` binding inside resolved to null —
+					 * which is the card's authored fallback, and the card is
+					 * authored empty on purpose. A silent failure in both
+					 * directions.
+					 *
+					 * `require` puts the card's blocks in *this* file's parsed
+					 * tree, so the repeater's context reaches them the way
+					 * `core/post-template`'s reaches its inner blocks.
+					 */
+					require __DIR__ . '/card-trustpilot-review.php';
+					?>
 					<!-- /wp:sd/trustpilot-reviews -->
 
 				</div>

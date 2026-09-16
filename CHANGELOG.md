@@ -6,7 +6,53 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛 **The team single's Trustpilot reviews rendered as three empty cards.** LS-2020
+  (line 10, Team / Safari Expert). `patterns/template-single-team.php`.
+
+  The review card was pulled in with `<!-- wp:pattern {"slug":"…/card-trustpilot-review"} /-->`
+  inside `sd/trustpilot-reviews`. `render_block_core_pattern()`
+  (`wp-includes/blocks/pattern.php`) takes **no `$block` argument** and ends in
+  `do_blocks( $content )`, which builds a fresh block tree with an empty available
+  context. So the repeater handed each of its three passes an `sdTrustpilotIndex`,
+  `core/pattern` discarded it, and every `sd/trustpilot-review` binding inside resolved
+  to null — which is the card's authored fallback, and the card is authored empty on
+  purpose. Right classes, right count, no date, no headline, no text, no name: dev's
+  `/team/liesl-mathews/` beside live's three Liesl reviews.
+
+  The card is now `require`d, so its blocks sit in the template's own parsed tree and the
+  repeater's context reaches them the way `core/post-template`'s reaches its inner blocks.
+  Nothing was wrong with the plugin: the cache on dev held Liesl's three reviews under
+  `_transient_sd_enh_tp_reviews_<md5('Liesl')>` throughout.
+
+  **References inside a `core/query` loop stay as they are** — `core/post-template` sets
+  `$GLOBALS['post']` per row and the core blocks in those cards read the global post, so
+  losing the block context costs them nothing. A review is not a post, which is what makes
+  this one different.
+
 ### Changed
+
+- **The team single's Trustpilot badge is stacked, matching live.** LS-2020 (line 10).
+  New `patterns/trustpilot-score-stacked.php`; `patterns/template-single-team.php` requires
+  it in place of `patterns/trustpilot-score.php`.
+
+  Live ships one component and two arrangements, separated in CSS rather than PHP:
+  `#tb-horizon-review` is a centred row with the band word hidden, and
+  `#tb-list-review-container #tb-horizon-review` (`sd-lsx-child/assets/css/custom.css:4348`)
+  is a column — band word (600, order 1), stars (2), count (3), mark (4) — with the
+  `TrustScore 5 |` span set to `display:none` and a `Based on` prefix injected before the
+  count. Three of the four children change, which is past what a `flex`/`orientation`
+  switch can express, so the badge is authored in reading order in its own file rather
+  than re-ordered with CSS `order`.
+
+  Sizes are dev's, not live's: font-size 100, a 160px star tile and a 132px mark, against
+  live's 12px text and `max-height:25px` on everything. Zared's call, 2026-09-16. Live's
+  underline on the count is **not** carried over — it is not a link, and nothing else in
+  the badge but the mark is.
+
+  `patterns/trustpilot-score.php` is unchanged and still serves
+  `patterns/safari-expert.php`, where live draws the row arrangement.
 
 - ⭐ **The team single's Trustpilot review row is a carousel.** LS-2020 (line 10, Team /
   Safari Expert). `patterns/template-single-team.php`, `inc/review-slider.php`,
