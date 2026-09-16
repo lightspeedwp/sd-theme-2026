@@ -167,11 +167,50 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   values render at the same weight. Only the prefixes are bold now, which is what the card
   style already says (`& strong`, `& .wp-block-post-terms__prefix`).
 
-- 📐 **The team single's bio sets its own paragraph gap.**
-  `patterns/template-single-team.php`. `core/post-content` carries
-  `blockGap: var:preset|spacing|30` (M) rather than falling to the root gap, which read as a
-  stack of separate statements instead of one passage. On the markup, never in a variation
-  JSON — see AGENTS.md.
+- 📐 **The team single's bio sets its own paragraph gap, and stacks in flow rather than
+  constrained.** LS-2020 (line 10). `patterns/template-single-team.php`.
+
+  `core/post-content` carries `blockGap: var:preset|spacing|30` (M) rather than falling to
+  the root gap, which read as a stack of separate statements instead of one passage. `M` is
+  the same step the meta rows above it use. On the markup, never in a variation JSON — see
+  AGENTS.md.
+
+  Its layout also moved `constrained` → `default`. With `useRootPaddingAwareAlignments` on
+  — theme.json sets it — core adds `has-global-padding` to **every** constrained-layout
+  block and not just the ones at the root
+  (`wp-includes/block-supports/layout.php:1111-1117`), so a constrained `post-content`
+  picked up the root left padding and the bio sat one `spacing|20` in from the Meet heading
+  and the role above it. The column already constrains the measure; this block only needs to
+  stack its children, which flow does, `blockGap` and all.
+
+- 🎨 **The team single's role line is `brand-600` at font-size 400.** LS-2020 (line 10).
+  `patterns/template-single-team.php`.
+
+  Up from body colour at 300, so the consultant's job title reads as a standfirst under the
+  name rather than as another meta row. Zared's call, 2026-09-16. The heading face, the
+  semi-bold weight and `lsx-role-wrapper` are unchanged — that class is Tour Operator's
+  empty-meta hook, not styling, so the whole line still disappears on a member with no role
+  set.
+
+- 🖼️ **The team member portrait is round.** LS-2020 (line 10).
+  `patterns/template-single-team.php`.
+
+  `core/post-featured-image` takes `border-radius` from preset `500` — `9999px`, whose
+  **name** is `round`.
+
+  ⚠️ **Reference radius presets by slug, not by name.** The first pass wrote the value as a
+  raw `var(--wp--preset--border-radius--round)` and the portrait stayed square, because core
+  keys the generated custom properties on the preset's `slug`: the variables block emits
+  `--wp--preset--border-radius--0` through `--wp--preset--border-radius--500` and **no
+  `--round`** (measured against `wp_get_global_stylesheet( [ 'variables' ] )`). So the
+  declaration named a property that does not exist and was dropped at computed-value time.
+  `var:preset|border-radius|500` is both the working form and the authored form the rest of
+  the theme uses — which is the point of the rule: a slug reference is one
+  `theme-orphaned-refs` can check, and a name reference is one it cannot.
+
+  ⚠️ **The crop stays `aspectRatio: 1` and must.** The radius is what makes it a circle, but
+  only the square crop keeps it from being an ellipse. Image crops are `aspectRatio`, never
+  CSS — see AGENTS.md.
 
 ### Fixed
 
