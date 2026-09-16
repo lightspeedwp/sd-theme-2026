@@ -8,6 +8,26 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- 🐛 **The review cards collapsed to a date and a star tile the moment Slick initialised.**
+  LS-2020 (line 10). `assets/styles/core-group.css`.
+
+  The equal-height rule was written as `.sd-review-slider .slick-slide > div` on the
+  assumption that Slick wraps each slide in a bare `<div>`. It only does that when
+  `rows`/`slidesPerRow` ask it to; at this row's settings it puts `.slick-slide` on the
+  review card itself, so the card is a direct child of `.slick-track` and the selector
+  matched **the card's own first child**.
+
+  That was inert for as long as the card's children were a heading and three paragraphs.
+  Adding the stars-and-date group gave it a `<div>` to match, and it stretched that group
+  to the card's full height — measured on dev: meta row 220px in a 220px card, reviewer
+  name at y=2158 against a `.slick-list` clipping at y=2024. Hence a row that rendered
+  correctly and then lost everything below the date.
+
+  Both selectors now carry `:not([class])`. Slick's wrapper has no attributes at all and
+  every authored block carries at least one class, so it matches the wrapper and can never
+  match block markup. The unwrapped shape needs no rule: `.slick-track` is already
+  `display:flex` with `align-items:stretch`.
+
 - 🐛 **The team single's Trustpilot reviews rendered as three empty cards.** LS-2020
   (line 10, Team / Safari Expert). `patterns/template-single-team.php`.
 

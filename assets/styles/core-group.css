@@ -636,8 +636,29 @@
 	align-items: stretch;
 }
 
-.sd-review-slider .slick-slide > div,
-.sd-review-slider .slick-slide > div > * {
+/* Equal-height cards — `:not([class])` is load-bearing, not tidiness.
+   ---------------------------------------------------------------------------
+   Slick only wraps each slide in a bare `<div>` when `rows`/`slidesPerRow` ask
+   it to. At this row's settings it does not: it puts `.slick-slide` on the
+   review card itself, so the card is a direct child of `.slick-track`.
+
+   Written as a plain `.slick-slide > div`, this rule therefore matched the
+   *card's own first child*. It hit nothing for as long as the card's children
+   were a heading and three paragraphs — and the moment one of them became a
+   group (the stars-and-date row, 2026-09-16) that group was stretched to the
+   full height of the card, pushing the headline, the extract and the reviewer
+   name out of `.slick-list`, which clips. The row rendered correctly and then,
+   on Slick init, collapsed to a date and a star tile.
+
+   Slick's wrapper carries no attributes at all, and every authored block
+   carries at least one class, so `:not([class])` matches the wrapper and can
+   never match block markup. Keep it on both lines.
+
+   Nothing is needed for the unwrapped shape: `.slick-track` is `display: flex`
+   with `align-items: stretch` above, which already gives every slide the height
+   of the tallest. */
+.sd-review-slider .slick-slide > div:not([class]),
+.sd-review-slider .slick-slide > div:not([class]) > * {
 	height: 100%;
 }
 
