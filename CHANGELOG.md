@@ -37,6 +37,22 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   on the breadcrumb strip. Putting the banner back would be a new design decision rather than
   a translation — say the word and it is a `core/cover` away.
 
+### Fixed
+
+- 🖼️ **The Browse By Category tiles show their images.** LS-2022 (line 12).
+  `patterns/card-category.php`.
+
+  The tile bound its image `url` and `alt` to `sd/term-meta` with `key: sd_thumbnail`.
+  `sd_thumbnail` is the brand logo field on `accommodation-brand`, ported from the child
+  theme — **no post category has ever held that key.** Post categories store their tile image
+  under plain `thumbnail`, which is what LSX Banners wrote on live and what 10 of the 11
+  category terms on dev already carry. So every tile in the band rendered imageless, and the
+  binding failed the way bindings do: silently, with an empty `<figure>`.
+
+  The key is now `thumbnail`, with the reasoning written into the pattern so it is not
+  "corrected" back. The editing UI for the field and the `show_in_rest` registration that
+  makes it readable here are plugin work — `SD_Enhancements\TermMeta`, same issue.
+
 ### Removed
 
 - 🗑️ **`patterns/template-index-news.php` — the KWV-era blog landing.** LS-2022 (line 12).

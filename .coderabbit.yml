@@ -1,0 +1,182 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit configuration — sd-theme-2026 (WordPress block theme).
+#
+# Why this file exists: without it CodeRabbit falls back to the Organization UI
+# defaults, which only auto-review pull requests targeting the repository's
+# default branch. This repo's default branch is `main` but every PR targets
+# `develop`, so every review was skipped with "Auto reviews are disabled on
+# base/target branches other than the default branch". `auto_review.base_branches`
+# below fixes that.
+
+language: en-US
+
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+  high_level_summary: true
+  collapse_walkthrough: true
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+    auto_incremental_review: true
+    # Regex patterns, not globs. main <- develop <- feature/ls-NNNN.
+    base_branches:
+      - main
+      - develop
+      - feature/.*
+      - fix/.*
+      - task/.*
+      - update/.*
+
+  path_filters:
+    - "!node_modules/**"
+    - "!vendor/**"
+    - "!build/**"
+    - "!dist/**"
+    - "!assets/fonts/**"
+    - "!assets/images/**"
+    - "!**/*.map"
+
+  tools:
+    # The theme ships .phpcs.xml.dist (full WordPress standard, no exclusions).
+    phpcs:
+      enabled: true
+    markdownlint:
+      enabled: true
+    # Secret scanning is non-negotiable on this project.
+    gitleaks:
+      enabled: true
+    trufflehog:
+      enabled: true
+    # Off deliberately: templates/ and parts/ are block markup, not standalone
+    # HTML, and the theme has no eslint/stylelint config to honour. Enable these
+    # only once a real config file lands.
+    htmlhint:
+      enabled: false
+    eslint:
+      enabled: false
+    stylelint:
+      enabled: false
+
+  finishing_touches:
+    docstrings:
+      enabled: true
+    unit_tests:
+      enabled: false
+
+  path_instructions:
+    - path: "patterns/*.php"
+      instructions: |
+        WordPress block pattern file. The project rule is that patterns follow
+        WordPress core's own form — this is a measured standard, not a preference.
+
+        Flag as a problem:
+        - Any variable holding a translatable literal. Strings must be inline:
+          esc_html_e( 'Text', 'sd-theme-2026' ) / esc_html_x( ... ).
+        - Any loop, conditional or data-shaping logic. Patterns are markup.
+        - Any phpcs:ignore comment. The theme must be silent under the full
+          WordPress standard with no exclusions.
+        - Unescaped output. Every echo must use esc_html(), esc_attr(),
+          esc_url() or wp_kses_post() as appropriate.
+        - A wrong or missing text domain. It is 'sd-theme-2026'.
+        - $_GET, $_POST or $_REQUEST used directly.
+
+        Also check the registration header: Title, Slug (namespaced), Categories,
+        Description, Keywords, Viewport Width, Block Types, Template Types,
+        and an explicit Inserter boolean.
+
+    - path: "theme.json"
+      instructions: |
+        Block theme global settings and styles.
+        - Validate the $schema reference and the version field.
+        - Colour, spacing, typography, radius and shadow presets are generated
+          from the Figma Design System. Check that slugs referenced elsewhere in
+          the theme still exist here — renaming a preset orphans every
+          var:preset reference that points at it.
+        - Flag deprecated settings.
+
+    - path: "styles/**/*.json"
+      instructions: |
+        Style variation / block style / section style JSON.
+        - Must be valid JSON.
+        - Colour and font references must resolve to slugs that exist in
+          theme.json. Flag any var:preset or --wp--preset token that does not.
+        - Prefer structured style properties over the `css` field. The `css`
+          field is sanitised and applies at zero specificity via :where(), so
+          :hover, :first-child and comma selectors are unreliable there.
+        - Flag raw hex colours and literal font names — this theme references
+          presets by slug, never by value.
+
+    - path: "templates/*.html"
+      instructions: |
+        WordPress block template.
+        - Check semantic tagName values on group/section blocks.
+        - Check heading hierarchy — exactly one h1, no skipped levels.
+        - Check that every referenced template part exists in parts/.
+        - Flag responsive show/hide done with CSS media queries; this project
+          uses the Block Visibility plugin's per-block controls instead.
+
+    - path: "parts/*.html"
+      instructions: |
+        WordPress block template part.
+        - Check semantic HTML, landmark roles and heading hierarchy.
+        - Header parts should carry a skip link.
+        - Modals and dropdowns need keyboard support and a focus trap; flag any
+          interactive part that is mouse-only.
+
+    - path: "functions.php"
+      instructions: |
+        Block theme functions file — keep it minimal.
+
+        Apply the project's theme/plugin boundary test: if deactivating the theme
+        would break it, it belongs in the sd-enhancements plugin, not here.
+        Import logic, form handlers, breadcrumb filters, search integration and
+        CRM routing are plugin work even when they surface visually. Flag any of
+        it that appears in this file.
+
+        Otherwise review for correct hook usage, escaping, sanitisation and
+        validation.
+
+    - path: "inc/**/*.php"
+      instructions: |
+        Theme PHP includes. Same boundary test as functions.php — business logic
+        belongs in the plugin.
+        - Flag unescaped output and direct $wpdb queries without prepare().
+        - Check capability checks and nonce verification on anything that writes.
+        - Check the text domain is 'sd-theme-2026'.
+
+    - path: "assets/js/*.js"
+      instructions: |
+        Keep it lean — this is a block theme, not a JS application.
+        - Flag innerHTML with unescaped data and other injection risks.
+        - Avoid global scope pollution.
+        - Flag any new runtime dependency; this project does not add build
+          tooling or npm packages without explicit justification.
+
+    - path: "**/*.md"
+      instructions: |
+        Documentation. Check that any command, path or file reference is
+        accurate against the repository as it actually stands.
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "AGENTS.md"
+      - "CONTRIBUTING.md"
+      - "DESIGN.md"
+      - "PATTERNS.md"
+  learnings:
+    scope: auto
+  linear:
+    usage: auto
+    team_keys:
+      - LS
+
+chat:
+  enabled: true
