@@ -20,6 +20,7 @@
 .sd-post-nav .post-navigation-link__label {
 	display: block;
 	color: var(--wp--preset--color--brand-600);
+   margin-bottom: var(--wp--preset--spacing--5);
 }
 
 .sd-post-nav a {
@@ -27,11 +28,6 @@
 	font-weight: var(--wp--custom--font-weight--semi-bold);
 	line-height: var(--wp--custom--line-height--snug);
 	text-decoration: none;
-}
-
-.sd-post-nav a:hover,
-.sd-post-nav a:focus {
-	color: var(--wp--preset--color--brand-500);
 }
 
 /* The big chevron.
