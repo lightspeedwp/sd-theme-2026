@@ -8,6 +8,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ❯ **The big chevron on the single post's previous/next pager.** LS-2022 (line 12).
+  `assets/styles/core-post-navigation-link.css`.
+
+  Live draws a 55px FontAwesome angle inside each pager link, absolutely positioned 15px from
+  the edge and vertically centred, taking its colour from the anchor — measured in the browser
+  on the Camille post, 2026-09-16 (`lsx/assets/css/gutenberg.css`). The pager reproduces it as
+  a Phosphor caret mask painted with `currentColor`: the same glyph pair the carousel arrows
+  already use, so the theme does not load FontAwesome for one character, and the colour still
+  resolves through a token.
+
+  It is a `::before` on the anchor rather than `core/post-navigation-link`'s own `arrow`
+  attribute, which renders a `«`/`»` span *outside* the link and so would sit outside the
+  padded box and miss the link's hover. **Unlike live's, it moves**: the chevron slides 4px in
+  the direction it points on `:hover` and on `:focus-visible`, and holds still under
+  `prefers-reduced-motion`. Size and clearance are `--sd-post-nav-chevron-size` /
+  `--sd-post-nav-chevron-gap`.
+
 - 📂 **The blog category archive, rebuilt from the live site.** LS-2022 (line 12, Blog
   Templates and Related Posts). `patterns/template-category.php`, used by
   `templates/category.html`.
@@ -103,6 +120,49 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   **Template: Blog Landing** alongside the new `templates/home.html`.
 
 ### Changed
+
+- 🎠 **The category shelf on the blog landing is one continuous band again.** LS-2022
+  (line 12). `patterns/blog-categories.php`, `styles/sections/slider-frame.json`,
+  `assets/styles/core-group.css`.
+
+  The shelf's term template has always carried `blockGap: 0`, because live's five 228px tiles
+  fill a 1140px rail exactly and butt together into a single grey bar. That was only half the
+  story: Tour Operator insets every slide by 15px on all four sides once Slick takes over
+  (`.wp-block-terms-query.lsx-to-slider .slick-slide{padding:15px!important}`,
+  tour-operator/build/style.css), so the carousel put a 30px gutter back between tiles the
+  block markup had already set to zero.
+
+  The vendor constant is now restated as `--sd-slider-slide-gutter`, defaulting to the
+  vendor's own 15px so every existing card shelf renders unchanged, and the new
+  `sd-slider-tight` modifier sets it to 0 for the category band. It is deliberately not
+  `sd-slider-flush`, which also strips the shelf's focus-ring padding, drops its block margins
+  and forces a flex track — none of which an in-flow shelf wants.
+
+- 🔗 **The single post's related shelf now runs on a Tour Operator related query.** LS-2022
+  (line 12, Blog Templates and Related Posts). `patterns/template-single-post.php`; the rule
+  itself is `SD\Enhancements\Queries::relate_posts_by_category()` in `sd-enhancements`.
+
+  The `core/post-template` was classed `sd-related-posts-query` against a filter that had
+  never been written, so the shelf rendered the three most recent posts sitewide and the post
+  being read could appear in its own related list. It is now `lsx-post-related-post-query`,
+  which is a name Tour Operator acts on: `Query_Loop::query_args_filter()` matches
+  `/(lsx|facts)-(.*?)-query/` on the className, derives the key `post-related-post` and ends
+  by applying `lsx_to_query_loop_query_args_post-related-post` — the hook the plugin now
+  takes. Same rails as `lsx-tour-related-tour-query`, not a parallel set of our own.
+
+  ⚠️ **TO 2.2 ships no post↔post variation** — verified against the installed plugin locally
+  and on dev, both 2.2. Its `default:` branch reads a `post_to_post` connection meta key that
+  SD's posts have never had, and sets `post__in` to the post being read; the plugin filter
+  clears that first. TO's "hide the wrapper when the query is disabled" affordance is not
+  usable here for the same reason — it is decided before the filter runs — so the plugin
+  guarantees a non-empty shelf instead of an empty one.
+
+- 📏 **Tightened the gap between the elements of the single post's content section.** LS-2022
+  (line 12). `patterns/template-single-post.php`.
+
+  The `article` group's `blockGap` goes from L (`spacing|40`) to S (`spacing|20`), so the
+  byline/title/categories header sits closer to the body copy it introduces. At Zared's
+  direction, 2026-09-16.
 
 - 🧹 **Removed the inherited "News" archive layout from the category template.** LS-2022
   (line 12). `patterns/template-category.php`.

@@ -33,6 +33,15 @@
  * reproduces that, and it is on the markup rather than in a style variation
  * because a variation's own `blockGap` is emitted nowhere. → AGENTS.md
  *
+ * `blockGap: 0` is only half of it, though, and the half that stops mattering
+ * the moment Slick takes over. Tour Operator insets every slide by 15px on all
+ * four sides — `.wp-block-terms-query.lsx-to-slider .slick-slide{padding:15px
+ * !important}`, tour-operator/build/style.css — so the carousel put a 30px
+ * gutter back between tiles that the block markup had already set to zero.
+ * `sd-slider-tight` takes it off by setting `--sd-slider-slide-gutter` to 0;
+ * the binding and the specificity reasoning are in
+ * assets/styles/core-group.css. Corrected 2026-09-16.
+ *
  * ## The carousel is Tour Operator's Slick, not the Carousel Block
  *
  * `hasCustomClass` plus `lsx-to-slider` is Tour Operator's "Enable Slider"
@@ -64,8 +73,8 @@
  */
 
 ?>
-<!-- wp:terms-query {"termQuery":{"perPage":100,"taxonomy":"category","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider"} -->
-<div class="wp-block-terms-query alignwide is-style-slider-frame lsx-to-slider">
+<!-- wp:terms-query {"termQuery":{"perPage":100,"taxonomy":"category","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame sd-slider-tight lsx-to-slider"} -->
+<div class="wp-block-terms-query alignwide is-style-slider-frame sd-slider-tight lsx-to-slider">
 
 	<!-- wp:term-template {"className":"columns-5","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"grid","columnCount":5}} -->
 		<?php require __DIR__ . '/card-category.php'; ?>

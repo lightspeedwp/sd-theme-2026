@@ -26,3 +26,121 @@
 .sd-post-nav a:focus {
 	color: var(--wp--preset--color--brand-500);
 }
+
+/* The big chevron.
+   ---------------------------------------------------------------------------
+   Live draws a 55px FontAwesome angle inside each pager link — measured in the
+   browser on the Camille post, 2026-09-16:
+
+     .single-post .post-navigation .nav-links .previous > a:before
+       { content: "\f104"; font: 55px FontAwesome; position: absolute;
+         top: 50%; transform: translateY(-50%); left: 15px }
+     .single-post .post-navigation .nav-links .previous > a
+       { padding-left: 4.5rem }          -- 45px; live's root is 10px
+
+   with `.next` the mirror of it (`\f105`, `right: 15px`). The glyph takes its
+   colour from the anchor, which is why live's chevron is the same #cc7f16 as
+   the "Previous Post" label above the title.
+
+   Two things are done differently here, both deliberate:
+
+   1. **A mask, not a font.** The chevron is Phosphor's caret-left/caret-right —
+      the same pair styles/sections/slider-frame.json already draws for the
+      carousel arrows, inlined the same way in assets/styles/core-group.css. The
+      theme does not load FontAwesome and is not going to for one glyph, and a
+      mask painted with `background-color: currentColor` inherits the link
+      colour exactly as live's glyph inherits it.
+
+   2. **`::before` on the anchor, not core's `arrow` attribute.**
+      `post-navigation-link`'s own arrow renders a `«`/`»` text span *outside*
+      the link (post-navigation-link.php:98-100), so it would neither sit inside
+      the padded box live puts it in nor pick up the link's hover. Inside the
+      anchor it does both for free.
+
+   The pseudo-element is decorative and carries no text, so it needs no
+   `aria-hidden` — there is nothing in the accessibility tree to hide.
+
+   Sizes are tokens so the chevron can be tuned in one place. 44px rather than
+   live's 55px: live's glyph is a thin FontAwesome angle inside a 55px em box
+   and measures 19.7px wide, where Phosphor's caret fills its square viewBox. */
+.sd-post-nav {
+	--sd-post-nav-chevron-size: 44px;
+	--sd-post-nav-chevron-gap: var(--wp--preset--spacing--40);
+}
+
+.sd-post-nav a {
+	display: block;
+	position: relative;
+}
+
+.sd-post-nav a::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	display: block;
+	box-sizing: border-box;
+	inline-size: var(--sd-post-nav-chevron-size);
+	block-size: var(--sd-post-nav-chevron-size);
+	background-color: currentColor;
+	transition: transform 150ms ease, background-color 150ms ease;
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+
+/* The link is padded on the side the chevron sits, so the label and the title
+   clear it at any `--sd-post-nav-chevron-size`. Logical properties: the pager
+   is prev-on-the-left only in an LTR locale. */
+.post-navigation-link-previous.sd-post-nav a {
+	padding-inline-start: calc(var(--sd-post-nav-chevron-size) + var(--sd-post-nav-chevron-gap));
+}
+
+.post-navigation-link-previous.sd-post-nav a::before {
+	inset-inline-start: 0;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
+}
+
+.post-navigation-link-next.sd-post-nav a {
+	padding-inline-end: calc(var(--sd-post-nav-chevron-size) + var(--sd-post-nav-chevron-gap));
+}
+
+.post-navigation-link-next.sd-post-nav a::before {
+	inset-inline-end: 0;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
+}
+
+/* The hover. `currentColor` means the chevron already flips with the `:hover` /
+   `:focus` rule above — this adds the movement: the chevron slides a few pixels
+   in the direction it points, which is the one thing live's static glyph does
+   not do and the thing that makes it read as a control.
+
+   `translateY(-50%)` has to be restated in every transform, or the chevron
+   drops to sit on the link's centre line. */
+.post-navigation-link-previous.sd-post-nav a:hover::before,
+.post-navigation-link-previous.sd-post-nav a:focus-visible::before {
+	transform: translateY(-50%) translateX(-4px);
+}
+
+.post-navigation-link-next.sd-post-nav a:hover::before,
+.post-navigation-link-next.sd-post-nav a:focus-visible::before {
+	transform: translateY(-50%) translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sd-post-nav a::before {
+		transition-duration: 1ms;
+	}
+
+	.post-navigation-link-previous.sd-post-nav a:hover::before,
+	.post-navigation-link-previous.sd-post-nav a:focus-visible::before,
+	.post-navigation-link-next.sd-post-nav a:hover::before,
+	.post-navigation-link-next.sd-post-nav a:focus-visible::before {
+		transform: translateY(-50%);
+	}
+}

@@ -84,7 +84,7 @@
  * `neutral-200` exactly, which is what `is-style-tinted-page-section` paints.
  * Both the related shelf and the pager sit inside it, on the same ground.
  *
- * ## Why the related shelf carries a class instead of a query
+ * ## The related shelf is a Tour Operator related query
  *
  * "Posts sharing a category with this one, minus this one" cannot be written in
  * block markup: `core/query`'s `taxQuery` holds fixed term IDs and `exclude`
@@ -92,22 +92,50 @@
  * also behaviour rather than design — deactivate the theme and the rule should
  * survive — so it belongs in the plugin under the deactivation test.
  *
- * The `core/post-template` therefore carries `sd-related-posts-query`, which is
- * the convention Tour Operator 2.2 uses for its own related-content loops
- * (`lsx-{type}-related-{type}-query`) and that `sd-enhancements` already
- * follows for `sd-mega-menu-tours-query` and `sd-safari-gurus-query`
- * (sd-enhancements-2026/modules/queries.php). The class goes on the
- * post-template and not on the query wrapper because
- * `query_loop_block_query_vars` is applied by
- * `render_block_core_post_template()`, so that is the block whose className the
+ * The `core/post-template` therefore carries `lsx-post-related-post-query`, and
+ * that name is not decorative. Tour Operator's `Query_Loop::query_args_filter()`
+ * matches `/(lsx|facts)-(.*?)-query/` against the post-template's className and
+ * runs the matched key through its related-content machinery
+ * (tour-operator/includes/classes/blocks/class-query-loop.php:358-372), so this
+ * shelf is on the same rails as `lsx-tour-related-tour-query` and
+ * `lsx-accommodation-related-accommodation-query` rather than beside them on a
+ * bespoke one. The class goes on the post-template and not on the query wrapper
+ * because `query_loop_block_query_vars` is applied by
+ * `render_block_core_post_template()` — that is the block whose className the
  * filter can see.
  *
- * ⚠️ **That filter is not written yet.** Until it lands in `sd-enhancements`
- * the shelf renders the three most recent posts sitewide, and the post being
- * read can appear in its own related list. An unfiltered shelf is visibly wrong
- * and gets fixed; a silently empty one looks like a template bug and can
- * survive a release — the same reasoning `constrain_safari_gurus_query()`
- * records for its own empty-term fallback. → flagged in CHANGELOG.
+ * ## What Tour Operator supplies, and what it does not
+ *
+ * Measured against the installed plugin, 2026-09-16 — TO 2.2 locally **and** on
+ * dev, so this is the shipped behaviour and not a stale local copy.
+ *
+ * TO 2.2 ships **no post↔post variation**: `src/blocks/` has variations for
+ * tour, accommodation, destination, review, special and team, and none for
+ * `post`, and the switch in `query_args_filter()` has no `post-related-post`
+ * case. Its `default:` branch reads a `post_to_post` connection meta key, which
+ * SD's blog posts have never had — TO's own post metabox
+ * (includes/metaboxes/config-post.php) connects a post to accommodation,
+ * destinations and tours, never to another post. Left alone, that branch would
+ * set `post__in` to the post being read and the shelf would show the reader the
+ * article they are already on.
+ *
+ * So the shelf uses TO's plumbing and TO's own extension point for the rule:
+ * `sd-enhancements` hooks `lsx_to_query_loop_query_args_post-related-post`,
+ * which TO applies at the end of `query_args_filter()`, and swaps that
+ * connection lookup for the category match live actually uses. →
+ * `SD\Enhancements\Queries::relate_posts_by_category()`.
+ *
+ * The one TO affordance deliberately **not** taken is the wrapper class. A
+ * `core/group` classed `lsx-post-related-post-query-wrapper` would be hidden
+ * whole by `maybe_hide_varitaion()` whenever TO flags the key disabled — which
+ * is what live does with an empty shelf. It is not usable here: TO flags the
+ * key disabled inside the connection lookup, *before* the filter above has had
+ * a chance to replace that lookup, so the shelf would never render at all. The
+ * plugin filter therefore guarantees a non-empty shelf instead — a post with no
+ * categories falls back to the most recent posts, minus itself — on the same
+ * reasoning `constrain_safari_gurus_query()` records for its own empty-term
+ * fallback: a visibly wrong shelf gets fixed, a silently empty one looks like a
+ * template bug and can survive a release.
  *
  * ## The related tile is card-post-grid, whole
  *
@@ -138,6 +166,11 @@
  * `core/columns` rather than a flex group: two fixed halves are what live has,
  * and core stacks columns below 782px by itself.
  *
+ * Live also draws a 55px chevron inside each half, pointing the way the link
+ * goes. That is `assets/styles/core-post-navigation-link.css`, which carries the
+ * measurement and the reasoning for drawing it as a mask rather than as core's
+ * `arrow` attribute. Unlike live's, it moves on hover and on keyboard focus.
+ *
  * ## What live has that this does not
  *
  * **`footer.footer-meta`** — the sharing row. It renders empty on both posts
@@ -167,7 +200,7 @@
 	require __DIR__ . '/breadcrumbs.php';
 	?>
 
-	<!-- wp:group {"tagName":"article","metadata":{"name":"Article"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"tagName":"article","metadata":{"name":"Article"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
 	<article class="wp-block-group alignfull is-style-light-page-section">
 
 		<!-- wp:group {"metadata":{"name":"Article Header"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
@@ -227,7 +260,7 @@
 			<!-- wp:query {"queryId":0,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false,"taxQuery":null,"parents":[]},"align":"wide","layout":{"type":"default"}} -->
 			<div class="wp-block-query alignwide">
 
-				<!-- wp:post-template {"className":"sd-related-posts-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+				<!-- wp:post-template {"className":"lsx-post-related-post-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
 					<?php require __DIR__ . '/card-post-grid.php'; ?>
 				<!-- /wp:post-template -->
 

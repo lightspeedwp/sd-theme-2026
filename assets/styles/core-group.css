@@ -285,6 +285,36 @@
 	margin-block: calc(var(--wp--preset--spacing--20) * -1);
 }
 
+/* The gutter between slides, as a number rather than a vendor constant.
+   ---------------------------------------------------------------------------
+   Tour Operator insets every slide by 15px on all four sides —
+   `.wp-block-query.lsx-to-slider .slick-slide,
+    .wp-block-terms-query.lsx-to-slider .slick-slide { padding: 15px !important }`
+   (tour-operator/build/style.css) — which reads as a 30px gutter between any
+   two slides. That is right for the card shelves (tours, accommodation,
+   regions, reviews) and wrong for a shelf whose design is a continuous band,
+   so the constant is restated here as `--sd-slider-slide-gutter` and a shelf
+   that wants a different one sets the token instead of re-fighting the vendor.
+
+   The vendor selector is (0,3,0) and carries `!important`, so ours matches its
+   shape plus our own style class to reach (0,4,0) — the least surprising way
+   past it, and the same move `.sd-slider-flush` below already makes. The
+   fallback is the vendor's own 15px, so a frame that never sets the token
+   renders exactly as it does today.
+
+   `sd-slider-tight` is the band variant: zero gutter, slides butting together.
+   It is *not* `sd-slider-flush` — that one also strips the `.slick-list`
+   padding above, drops the shelf's block margins and forces a flex track,
+   which a normal in-flow shelf does not want. */
+.wp-block-query.lsx-to-slider.is-style-slider-frame .slick-slide,
+.wp-block-terms-query.lsx-to-slider.is-style-slider-frame .slick-slide {
+	padding: var(--sd-slider-slide-gutter, 15px) !important;
+}
+
+.is-style-slider-frame.sd-slider-tight {
+	--sd-slider-slide-gutter: 0px;
+}
+
 /* Arrows — vertically centred against the shelf, clear of its outer edges. */
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next) {
 	position: absolute !important;
