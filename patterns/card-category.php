@@ -12,10 +12,24 @@
  * @package sd-theme-2026
  */
 
+/*
+ * The key is `thumbnail`, not `sd_thumbnail`.
+ *
+ * `sd_thumbnail` is the brand logo field on `accommodation-brand`, ported from
+ * the child theme. Post categories store their tile image under plain
+ * `thumbnail` — the key LSX Banners wrote on live, and the key 10 of the 11
+ * category terms on dev already hold a value for. Binding this tile to
+ * `sd_thumbnail` read a key no category has ever had, so every tile in the
+ * "Browse By Category" band rendered imageless.
+ *
+ * The editing UI and the `show_in_rest` registration that makes the key
+ * readable here are both in the plugin — SD_Enhancements\TermMeta.
+ */
+
 ?>
 <!-- wp:group {"metadata":{"name":"Category Tile"},"className":"is-style-category-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 <div class="wp-block-group is-style-category-card">
-	<!-- wp:image {"metadata":{"name":"Category Image","bindings":{"url":{"source":"sd/term-meta","args":{"key":"sd_thumbnail","format":"attachment-url","size":"medium_large"}},"alt":{"source":"sd/term-meta","args":{"key":"sd_thumbnail","format":"attachment-alt"}}}},"aspectRatio":"16/9","scale":"cover","sizeSlug":"medium_large","linkDestination":"none"} -->
+	<!-- wp:image {"metadata":{"name":"Category Image","bindings":{"url":{"source":"sd/term-meta","args":{"key":"thumbnail","format":"attachment-url","size":"medium_large"}},"alt":{"source":"sd/term-meta","args":{"key":"thumbnail","format":"attachment-alt"}}}},"aspectRatio":"16/9","scale":"cover","sizeSlug":"medium_large","linkDestination":"none"} -->
 	<figure class="wp-block-image size-medium_large"><img alt="" style="aspect-ratio:16/9;object-fit:cover"/></figure>
 	<!-- /wp:image -->
 
