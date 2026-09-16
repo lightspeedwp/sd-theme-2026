@@ -234,7 +234,7 @@
 	require __DIR__ . '/breadcrumbs.php';
 	?>
 
-	<!-- wp:group {"tagName":"article","metadata":{"name":"Article"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"tagName":"article","metadata":{"name":"Article"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|60"}},"layout":{"type":"constrained"}} -->
 	<article class="wp-block-group alignfull is-style-light-page-section">
 
 		<!-- wp:group {"metadata":{"name":"Article Header"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
@@ -243,17 +243,30 @@
 			<?php
 			/*
 			 * Live's `.post-meta.post-meta-top-first` — the date, then "by" and
-			 * the author, italic and tinted. `core/post-author` carries the
-			 * byline word itself; live lowercases its "By " in CSS, so it is
-			 * authored lowercase here rather than transformed.
+			 * the author, italic and tinted. The byline word is its own
+			 * `core/paragraph` sitting beside `core/post-author-name` in a nowrap
+			 * flex row, rather than `core/post-author`'s `byline` attribute, so the
+			 * word keeps its own font size and stays translatable. Live lowercases
+			 * its "By " in CSS, so it is authored lowercase here rather than
+			 * transformed.
 			 */
 			?>
-			<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"},"typography":{"fontStyle":"italic","lineHeight":"var:custom|line-height|body"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"}}}},"textColor":"brand-500","fontSize":"200","layout":{"type":"flex","flexWrap":"wrap"}} -->
-			<div class="wp-block-group has-brand-500-color has-text-color has-link-color has-200-font-size" style="font-style:italic;line-height:var(--wp--custom--line-height--body)">
+			<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"},"typography":{"fontStyle":"italic","lineHeight":"var:custom|line-height|body"},"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"200","layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-group has-brand-600-color has-text-color has-link-color has-200-font-size" style="font-style:italic;line-height:var(--wp--custom--line-height--body)">
 
-				<!-- wp:post-date {"format":"F j, Y","isLink":false} /-->
+				<!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}}} /-->
 
-				<!-- wp:post-author {"showAvatar":false,"showBio":false,"byline":"<?php esc_attr_e( 'by', 'sd-theme-2026' ); ?>","isLink":true} /-->
+				<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"top"}} -->
+				<div class="wp-block-group">
+
+					<!-- wp:paragraph {"fontSize":"200"} -->
+					<p class="has-200-font-size"><?php esc_html_e( 'by', 'sd-theme-2026' ); ?></p>
+					<!-- /wp:paragraph -->
+
+					<!-- wp:post-author-name {"isLink":true,"style":{"typography":{"fontSize":"1em"}}} /-->
+
+				</div>
+				<!-- /wp:group -->
 
 			</div>
 			<!-- /wp:group -->
@@ -266,12 +279,12 @@
 			 * same italic and same tint as the byline above the title.
 			 */
 			?>
-			<!-- wp:post-terms {"term":"category","prefix":"<?php esc_attr_e( 'Posted in: ', 'sd-theme-2026' ); ?>","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-500"}}}},"textColor":"brand-500","fontSize":"200"} /-->
+			<!-- wp:post-terms {"term":"category","prefix":"<?php esc_attr_e( 'Posted in: ', 'sd-theme-2026' ); ?>","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"200"} /-->
 
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		<!-- wp:post-content {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} /-->
 
 	</article>
 	<!-- /wp:group -->
@@ -287,8 +300,8 @@
 		<!-- wp:group {"metadata":{"name":"Related Posts"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group alignwide">
 
-			<!-- wp:heading {"textAlign":"center","metadata":{"name":"Related Heading"},"className":"is-style-section-title","anchor":"h-related"} -->
-			<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-related"><?php esc_html_e( 'Related Posts', 'sd-theme-2026' ); ?></h2>
+			<!-- wp:heading {"textAlign":"center","metadata":{"name":"Related Heading"},"className":"is-style-section-title","anchor":"h-related-posts"} -->
+			<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-related-posts"><?php esc_html_e( 'Related Posts', 'sd-theme-2026' ); ?></h2>
 			<!-- /wp:heading -->
 
 			<!-- wp:query {"queryId":0,"query":{"perPage":15,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false,"taxQuery":null,"parents":[]},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->

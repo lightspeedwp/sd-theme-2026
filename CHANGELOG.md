@@ -137,6 +137,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- ✍️ **The single post byline is two blocks, and the article breathes.** LS-2022 (line 12, Blog
+  Templates and Related Posts). `patterns/template-single-post.php`.
+
+  Zared, 2026-09-16, edited in the Site Editor on dev and imported back to the pattern. The
+  byline word is now its own `core/paragraph` beside `core/post-author-name` in a nowrap flex
+  row, where it had been `core/post-author`'s `byline` attribute. `core/post-author` renders the
+  word inside the author block's own wrapper, so the word could not carry its own font size and
+  sat on the author's baseline rather than the date's; splitting them lets the row align on one
+  line and keeps "by" translatable in its own string. `core/post-date` picks up the
+  `core/post-data` `datetime` binding the editor now writes for it.
+
+  The spacing and tint move with it: the article's block gap opens from `spacing|20` to
+  `spacing|60` so the header, body and closing band read as three sections rather than one
+  column; `core/post-content` takes `spacing|30` between its own paragraphs; the byline row
+  opens from `spacing|5` to `spacing|10`; and the byline and category tint move from
+  `brand-500` to `brand-600`, the darker of the two against the light page section. The related
+  heading's anchor is `h-related-posts`, which is what the editor assigned it — nothing links
+  to the old `h-related`.
+
+  Imported selectively, not verbatim. The editor's flattened copy also carried its own
+  normalisation — the injected pattern metadata, an inert `placeholder` on the byline
+  paragraph, `textAlign` relocated into `style.typography`, and reordered attribute keys — none
+  of which changes a rendered class, so none of it was brought across. `breadcrumbs.php` and
+  `card-post-grid.php` came back identical; `why-choose-sd.php` differed only by that
+  normalisation and is untouched.
+
 - 📏 **The two blog banners open at 360px, not 454px.** LS-2022 (line 12, Blog Templates and
   Related Posts). `patterns/template-category.php`, `patterns/template-home-blog.php`.
 
