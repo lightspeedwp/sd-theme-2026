@@ -252,8 +252,8 @@
 				 * member could be given one without the other.
 				 */
 				?>
-				<!-- wp:paragraph {"metadata":{"name":"Role","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"role"}}}},"className":"lsx-role-wrapper","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"300","fontFamily":"heading"} -->
-				<p class="lsx-role-wrapper has-heading-font-family has-300-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"></p>
+				<!-- wp:paragraph {"metadata":{"name":"Role","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"role"}}}},"className":"lsx-role-wrapper","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"textColor":"brand-600","fontSize":"400","fontFamily":"heading"} -->
+				<p class="lsx-role-wrapper has-brand-600-color has-text-color has-heading-font-family has-400-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"></p>
 				<!-- /wp:paragraph -->
 
 				<?php
@@ -270,9 +270,19 @@
 				 * instead of one passage. `M` is the same step the meta rows
 				 * above it use. A `blockGap` belongs on the block markup and
 				 * never in a variation JSON — see AGENTS.md.
+				 *
+				 * The layout is `default` (flow) and not `constrained`. With
+				 * `useRootPaddingAwareAlignments` on — theme.json sets it — core
+				 * adds `has-global-padding` to *every* constrained-layout block, not
+				 * just the ones at the root (block-supports/layout.php:1111-1117), so
+				 * a constrained `post-content` picked up the root left padding and
+				 * the bio sat one `spacing|20` in from the Meet heading and the role
+				 * above it. The column already constrains the measure; this block
+				 * only needs to stack its children, which flow does, `blockGap` and
+				 * all.
 				 */
 				?>
-				<!-- wp:post-content {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} /-->
+				<!-- wp:post-content {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} /-->
 
 				<?php
 				/*
