@@ -9,10 +9,6 @@
    enqueued only when a post-terms block actually renders, rather than site-wide
    via the always-loaded Woo sheet (which was bleeding onto blog post terms).
    See the assets/styles audit, finding ②. */
-.wp-block-post-terms a:hover {
-	text-decoration: underline;
-}
-
 .wp-block-post-terms__prefix {
 	font-weight: 600;
 }

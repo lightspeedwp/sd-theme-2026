@@ -6,7 +6,366 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- ❮ **A left chevron on the blog category archive's *Back To Blog* link.** LS-2022 (line 12,
+  Blog Templates and Related Posts). `styles/blocks/paragraph/back-link.json`,
+  `assets/styles/core-paragraph.css`, `patterns/template-category.php`.
+
+  Zared, 2026-09-16. Live's anchor is plain body-scale link text and stays that way; the chevron
+  is the one thing added, so the link reads as a way back rather than as another link in the
+  page. It is the same Phosphor `CaretLeft` the slider frame's previous control uses, as a
+  `::before` mask painted with `currentColor` — so it follows the link's colour and its hover
+  with no second rule, and being a pseudo-element it never enters the accessible name.
+
+  The anchor's `inline-flex` layout is in the variation's `css` field, where the editor lays it
+  out too; only the `::before` is in `assets/styles/core-paragraph.css`, because a `css` field
+  mangles `content: ""` and drops the rule containing it. Verified locally: the variation
+  registers against `core/paragraph`, the pattern renders `is-style-back-link--2`, and core
+  emits `:root :where(p.is-style-back-link--2 a){display: inline-flex; …}` on
+  `block-style-variation-styles`.
+
+- ❯ **The big chevron on the single post's previous/next pager.** LS-2022 (line 12).
+  `assets/styles/core-post-navigation-link.css`.
+
+  Live draws a 55px FontAwesome angle inside each pager link, absolutely positioned 15px from
+  the edge and vertically centred, taking its colour from the anchor — measured in the browser
+  on the Camille post, 2026-09-16 (`lsx/assets/css/gutenberg.css`). The pager reproduces it as
+  a Phosphor caret mask painted with `currentColor`: the same glyph pair the carousel arrows
+  already use, so the theme does not load FontAwesome for one character, and the colour still
+  resolves through a token.
+
+  It is a `::before` on the anchor rather than `core/post-navigation-link`'s own `arrow`
+  attribute, which renders a `«`/`»` span *outside* the link and so would sit outside the
+  padded box and miss the link's hover. Size and clearance are `--sd-post-nav-chevron-size` /
+  `--sd-post-nav-chevron-gap`. (The 4px hover slide this shipped with is gone — see *The
+  single post's pager sits tighter…* under **Changed**.)
+
+- 📂 **The blog category archive, rebuilt from the live site.** LS-2022 (line 12, Blog
+  Templates and Related Posts). `patterns/template-category.php`, used by
+  `templates/category.html`.
+
+  `/category/rwanda/` and its siblings now render as live renders them: a photographic banner
+  carrying the category name, the breadcrumb strip, a *Back To Blog* link, the list of post
+  rows with pagination, and the *Why choose Southern Destinations* value band. It is the blog
+  landing with the intro band taken out and the back-link put in, and it shares the blog
+  landing's post row (`card-post-list.php`) so the two pages agree.
+
+  **The heading is the category itself**, rendered from the queried term rather than authored,
+  so every category gets its own title with no per-term template. Live prints the same string
+  twice — once visibly in the banner as the bare term name, once hidden as "Category: Rwanda";
+  the visible one is reproduced and the hidden Tour Operator artefact is dropped, as it was on
+  the team and destinations archives.
+
+  **The loop inherits the main query**, so the category's own pagination and Settings →
+  Reading govern it and nothing about publishing or categorising changes — task 12.5.
+
+  ⚠️ **The banner photograph is the same on every category.** Live sets a banner image per
+  category — Rwanda draws a gorilla-trekking shot — and a `core/cover` takes a fixed URL, so
+  following the term needs a block binding over the term's banner meta. That is
+  `sd-enhancements` work, not theme work. Until it exists the banner carries the same
+  photograph the blog landing uses, and switching it to a binding later is a change to one
+  block.
+
+- 📰 **The blog landing page, built from the live site.** LS-2022 (line 12, Blog Templates
+  and Related Posts). `templates/home.html`, `patterns/template-home-blog.php` and
+  `patterns/blog-categories.php`.
+
+  The posts index now has a template of its own. What a reader sees, top to bottom: the
+  breadcrumb strip, a warm band carrying the *Tales from our trails* heading and the italic
+  standfirst with its drop cap, the Browse By Category shelf, the list of post rows with
+  pagination, and the *Why choose Southern Destinations* value band. That is live's blog
+  landing, section for section.
+
+  **The loop inherits the main query**, so Settings → Reading still decides how many posts a
+  page holds and publishing, scheduling and back-dating behave exactly as they do today.
+  Nothing an editor does changes because of this template — task 12.5.
+
+  **The category shelf follows the taxonomy.** It is a `core/terms-query` over the post
+  categories with empty ones hidden, so adding or renaming a category updates the shelf with
+  no template edit. Live hard-codes nine tiles; this does not.
+
+  Two pieces that were already in the theme get their first use here: `card-post-list.php`,
+  the post row built for this page back in August, and `card-category.php`, the tile whose
+  style variation has described itself as belonging to "the live blog landing" since it was
+  written.
+
+- 🏞️ **A photographic banner on the blog landing.** LS-2022 (line 12).
+  `patterns/template-home-blog.php`.
+
+  The page now opens on the same 454px banner as every other landing page in the theme,
+  above the breadcrumb strip, carrying the page title over the old About Us photograph
+  (`uploads/2019/07/about-us-banner.jpg`).
+
+  This reverses a call recorded when the template was written. LSX Banners *is* configured on
+  live's blog and points at `blog_header.jpg`, but the child theme collapses the banner to a
+  50px sliver, so the photograph is never seen there — which is why the first build opened
+  on the breadcrumb strip and logged the banner as a design decision rather than a
+  translation. Zared ruled it in on 2026-09-16.
+
+  **The `h1` moved with it.** Live authors `<h1 class="archive-title">Blog</h1>` and then
+  hides it; with a banner to sit in, that heading is now the visible page title, and
+  *Tales from our trails* steps down to the `h2` that follows it. The page still has exactly
+  one `h1`.
+
+### Fixed
+
+- 🖼️ **The Browse By Category tiles show their images.** LS-2022 (line 12).
+  `patterns/card-category.php`.
+
+  The tile bound its image `url` and `alt` to `sd/term-meta` with `key: sd_thumbnail`.
+  `sd_thumbnail` is the brand logo field on `accommodation-brand`, ported from the child
+  theme — **no post category has ever held that key.** Post categories store their tile image
+  under plain `thumbnail`, which is what LSX Banners wrote on live and what 10 of the 11
+  category terms on dev already carry. So every tile in the band rendered imageless, and the
+  binding failed the way bindings do: silently, with an empty `<figure>`.
+
+  The key is now `thumbnail`, with the reasoning written into the pattern so it is not
+  "corrected" back. The editing UI for the field and the `show_in_rest` registration that
+  makes it readable here are plugin work — `SD_Enhancements\TermMeta`, same issue.
+
+### Removed
+
+- 🗑️ **`patterns/template-index-news.php` — the KWV-era blog landing.** LS-2022 (line 12).
+
+  It ran a dark "News" cover hero and a sticky categories sidebar down the right-hand side.
+  The live blog landing has neither: it is a single full-width column, and its categories are
+  the shelf in the intro band. The pattern came across from the `kwv-theme-2026` base and was
+  never measured against this site, so it is removed rather than left standing as a second,
+  contradictory blog landing. `templates/index.html` — the generic fallback — now points at
+  **Template: Blog Landing** alongside the new `templates/home.html`.
+
 ### Changed
+
+- ✍️ **The single post byline is two blocks, and the article breathes.** LS-2022 (line 12, Blog
+  Templates and Related Posts). `patterns/template-single-post.php`.
+
+  Zared, 2026-09-16, edited in the Site Editor on dev and imported back to the pattern. The
+  byline word is now its own `core/paragraph` beside `core/post-author-name` in a nowrap flex
+  row, where it had been `core/post-author`'s `byline` attribute. `core/post-author` renders the
+  word inside the author block's own wrapper, so the word could not carry its own font size and
+  sat on the author's baseline rather than the date's; splitting them lets the row align on one
+  line and keeps "by" translatable in its own string. `core/post-date` picks up the
+  `core/post-data` `datetime` binding the editor now writes for it.
+
+  The spacing and tint move with it: the article's block gap opens from `spacing|20` to
+  `spacing|60` so the header, body and closing band read as three sections rather than one
+  column; `core/post-content` takes `spacing|30` between its own paragraphs; the byline row
+  opens from `spacing|5` to `spacing|10`; and the byline and category tint move from
+  `brand-500` to `brand-600`, the darker of the two against the light page section. The related
+  heading's anchor is `h-related-posts`, which is what the editor assigned it — nothing links
+  to the old `h-related`.
+
+  Imported selectively, not verbatim. The editor's flattened copy also carried its own
+  normalisation — the injected pattern metadata, an inert `placeholder` on the byline
+  paragraph, `textAlign` relocated into `style.typography`, and reordered attribute keys — none
+  of which changes a rendered class, so none of it was brought across. `breadcrumbs.php` and
+  `card-post-grid.php` came back identical; `why-choose-sd.php` differed only by that
+  normalisation and is untouched.
+
+- 📏 **The two blog banners open at 360px, not 454px.** LS-2022 (line 12, Blog Templates and
+  Related Posts). `patterns/template-category.php`, `patterns/template-home-blog.php`.
+
+  Zared, 2026-09-16 — the banner was crowding the first post row off the fold on both pages.
+  360px is the floor the two Tour Operator singles already carry
+  (`patterns/destination-banner.php`, `patterns/template-single-tour.php`), so the list pages
+  now open at the same height as the pages they lead to. The two move together deliberately: a
+  step in banner height between the blog landing and a category would read as a mistake. The
+  page landings keep 454px.
+
+- 🖼️ **The category banner is the category's photograph, not one image for all of them.**
+  LS-2022 (line 12). `patterns/template-category.php`.
+
+  The cover now declares a `sd/term-meta` binding on `url` against the term's `banner` meta —
+  the same association live has, and one that was already in the database. `sd-enhancements`'
+  new `TermBanner` module paints it; `core/cover` is a static block whose `url` declares no
+  `source` in block.json, so the binding resolves the value and cannot reach the HTML on its
+  own. The reasoning is written out on the pattern and on `modules/term-banner.php`.
+
+  **The `url` in the markup is now the fallback, not the banner** — what the two categories with
+  no `banner` row (Safari Tips, Botswana) wear, and what the page wears with the plugin
+  deactivated. It is still the blog landing's image, so an unset category reads as the same
+  section of the site. The note claiming the banner could only be static here is corrected
+  rather than left to contradict the markup.
+
+- 📐 **The category archive's top band is tighter.** LS-2022 (line 12).
+  `patterns/template-category.php`.
+
+  Zared, 2026-09-16. `is-style-light-page-section` opens on spacing|70, which is right for a
+  content band and too much for a one-line back-link: it put ~70px between the breadcrumb strip
+  and the link, and another ~70px between the link and the first post row. The back-link band now
+  opens on spacing|40 and the post list on spacing|30, so the breadcrumbs, the link and the first
+  row read as one group instead of three separated bands.
+
+- 🎠 **The single post's related shelf is a carousel of fifteen, not a row of three.** LS-2022
+  (line 12, Blog Templates and Related Posts). `patterns/template-single-post.php`.
+
+  Zared, 2026-09-16. Live draws three tiles and stops; this shows fifteen on a Slick carousel,
+  three at a time. It is now the same object as the homepage's *Tales from our trails* band —
+  `hasCustomClass` + `lsx-to-slider` is Tour Operator's "Enable Slider" checkbox on
+  `core/query`, `is-style-slider-frame` supplies the arrows and dots, and `slidesToShow` comes
+  off the `columns-3` class `core/post-template` emits from its own grid `columnCount`, which
+  doubles as the no-JavaScript fallback.
+
+  ⚠️ **The count lives in two places and they have to agree.** The block's `perPage` never
+  reaches `WP_Query` on this shelf: `Queries::relate_posts_by_category()` replaces Tour
+  Operator's arguments wholesale, so `RELATED_POSTS_PER_PAGE` in **sd-enhancements-2026**
+  moves to 15 alongside this. Changing one alone changes nothing.
+
+  The grid's `minimumColumnWidth: 16px` is gone with it — it made core add
+  `has-native-responsive-grid` and switch the fallback to an auto-fill track rather than the
+  three-up row Slick is about to be told it has. The homepage carousel has never set it.
+
+- ❮ **The single post's pager sits tighter, and the chevron holds still.** LS-2022 (line 12).
+  `assets/styles/core-post-navigation-link.css`.
+
+  Three changes, all Zared's, 2026-09-16.
+
+  `--sd-post-nav-chevron-gap` drops from spacing 40 (26–40px) to spacing 10 (8–10px). The gap
+  was never the whole of what a reader saw: Phosphor's caret path spans about 38% of its
+  square viewBox, so a 44px chevron box already leaves roughly 13px of empty mask on the inner
+  side before the gap starts, and spacing 40 on top of that read as a gulf.
+
+  **The 4px hover slide is removed.** The caret is a signpost here, not a control the reader
+  aims at, and the movement pulled the eye off the title that is the actual link. Live's glyph
+  is static too, so this is back to the port. The `prefers-reduced-motion` block keeps only the
+  transition damping it still has something to damp.
+
+  **"Previous Post" / "Next Post" is brand-600 by default**, and the chevron flips to brand-600
+  on `:hover` / `:focus-visible` rather than following the anchor to brand-500. Set on the
+  label rather than the anchor because the adjacent post's *title* stays `contrast` — the title
+  is the link's content, the label its signpost — and the caret's hover is stated explicitly
+  because `background-color: currentColor` would otherwise land it a step short of the label's
+  tone. Live paints its label #cc7f16 (brand-500); brand-600 is the tone the slider arrows'
+  active state already uses, so the closing band's two brand accents now agree.
+
+- ↔ **The category slider's arrows stand clear of the band.** LS-2022 (line 12).
+  `styles/sections/slider-frame.json`, `assets/styles/core-group.css`.
+
+  Zared, 2026-09-16 — the chevrons sat almost against the category artwork. The clearance a
+  reader sees is three things added together: the arrow's own offset from the frame edge, the
+  slide's 15px inset, and the empty margin inside the caret's square mask box.
+  `.sd-slider-tight` sets `--sd-slider-slide-gutter` to 0 by design — the band is one
+  continuous bar, not a row of cards — which gives the middle one away and leaves the chevron
+  nearly touching the tile.
+
+  The arrow offset is now a token, `--sd-slider-nav-offset`, declared on the frame at the 10px
+  every shelf already used, so nothing else moves. `.sd-slider-tight` sets it to 28px: the
+  10px + 15px the card shelves read at, plus a little. The gutter *between* tiles stays 0.
+
+- 🎠 **The category shelf on the blog landing is one continuous band again.** LS-2022
+  (line 12). `patterns/blog-categories.php`, `styles/sections/slider-frame.json`,
+  `assets/styles/core-group.css`.
+
+  The shelf's term template has always carried `blockGap: 0`, because live's five 228px tiles
+  fill a 1140px rail exactly and butt together into a single grey bar. That was only half the
+  story: Tour Operator insets every slide by 15px on all four sides once Slick takes over
+  (`.wp-block-terms-query.lsx-to-slider .slick-slide{padding:15px!important}`,
+  tour-operator/build/style.css), so the carousel put a 30px gutter back between tiles the
+  block markup had already set to zero.
+
+  The vendor constant is now restated as `--sd-slider-slide-gutter`, defaulting to the
+  vendor's own 15px so every existing card shelf renders unchanged, and the new
+  `sd-slider-tight` modifier sets it to 0 for the category band. It is deliberately not
+  `sd-slider-flush`, which also strips the shelf's focus-ring padding, drops its block margins
+  and forces a flex track — none of which an in-flow shelf wants.
+
+- 🔗 **The single post's related shelf now runs on a Tour Operator related query.** LS-2022
+  (line 12, Blog Templates and Related Posts). `patterns/template-single-post.php`; the rule
+  itself is `SD\Enhancements\Queries::relate_posts_by_category()` in `sd-enhancements`.
+
+  The `core/post-template` was classed `sd-related-posts-query` against a filter that had
+  never been written, so the shelf rendered the three most recent posts sitewide and the post
+  being read could appear in its own related list. It is now `lsx-post-related-post-query`,
+  which is a name Tour Operator acts on: `Query_Loop::query_args_filter()` matches
+  `/(lsx|facts)-(.*?)-query/` on the className, derives the key `post-related-post` and ends
+  by applying `lsx_to_query_loop_query_args_post-related-post` — the hook the plugin now
+  takes. Same rails as `lsx-tour-related-tour-query`, not a parallel set of our own.
+
+  ⚠️ **TO 2.2 ships no post↔post variation** — verified against the installed plugin locally
+  and on dev, both 2.2. Its `default:` branch reads a `post_to_post` connection meta key that
+  SD's posts have never had, and sets `post__in` to the post being read; the plugin filter
+  clears that first. TO's "hide the wrapper when the query is disabled" affordance is not
+  usable here for the same reason — it is decided before the filter runs — so the plugin
+  guarantees a non-empty shelf instead of an empty one.
+
+- 📏 **Tightened the gap between the elements of the single post's content section.** LS-2022
+  (line 12). `patterns/template-single-post.php`.
+
+  The `article` group's `blockGap` goes from L (`spacing|40`) to S (`spacing|20`), so the
+  byline/title/categories header sits closer to the body copy it introduces. At Zared's
+  direction, 2026-09-16.
+
+- 🧹 **Removed the inherited "News" archive layout from the category template.** LS-2022
+  (line 12). `patterns/template-category.php`.
+
+  The category template had been running the KWV base theme's news archive — a dark cover
+  hero over a sticky `core/categories` sidebar in a 90/20 column pair. Southern Destinations'
+  category pages have none of that: no sidebar, no dark hero, no categories list. It was
+  carried across with the theme architecture and never measured against this site, the same
+  way `template-index-news` was on the blog landing, and it is replaced rather than left
+  standing as a second, contradictory blog archive.
+
+- ✍️ **The blog post row and landing page, as authored in the Site Editor.** LS-2022
+  (line 12). `patterns/card-post-list.php` and `patterns/template-home-blog.php`, imported
+  from the Blog Home template override on dev (2026-09-16).
+
+  These are the adjustments made against the real migrated posts rather than the six local
+  fixtures. The row: the image column narrows to 30%, the body column gains a little top
+  padding so the title sits level with the photograph, and the byline opens out — date,
+  author and category now breathe at `spacing|20` while *by* stays tight against the author
+  name. The landing page: pagination switches to chevrons without their labels, and the
+  empty-loop message reads *No stories yet, check back in regularly as we post often.*
+
+  **The byline is composed rather than `core/post-author`.** That block renders its byline
+  word and the name into one container it owns, so the two could not be spaced independently
+  of the gap between the byline's three parts. It is now a literal *by* beside
+  `core/post-author-name`, in their own group.
+
+  ⚠️ **The tag rule's border width is a literal `1px`, deliberately.** `core/post-terms` is
+  a dynamic block, so its styles are resolved by the server-side style engine — which expands
+  `var:preset|…` only, and only for properties that declare `css_vars`. `border.width`
+  declares none. The `var:custom|border-width|200` this row previously carried had therefore
+  never drawn a rule at all. Measured on local 2026-09-16; the reasoning is in the pattern so
+  it is not "corrected" back to a token.
+
+- 📄 **The single blog post page, rebuilt from the live site.** LS-2022 (line 12, Blog
+  Templates and Related Posts). `patterns/template-single-post.php` and
+  `assets/styles/core-post-navigation-link.css`.
+
+  What a reader sees, top to bottom: the breadcrumb strip, the article — an italic
+  date-and-author byline, the title, the categories, the post — then a full-bleed tinted
+  band carrying three **Related Posts** and the previous/next pager, and the *Why choose
+  Southern Destinations* value band. That is live, section for section, measured on
+  2026-09-16 against two posts so nothing in it is a property of one article.
+
+  **The pattern that stood here was the `kwv-theme-2026` base's and had never been measured
+  against this site.** It ran a "← Back to News" link, an author avatar, a 1:1 featured
+  image beside the title in a 60/40 pair, and a bare prev/next row. Live has none of the
+  first three; the pager is kept and moved into the closing band where live puts it.
+
+  ⚠️ **Live does not render the featured image on a single post** — measured on both posts.
+  The photograph at the top of the Namibia article is a `core/image` inside the post
+  content, placed by the author; the second post carries a featured image and shows no image
+  at all. The featured image is for the cards. Putting one back on the page is a new design
+  decision rather than a translation, and it is one block away.
+
+  **The related tile is `card-post-grid.php`, used whole.** Live's related card is the same
+  centred title, date and excerpt, with the author, categories, "Read More" and tags all
+  switched off in CSS. Those last two are the only difference, and a post tile looking like
+  the same object wherever it appears was worth more than a second card — the same call
+  `template-single-team.php` made for its blog shelf. Two attributes come out if you'd
+  rather match live exactly.
+
+  🔵 **The related shelf needs one filter in `sd-enhancements` before it is correct.**
+  "Posts sharing a category with this one, minus this one" cannot be written in block
+  markup — `taxQuery` holds fixed term IDs and `exclude` holds fixed post IDs — and it is
+  behaviour, not design, so it falls on the plugin side of the deactivation test. The
+  `core/post-template` carries `sd-related-posts-query`, which is the convention Tour
+  Operator 2.2 and `sd-enhancements`' own `Queries` module already use. **Until that filter
+  lands the shelf shows the three most recent posts sitewide, and the post being read can
+  appear in its own related list.** An unfiltered shelf is visibly wrong and gets fixed; a
+  silently empty one looks like a template bug and can survive a release.
 
 - 🖼️ **All four gallery bands now use `sd/gallery` instead of the `lsx/gallery` placeholder.**
   LS-2023 (line 13, Gallery Implementation).
