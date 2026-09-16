@@ -74,6 +74,8 @@
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 3;
 	line-clamp: 3;
+}
+
 /*
  * `is-style-back-link` — the left chevron on the "Back To Blog" link that opens
  * the blog category archive. → styles/blocks/paragraph/back-link.json
