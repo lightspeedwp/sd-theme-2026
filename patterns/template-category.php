@@ -186,8 +186,8 @@
 	 * `is-style-back-link` puts a left chevron in front of the label, added
 	 * 2026-09-16. It is a masked pseudo-element on the anchor rather than a
 	 * character or an `<img>`: it inherits `currentColor`, so the hover state
-	 * carries it without a second rule, and it is `aria-hidden` by
-	 * construction, so the link's accessible name stays "Back To Blog".
+	 * carries it without a second rule, and its `content` is empty — the shape
+	 * is a mask — so the link's accessible name stays "Back To Blog".
 	 * → styles/blocks/paragraph/back-link.json
 	 *
 	 * ## The band is tighter than the section default
