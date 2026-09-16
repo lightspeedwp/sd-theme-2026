@@ -326,7 +326,7 @@
 				 * Image crops are `aspectRatio`, never CSS. → AGENTS.md
 				 */
 				?>
-				<!-- wp:post-featured-image {"aspectRatio":"1","metadata":{"name":"Portrait"}, "style":{"border":{"border-radius":"var(--wp--preset--border-radius--round)"}}} /-->
+				<!-- wp:post-featured-image {"aspectRatio":"1","metadata":{"name":"Portrait"},"style":{"border":{"radius":"var:preset|border-radius|500"}}} /-->
 
 			</div>
 			<!-- /wp:column -->
