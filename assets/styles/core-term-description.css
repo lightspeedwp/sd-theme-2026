@@ -83,10 +83,23 @@
  * also live's behaviour — live has no Read more on this page at all.
  *
  * ⚠️ The button is hidden with `display: none` rather than `[hidden]` or
- * `visibility`, and the script's overflow test runs against the *unclamped*
- * text, so the measurement is not taken through a collapsed box.
+ * `visibility`. The script's overflow test applies the clamp and measures what
+ * it costs, so these rules are the thing being measured — see the head of
+ * `assets/js/intro-collapse.js`.
  */
-.sd-intro-collapse__actions {
+
+/*
+ * ⚠️ **The hide is scoped to the container, and it has to be.** `core/buttons`
+ * is a flex layout, and global styles print `body .is-layout-flex { display:
+ * flex }` — specificity (0,1,1), which outranks a lone class. A bare
+ * `.sd-intro-collapse__actions { display: none }` therefore lost, and the
+ * toggle showed on every brand whether the story overflowed or not; measured
+ * on dev 2026-09-16, where a six-line description that the script had
+ * correctly declined to enhance still carried a Read more that did nothing.
+ * Scoping to the container takes the hide to (0,2,0) and it lands. The reveal
+ * below is (0,3,0) and still wins over it.
+ */
+.sd-intro-collapse .sd-intro-collapse__actions {
 	display: none;
 }
 
@@ -123,6 +136,14 @@
  * because the `wp-element-button` class the block also carries points the link
  * colour at the *button* element, not the link one.
  *
+ * ⚠️ **Italic, like the copy above it and like the link it imitates.** On
+ * `patterns/destination-summary.php` the read-more inherits its italic from the
+ * inline `font-style:italic` on the wrapping group. Here the italic stops at
+ * the description — the toggle is a sibling of `.sd-intro-collapse__text`, not
+ * a descendant — so it is set by name. It pairs with the ellipsis on the
+ * pattern's label: both were asked for so the two pages read alike. Zared's
+ * call, 2026-09-16.
+ *
  * ⚠️ **No underline, in either state.** theme.json's `elements.link` sets
  * `textDecoration: none` on `:hover` as well as at rest, so the read-more this
  * is matching is not underlined anywhere on the site. An underline here would
@@ -145,6 +166,7 @@
 	color: var(--wp--preset--color--brand-600);
 	font-family: inherit;
 	font-size: inherit;
+	font-style: italic;
 	font-weight: var(--wp--custom--font-weight--regular);
 	line-height: inherit;
 	letter-spacing: normal;
@@ -172,10 +194,16 @@
 }
 
 /*
- * Six lines is the clamp. `-webkit-line-clamp` with `-webkit-box` is still the
- * only form Safari and Firefox both honour; the unprefixed `line-clamp` is not
- * yet safe to rely on alone, so both are declared and the prefixed one wins
- * where it has to.
+ * Ten lines is the clamp — up from six, Zared's call 2026-09-16, because six
+ * cut most brand stories mid-thought. `-webkit-line-clamp` with `-webkit-box`
+ * is still the only form Safari and Firefox both honour; the unprefixed
+ * `line-clamp` is not yet safe to rely on alone, so both are declared and the
+ * prefixed one wins where it has to.
+ *
+ * This is now the **only** place the line count is written.
+ * `assets/js/intro-collapse.js` used to carry a `CLAMP_LINES` copy that had to
+ * be kept in step by hand; it measures the clamp itself instead, so changing
+ * the number here is the whole change.
  *
  * The drop cap and the clamp coexist: a floated `::first-letter` inside a
  * `-webkit-box` is laid out before the clamp is applied, so the cap survives
@@ -185,8 +213,8 @@
 	display: -webkit-box;
 	overflow: hidden;
 	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 6;
-	line-clamp: 6;
+	-webkit-line-clamp: 10;
+	line-clamp: 10;
 }
 
 .sd-intro-collapse.is-enhanced.is-expanded .sd-intro-collapse__text {

@@ -94,14 +94,14 @@
  * built it. → The full note on what a `core/tabs` conversion would take, and
  * the query gap below, is in `.github/tasks/`.
  *
- * ⚠️ **The tabs do not narrow the results yet.** `BrandEndpoints` resolves the
- * `endpoint` query var and `BrandRegions::current_endpoint()` reads it to mark
- * the active tab, but nothing filters the accommodation query by it — grepped
- * across sd-enhancements 2026-09-10: the only readers of `endpoint` are the
- * resolver and the tab strip. `Queries::bound_brand_archive()` caps the archive
- * at a page size and does nothing per region. So today every region tab returns
- * the same rows. That is plugin work in sd-enhancements, not something a
- * template can fix. → flagged, see the task note.
+ * **The tabs narrow the results, and the plugin is what does it.** Until
+ * 2026-09-16 they did not: `BrandEndpoints` resolved the `endpoint` query var
+ * and `BrandRegions::current_endpoint()` read it to mark the active tab, but
+ * nothing filtered the accommodation query, so every tab returned the same rows.
+ * `SD\Enhancements\Queries::scope_brand_archive_to_region()` now sets `post__in`
+ * on the main query from the region's connected accommodation. Nothing in this
+ * template expresses that and nothing here should — the `core/query` below
+ * inherits the main query, which is the whole mechanism.
  *
  * ## The facet set
  *
@@ -113,10 +113,11 @@
  * `taxonomy-accommodation-type` its only possible value was the term the
  * visitor was already standing on.
  *
- * ⚠️ Destination overlaps the region tabs — both narrow by place, one by URL
- * and one by facet, and neither knows about the other. Once the endpoint scopes
- * the query (above), the two will need to compose or one will need to go.
- * → flagged with the query gap, same task note.
+ * Destination overlaps the region tabs — both narrow by place, one by URL and
+ * one by facet. They **compose**, and no longer by accident: the region scope is
+ * set on `pre_get_posts` at priority 10 and FacetWP reads the main query's vars
+ * at 999, so the facet narrows *within* the active region and its counts are
+ * counted there. Kept on that basis rather than removed.
  *
  * The same ⚠️ from the type archive applies: `facetwp_display()` returns an
  * empty string for a facet name that does not exist in `facetwp_settings`, with
@@ -235,9 +236,15 @@
 				 * `sd-intro-collapse` is the hook both files key off. **Renaming
 				 * it silently disables the collapse**, the same contract
 				 * `sd-search-filters` carries on the rail below.
+				 *
+				 * The group's `blockGap` is `spacing|20`, one step in from the
+				 * `30` it carried, so the toggle reads as the tail of the story
+				 * rather than as a separate row under it. Zared's call,
+				 * 2026-09-16. It is the gap between the text and the toggle and
+				 * nothing else — the group holds exactly those two children.
 				 */
 				?>
-				<!-- wp:group {"metadata":{"name":"Brand Story"},"className":"sd-intro-collapse","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
+				<!-- wp:group {"metadata":{"name":"Brand Story"},"className":"sd-intro-collapse","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained","justifyContent":"left"}} -->
 				<div class="wp-block-group sd-intro-collapse">
 
 					<!-- wp:term-description {"className":"is-style-archive-intro sd-intro-collapse__text"} /-->
@@ -265,18 +272,23 @@
 					 * brand-500. `fontSize` is `300` to match the read-more it
 					 * is imitating, up from `200`.
 					 *
-					 * The label stays **"Read more"** and not the "Read more..."
-					 * `destination-summary.php` uses. That block is a one-way
-					 * link; this is half of a toggle whose other half is
-					 * `inc/intro-collapse.php`'s localised "Read less", and an
-					 * ellipsis on only one of the pair reads as a mistake. Only
-					 * the appearance was asked for.
+					 * The label is **"Read more..."**, with the ellipsis
+					 * `destination-summary.php` uses, and it is set in italics
+					 * by `assets/styles/core-term-description.css`. Zared's
+					 * call, 2026-09-16 — this supersedes the note that stood
+					 * here, which kept the label plain for symmetry with the
+					 * toggle's other half.
+					 *
+					 * `inc/intro-collapse.php`'s "Read less" stays plain. The
+					 * ellipsis says the text continues past the cut, which is
+					 * true of the collapsed state and not of the expanded one;
+					 * the two labels are a pair in function, not in shape.
 					 */
 					?>
 					<!-- wp:buttons {"className":"sd-intro-collapse__actions"} -->
 					<div class="wp-block-buttons sd-intro-collapse__actions">
 						<!-- wp:button {"className":"sd-intro-collapse__toggle","fontSize":"300"} -->
-						<div class="wp-block-button has-custom-font-size sd-intro-collapse__toggle has-300-font-size"><a class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Read more', 'sd-theme-2026' ); ?></a></div>
+						<div class="wp-block-button has-custom-font-size sd-intro-collapse__toggle has-300-font-size"><a class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Read more...', 'sd-theme-2026' ); ?></a></div>
 						<!-- /wp:button -->
 					</div>
 					<!-- /wp:buttons -->

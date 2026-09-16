@@ -8,6 +8,33 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- 🐛 **The brand Read more showed on every brand, whether the story overflowed or not.**
+  LS-2018 (line 8, Lodge / Brand). `assets/styles/core-term-description.css`,
+  `assets/js/intro-collapse.js`.
+
+  Two independent faults, and the first one hid the second.
+
+  The toggle is meant to be revealed only by `.is-enhanced`, which
+  `assets/js/intro-collapse.js` adds after confirming the text is actually clipped. The hide
+  was written as `.sd-intro-collapse__actions { display: none }` — one class, (0,1,0) — and
+  global styles print `body .is-layout-flex { display: flex }` at (0,1,1) for the
+  `core/buttons` layout. So the hide never applied and the button was visible on every brand
+  regardless of what the script decided. Measured on dev at /brand/african-bush-camps/,
+  2026-09-16: `is-enhanced` absent from the container, computed `display: flex` on the
+  actions, and `body .is-layout-flex` named as the winning rule. The hide is now scoped to
+  `.sd-intro-collapse` — (0,2,0), which lands, and which the (0,3,0) reveal still beats.
+
+  Behind that, the overflow test itself over-reported. It compared the text's unclamped
+  height against the height N lines would occupy, derived from the computed `line-height`,
+  with the line count duplicated in the script as `CLAMP_LINES` and kept in step with
+  `-webkit-line-clamp` by hand. Any margin inside the description — the paragraph rhythm on
+  a multi-paragraph term description — counts toward the height but not toward the line
+  count, so the test said "overflowing" on text that was not being cut. It now measures the
+  clamp instead of modelling it: read the height, add `.is-enhanced`, read it again, and keep
+  the class only if the second reading is shorter. Both reads are synchronous within one
+  task, so nothing paints in between. `CLAMP_LINES` and its `FALLBACK_LINE_HEIGHT` are gone —
+  the CSS is now the only place the line count is written.
+
 - 🐛 **The review cards collapsed to a date and a star tile the moment Slick initialised.**
   LS-2020 (line 10). `assets/styles/core-group.css`.
 
@@ -52,6 +79,30 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   this one different.
 
 ### Changed
+
+- 📐 **The brand Read more is italic, ellipsised, closer to the copy, and cuts at ten lines.**
+  LS-2018 (line 8, Lodge / Brand). Zared's call, 2026-09-16.
+  `patterns/template-taxonomy-accommodation-brand.php`,
+  `assets/styles/core-term-description.css`.
+
+  Four adjustments so the control reads as the `core/read-more` on a Tour Operator single —
+  `patterns/destination-summary.php` — which is what the 2026-09-16 restyle set out to match
+  and stopped one step short of.
+
+  The label is now `Read more...`, carrying the ellipsis that pattern uses, and the toggle is
+  set in italics by name. On the destination single the italic is inherited from the wrapping
+  group's inline `font-style`; here the toggle is a sibling of the description rather than a
+  descendant, so inheritance cannot reach it. `inc/intro-collapse.php`'s localised "Read
+  less" stays plain — the ellipsis says the text continues past the cut, which is true of the
+  collapsed state only.
+
+  The story group's `blockGap` drops from `spacing|30` to `spacing|20`, and the group holds
+  exactly the description and the toggle, so that is the gap between those two and nothing
+  else.
+
+  The clamp goes from six lines to ten, because six cut most brand stories mid-thought. With
+  the measurement fix above, /brand/african-bush-camps/ — six lines at the 900px column —
+  now gets no Read more at all, which is the intended behaviour and also live's.
 
 - 📐 **The Brands landing standfirst runs to 1100px, and the measure is set on two blocks
   because one does nothing.** LS-2018 (line 8, Lodge / Brand).
