@@ -53,6 +53,116 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 📐 **The Brands landing standfirst runs to 1100px, and the measure is set on two blocks
+  because one does nothing.** LS-2018 (line 8, Lodge / Brand).
+  `patterns/template-page-brands.php`.
+
+  Wider than the root `contentSize` (900px), narrower than the 1440px the `alignwide`
+  group around it gets. Zared's call.
+
+  ⚠️ **Setting it on the parent group alone has no visible effect**, which is what it
+  looked like when it was tried in the Site Editor. A constrained layout constrains its
+  *children*, never itself — so a `contentSize` on the group widens the
+  `core/post-content` wrapper and stops. `core/post-content` is itself a constrained
+  container, and with no `contentSize` of its own it falls back to the global 900px and
+  re-caps every paragraph inside the wrapper it was just given. Verified against
+  `wp_get_layout_style()`: a constrained layout emits
+  `… > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width:1100px}`, which
+  reaches the wrapper and not the text. Both layouts carry the value now.
+
+- 🏷️ **The single-brand archive loses its keyword box, result count and sort control, and
+  the region strip moves into the results column.** LS-2018 (line 8, Lodge / Brand).
+  `patterns/template-taxonomy-accommodation-brand.php`,
+  `assets/styles/sd-brand-regions.css`. Zared's call, measured against
+  `/brand/wilderness-safaris/`.
+
+  A brand archive is already a narrow set — Wilderness Safaris, the largest, is a few
+  dozen properties over six countries — and three chrome controls above a list that short
+  read as search furniture rather than as a brand's page. The regions strip and the three
+  checkbox facets are now the whole navigation.
+
+  ⚠️ **The two taxonomy templates are deliberately no longer the same.**
+  `template-taxonomy-accommodation-type.php` keeps all three controls. Do not restore them
+  here for consistency — the divergence is the decision. The FacetWP facets themselves are
+  untouched in `wp_options`, so putting any back is a markup change and nothing else.
+
+  ⚠️ **The `Results` `h2` stays, as `screen-reader-text`.** The cards are `h3`. With no
+  `h2` between them and the rail's own "Refine by", every card title would be announced as
+  a child of the filter rail. The theme adds no CSS for it — checked rather than assumed:
+  `wp_should_load_separate_core_block_assets()` is true on this install, so the monolithic
+  `block-library/style.css` never loads and the class arrives from
+  `block-library/common.css:222`, which is what the enqueued `wp-block-library` handle
+  resolves to. Both files define it, so flipping that setting cannot break it.
+  `#h-results` is kept as a real anchor.
+
+  **The region strip** ran full width above the two columns and now heads the results
+  column, directly over the first card — which is live's own relationship, where the strip
+  sits immediately above `.lsx-to-archive-items`. Its `alignwide` is gone with the move: a
+  block inside a `core/column` has no constrained layout to align against.
+
+- 🎨 **The region strip is live's tinted bar, not an underlined tab rail.** LS-2018 (line
+  8, Lodge / Brand). `assets/styles/sd-brand-regions.css`.
+
+  **The separator is gone** — the `neutral-300` bottom border and the 3px active marker
+  that overlapped it. With the strip inside the results column a full-width line under it
+  separated the strip from the cards it belongs to, and live draws no such line.
+
+  Measured from `sd-lsx-child/assets/css/partials/_single.scss` (compiled at
+  `assets/css/custom.css:2846`) and mapped to tokens: bar `#f0ebe5` → `neutral-200` (the
+  mapping decision 5 already made for the card meta strip), item `#60483b` →
+  `neutral-700`, `border-right: 1px white` → `base`, hover/active bar `#3E3530` →
+  `primary-600`, hover/active type `#cc7f16` → `brand-500` (exact). 14px uppercase 600 →
+  font-size `200`, semi-bold.
+
+  ⚠️ **`gap` is zero and must stay zero.** The separation between segments is the
+  `border-inline-end` hairline, as on live; a gap would put the bar's own tint between
+  segments and leave the hairlines reading as stray ticks. ⚠️ **The ground is on the
+  `<li>`, the type on the `<a>`** — live's anchor carries `margin: 5px 0`, so only the
+  list item paints the bar's full height. `:has()` carries hover and focus up to the `li`
+  for that reason, and degrades correctly: without it the type still changes colour, so
+  the state is never invisible. Focus takes an `accent-400` ring because `brand-500` on
+  `primary-600` is already the current-segment pair.
+
+- 🎨 **The brand story's Read more reads as a link, like every Tour Operator read-more.**
+  LS-2018 (line 8, Lodge / Brand). `patterns/template-taxonomy-accommodation-brand.php`,
+  `assets/styles/core-term-description.css`. Zared's call.
+
+  `is-style-outline` is gone and no button style replaces it; the flat look is scoped CSS
+  on `.sd-intro-collapse__toggle`, because one control does not warrant a theme-wide
+  `is-style-*`. Font size `200` → `300`, matching `patterns/destination-summary.php`.
+
+  ⚠️ **It is still a `core/button` and must stay one.** `assets/js/intro-collapse.js` binds
+  to `.sd-intro-collapse__toggle a` and puts `role="button"`, `tabindex`, `aria-expanded`
+  and `aria-controls` on it; `core/read-more` renders a link to a *post* permalink and
+  there is no post on a taxonomy archive. Only the paint changed. A focus ring is added
+  explicitly — the outline variation's border was carrying it, and a bare `<a>` with no
+  `href` has nothing.
+
+  ⚠️ **The reset answers each property by name** because with the variation gone the anchor
+  falls back to theme.json's `elements.button` (brand-500 fill, heading face, uppercase) —
+  including `font-size: inherit`, since `elements.button` writes the size onto the anchor
+  while `core/button` puts its font-size class on the wrapping `<div>`. No underline in
+  either state: theme.json's `elements.link` sets `textDecoration: none` at rest *and* on
+  hover, so the read-more this imitates is not underlined anywhere on the site.
+
+- 📐 **The accommodation list card's meta rows sit at XS.** LS-2018 (line 8, Lodge /
+  Brand). `patterns/card-accommodation-list.php`. Shared with the accommodation-type
+  archive.
+
+  `blockGap` `spacing|20` (S) → `spacing|10` (XS) on the meta panel. Three short prefixed
+  read-outs at S read as three separate statements rather than one block of facts, and the
+  gap was wider than the leading inside each row. The panel's own inset padding stays at
+  `20` — the two are deliberately no longer the same token, because they are doing
+  different jobs.
+
+- 🎨 **The facet chevrons are a quarter-rem smaller.** LS-2018 (line 8, Lodge / Brand).
+  `assets/styles/facetwp-facets.css`. `2rem` → `1.75rem`, on the collapsible facet
+  headings and the sort select alike — the file's own ⚠️ requires the two to match, since
+  they sit in different type contexts and an `em` value would draw two different chevrons.
+  At `2rem` the box filled the 32.4px heading row exactly and competed with the heading.
+  Still well over the 24px minimum target: the hit area is the whole heading row, not this
+  pseudo-element.
+
 - **The Trustpilot review card carries stars and a linked headline, and clamps the
   extract.** LS-2020 (line 10). `patterns/card-trustpilot-review.php`,
   `assets/styles/core-paragraph.css`. Needs `sd-enhancements` at the matching revision —

@@ -175,24 +175,31 @@
 
    ⚠️ The box is much larger than the mark it draws. The path spans y 6.6→16.5
    of a 24-unit viewBox, so the visible chevron is ~41% of the box height: at
-   `2rem` the box is 32px and the mark reads about 13 × 23px, which also fills
-   the 32.4px heading row exactly. Sized up from `0.7em` and darkened from
-   `neutral-400` to `neutral-700` — the heading's own colour — on 2026-09-10,
-   because at live's weight it was too faint to read as a control. Live's is a
-   15px `#C1BDB4` FontAwesome glyph; this is the one place the rail is
-   deliberately stronger than live, since live's own chevron sits on a plate
-   that also has a pointer-cursor button around it and this one does not.
+   `1.75rem` the box is 28px and the mark reads about 11.5 × 20px. Sized up from
+   `0.7em` and darkened from `neutral-400` to `neutral-700` — the heading's own
+   colour — on 2026-09-10, because at live's weight it was too faint to read as
+   a control. Live's is a 15px `#C1BDB4` FontAwesome glyph; this is the one
+   place the rail is deliberately stronger than live, since live's own chevron
+   sits on a plate that also has a pointer-cursor button around it and this one
+   does not.
+
+   Down from `2rem` on 2026-09-16 — Zared's call. At `2rem` the box filled the
+   32.4px heading row exactly and the mark read as a second glyph competing with
+   the heading; a quarter-rem off leaves the control legible and lets the
+   heading lead. It is still comfortably over the 24px minimum target size, so
+   nothing is lost on touch: the whole heading row is the hit area, not this
+   pseudo-element, which carries no pointer events of its own.
 
    ⚠️ **`rem`, not `em`, and the sort control below must match.** The two
    chevrons sit in different type contexts — this heading is `400` (24px), the
    sort's `<select>` wrapper inherits the body `300` (19.2px) — so the same
    `em` value resolved to 33.6px here and 26.9px there. Measured on dev
-   2026-09-10. Keep both at `2rem`. */
+   2026-09-10. Keep both at `1.75rem`. */
 .sd-filters-collapsible .sd-facet-fold > .wp-block-heading::after {
 	content: "";
 	flex: none;
-	inline-size: 2rem;
-	block-size: 2rem;
+	inline-size: 1.75rem;
+	block-size: 1.75rem;
 	background-color: var(--wp--preset--color--neutral-700);
 	transition: transform 0.25s ease, background-color 0.25s ease;
 	-webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%2016.5%203.5%208l1.4-1.4L12%2013.7l7.1-7.1L20.5%208z'/%3E%3C/svg%3E") center / contain no-repeat;
@@ -784,11 +791,12 @@
 	inset-inline-end: var(--wp--preset--spacing--20);
 	inset-block-start: 50%;
 
-	/* `2rem`, matching the facet headings' chevron exactly. Not `em`: this
-	   wrapper inherits the body `300` where the headings are `400`, so an `em`
-	   value would draw two different chevrons. */
-	inline-size: 2rem;
-	block-size: 2rem;
+	/* `1.75rem`, matching the facet headings' chevron exactly — down from `2rem`
+	   with it on 2026-09-16. Not `em`: this wrapper inherits the body `300`
+	   where the headings are `400`, so an `em` value would draw two different
+	   chevrons. */
+	inline-size: 1.75rem;
+	block-size: 1.75rem;
 	transform: translateY(-50%);
 	background-color: var(--wp--preset--color--neutral-700);
 	pointer-events: none;

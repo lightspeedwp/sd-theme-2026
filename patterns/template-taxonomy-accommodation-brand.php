@@ -2,7 +2,7 @@
 /**
  * Title: Template: Accommodation Brand Taxonomy
  * Slug: sd-theme-2026/template-taxonomy-accommodation-brand
- * Description: The single-brand archive — the photographic banner carrying the brand name, the breadcrumb strip, a two-column intro of the brand's story beside its logo, then the region tabs over a FacetWP filter rail and the brand's accommodation as horizontal rows.
+ * Description: The single-brand archive — the photographic banner carrying the brand name, the breadcrumb strip, a two-column intro of the brand's story beside its logo, then a FacetWP filter rail beside the brand's accommodation as horizontal rows, with the region strip heading the results column.
  * Categories: hidden
  * Keywords: brand, accommodation, taxonomy, operator, lodge, regions, tabs, facetwp, facets, filters
  * Block Types: core/query
@@ -19,12 +19,28 @@
  * read 2026-09-10, with four deliberate departures asked for at the time —
  * they are listed under "What this does not copy from live" below.
  *
+ * Finalised against https://www.southerndestinations.com/brand/wilderness-safaris/
+ * on 2026-09-16. That pass took the page in the opposite direction on one
+ * point: **back toward live on the region strip, and further from the type
+ * archive on the chrome.** The strip moved out of the full-width slot above the
+ * columns and into the head of the results column, and was restyled to live's
+ * tinted bar of flush segments (`assets/styles/sd-brand-regions.css` carries
+ * the measurements); the keyword box, the result count and the sort select all
+ * came out. Each change is noted at its site.
+ *
  * The sibling template `patterns/template-taxonomy-accommodation-type.php`
  * reasoned out the whole facet apparatus — why the count, sort and pager are
  * facet *blocks* rather than shortcodes, why `core/query-pagination` cannot be
  * used on a FacetWP page, why each facet carries an inner `core/heading`, and
  * the three settings that live in `wp_options` rather than in theme code. All
  * of that applies here unchanged and is not restated; read that file first.
+ *
+ * ⚠️ **The two templates are no longer chrome-for-chrome the same.** The type
+ * archive keeps its keyword box, its result count and its sort control; this
+ * one has none of the three. Do not "restore consistency" by putting them back
+ * — the divergence is the decision, not drift. The facets themselves are still
+ * configured in `wp_options`, so returning any of them is a markup change here
+ * and nothing else.
  *
  * ## What this does not copy from live
  *
@@ -90,9 +106,10 @@
  * ## The facet set
  *
  * Live registers four controls on this page — a keyword box, Destination,
- * Specials and Types. All four are carried. **Types belongs here where it did
- * not on the type archive**: this archive is scoped by *brand*, so
- * `accommodation_type` still has real choices to offer, where on
+ * Specials and Types. **Three are carried; the keyword box is not**, dropped
+ * on 2026-09-16 with the result count and the sort select. **Types belongs
+ * here where it did not on the type archive**: this archive is scoped by
+ * *brand*, so `accommodation_type` still has real choices to offer, where on
  * `taxonomy-accommodation-type` its only possible value was the term the
  * visitor was already standing on.
  *
@@ -225,10 +242,41 @@
 
 					<!-- wp:term-description {"className":"is-style-archive-intro sd-intro-collapse__text"} /-->
 
+					<?php
+					/*
+					 * ⚠️ **A `core/button` that is dressed as a link, and it has
+					 * to stay a button.** `assets/js/intro-collapse.js` binds to
+					 * `.sd-intro-collapse__toggle a`, sets `aria-expanded` and
+					 * `aria-controls` on it and swaps its label — so the element
+					 * is a real control and `core/read-more` cannot replace it
+					 * (that block renders a link to a post permalink, and there
+					 * is no post in context on a taxonomy archive; the file
+					 * header carries the full reasoning).
+					 *
+					 * What changed on 2026-09-16 is only its appearance: it now
+					 * reads as the plain `core/read-more` link every Tour
+					 * Operator single carries — `patterns/destination-summary.php`
+					 * line for line — rather than as an outlined button. Zared's
+					 * call. `is-style-outline` is therefore **gone**, and no
+					 * other button style replaces it: the flat look is written
+					 * in `assets/styles/core-term-description.css`, scoped to
+					 * `.sd-intro-collapse__toggle`, because core's own
+					 * `.wp-block-button__link` defaults would otherwise fill it
+					 * brand-500. `fontSize` is `300` to match the read-more it
+					 * is imitating, up from `200`.
+					 *
+					 * The label stays **"Read more"** and not the "Read more..."
+					 * `destination-summary.php` uses. That block is a one-way
+					 * link; this is half of a toggle whose other half is
+					 * `inc/intro-collapse.php`'s localised "Read less", and an
+					 * ellipsis on only one of the pair reads as a mistake. Only
+					 * the appearance was asked for.
+					 */
+					?>
 					<!-- wp:buttons {"className":"sd-intro-collapse__actions"} -->
 					<div class="wp-block-buttons sd-intro-collapse__actions">
-						<!-- wp:button {"className":"is-style-outline sd-intro-collapse__toggle","fontSize":"200"} -->
-						<div class="wp-block-button has-custom-font-size is-style-outline sd-intro-collapse__toggle has-200-font-size"><a class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Read more', 'sd-theme-2026' ); ?></a></div>
+						<!-- wp:button {"className":"sd-intro-collapse__toggle","fontSize":"300"} -->
+						<div class="wp-block-button has-custom-font-size sd-intro-collapse__toggle has-300-font-size"><a class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Read more', 'sd-theme-2026' ); ?></a></div>
 						<!-- /wp:button -->
 					</div>
 					<!-- /wp:buttons -->
@@ -284,21 +332,6 @@
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Results"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|50","padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"},"anchor":"accommodation"} -->
 	<section class="wp-block-group alignfull" id="accommodation" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--80)">
 
-		<?php
-		/*
-		 * The region tabs. See this file's header for why these are links and
-		 * not `core/tabs`, and for the ⚠️ that they do not yet narrow the query.
-		 *
-		 * The block renders nothing when a brand has fewer than two regions —
-		 * one region is not a choice — so brands like Ilios Travel (one
-		 * property) simply do not get a strip, and the results below close the
-		 * gap. `label` names the landmark for a screen reader; the block falls
-		 * back to "Regions" if it is empty, but it is set here so the string
-		 * belongs to this theme's text domain rather than the plugin's.
-		 */
-		?>
-		<!-- wp:sd/brand-regions {"tagName":"nav","label":"<?php esc_attr_e( 'Regions', 'sd-theme-2026' ); ?>","align":"wide","className":"sd-brand-regions"} /-->
-
 		<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
 		<div class="wp-block-columns alignwide">
 
@@ -320,19 +353,22 @@
 
 				<?php
 				/*
-				 * The keyword box **above** "Refine by", as on the
-				 * accommodation-type page — searching re-queries the set, where
-				 * everything below the heading narrows it. That file carries the
-				 * reasoning in full.
+				 * ⚠️ **No keyword box.** The accommodation-type page opens its
+				 * rail with a `search_accommodation` facet above "Refine by";
+				 * this one deliberately does not. Zared's call, 2026-09-16,
+				 * with the result count and the sort control below — a brand
+				 * archive is already a narrow set (Wilderness Safaris, the
+				 * largest, is a few dozen properties across six countries), and
+				 * three chrome controls over a list that short read as search
+				 * furniture rather than as a brand's page. The regions strip and
+				 * the three checkbox facets are the whole navigation.
 				 *
-				 * `hasHeader: false` keeps it out of the fold treatment: the
-				 * script's section test requires a heading, so a headerless
-				 * facet stays open and usable, and unplated, as live's keyword
-				 * box is.
+				 * The FacetWP facet itself is untouched and still configured —
+				 * only this template stops rendering it, so the type archive
+				 * keeps its keyword box and nothing needs reconfiguring to put
+				 * this one back.
 				 */
 				?>
-				<!-- wp:facetwp/facet {"facetName":"search_accommodation","facetLabel":"Search","facetType":"search","hasHeader":false} /-->
-
 				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
 				<h2 class="wp-block-heading has-400-font-size" id="h-refine-by"><?php esc_html_e( 'Refine by', 'sd-theme-2026' ); ?></h2>
 				<!-- /wp:heading -->
@@ -404,39 +440,73 @@
 
 				<?php
 				/*
-				 * The toolbar — the result count on the leading edge, the sort
-				 * control on the trailing one. The `h2` keeps "Results"
-				 * translatable and gives the region the heading it needs;
-				 * without one the card titles (`h3`) would read as children of
-				 * the rail's "Refine by".
+				 * The region strip, at the head of the results column.
 				 *
-				 * ⚠️ `results_count` is a **Pager** facet with its "Pager type"
-				 * set to *Result counts*, and `hideOnEmpty` is deliberately off
-				 * — the block's front.js hides any `pager` facet when
-				 * `total_pages < 2`, which on a count is exactly wrong. Full
-				 * reasoning, and the `([total])` count-text setting, on the type
-				 * archive.
+				 * It ran full-width above the two columns until 2026-09-16,
+				 * where it read as a second navigation belonging to the page
+				 * rather than as a control over the list. Zared's call: it
+				 * belongs to the results, so it sits in the results column,
+				 * directly over the first card and in line with the rail's
+				 * "Refine by" — the same relationship live has, where the strip
+				 * sits immediately above `.lsx-to-archive-items`.
+				 *
+				 * `align` is therefore **gone**: `alignwide` on a block inside a
+				 * `core/column` is meaningless (the column is the containing
+				 * block, and it is not a constrained layout), and leaving it on
+				 * only invited the next reader to think the strip still spanned
+				 * something.
+				 *
+				 * See this file's header for why these are links and not
+				 * `core/tabs`, and for the ⚠️ that they do not yet narrow the
+				 * query.
+				 *
+				 * The block renders nothing when a brand has fewer than two
+				 * regions — one region is not a choice — so brands like Ilios
+				 * Travel (one property) simply do not get a strip, and the cards
+				 * close the gap. `label` names the landmark for a screen reader;
+				 * the block falls back to "Regions" if it is empty, but it is
+				 * set here so the string belongs to this theme's text domain
+				 * rather than the plugin's.
 				 */
 				?>
-				<!-- wp:group {"metadata":{"name":"Results Toolbar"},"className":"sd-search-toolbar","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center","justifyContent":"space-between"}} -->
-				<div class="wp-block-group sd-search-toolbar">
+				<!-- wp:sd/brand-regions {"tagName":"nav","label":"<?php esc_attr_e( 'Regions', 'sd-theme-2026' ); ?>","className":"sd-brand-regions"} /-->
 
-					<!-- wp:group {"metadata":{"name":"Result Count"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"bottom"}} -->
-					<div class="wp-block-group">
-
-						<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-results"} -->
-						<h2 class="wp-block-heading has-400-font-size" id="h-results"><?php esc_html_e( 'Results', 'sd-theme-2026' ); ?></h2>
-						<!-- /wp:heading -->
-
-						<!-- wp:facetwp/facet {"facetName":"results_count","facetLabel":"Result count","facetType":"pager","hasHeader":false,"className":"sd-search-counts"} /-->
-
-					</div>
-					<!-- /wp:group -->
-
-					<!-- wp:facetwp/facet {"facetName":"sort_","facetLabel":"Sort","facetType":"sort","hasHeader":false,"className":"sd-search-sort"} /-->
-
-				</div>
-				<!-- /wp:group -->
+				<?php
+				/*
+				 * The results heading, and nothing else.
+				 *
+				 * ⚠️ **The toolbar is gone but its `h2` is not, and must not
+				 * be.** What stood here was a flex row carrying "Results", a
+				 * `results_count` pager facet and the `sort_` select; all three
+				 * came out on 2026-09-16 with the keyword box above — Zared's
+				 * call, reasoning on the rail.
+				 *
+				 * The heading stays because the *cards* are `h3`. With no `h2`
+				 * between them and the rail's own "Refine by", every card title
+				 * on the page would be announced as a child of the filter rail —
+				 * a screen-reader reading of the document outline that says the
+				 * results belong to the filters.
+				 *
+				 * `screen-reader-text` is core's own utility and the theme adds
+				 * no rule for it. Verified on this install rather than assumed:
+				 * `wp_should_load_separate_core_block_assets()` is **true**
+				 * here, so the monolithic `block-library/style.css` never loads
+				 * and the class comes from `block-library/common.css:222`, which
+				 * is what the `wp-block-library` handle resolves to and is
+				 * enqueued on every front-end request. Both files define it, so
+				 * the class survives that setting being flipped either way.
+				 *
+				 * The `id` is kept: `#h-results` is a real anchor and removing
+				 * it would break any link already pointing at it.
+				 *
+				 * The FacetWP facets themselves are untouched — `results_count`
+				 * is still the Pager facet set to *Result counts*, and `sort_`
+				 * is still configured. Only this template stops rendering them.
+				 */
+				?>
+				<!-- wp:heading {"level":2,"className":"screen-reader-text","anchor":"h-results"} -->
+				<h2 class="wp-block-heading screen-reader-text" id="h-results"><?php esc_html_e( 'Results', 'sd-theme-2026' ); ?></h2>
+				<!-- /wp:heading -->
 
 				<?php
 				/*

@@ -129,15 +129,30 @@
 	 * `patterns/destination-summary.php` — which reasoned this out in full —
 	 * carries it for the same reason; the italic actually rendered comes from
 	 * the group. Worth knowing if either is ever touched in isolation.
+	 *
+	 * ## The 1100px measure has to be set twice, and that is not a mistake
+	 *
+	 * The standfirst runs to `1100px`, wider than the root `contentSize` of
+	 * `900px` and narrower than the `1440px` `alignwide` gives the group around
+	 * it. Zared's call, 2026-09-16.
+	 *
+	 * ⚠️ **Setting it on the parent group alone does nothing visible**, which is
+	 * what it looked like when it was tried in the Site Editor. A constrained
+	 * layout constrains its *children*, not itself — so a `contentSize` on the
+	 * group widens the `core/post-content` wrapper to 1100px and stops there.
+	 * `core/post-content` is itself a constrained container, and with no
+	 * `contentSize` of its own it falls back to the global `900px` and re-caps
+	 * every paragraph inside the wrapper it was just given. The wrapper grew;
+	 * the text did not. Both layouts carry the value, and both have to.
 	 */
 	?>
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Brands Intro"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 	<section class="wp-block-group alignfull is-style-tinted-page-section">
 
-		<!-- wp:group {"align":"wide","style":{"typography":{"fontStyle":"italic","fontWeight":"var:custom|font-weight|regular"},"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} -->
+		<!-- wp:group {"align":"wide","style":{"typography":{"fontStyle":"italic","fontWeight":"var:custom|font-weight|regular"},"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
 		<div class="wp-block-group alignwide" style="font-style:italic;font-weight:var(--wp--custom--font-weight--regular)">
 
-			<!-- wp:post-content {"className":"is-style-archive-intro","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} /-->
+			<!-- wp:post-content {"className":"is-style-archive-intro","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained","contentSize":"1100px"}} /-->
 
 		</div>
 		<!-- /wp:group -->
