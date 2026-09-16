@@ -11,8 +11,15 @@
    Here rather than in a block-style `css` field because this file already
    exists for the `:hover`/`:focus` flips below, which a `css` field strips.
    → AGENTS.md, "Styling lives in JSON" */
+/* The label carries brand-600 in its own right rather than inheriting the
+   anchor's `contrast` — Zared, 2026-09-16. Live paints it #cc7f16 (brand-500);
+   this is the heavier brand tone the slider arrows' active state already uses,
+   so the two brand accents on the closing band agree. It is set on the label
+   and not on the anchor because the adjacent post's *title* stays `contrast`:
+   the title is the link's content, the label is its signpost. */
 .sd-post-nav .post-navigation-link__label {
 	display: block;
+	color: var(--wp--preset--color--brand-600);
 }
 
 .sd-post-nav a {
@@ -62,10 +69,16 @@
 
    Sizes are tokens so the chevron can be tuned in one place. 44px rather than
    live's 55px: live's glyph is a thin FontAwesome angle inside a 55px em box
-   and measures 19.7px wide, where Phosphor's caret fills its square viewBox. */
+   and measures 19.7px wide, where Phosphor's caret fills its square viewBox.
+
+   The gap is spacing 10 (8-10px), down from spacing 40 (26-40px) — Zared,
+   2026-09-16. The gap is not the whole of what a reader sees between the caret
+   and the words: Phosphor's caret path spans about 38% of its square viewBox,
+   so a 44px box leaves roughly 13px of empty mask on the inner side before the
+   gap even starts. spacing 40 on top of that read as a gulf. */
 .sd-post-nav {
 	--sd-post-nav-chevron-size: 44px;
-	--sd-post-nav-chevron-gap: var(--wp--preset--spacing--40);
+	--sd-post-nav-chevron-gap: var(--wp--preset--spacing--10);
 }
 
 .sd-post-nav a {
@@ -83,7 +96,7 @@
 	inline-size: var(--sd-post-nav-chevron-size);
 	block-size: var(--sd-post-nav-chevron-size);
 	background-color: currentColor;
-	transition: transform 150ms ease, background-color 150ms ease;
+	transition: background-color 150ms ease;
 	-webkit-mask-position: center;
 	mask-position: center;
 	-webkit-mask-repeat: no-repeat;
@@ -115,32 +128,27 @@
 	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
 }
 
-/* The hover. `currentColor` means the chevron already flips with the `:hover` /
-   `:focus` rule above — this adds the movement: the chevron slides a few pixels
-   in the direction it points, which is the one thing live's static glyph does
-   not do and the thing that makes it read as a control.
+/* The hover: a colour change and nothing else.
+   ---------------------------------------------------------------------------
+   The chevron used to slide 4px in the direction it points. Removed at Zared's
+   direction, 2026-09-16 — the caret is a signpost here, not a control the
+   reader aims at, and the slide pulled the eye away from the title that is the
+   actual link. Live's glyph is static too, so this is back to the port.
 
-   `translateY(-50%)` has to be restated in every transform, or the chevron
-   drops to sit on the link's centre line. */
-.post-navigation-link-previous.sd-post-nav a:hover::before,
-.post-navigation-link-previous.sd-post-nav a:focus-visible::before {
-	transform: translateY(-50%) translateX(-4px);
-}
-
-.post-navigation-link-next.sd-post-nav a:hover::before,
-.post-navigation-link-next.sd-post-nav a:focus-visible::before {
-	transform: translateY(-50%) translateX(4px);
+   brand-600 explicitly rather than by inheritance. `background-color:
+   currentColor` above means the chevron already follows the anchor, and the
+   anchor's own hover is brand-500 — the tone live uses — so without this rule
+   the caret would land a step short. The label above is already brand-600, so
+   the hover brings the caret onto the same tone rather than introducing a third
+   one. The `transform` is left exactly as the base rule set it, which is why
+   `translateY(-50%)` does not need restating: nothing overrides it any more. */
+.sd-post-nav a:hover::before,
+.sd-post-nav a:focus-visible::before {
+	background-color: var(--wp--preset--color--brand-600);
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.sd-post-nav a::before {
 		transition-duration: 1ms;
-	}
-
-	.post-navigation-link-previous.sd-post-nav a:hover::before,
-	.post-navigation-link-previous.sd-post-nav a:focus-visible::before,
-	.post-navigation-link-next.sd-post-nav a:hover::before,
-	.post-navigation-link-next.sd-post-nav a:focus-visible::before {
-		transform: translateY(-50%);
 	}
 }

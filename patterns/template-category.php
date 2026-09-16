@@ -56,16 +56,37 @@
  * overlay at 0% — the reasoning is written out on
  * patterns/template-archive-destination.php and is not repeated here.
  *
- * ⚠️ **The photograph is per-term on live and static here.** Live's banner
- * image is a Tour Operator / LSX Banners setting on the category itself —
- * `/category/rwanda/` draws `uploads/2013/10/header-gorilla-trekking-uganda.jpg`,
- * and a different category draws a different file. `core/cover` takes a fixed
- * `url`, so a block theme can only follow the term if something feeds it: a
- * block binding reading the term's banner meta, which is `sd-enhancements`
- * work rather than theme work. Until that exists the banner is one chosen
- * photograph for every category, and it is deliberately the same file the blog
- * landing uses so the two pages read as one section of the site. Swapping it
- * for a binding later is a change to this one block.
+ * **The photograph is per-term, as it is on live.** Live's banner image is a
+ * setting on the category itself — `/category/rwanda/` draws
+ * `uploads/2013/10/header-gorilla-trekking-uganda.jpg`, and a different
+ * category draws a different file. The same association is already in the
+ * database as `banner` term meta: measured on dev 2026-09-16, 9 of the 11
+ * category terms carry one, and `sd-enhancements`' TermMeta module declares
+ * the field.
+ *
+ * The cover declares that source as a `sd/term-meta` binding on `url`, which
+ * is where a reader and the Site Editor can see it. The binding cannot paint
+ * it on its own — `core/cover` is a static block whose `url` declares no
+ * `source` in block.json, so `WP_Block::replace_html()` resolves the value and
+ * then leaves the HTML alone — so `sd-enhancements`' TermBanner module swaps
+ * the `<img>` on `render_block_core/cover`. The full reasoning, including why
+ * Tour Operator's own banner filter cannot serve this page, is on
+ * `modules/term-banner.php`; it is not repeated here.
+ *
+ * The `url` below is therefore the **fallback**, not the banner: it is what
+ * the two categories with no `banner` row (Safari Tips, Botswana) wear, and
+ * what the page wears with the plugin deactivated. It is deliberately the same
+ * file the blog landing uses, so an unset category still reads as the same
+ * section of the site.
+ *
+ * ## The height is the singles' height
+ *
+ * 360px, which is what patterns/destination-banner.php and
+ * patterns/template-single-tour.php both set, rather than the 454px the page
+ * landing banners use. Ruled 2026-09-16: the category archive is a list page
+ * and the banner was crowding the first row off the fold. The blog landing
+ * moved with it — patterns/template-home-blog.php — because the two are one
+ * section and a step in banner height between them would read as a mistake.
  *
  * ## The `h1` is the term name
  *
@@ -119,8 +140,8 @@
 <!-- wp:group {"tagName":"main","metadata":{"name":"Category Archive"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
 <main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner","bindings":{"url":{"source":"sd/term-meta","args":{"key":"banner","format":"attachment-url"}}}},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<?php
 		/*
@@ -161,13 +182,29 @@
 	 *
 	 * `home_url( '/blog/' )` inline is the theme's idiom for a known page —
 	 * patterns/homepage-main-content.php and patterns/header.php do the same.
+	 *
+	 * `is-style-back-link` puts a left chevron in front of the label, added
+	 * 2026-09-16. It is a masked pseudo-element on the anchor rather than a
+	 * character or an `<img>`: it inherits `currentColor`, so the hover state
+	 * carries it without a second rule, and it is `aria-hidden` by
+	 * construction, so the link's accessible name stays "Back To Blog".
+	 * → styles/blocks/paragraph/back-link.json
+	 *
+	 * ## The band is tighter than the section default
+	 *
+	 * `is-style-light-page-section` opens on spacing|70, which is right for a
+	 * content band and too much for a one-line back-link: it put ~70px between
+	 * the breadcrumb strip and the link, and another ~70px between the link and
+	 * the first post row. Ruled 2026-09-16 — the top padding drops to spacing|40
+	 * here and the post list below opens on spacing|30, so the three elements
+	 * read as one group under the breadcrumbs instead of three separated bands.
 	 */
 	?>
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Back To Blog"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"padding":{"bottom":"0"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-group alignfull is-style-light-page-section" style="padding-bottom:0">
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Back To Blog"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"0"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull is-style-light-page-section" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:0">
 
-		<!-- wp:paragraph {"align":"wide","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"300"} -->
-		<p class="alignwide has-brand-600-color has-text-color has-link-color has-300-font-size"><a href="<?php echo esc_url( home_url( '/blog/' ) ); ?>"><?php esc_html_e( 'Back To Blog', 'sd-theme-2026' ); ?></a></p>
+		<!-- wp:paragraph {"align":"wide","className":"is-style-back-link","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"300"} -->
+		<p class="alignwide is-style-back-link has-brand-600-color has-text-color has-link-color has-300-font-size"><a href="<?php echo esc_url( home_url( '/blog/' ) ); ?>"><?php esc_html_e( 'Back To Blog', 'sd-theme-2026' ); ?></a></p>
 		<!-- /wp:paragraph -->
 
 	</section>
@@ -189,8 +226,8 @@
 	 * between the editor and the front end. → AGENTS.md
 	 */
 	?>
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Posts"},"align":"full","className":"is-style-light-page-section","layout":{"type":"constrained"}} -->
-	<section class="wp-block-group alignfull is-style-light-page-section">
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Posts"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"padding":{"top":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull is-style-light-page-section" style="padding-top:var(--wp--preset--spacing--30)">
 
 		<!-- wp:query {"queryId":0,"query":{"perPage":12,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[]},"align":"wide","layout":{"type":"default"}} -->
 		<div class="wp-block-query alignwide">

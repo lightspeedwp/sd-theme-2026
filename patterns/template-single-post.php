@@ -2,7 +2,7 @@
 /**
  * Title: Template: Single Post
  * Slug: sd-theme-2026/template-single-post
- * Description: A single blog post — the breadcrumb strip, the article with its date-and-author byline above the title and its categories beneath, the post body, then the tinted closing band carrying three related posts and the previous/next pager, and the Why Choose value band.
+ * Description: A single blog post — the breadcrumb strip, the article with its date-and-author byline above the title and its categories beneath, the post body, then the tinted closing band carrying a fifteen-post related carousel and the previous/next pager, and the Why Choose value band.
  * Categories: hidden
  * Keywords: post, single, blog, news, article, related, pager
  * Template Types: single
@@ -25,7 +25,9 @@
  *   1. The Yoast breadcrumb strip — Home › Blog › Namibia › {title}.
  *   2. `main > article.post` — the byline, the `h1`, the categories, the body.
  *   3. `.sd-single-post-bottom` — a full-bleed `#f7f5f2` band holding the
- *      "Related Posts" shelf and, beneath it, `nav.post-navigation`.
+ *      "Related Posts" shelf and, beneath it, `nav.post-navigation`. Live's
+ *      shelf is a static row of three; this one is a carousel of fifteen —
+ *      see "The shelf is a carousel of fifteen" below.
  *   4. `#footer-choose-cta` — the "Why choose Southern Destinations" value
  *      band, which lives in live's footer region and in this theme's templates.
  *
@@ -136,6 +138,38 @@
  * reasoning `constrain_safari_gurus_query()` records for its own empty-term
  * fallback: a visibly wrong shelf gets fixed, a silently empty one looks like a
  * template bug and can survive a release.
+ *
+ * ## The shelf is a carousel of fifteen
+ *
+ * Live draws three tiles and stops. Zared's call, 2026-09-16: fifteen on a
+ * carousel instead, three at a time — the same shelf the homepage's "Tales from
+ * our trails" band already is, so a reader meets the same object with the same
+ * controls in both places, and a post with a well-populated category is no
+ * longer reduced to the three most recent.
+ *
+ * The carousel is Tour Operator's Slick, exactly as
+ * patterns/homepage-tales-from-our-trails.php runs it: `hasCustomClass` plus
+ * `lsx-to-slider` is TO's "Enable Slider" checkbox on `core/query`
+ * (src/js/blocks/slider-query.js:17), both attributes written out so the
+ * checkbox reads as ticked when the pattern is opened, and `is-style-slider-frame`
+ * supplies the arrow and dot presentation. `slidesToShow` is read off the
+ * `columns-N` class custom.js:458-464 looks for, which `core/post-template`
+ * emits from its own `layout.columnCount` — so the three-up grid below does
+ * double duty: it sets the shelf for Slick, and it is what the band degrades to
+ * with JavaScript off or with Tour Operator deactivated.
+ *
+ * The `minimumColumnWidth: 16px` the grid used to carry is gone with it. It made
+ * core add `has-native-responsive-grid` and switch the fallback to an auto-fill
+ * track, which is not the three-up row Slick is about to be told it has — the
+ * homepage carousel has never set it, and this shelf should not differ from the
+ * one it is now a copy of.
+ *
+ * **Fifteen has to be set in two places.** The block's `perPage` is not what the
+ * query runs on: `Queries::relate_posts_by_category()` replaces TO's arguments
+ * wholesale and sets `posts_per_page` from its own
+ * `RELATED_POSTS_PER_PAGE` constant, so that constant moves to 15 with this. The
+ * two are required to agree and the plugin's own comment says so.
+ * → sd-enhancements-2026/modules/queries.php
  *
  * ## The related tile is card-post-grid, whole
  *
@@ -257,10 +291,10 @@
 			<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-related"><?php esc_html_e( 'Related Posts', 'sd-theme-2026' ); ?></h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:query {"queryId":0,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false,"taxQuery":null,"parents":[]},"align":"wide","layout":{"type":"default"}} -->
-			<div class="wp-block-query alignwide">
+			<!-- wp:query {"queryId":0,"query":{"perPage":15,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false,"taxQuery":null,"parents":[]},"hasCustomClass":true,"align":"wide","className":"is-style-slider-frame lsx-to-slider","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
+			<div class="wp-block-query alignwide is-style-slider-frame lsx-to-slider">
 
-				<!-- wp:post-template {"className":"lsx-post-related-post-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+				<!-- wp:post-template {"className":"lsx-post-related-post-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3}} -->
 					<?php require __DIR__ . '/card-post-grid.php'; ?>
 				<!-- /wp:post-template -->
 

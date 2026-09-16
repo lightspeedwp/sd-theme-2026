@@ -42,7 +42,9 @@
  * This file previously recorded that as "so the page opens on the breadcrumb
  * strip, and adding the banner back would be a redesign". **Zared took that
  * call on 2026-09-16 and ruled the banner in**, so the blog landing now opens
- * on the same 454px `core/cover` as every other landing page in the theme.
+ * on a `core/cover` like every other landing page in the theme — at the 360px
+ * floor the Tour Operator singles use rather than the 454px the page landings
+ * do, for the reason recorded on the block itself.
  * The note is corrected here rather than left to contradict the markup below.
  *
  * It is a restoration of a banner live already configures rather than a new
@@ -127,10 +129,19 @@
 	 * (`uploads/2019/03/blog_header.jpg`) is never visible behind the collapsed
 	 * 50px sliver, so there is no "the live one" to carry across; this is a
 	 * chosen photograph, and swapping it later is a one-line change.
+	 *
+	 * **360px, not the 454px the page landings use** — ruled 2026-09-16, with
+	 * the category archive, because the banner was crowding the first post row
+	 * off the fold on both. It is the floor the two Tour Operator singles
+	 * already carry (patterns/destination-banner.php,
+	 * patterns/template-single-tour.php), so the list pages now open at the
+	 * same height as the pages they lead to. The two blog pages move together:
+	 * a step in banner height between the landing and a category would read as
+	 * a mistake. → patterns/template-category.php
 	 */
 	?>
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">

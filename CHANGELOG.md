@@ -8,6 +8,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ❮ **A left chevron on the blog category archive's *Back To Blog* link.** LS-2022 (line 12,
+  Blog Templates and Related Posts). `styles/blocks/paragraph/back-link.json`,
+  `assets/styles/core-paragraph.css`, `patterns/template-category.php`.
+
+  Zared, 2026-09-16. Live's anchor is plain body-scale link text and stays that way; the chevron
+  is the one thing added, so the link reads as a way back rather than as another link in the
+  page. It is the same Phosphor `CaretLeft` the slider frame's previous control uses, as a
+  `::before` mask painted with `currentColor` — so it follows the link's colour and its hover
+  with no second rule, and being a pseudo-element it never enters the accessible name.
+
+  The anchor's `inline-flex` layout is in the variation's `css` field, where the editor lays it
+  out too; only the `::before` is in `assets/styles/core-paragraph.css`, because a `css` field
+  mangles `content: ""` and drops the rule containing it. Verified locally: the variation
+  registers against `core/paragraph`, the pattern renders `is-style-back-link--2`, and core
+  emits `:root :where(p.is-style-back-link--2 a){display: inline-flex; …}` on
+  `block-style-variation-styles`.
+
 - ❯ **The big chevron on the single post's previous/next pager.** LS-2022 (line 12).
   `assets/styles/core-post-navigation-link.css`.
 
@@ -20,10 +37,9 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
   It is a `::before` on the anchor rather than `core/post-navigation-link`'s own `arrow`
   attribute, which renders a `«`/`»` span *outside* the link and so would sit outside the
-  padded box and miss the link's hover. **Unlike live's, it moves**: the chevron slides 4px in
-  the direction it points on `:hover` and on `:focus-visible`, and holds still under
-  `prefers-reduced-motion`. Size and clearance are `--sd-post-nav-chevron-size` /
-  `--sd-post-nav-chevron-gap`.
+  padded box and miss the link's hover. Size and clearance are `--sd-post-nav-chevron-size` /
+  `--sd-post-nav-chevron-gap`. (The 4px hover slide this shipped with is gone — see *The
+  single post's pager sits tighter…* under **Changed**.)
 
 - 📂 **The blog category archive, rebuilt from the live site.** LS-2022 (line 12, Blog
   Templates and Related Posts). `patterns/template-category.php`, used by
@@ -120,6 +136,96 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   **Template: Blog Landing** alongside the new `templates/home.html`.
 
 ### Changed
+
+- 📏 **The two blog banners open at 360px, not 454px.** LS-2022 (line 12, Blog Templates and
+  Related Posts). `patterns/template-category.php`, `patterns/template-home-blog.php`.
+
+  Zared, 2026-09-16 — the banner was crowding the first post row off the fold on both pages.
+  360px is the floor the two Tour Operator singles already carry
+  (`patterns/destination-banner.php`, `patterns/template-single-tour.php`), so the list pages
+  now open at the same height as the pages they lead to. The two move together deliberately: a
+  step in banner height between the blog landing and a category would read as a mistake. The
+  page landings keep 454px.
+
+- 🖼️ **The category banner is the category's photograph, not one image for all of them.**
+  LS-2022 (line 12). `patterns/template-category.php`.
+
+  The cover now declares a `sd/term-meta` binding on `url` against the term's `banner` meta —
+  the same association live has, and one that was already in the database. `sd-enhancements`'
+  new `TermBanner` module paints it; `core/cover` is a static block whose `url` declares no
+  `source` in block.json, so the binding resolves the value and cannot reach the HTML on its
+  own. The reasoning is written out on the pattern and on `modules/term-banner.php`.
+
+  **The `url` in the markup is now the fallback, not the banner** — what the two categories with
+  no `banner` row (Safari Tips, Botswana) wear, and what the page wears with the plugin
+  deactivated. It is still the blog landing's image, so an unset category reads as the same
+  section of the site. The note claiming the banner could only be static here is corrected
+  rather than left to contradict the markup.
+
+- 📐 **The category archive's top band is tighter.** LS-2022 (line 12).
+  `patterns/template-category.php`.
+
+  Zared, 2026-09-16. `is-style-light-page-section` opens on spacing|70, which is right for a
+  content band and too much for a one-line back-link: it put ~70px between the breadcrumb strip
+  and the link, and another ~70px between the link and the first post row. The back-link band now
+  opens on spacing|40 and the post list on spacing|30, so the breadcrumbs, the link and the first
+  row read as one group instead of three separated bands.
+
+- 🎠 **The single post's related shelf is a carousel of fifteen, not a row of three.** LS-2022
+  (line 12, Blog Templates and Related Posts). `patterns/template-single-post.php`.
+
+  Zared, 2026-09-16. Live draws three tiles and stops; this shows fifteen on a Slick carousel,
+  three at a time. It is now the same object as the homepage's *Tales from our trails* band —
+  `hasCustomClass` + `lsx-to-slider` is Tour Operator's "Enable Slider" checkbox on
+  `core/query`, `is-style-slider-frame` supplies the arrows and dots, and `slidesToShow` comes
+  off the `columns-3` class `core/post-template` emits from its own grid `columnCount`, which
+  doubles as the no-JavaScript fallback.
+
+  ⚠️ **The count lives in two places and they have to agree.** The block's `perPage` never
+  reaches `WP_Query` on this shelf: `Queries::relate_posts_by_category()` replaces Tour
+  Operator's arguments wholesale, so `RELATED_POSTS_PER_PAGE` in **sd-enhancements-2026**
+  moves to 15 alongside this. Changing one alone changes nothing.
+
+  The grid's `minimumColumnWidth: 16px` is gone with it — it made core add
+  `has-native-responsive-grid` and switch the fallback to an auto-fill track rather than the
+  three-up row Slick is about to be told it has. The homepage carousel has never set it.
+
+- ❮ **The single post's pager sits tighter, and the chevron holds still.** LS-2022 (line 12).
+  `assets/styles/core-post-navigation-link.css`.
+
+  Three changes, all Zared's, 2026-09-16.
+
+  `--sd-post-nav-chevron-gap` drops from spacing 40 (26–40px) to spacing 10 (8–10px). The gap
+  was never the whole of what a reader saw: Phosphor's caret path spans about 38% of its
+  square viewBox, so a 44px chevron box already leaves roughly 13px of empty mask on the inner
+  side before the gap starts, and spacing 40 on top of that read as a gulf.
+
+  **The 4px hover slide is removed.** The caret is a signpost here, not a control the reader
+  aims at, and the movement pulled the eye off the title that is the actual link. Live's glyph
+  is static too, so this is back to the port. The `prefers-reduced-motion` block keeps only the
+  transition damping it still has something to damp.
+
+  **"Previous Post" / "Next Post" is brand-600 by default**, and the chevron flips to brand-600
+  on `:hover` / `:focus-visible` rather than following the anchor to brand-500. Set on the
+  label rather than the anchor because the adjacent post's *title* stays `contrast` — the title
+  is the link's content, the label its signpost — and the caret's hover is stated explicitly
+  because `background-color: currentColor` would otherwise land it a step short of the label's
+  tone. Live paints its label #cc7f16 (brand-500); brand-600 is the tone the slider arrows'
+  active state already uses, so the closing band's two brand accents now agree.
+
+- ↔ **The category slider's arrows stand clear of the band.** LS-2022 (line 12).
+  `styles/sections/slider-frame.json`, `assets/styles/core-group.css`.
+
+  Zared, 2026-09-16 — the chevrons sat almost against the category artwork. The clearance a
+  reader sees is three things added together: the arrow's own offset from the frame edge, the
+  slide's 15px inset, and the empty margin inside the caret's square mask box.
+  `.sd-slider-tight` sets `--sd-slider-slide-gutter` to 0 by design — the band is one
+  continuous bar, not a row of cards — which gives the middle one away and leaves the chevron
+  nearly touching the tile.
+
+  The arrow offset is now a token, `--sd-slider-nav-offset`, declared on the frame at the 10px
+  every shelf already used, so nothing else moves. `.sd-slider-tight` sets it to 28px: the
+  10px + 15px the card shelves read at, plus a little. The gutter *between* tiles stays 0.
 
 - 🎠 **The category shelf on the blog landing is one continuous band again.** LS-2022
   (line 12). `patterns/blog-categories.php`, `styles/sections/slider-frame.json`,

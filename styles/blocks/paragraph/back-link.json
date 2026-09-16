@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Back Link",
+	"slug": "back-link",
+	"blockTypes": [ "core/paragraph" ],
+	"description": "A paragraph whose link is preceded by a left chevron — the \"Back To Blog\" link that opens the blog category archive, live's `.archive-category-title a.back-to-blog`. Live styles that anchor as plain body-scale link text and this keeps it there; the chevron is the one thing added, so the link reads as a way back rather than as another link in the page. Colour and font size stay on the block. The `css` field holds the anchor's layout, so the editor lays the chevron out too; the chevron itself is in assets/styles/core-paragraph.css, because a `css` field mangles `content: \"\"` and drops the rule containing it. It is a pseudo-element painted with `currentColor`, so it never enters the link's accessible name and the hover colour carries it with no second rule.",
+	"styles": {
+		"css": "& a { display: inline-flex; align-items: center; gap: 0.4em; }"
+	}
+}
