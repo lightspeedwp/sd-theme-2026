@@ -642,6 +642,72 @@
 	height: 100%;
 }
 
+/**
+ * Review Slider — the Trustpilot row on the team single.
+ *
+ * The frame is `core/group.sd-review-slider.is-style-slider-frame` and the
+ * track is `sd/trustpilot-reviews` inside it; assets/js/review-slider.js hands
+ * the track to Slick. Everything above that is keyed to `.is-style-slider-frame`
+ * already applies — the `.slick-list` clip relief and the dot row both come for
+ * free. Two things do not, and they are here rather than in a block-style JSON
+ * because both target Slick's own generated markup, which no `styles` object
+ * can reach.
+ *
+ * 1. **The gutter.** Tour Operator insets every slide by 15px, but its selector
+ *    is `.wp-block-query.lsx-to-slider .slick-slide`
+ *    (tour-operator/build/style.css) and this frame is neither a query block nor
+ *    an `lsx-to-slider` — nothing here is TO's slider. So the row would go
+ *    edge-to-edge: the block's own `blockGap` is a grid gap, and the script
+ *    removes `is-layout-grid` at the moment Slick takes over. Half the gap on
+ *    each side reproduces it, from the same token the block authors, so the two
+ *    presentations measure the same. `!important` is not needed — nothing else
+ *    reaches this selector.
+ * 2. **Equal height.** Slick sizes the track to the tallest slide and leaves the
+ *    rest at their own height, so a short review left a strip of section ground
+ *    under its card. Same flex-track recipe as `.sd-slider-flush` above; Slick's
+ *    inline widths on track and slides survive it untouched. It matters more
+ *    here than on the card shelves because review length is a Trustpilot
+ *    author's, not an editor's.
+ *
+ * No arrow rules: the script runs this row without arrows at every width, and
+ * why is documented there.
+ */
+.sd-review-slider .slick-slide {
+	padding-inline: calc(var(--wp--preset--spacing--40) / 2);
+	height: auto;
+}
+
+.sd-review-slider .slick-track {
+	display: flex;
+	align-items: stretch;
+}
+
+/* Equal-height cards — `:not([class])` is load-bearing, not tidiness.
+   ---------------------------------------------------------------------------
+   Slick only wraps each slide in a bare `<div>` when `rows`/`slidesPerRow` ask
+   it to. At this row's settings it does not: it puts `.slick-slide` on the
+   review card itself, so the card is a direct child of `.slick-track`.
+
+   Written as a plain `.slick-slide > div`, this rule therefore matched the
+   *card's own first child*. It hit nothing for as long as the card's children
+   were a heading and three paragraphs — and the moment one of them became a
+   group (the stars-and-date row, 2026-09-16) that group was stretched to the
+   full height of the card, pushing the headline, the extract and the reviewer
+   name out of `.slick-list`, which clips. The row rendered correctly and then,
+   on Slick init, collapsed to a date and a star tile.
+
+   Slick's wrapper carries no attributes at all, and every authored block
+   carries at least one class, so `:not([class])` matches the wrapper and can
+   never match block markup. Keep it on both lines.
+
+   Nothing is needed for the unwrapped shape: `.slick-track` is `display: flex`
+   with `align-items: stretch` above, which already gives every slide the height
+   of the tallest. */
+.sd-review-slider .slick-slide > div:not([class]),
+.sd-review-slider .slick-slide > div:not([class]) > * {
+	height: 100%;
+}
+
 /* Header rules removed 2026-08-21
    ===========================================================================
    Three blocks went from here, all of them hanging off hooks the header no

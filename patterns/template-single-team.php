@@ -119,11 +119,19 @@
  * white. Measured, not assumed: nothing in custom.css tints `#feedback`,
  * `#gallery`, `#tours`, `#destination` or `#posts` on this template.
  *
- * `require`, not `<!-- wp:pattern -->`, for the score badge and the closing
- * band — a nested pattern reference inside another *pattern* is dropped on
- * front-end render while still resolving under a WP-CLI `do_blocks()` test.
- * References inside a *query loop* are fine, which is why the three card
- * patterns below are still written as references.
+ * `require`, not `<!-- wp:pattern -->`, for the score badge, the review card
+ * and the closing band — a nested pattern reference inside another *pattern* is
+ * dropped on front-end render while still resolving under a WP-CLI
+ * `do_blocks()` test.
+ *
+ * References inside a `core/query` loop are fine, which is why the three card
+ * patterns below are still written as references: `core/post-template` sets
+ * `$GLOBALS['post']` for each row, and the core blocks in those cards read the
+ * global post, so losing the block *context* across `render_block_core_pattern()`
+ * costs them nothing. A reference inside `sd/trustpilot-reviews` is **not** fine
+ * for exactly that reason inverted — a review is not a post, so the only route
+ * in is the context, and the context is what the reference throws away. That
+ * cost three empty cards on dev until 2026-09-16; the detail is at the block.
  * → .claude/skills/wp-pattern-runtime-pitfalls
  */
 
@@ -244,8 +252,8 @@
 				 * member could be given one without the other.
 				 */
 				?>
-				<!-- wp:paragraph {"metadata":{"name":"Role","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"role"}}}},"className":"lsx-role-wrapper","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"300","fontFamily":"heading"} -->
-				<p class="lsx-role-wrapper has-heading-font-family has-300-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"></p>
+				<!-- wp:paragraph {"metadata":{"name":"Role","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"role"}}}},"className":"lsx-role-wrapper","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"textColor":"brand-600","fontSize":"400","fontFamily":"heading"} -->
+				<p class="lsx-role-wrapper has-brand-600-color has-text-color has-heading-font-family has-400-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"></p>
 				<!-- /wp:paragraph -->
 
 				<?php
@@ -254,9 +262,27 @@
 				 * rendered whole — this template has no `.more-text` collapse to
 				 * reproduce, unlike the tour and destination singles, because
 				 * custom.js only truncates `.entry-content` on those.
+				 *
+				 * The gap between the bio's own paragraphs is set here rather
+				 * than left to the root `blockGap`: `core/post-content` is a
+				 * layout container whose children are authored copy, and at the
+				 * root gap the bio read as a stack of separate statements
+				 * instead of one passage. `M` is the same step the meta rows
+				 * above it use. A `blockGap` belongs on the block markup and
+				 * never in a variation JSON — see AGENTS.md.
+				 *
+				 * The layout is `default` (flow) and not `constrained`. With
+				 * `useRootPaddingAwareAlignments` on — theme.json sets it — core
+				 * adds `has-global-padding` to *every* constrained-layout block, not
+				 * just the ones at the root (block-supports/layout.php:1111-1117), so
+				 * a constrained `post-content` picked up the root left padding and
+				 * the bio sat one `spacing|20` in from the Meet heading and the role
+				 * above it. The column already constrains the measure; this block
+				 * only needs to stack its children, which flow does, `blockGap` and
+				 * all.
 				 */
 				?>
-				<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+				<!-- wp:post-content {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} /-->
 
 				<?php
 				/*
@@ -300,7 +326,7 @@
 				 * Image crops are `aspectRatio`, never CSS. → AGENTS.md
 				 */
 				?>
-				<!-- wp:post-featured-image {"aspectRatio":"1","metadata":{"name":"Portrait"}} /-->
+				<!-- wp:post-featured-image {"aspectRatio":"1","metadata":{"name":"Portrait"},"style":{"border":{"radius":"var:preset|border-radius|500"}}} /-->
 
 			</div>
 			<!-- /wp:column -->
@@ -369,13 +395,20 @@
 
 				<?php
 				/*
-				 * Live's `#tb-horizon-review` inside the row — the same badge
-				 * the header and the Why Choose band carry, and the company's
+				 * Live's `#tb-horizon-review` inside the row, and the company's
 				 * score rather than the consultant's, because `sd/trustpilot`
-				 * reads the business unit. `require`, not a nested pattern
-				 * reference.
+				 * reads the business unit.
+				 *
+				 * The *stacked* badge, not patterns/trustpilot-score.php: live
+				 * re-orders and re-labels the badge for this one placement
+				 * (sd-lsx-child/assets/css/custom.css:4348) — band word, stars,
+				 * "Based on N reviews", mark — and drops the TrustScore figure.
+				 * The file it points at carries the full comparison.
+				 *
+				 * `require`, not a nested pattern reference. See the reviews
+				 * block below for what that costs when it is got wrong.
 				 */
-				require __DIR__ . '/trustpilot-score.php';
+				require __DIR__ . '/trustpilot-score-stacked.php';
 				?>
 
 			</div>
@@ -384,9 +417,66 @@
 			<!-- wp:column {"verticalAlignment":"top","width":"75%"} -->
 			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:75%">
 
-				<!-- wp:sd/trustpilot-reviews {"metadata":{"name":"Trustpilot Reviews"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
-					<!-- wp:pattern {"slug":"sd-theme-2026/card-trustpilot-review"} /-->
-				<!-- /wp:sd/trustpilot-reviews -->
+				<?php
+				/*
+				 * The frame, not the track. Slick appends its arrows and its dot
+				 * row to the *parent* of the element it initialises — see
+				 * assets/js/review-slider.js — and styles/sections/slider-frame.json
+				 * positions both against that parent's edges, which is why this
+				 * group exists and why `is-style-slider-frame` is on it rather
+				 * than on the reviews block. It is the same shape the three
+				 * shelves further down the page have, where `core/query` is the
+				 * frame and `core/post-template` the track.
+				 *
+				 * Live slides this row only below 767px
+				 * (sd-lsx-child/assets/js/custom.js:358) and leaves it a static
+				 * flex row above; the shelves' responsive curve is used instead,
+				 * at Zared's direction 2026-09-16, so the reviews are not the one
+				 * row on the page with its own behaviour. Desktop is unchanged
+				 * either way — three reviews in three slots is what live draws.
+				 */
+				?>
+				<!-- wp:group {"metadata":{"name":"Reviews Slider"},"className":"sd-review-slider is-style-slider-frame","style":{"spacing":{"blockGap":"0","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"default"}} -->
+				<div class="wp-block-group sd-review-slider is-style-slider-frame" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+
+					<?php
+					/*
+					 * The grid is the no-JS presentation and the desktop layout
+					 * both — three across, which is live's row. The script
+					 * removes `is-layout-grid` only at the point Slick takes
+					 * over, so a page with no jQuery, no Slick or no JavaScript
+					 * still renders the finished row.
+					 */
+					?>
+					<!-- wp:sd/trustpilot-reviews {"metadata":{"name":"Trustpilot Reviews"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+					<?php
+					/*
+					 * ⚠️ **`require`, never `<!-- wp:pattern ... /-->` here.** The
+					 * card was a nested pattern reference until 2026-09-16 and
+					 * the row rendered three structurally perfect, completely
+					 * empty cards on dev — right classes, right count, no date,
+					 * no headline, no text, no name.
+					 *
+					 * `render_block_core_pattern()` (wp-includes/blocks/pattern.php)
+					 * takes no `$block` argument and ends in `do_blocks( $content )`,
+					 * which builds a fresh block tree with an **empty available
+					 * context**. So `sd/trustpilot-reviews` handed each repeat its
+					 * `sdTrustpilotIndex`, `core/pattern` threw it away, and every
+					 * `sd/trustpilot-review` binding inside resolved to null —
+					 * which is the card's authored fallback, and the card is
+					 * authored empty on purpose. A silent failure in both
+					 * directions.
+					 *
+					 * `require` puts the card's blocks in *this* file's parsed
+					 * tree, so the repeater's context reaches them the way
+					 * `core/post-template`'s reaches its inner blocks.
+					 */
+					require __DIR__ . '/card-trustpilot-review.php';
+					?>
+					<!-- /wp:sd/trustpilot-reviews -->
+
+				</div>
+				<!-- /wp:group -->
 
 			</div>
 			<!-- /wp:column -->

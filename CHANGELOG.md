@@ -6,6 +6,190 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Fixed
+
+- 🐛 **The review cards collapsed to a date and a star tile the moment Slick initialised.**
+  LS-2020 (line 10). `assets/styles/core-group.css`.
+
+  The equal-height rule was written as `.sd-review-slider .slick-slide > div` on the
+  assumption that Slick wraps each slide in a bare `<div>`. It only does that when
+  `rows`/`slidesPerRow` ask it to; at this row's settings it puts `.slick-slide` on the
+  review card itself, so the card is a direct child of `.slick-track` and the selector
+  matched **the card's own first child**.
+
+  That was inert for as long as the card's children were a heading and three paragraphs.
+  Adding the stars-and-date group gave it a `<div>` to match, and it stretched that group
+  to the card's full height — measured on dev: meta row 220px in a 220px card, reviewer
+  name at y=2158 against a `.slick-list` clipping at y=2024. Hence a row that rendered
+  correctly and then lost everything below the date.
+
+  Both selectors now carry `:not([class])`. Slick's wrapper has no attributes at all and
+  every authored block carries at least one class, so it matches the wrapper and can never
+  match block markup. The unwrapped shape needs no rule: `.slick-track` is already
+  `display:flex` with `align-items:stretch`.
+
+- 🐛 **The team single's Trustpilot reviews rendered as three empty cards.** LS-2020
+  (line 10, Team / Safari Expert). `patterns/template-single-team.php`.
+
+  The review card was pulled in with `<!-- wp:pattern {"slug":"…/card-trustpilot-review"} /-->`
+  inside `sd/trustpilot-reviews`. `render_block_core_pattern()`
+  (`wp-includes/blocks/pattern.php`) takes **no `$block` argument** and ends in
+  `do_blocks( $content )`, which builds a fresh block tree with an empty available
+  context. So the repeater handed each of its three passes an `sdTrustpilotIndex`,
+  `core/pattern` discarded it, and every `sd/trustpilot-review` binding inside resolved
+  to null — which is the card's authored fallback, and the card is authored empty on
+  purpose. Right classes, right count, no date, no headline, no text, no name: dev's
+  `/team/liesl-mathews/` beside live's three Liesl reviews.
+
+  The card is now `require`d, so its blocks sit in the template's own parsed tree and the
+  repeater's context reaches them the way `core/post-template`'s reaches its inner blocks.
+  Nothing was wrong with the plugin: the cache on dev held Liesl's three reviews under
+  `_transient_sd_enh_tp_reviews_<md5('Liesl')>` throughout.
+
+  **References inside a `core/query` loop stay as they are** — `core/post-template` sets
+  `$GLOBALS['post']` per row and the core blocks in those cards read the global post, so
+  losing the block context costs them nothing. A review is not a post, which is what makes
+  this one different.
+
+### Changed
+
+- **The Trustpilot review card carries stars and a linked headline, and clamps the
+  extract.** LS-2020 (line 10). `patterns/card-trustpilot-review.php`,
+  `assets/styles/core-paragraph.css`. Needs `sd-enhancements` at the matching revision —
+  it adds the two source keys below.
+
+  The star tile is back on the card, beside the date in a flex row, at 110px — live's
+  `.tb-review-box img` is 40% of a ~300px box. It binds `sd/trustpilot-review`'s new
+  `stars_image`, which is **that review's** rating rather than the company's, so a 4½-star
+  review draws the 4½-star tile. Decorative: the date beside it is the labelled content.
+
+  The headline is live's link again — an anchor to the company review page, arriving inside
+  the bound value via the source's new `link` arg, because a binding replaces a block's
+  whole `content` and `core/heading` has no bindable `href`. Core `wp_kses_post()`s
+  rich-text replacements, so this is a supported route rather than a way round escaping.
+  Hover is `brand-600` against live's `#cc7f16`, set as `elements.link` on the heading so
+  it travels with the block.
+
+  The extract is clamped to **three lines** in CSS. Live throws the rest of the review away
+  in PHP at ten words; ten words is not a number of lines, so three reviews of different
+  lengths gave three cards of different heights. The clamp cuts at the rendered measure and
+  leaves the whole review in the markup. Not in a block-style `css` field: it needs
+  `display:-webkit-box`, and the sanitiser drops `-webkit-box-orient`.
+
+- **The team single's Trustpilot badge is stacked, matching live.** LS-2020 (line 10).
+  New `patterns/trustpilot-score-stacked.php`; `patterns/template-single-team.php` requires
+  it in place of `patterns/trustpilot-score.php`.
+
+  Live ships one component and two arrangements, separated in CSS rather than PHP:
+  `#tb-horizon-review` is a centred row with the band word hidden, and
+  `#tb-list-review-container #tb-horizon-review` (`sd-lsx-child/assets/css/custom.css:4348`)
+  is a column — band word (600, order 1), stars (2), count (3), mark (4) — with the
+  `TrustScore 5 |` span set to `display:none` and a `Based on` prefix injected before the
+  count. Three of the four children change, which is past what a `flex`/`orientation`
+  switch can express, so the badge is authored in reading order in its own file rather
+  than re-ordered with CSS `order`.
+
+  Sizes are dev's, not live's: font-size 100, a 160px star tile and a 132px mark, against
+  live's 12px text and `max-height:25px` on everything. Zared's call, 2026-09-16. Live's
+  underline on the count is **not** carried over — it is not a link, and nothing else in
+  the badge but the mark is.
+
+  `patterns/trustpilot-score.php` is unchanged and still serves
+  `patterns/safari-expert.php`, where live draws the row arrangement.
+
+- ⭐ **The team single's Trustpilot review row is a carousel.** LS-2020 (line 10, Team /
+  Safari Expert). `patterns/template-single-team.php`, `inc/review-slider.php`,
+  `assets/js/review-slider.js`, `assets/styles/core-group.css`, `functions.php`.
+
+  ⚠️ **The script is enqueued on `wp_enqueue_scripts` at priority 20 and depends on
+  `tour-operator-script` — never on `slick`, and never from a `render_block` filter.**
+  The first pass did both and took every slider on the team single down with it on dev
+  (2026-09-16). `wp_script_is( $handle, 'queue' )` falls through to `recurse_deps()`, so it
+  answers true for any handle that is merely a *dependency* of something queued — and Tour
+  Operator guards its own vendor enqueue with exactly that question at priority 1. A
+  render-time enqueue naming `slick` can land first, because an SEO plugin renders block
+  content during `wp_head` to build its description; TO then registered neither `slick` nor
+  `slick-lightbox`, and `tour-operator-script` — which depends on both — was dropped
+  silently at print time, taking TO's `custom.js`, `sd-enhancements`' `to-slider.js` and
+  this script with it. `sd-enhancements/modules/to-slider.php` already had the right shape;
+  this now matches it.
+
+  `sd/trustpilot-reviews` is now wrapped in a `core/group` carrying
+  `sd-review-slider is-style-slider-frame` — the frame, because Slick appends its dot row to
+  the *parent* of the element it initialises and `styles/sections/slider-frame.json` positions
+  that row against the parent's edges. Same shape as the three shelves below it on the same
+  page, where `core/query` is the frame and `core/post-template` the track.
+
+  **It is not Tour Operator's initialiser.** TO's selector is
+  `.lsx-to-slider .wp-block-post-template` / `.wp-block-term-template`, and the reviews block
+  is neither — it is a repeater over a cached API response. Giving it a core class to be
+  picked up would drag core's post-template CSS onto it and claim a query loop that is not
+  there, so it keeps its own class and the theme initialises it with TO's settings: 3 up →
+  2 at ≤1028 → 1 at ≤782, dots and swipe.
+
+  **No arrows, at any width** — the one place the settings depart from the shelves.
+  `Trustpilot::REVIEW_COUNT` caps the cache at three and the desktop row shows three, so an
+  arrow could never move anything; and the frame's arrows sit outside its own edges, which on
+  a 75% column would put the left one on top of the score badge beside it.
+
+  ⚠️ **Live slides this row only below 767px** (`sd-lsx-child/assets/js/custom.js:358`) and
+  leaves it a static flex row above. The shelves' responsive curve is used instead, at Zared's
+  direction 2026-09-16, so the reviews are not the one row on the page with their own
+  behaviour. Desktop is unchanged either way — three reviews in three slots is what live draws.
+
+  Progressive enhancement throughout: the pattern authors the block as a three-column grid,
+  which is the finished desktop layout on its own, and `is-layout-grid` comes off only at the
+  point Slick takes over. No JavaScript, no jQuery or no Tour Operator leaves the row correct.
+
+- 📏 **Tour and blog card meta now render at one size — base.**
+  `patterns/card-tour-compact.php`, `patterns/card-post-grid.php`.
+
+  The tour card's meta rows were rendering at three different sizes. The cause is
+  `theme.json`'s `styles.blocks.core/paragraph.fontSize` of `300`: a block-level global style
+  is not inheritance, so it lands on every `core/paragraph` and beats the Body group's
+  `has-200-font-size` outright. The three paragraph rows came out at 300 while
+  `core/post-terms` — a `<div>`, with no block style of its own — inherited 200 and the
+  excerpt carried an explicit 200. Every row now carries an explicit `200`.
+
+  ⚠️ **Those explicit sizes are load-bearing, not redundant.** Remove one and that row goes
+  straight back to 300.
+
+  The blog card's date and category rows moved `100` → `200` for the same reason of one
+  size per card, and every meta row on both cards takes a 2px `padding-block` — Zared's
+  measurement — which settles "days" against the number beside it and puts the whole meta
+  block on one rhythm.
+
+  Both cards' Body group gap came down `S` → `XS` with it (Zared, 2026-09-16): at base
+  the rows are taller than they were at 100, and the old step left the meta reading as
+  separate blocks rather than one stack.
+
+  The travel-style row also lost its `medium` font weight, so the taxonomy and destination
+  values render at the same weight. Only the prefixes are bold now, which is what the card
+  style already says (`& strong`, `& .wp-block-post-terms__prefix`).
+
+- 📐 **The team single's bio sets its own paragraph gap.**
+  `patterns/template-single-team.php`. `core/post-content` carries
+  `blockGap: var:preset|spacing|30` (M) rather than falling to the root gap, which read as a
+  stack of separate statements instead of one passage. On the markup, never in a variation
+  JSON — see AGENTS.md.
+
+### Fixed
+
+- ⏳ **A tour with no duration no longer renders "Duration: days".**
+  `patterns/card-tour-compact.php`. The Duration group carries `lsx-duration-wrapper`, which
+  is Tour Operator's hook rather than a styling class: `Query_Loop::maybe_hide_varitaion()`
+  (`class-query-loop.php:96`) filters `render_block`, matches `(lsx|facts)-<key>-wrapper` on a
+  `core/group` or `core/paragraph`, and returns an empty string when that key's post meta is
+  empty.
+
+  It is on the **group**, deliberately. Tour Operator prepends the prefix with no test on the
+  value, so an empty duration rendered `<p><strong>Duration:</strong> </p>` next to a live
+  "days". The paragraph is not `:empty`, so the card style's `p:empty` rule cannot reach it —
+  only hiding the group takes the value and the "days" together.
+
+  Measured against Luxury Honeymoon Adventure (dev, 57936), whose `duration` meta is `""`,
+  and verified locally by blanking and restoring a tour's duration: the group and its "days"
+  both disappear, and both return.
 ### Added
 
 - ❮ **A left chevron on the blog category archive's *Back To Blog* link.** LS-2022 (line 12,

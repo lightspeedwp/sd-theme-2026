@@ -50,6 +50,52 @@
  * Operator's, not core's, and its bindings render them — which is why that copy
  * is not in a translation call here. The one literal string the theme owns is
  * "days", and it is.
+ *
+ * ## Every meta row carries its own font size, and has to
+ *
+ * The Body group is `fontSize: 200` and the rows inside it were left to
+ * inherit. They did not. `theme.json` sets
+ * `styles.blocks.core/paragraph.fontSize` to `300`, and a block-level global
+ * style is not inheritance — it lands on every `core/paragraph` and beats the
+ * ancestor's `has-200-font-size` outright. So the three paragraph rows rendered
+ * at 300 while `core/post-terms` — a `<div>`, with no block style of its own —
+ * inherited 200 and the excerpt carried an explicit 200: three sizes in one
+ * meta block. Measured on dev against /team/liesl-mathews/ 2026-09-16.
+ *
+ * The fix is an explicit `200` on each row rather than a `css`-field override
+ * on the card style, because the size is a property of the row and the editor
+ * should show it. **Do not remove these thinking they are redundant** — the
+ * moment one comes off, that row goes back to 300.
+ *
+ * `patterns/card-tour-list.php` has the same latent split on its Location row
+ * and is not fixed here; it is a different card on a different template.
+ *
+ * ## The 2px padding is optical alignment, not spacing
+ *
+ * "days" is a plain paragraph sitting beside a bound one in a nowrap flex row,
+ * and the two sat a hair out of line. A 2px `padding-block` on every field in
+ * the group — not just the one that needed it — settles them, and is carried on
+ * the taxonomy and destination rows too so the whole meta block sits on one
+ * rhythm. Zared's measurement, 2026-09-16.
+ *
+ * ## The duration row hides itself
+ *
+ * `lsx-duration-wrapper` is Tour Operator's hook, not a styling class:
+ * `Query_Loop::maybe_hide_varitaion()`
+ * (tour-operator/includes/classes/blocks/class-query-loop.php:96) filters
+ * `render_block`, matches `(lsx|facts)-<key>-wrapper` on a `core/group` or a
+ * `core/paragraph`, and returns an empty string when that key's post meta is
+ * empty. `duration` is neither a query nor a taxonomy, so it falls through to
+ * `get_post_meta()`.
+ *
+ * It is on the **group**, deliberately. TO prepends the prefix with no test on
+ * the value, so a tour with no duration rendered
+ * `<p><strong>Duration:</strong> </p>` next to a live "days" — the row read
+ * "Duration: days". The paragraph is not `:empty` either, so the card style's
+ * `p:empty` rule cannot reach it. Hiding the group takes the value and the
+ * "days" together, which is the only version of this that is correct. Luxury
+ * Honeymoon Adventure (dev, 57936) is the case it was measured against: its
+ * `duration` meta is `""`.
  */
 
 ?>
@@ -61,25 +107,25 @@
 	<div class="wp-block-group has-200-font-size" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
 		<!-- wp:post-title {"level":4,"isLink":true,"style":{"typography":{"textAlign":"center"}}} /-->
 
-		<!-- wp:group {"metadata":{"name":"Meta"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+		<!-- wp:group {"metadata":{"name":"Meta"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group">
 
-			<!-- wp:group {"metadata":{"name":"Duration"},"style":{"spacing":{"blockGap":"var:preset|spacing|5","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
-			<div class="wp-block-group" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
-				<!-- wp:paragraph {"metadata":{"name":"Duration Value","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"duration"}}}},"prefix":"Duration:","prefixBold":true} -->
-				<p></p>
+			<!-- wp:group {"metadata":{"name":"Duration"},"className":"lsx-duration-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|5","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
+			<div class="wp-block-group lsx-duration-wrapper" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+				<!-- wp:paragraph {"metadata":{"name":"Duration Value","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"duration"}}}},"style":{"spacing":{"padding":{"top":"2px","bottom":"2px"}}},"fontSize":"200","prefix":"Duration:","prefixBold":true} -->
+				<p class="has-200-font-size" style="padding-top:2px;padding-bottom:2px"></p>
 				<!-- /wp:paragraph -->
 
-				<!-- wp:paragraph {"style":{"spacing":{"padding":{"top":"2px","bottom":"2px"}}}} -->
-				<p style="padding-top:2px;padding-bottom:2px"><?php esc_html_e( 'days', 'sd-theme-2026' ); ?></p>
+				<!-- wp:paragraph {"style":{"spacing":{"padding":{"top":"2px","bottom":"2px"}}},"fontSize":"200"} -->
+				<p class="has-200-font-size" style="padding-top:2px;padding-bottom:2px"><?php esc_html_e( 'days', 'sd-theme-2026' ); ?></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->
 
-			<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Styles: ","style":{"typography":{"textAlign":"center","fontStyle":"normal","fontWeight":"var(--wp--custom--font-weight--medium)"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}}} /-->
+			<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Styles: ","style":{"typography":{"textAlign":"center","fontStyle":"normal"},"spacing":{"padding":{"top":"2px","bottom":"2px"}},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"fontSize":"200"} /-->
 
-			<!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour","parents":true}}}},"className":"lsx-destination-to-tour-wrapper","style":{"typography":{"textAlign":"center"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"prefix":"Destinations:","prefixBold":true} -->
-			<p class="has-text-align-center lsx-destination-to-tour-wrapper has-link-color"></p>
+			<!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour","parents":true}}}},"className":"lsx-destination-to-tour-wrapper","style":{"typography":{"textAlign":"center"},"spacing":{"padding":{"top":"2px","bottom":"2px"}},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"fontSize":"200","prefix":"Destinations:","prefixBold":true} -->
+			<p class="has-text-align-center lsx-destination-to-tour-wrapper has-link-color has-200-font-size" style="padding-top:2px;padding-bottom:2px"></p>
 			<!-- /wp:paragraph -->
 
 		</div>

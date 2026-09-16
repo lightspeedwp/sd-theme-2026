@@ -21,12 +21,12 @@
  *     live                                       here
  *     -----------------------------------------  -------------------------
  *     .tb-review-box            flex 0 1 25%      one grid cell, 3 across
- *     .tb-review-box img        40% wide stars    not rendered — see below
+ *     .tb-review-box img        40% wide stars    110px, beside the date
  *     .tb-review-date           12px              font-size 100
  *     .tb-title                 margin-top 1.5rem the card's blockGap
  *     .tb-title h3              15px, #4c5250     h3, font-size 200, neutral-700
- *     .tb-title h3 a:hover      #cc7f16           elements.link :hover, brand-500
- *     .tb-review-text p         inherited, 15px   font-size 200
+ *     .tb-title h3 a:hover      #cc7f16           elements.link :hover, brand-600
+ *     .tb-review-text p         inherited, 15px   font-size 200, clamped to 3
  *     .tb-person p              inherited         font-size 200
  *
  * Every value arrives through `sd/trustpilot-review`, which takes its subject
@@ -36,35 +36,43 @@
  * That block caps the cache at three reviews (`Trustpilot::REVIEW_COUNT`),
  * which is the row live draws.
  *
- * ## The star row is not here, and it is a plugin gap rather than a decision
+ * ## The star row — the review's own rating, not the company's
  *
- * Live opens each box with the same 5-star SVG the badge beside it carries.
- * `sd/trustpilot` exposes `stars_image` — a URL the theme itself answers,
- * through inc/trustpilot.php — but `sd/trustpilot-review` does not: its keys
- * are `stars`, `title`, `text`, `author`, `date` and `url`, and `stars` is a
- * bare float. Binding an image to the *business* rating would paint the
- * company's score onto an individual review, which is wrong, and binding a
+ * Live opens each box with a star SVG beside the date. This was left out until
+ * 2026-09-16 because `sd/trustpilot-review` exposed `stars` as a bare float and
+ * nothing else: binding an image to `sd/trustpilot`'s `stars_image` would have
+ * painted the *business* rating onto an individual review, and binding a
  * paragraph to `stars` renders the digit "5" on its own.
  *
- * So the row is left out until `sd/trustpilot-review` grows a `stars_image`
- * key — one call to the same private `stars_image()` the score source already
- * uses, in sd-enhancements, not here. Nothing in this file changes when it
- * lands except the image block that goes back on top. → flagged on LS-2033
+ * The source now answers `stars_image` from the review's own rating, through the
+ * same `sd_enh_trustpilot_stars_image` filter inc/trustpilot.php already answers
+ * for the badge — so the tile map lives in one place and serves both. Decorative
+ * (`alt=""`), because the date beside it is the labelled content and the
+ * headline below already links to the same place a linked tile would.
  *
- * ## The headline is not a link, and live's three all point at one URL
+ * Width is 110px: live's `.tb-review-box img` is 40% of a box that measures
+ * ~300px in the 75% column, and 40% of a flex row would have been a percentage
+ * of the wrong parent.
+ *
+ * ## The headline is a link, and live's three all point at one URL
  *
  * Live wraps each headline in an `<a>` to
  * `trustpilot.com/review/southerndestinations.com` — the company's review page,
  * not the individual review. All three boxes carry that identical href, and so
- * does the Trustpilot mark in the badge sitting beside them, which
- * patterns/trustpilot-score.php already renders. Reproducing it would put four
- * links to one destination inside one section.
+ * does the Trustpilot mark in the badge beside them.
  *
- * It is also not expressible: `core/heading` has no bindable `href`, and the
- * only core block that does is `core/button`. Turning three review headlines
- * into three buttons to say the same thing the badge says is worse markup for
- * no gain. `sd/trustpilot-review`'s `url` key stays available for the day the
- * API is asked for per-review permalinks.
+ * The anchor arrives inside the bound value, because a binding replaces a
+ * block's whole `content` and `core/heading` has no bindable `href`. That is a
+ * sanctioned route rather than a trick: core runs rich-text replacements through
+ * `wp_kses_post()` (`WP_Block::replace_html()`), and the href is a constant in
+ * sd-enhancements — see the `link` arg on `sd/trustpilot-review`. With `link`
+ * absent the same key returns the plain title, so the card degrades to text
+ * rather than to markup-as-text.
+ *
+ * The hover is `brand-600` against live's `#cc7f16`, set as `elements.link` on
+ * the heading so it travels with the block rather than needing a stylesheet.
+ * `sd/trustpilot-review`'s `url` key stays available for the day the API is
+ * asked for per-review permalinks.
  *
  * ## Why the fallbacks are empty and not sample copy
  *
@@ -79,27 +87,48 @@
 <!-- wp:group {"metadata":{"name":"Trustpilot Review Card"},"className":"sd-trustpilot-review","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"default"}} -->
 <div class="wp-block-group sd-trustpilot-review">
 
-	<?php /* Live's `.tb-review-date` — 12px, above the headline, in the site's own date format. */ ?>
-	<!-- wp:paragraph {"metadata":{"name":"Review date","bindings":{"content":{"source":"sd/trustpilot-review","args":{"key":"date"}}}},"className":"sd-trustpilot-review__date","fontSize":"100"} -->
-	<p class="sd-trustpilot-review__date has-100-font-size"></p>
-	<!-- /wp:paragraph -->
+	<?php
+	/*
+	 * Live's star tile and `.tb-review-date` — the tile at 40% of the box and
+	 * the date at 12px, sharing the line above the headline. A flex row rather
+	 * than two stacked blocks, so the two sit on one line at every width the
+	 * card is drawn at.
+	 */
+	?>
+	<!-- wp:group {"metadata":{"name":"Review Meta"},"className":"sd-trustpilot-review__meta","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+	<div class="wp-block-group sd-trustpilot-review__meta">
+
+		<!-- wp:image {"width":"110px","sizeSlug":"full","className":"sd-trustpilot-review__stars","metadata":{"name":"Review stars","bindings":{"url":{"source":"sd/trustpilot-review","args":{"key":"stars_image"}}}}} -->
+		<figure class="wp-block-image size-full is-resized sd-trustpilot-review__stars"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg' ) ); ?>" alt="" style="width: 110px; height: auto;"/></figure>
+		<!-- /wp:image -->
+
+		<!-- wp:paragraph {"metadata":{"name":"Review date","bindings":{"content":{"source":"sd/trustpilot-review","args":{"key":"date"}}}},"className":"sd-trustpilot-review__date","fontSize":"100"} -->
+		<p class="sd-trustpilot-review__date has-100-font-size"></p>
+		<!-- /wp:paragraph -->
+
+	</div>
+	<!-- /wp:group -->
 
 	<?php
 	/*
 	 * The headline. `h3` under the section's `h2` — live's is an `h3` too, and
 	 * at the same level relative to its section heading, so the outline is
-	 * carried across unchanged.
+	 * carried across unchanged. `link` on the binding wraps it in live's anchor;
+	 * the head of this file has why the markup arrives through the value.
 	 */
 	?>
-	<!-- wp:heading {"level":3,"metadata":{"name":"Review headline","bindings":{"content":{"source":"sd/trustpilot-review","args":{"key":"title"}}}},"className":"sd-trustpilot-review__title","textColor":"neutral-700","fontSize":"200"} -->
-	<h3 class="wp-block-heading sd-trustpilot-review__title has-neutral-700-color has-text-color has-200-font-size"></h3>
+	<!-- wp:heading {"level":3,"metadata":{"name":"Review headline","bindings":{"content":{"source":"sd/trustpilot-review","args":{"key":"title","link":true}}}},"className":"sd-trustpilot-review__title","textColor":"neutral-700","style":{"elements":{"link":{"color":{"text":"var:preset|color|neutral-700"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"fontSize":"200"} -->
+	<h3 class="wp-block-heading sd-trustpilot-review__title has-neutral-700-color has-text-color has-link-color has-200-font-size"></h3>
 	<!-- /wp:heading -->
 
 	<?php
 	/*
-	 * The extract. Trustpilot returns the full review body and live truncates
-	 * it in CSS; the plugin stores it whole, so the length is a content matter
-	 * rather than something this card should clamp.
+	 * The extract. Trustpilot returns the full review body and the plugin stores
+	 * it whole — live throws the rest away in PHP at ten words
+	 * (`wp_trim_words( $review->text, 10 )`), which is lossy and reflows badly.
+	 * Clamped to three lines in assets/styles/core-paragraph.css instead, so the
+	 * cut follows the rendered measure and the whole review is still in the
+	 * markup. Zared's call, 2026-09-16.
 	 */
 	?>
 	<!-- wp:paragraph {"metadata":{"name":"Review text","bindings":{"content":{"source":"sd/trustpilot-review","args":{"key":"text"}}}},"className":"sd-trustpilot-review__text","fontSize":"200"} -->

@@ -166,7 +166,8 @@ Drop these into any page body.
 | **CTA — Tell Us Your Trip Ideas** | The same enquiry band with the heading every tour, lodge and destination page uses. Placed by the tour template; place it by hand only on a page that needs it. | — |
 | **CTA — Inspired By This Property** | The same enquiry band with the heading the accommodation page uses. Placed by the accommodation template; place it by hand only on a page that needs it. | — |
 | **Why Choose Southern Destinations** | See above. | Trustpilot score |
-| **Trustpilot Score** | The rating badge on its own — the word, the mark, the stars and the TrustScore line. Already included inside the two patterns above; place it separately only where you want the badge alone. | Trustpilot |
+| **Trustpilot Score** | The rating badge on its own, in a row — the word, the mark, the stars and the TrustScore line. Already included inside the two patterns above; place it separately only where you want the badge alone. | Trustpilot |
+| **Trustpilot Score — Stacked** | The same badge in a column — the word, the stars, "Based on {n} reviews" and the mark. The arrangement that sits beside a review row; used by the consultant pages' client-feedback band. | Trustpilot |
 
 **Safari Expert Panel** works out who to show in this order: the consultant assigned to
 the destination or tour you are on, then the consultant connected to the post, then
