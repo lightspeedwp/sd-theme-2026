@@ -6,7 +6,87 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- 📰 **The blog landing page, built from the live site.** LS-2022 (line 12, Blog Templates
+  and Related Posts). `templates/home.html`, `patterns/template-home-blog.php` and
+  `patterns/blog-categories.php`.
+
+  The posts index now has a template of its own. What a reader sees, top to bottom: the
+  breadcrumb strip, a warm band carrying the *Tales from our trails* heading and the italic
+  standfirst with its drop cap, the Browse By Category shelf, the list of post rows with
+  pagination, and the *Why choose Southern Destinations* value band. That is live's blog
+  landing, section for section.
+
+  **The loop inherits the main query**, so Settings → Reading still decides how many posts a
+  page holds and publishing, scheduling and back-dating behave exactly as they do today.
+  Nothing an editor does changes because of this template — task 12.5.
+
+  **The category shelf follows the taxonomy.** It is a `core/terms-query` over the post
+  categories with empty ones hidden, so adding or renaming a category updates the shelf with
+  no template edit. Live hard-codes nine tiles; this does not.
+
+  Two pieces that were already in the theme get their first use here: `card-post-list.php`,
+  the post row built for this page back in August, and `card-category.php`, the tile whose
+  style variation has described itself as belonging to "the live blog landing" since it was
+  written.
+
+  ⚠️ **There is no hero banner on this page, and that is measured.** LSX Banners is
+  configured on the blog and points at `blog_header.jpg`, but the child theme collapses the
+  banner to a 50px sliver, so the photograph is never seen on live. The page therefore opens
+  on the breadcrumb strip. Putting the banner back would be a new design decision rather than
+  a translation — say the word and it is a `core/cover` away.
+
+### Removed
+
+- 🗑️ **`patterns/template-index-news.php` — the KWV-era blog landing.** LS-2022 (line 12).
+
+  It ran a dark "News" cover hero and a sticky categories sidebar down the right-hand side.
+  The live blog landing has neither: it is a single full-width column, and its categories are
+  the shelf in the intro band. The pattern came across from the `kwv-theme-2026` base and was
+  never measured against this site, so it is removed rather than left standing as a second,
+  contradictory blog landing. `templates/index.html` — the generic fallback — now points at
+  **Template: Blog Landing** alongside the new `templates/home.html`.
+
 ### Changed
+
+- 📄 **The single blog post page, rebuilt from the live site.** LS-2022 (line 12, Blog
+  Templates and Related Posts). `patterns/template-single-post.php` and
+  `assets/styles/core-post-navigation-link.css`.
+
+  What a reader sees, top to bottom: the breadcrumb strip, the article — an italic
+  date-and-author byline, the title, the categories, the post — then a full-bleed tinted
+  band carrying three **Related Posts** and the previous/next pager, and the *Why choose
+  Southern Destinations* value band. That is live, section for section, measured on
+  2026-09-16 against two posts so nothing in it is a property of one article.
+
+  **The pattern that stood here was the `kwv-theme-2026` base's and had never been measured
+  against this site.** It ran a "← Back to News" link, an author avatar, a 1:1 featured
+  image beside the title in a 60/40 pair, and a bare prev/next row. Live has none of the
+  first three; the pager is kept and moved into the closing band where live puts it.
+
+  ⚠️ **Live does not render the featured image on a single post** — measured on both posts.
+  The photograph at the top of the Namibia article is a `core/image` inside the post
+  content, placed by the author; the second post carries a featured image and shows no image
+  at all. The featured image is for the cards. Putting one back on the page is a new design
+  decision rather than a translation, and it is one block away.
+
+  **The related tile is `card-post-grid.php`, used whole.** Live's related card is the same
+  centred title, date and excerpt, with the author, categories, "Read More" and tags all
+  switched off in CSS. Those last two are the only difference, and a post tile looking like
+  the same object wherever it appears was worth more than a second card — the same call
+  `template-single-team.php` made for its blog shelf. Two attributes come out if you'd
+  rather match live exactly.
+
+  🔵 **The related shelf needs one filter in `sd-enhancements` before it is correct.**
+  "Posts sharing a category with this one, minus this one" cannot be written in block
+  markup — `taxQuery` holds fixed term IDs and `exclude` holds fixed post IDs — and it is
+  behaviour, not design, so it falls on the plugin side of the deactivation test. The
+  `core/post-template` carries `sd-related-posts-query`, which is the convention Tour
+  Operator 2.2 and `sd-enhancements`' own `Queries` module already use. **Until that filter
+  lands the shelf shows the three most recent posts sitewide, and the post being read can
+  appear in its own related list.** An unfiltered shelf is visibly wrong and gets fixed; a
+  silently empty one looks like a template bug and can survive a release.
 
 - 🖼️ **All four gallery bands now use `sd/gallery` instead of the `lsx/gallery` placeholder.**
   LS-2023 (line 13, Gallery Implementation).

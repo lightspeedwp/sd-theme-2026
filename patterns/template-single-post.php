@@ -1,71 +1,284 @@
 <?php
 /**
- * Title: Single Post
+ * Title: Template: Single Post
  * Slug: sd-theme-2026/template-single-post
+ * Description: A single blog post — the breadcrumb strip, the article with its date-and-author byline above the title and its categories beneath, the post body, then the tinted closing band carrying three related posts and the previous/next pager, and the Why Choose value band.
+ * Categories: hidden
+ * Keywords: post, single, blog, news, article, related, pager
  * Template Types: single
- * Description: The Southern Destinations single blog post layout — dark header, a two-column article header (a "back to news" link, post title and date beside a 4:3 featured image), the post body and previous/next post navigation.
- * Categories: sd-theme-2026/posts
- * Keywords: post, single, blog, news, article
+ * Post Types: wp_template
+ * Inserter: false
  * Viewport Width: 1500
- * Inserter: true
  *
  * @package sd-theme-2026
  */
 
-$sd_news_url = get_option( 'page_for_posts' )
-	? get_permalink( (int) get_option( 'page_for_posts' ) )
-	: home_url( '/news/' );
+/*
+ * Ported from https://www.southerndestinations.com/12-nights-7-landscapes-one-verdict-namibia-belongs-at-the-top-of-your-list/,
+ * measured 2026-09-16 against a second post
+ * (/africas-finest-namibias-top-5-eco-retreats/) so nothing here is a property
+ * of one article, and against sd-lsx-child/assets/css/custom.css:2742-2810 and
+ * lsx-blog-customizer/assets/css/lsx-blog-customizer.css.
+ *
+ * Live builds the page from four things, in this order:
+ *
+ *   1. The Yoast breadcrumb strip — Home › Blog › Namibia › {title}.
+ *   2. `main > article.post` — the byline, the `h1`, the categories, the body.
+ *   3. `.sd-single-post-bottom` — a full-bleed `#f7f5f2` band holding the
+ *      "Related Posts" shelf and, beneath it, `nav.post-navigation`.
+ *   4. `#footer-choose-cta` — the "Why choose Southern Destinations" value
+ *      band, which lives in live's footer region and in this theme's templates.
+ *
+ * ## This replaces the KWV-era single, it does not amend it
+ *
+ * The file that stood here came across from the `kwv-theme-2026` base and was
+ * never measured against this site. It ran a "← Back to News" link, an author
+ * avatar, a 1:1 featured image beside the title in a 60/40 pair, and a bare
+ * prev/next row. Live has none of the first three and puts the fourth inside
+ * the closing band. Each is removed below with its reason; the pager is kept
+ * and moved.
+ *
+ * ## Live does not render the featured image on a single post
+ *
+ * Measured on both posts: `article.post` goes byline → `h1` → categories →
+ * `.entry-content`, with no `.entry-image` anywhere in the header. The
+ * photograph at the top of the Namibia post is a `core/image` *inside the post
+ * content* — the author placed it — and the second post, which also carries
+ * `has-post-thumbnail`, shows no image at all. The featured image is for the
+ * cards: the blog landing row, the related shelf, the homepage carousel.
+ *
+ * So there is no `core/post-featured-image` here. Putting one back is a new
+ * design decision rather than a translation of this one, and it is one block
+ * away if Zared wants it. → AGENTS.md, "No redesign"
+ *
+ * ## The byline is split around the title, and that is live
+ *
+ * `.post-meta.post-meta-top-first` (date, author) sits *above* the `h1`;
+ * `.entry-meta > .post-meta.post-meta-top-last` (categories) sits *below* it.
+ * Both are italic 13px. The word "By" is painted `#cc7f16` — `brand-500`
+ * exactly — and `span.fn` is given `font-size: 0` purely to swallow the
+ * trailing comma after the author's name, a hack with nothing to port.
+ *
+ * Same three fields, same italic, same brand tint as the blog-landing row in
+ * patterns/card-post-list.php, so a post's byline reads the same wherever it
+ * appears. The theme sets the treatment on the wrapping group rather than on
+ * the post-* blocks inside it: those are dynamic, and the style engine drops
+ * `fontStyle` on a dynamic block. → AGENTS.md
+ *
+ * ## The `h1` is 30px and mixed case
+ *
+ * `custom.css:951` sets `h1 { font-size: 30px }` and only `h2` carries
+ * `text-transform: uppercase`. The heading face and the `#60483b` brown come
+ * from the same rule, and `is-style-light-page-section` already supplies that
+ * colour through `elements.heading`, so this heading sets nothing but its size.
+ * Font size 500 (32px) is the nearest token — the same reading
+ * patterns/template-home-blog.php made of the blog landing's 30px heading.
+ *
+ * The uppercase, letter-spaced 600 the previous version carried was the KWV
+ * base's decision, not this site's.
+ *
+ * ## The closing band is one band, and it is neutral-200
+ *
+ * `.sd-single-post-bottom` is `margin: 0 -9999rem; padding: 6.4rem 9999rem;
+ * background-color: #f7f5f2` — a full-bleed tinted strip, and `#f7f5f2` is
+ * `neutral-200` exactly, which is what `is-style-tinted-page-section` paints.
+ * Both the related shelf and the pager sit inside it, on the same ground.
+ *
+ * ## Why the related shelf carries a class instead of a query
+ *
+ * "Posts sharing a category with this one, minus this one" cannot be written in
+ * block markup: `core/query`'s `taxQuery` holds fixed term IDs and `exclude`
+ * holds fixed post IDs, and both change with every post being viewed. It is
+ * also behaviour rather than design — deactivate the theme and the rule should
+ * survive — so it belongs in the plugin under the deactivation test.
+ *
+ * The `core/post-template` therefore carries `sd-related-posts-query`, which is
+ * the convention Tour Operator 2.2 uses for its own related-content loops
+ * (`lsx-{type}-related-{type}-query`) and that `sd-enhancements` already
+ * follows for `sd-mega-menu-tours-query` and `sd-safari-gurus-query`
+ * (sd-enhancements-2026/modules/queries.php). The class goes on the
+ * post-template and not on the query wrapper because
+ * `query_loop_block_query_vars` is applied by
+ * `render_block_core_post_template()`, so that is the block whose className the
+ * filter can see.
+ *
+ * ⚠️ **That filter is not written yet.** Until it lands in `sd-enhancements`
+ * the shelf renders the three most recent posts sitewide, and the post being
+ * read can appear in its own related list. An unfiltered shelf is visibly wrong
+ * and gets fixed; a silently empty one looks like a template bug and can
+ * survive a release — the same reasoning `constrain_safari_gurus_query()`
+ * records for its own empty-term fallback. → flagged in CHANGELOG.
+ *
+ * ## The related tile is card-post-grid, whole
+ *
+ * Live's related card is `.entry-layout` at 33.33% with everything centred:
+ * image, title in `#60483b` at 22px with `text-transform: initial`, an italic
+ * date, the excerpt. The author, the categories, the "Read More" and the tags
+ * are all switched off with `display: none` in the child theme
+ * (custom.css:2791-2809).
+ *
+ * `patterns/card-post-grid.php` is that card — centred title, centred date,
+ * centred excerpt — plus a category byline and a tag footer live hides here.
+ * It is used whole rather than forked, on the same principle
+ * patterns/template-single-team.php shelves its blog posts with: a post looks
+ * like the same object wherever it appears. Two lines of difference did not
+ * justify a second post tile. Say the word and the byline's `core/post-terms`
+ * and the Tags group come out.
+ *
+ * ## The pager
+ *
+ * Live: `nav.post-navigation > .nav-links.pager.row`, two `col-sm-6` halves,
+ * each an anchor wrapping "Previous Post" / "Next Post" over the adjacent
+ * post's title. `core/post-navigation-link` with `linkLabel` renders exactly
+ * that shape — label span and title span, both inside the one anchor — so the
+ * only thing authored CSS adds is the line break between them, in
+ * assets/styles/core-post-navigation-link.css beside the hover rules that file
+ * already exists for.
+ *
+ * `core/columns` rather than a flex group: two fixed halves are what live has,
+ * and core stacks columns below 782px by itself.
+ *
+ * ## What live has that this does not
+ *
+ * **`footer.footer-meta`** — the sharing row. It renders empty on both posts
+ * measured; there is nothing to port. Sharing is plugin work if it is ever
+ * wanted back.
+ *
+ * **The "Not sure where to go?" CTA.** `#footer-cta` is present in live's
+ * markup on this page and holds one empty `.lsx-hero-unit`. The page closes on
+ * the value band alone, as the blog landing does.
+ *
+ * `require`, not nested `wp:pattern` references — a pattern referencing another
+ * pattern resolves under WP-CLI and is silently dropped on front-end render.
+ * → .claude/skills/wp-pattern-runtime-pitfalls
+ */
+
 ?>
 
-<!-- wp:group {"tagName":"main","metadata":{"name":"Article"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"blockGap":"var:preset|spacing|70"}},"layout":{"type":"constrained","contentSize":"1100px","wideSize":"1520px"}} -->
-<main class="wp-block-group alignfull is-style-light-page-section" style="margin-top:0;margin-bottom:0"><!-- wp:group {"metadata":{"name":"Article Header"},"align":"wide","layout":{"type":"constrained","contentSize":"1100px"}} -->
-<div class="wp-block-group alignwide"><!-- wp:columns {"align":"wide","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|60"}},"border":{"bottom":{"color":"var:preset|color|neutral-300","width":"1px"}}}} -->
-<div class="wp-block-columns alignwide" style="border-bottom-color:var(--wp--preset--color--neutral-300);border-bottom-width:1px;padding-bottom:var(--wp--preset--spacing--60)"><!-- wp:column {"verticalAlignment":"center","width":"60%"} -->
-<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:60%"><!-- wp:group {"align":"wide","style":{"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignwide" style="padding-top:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20)"><!-- wp:paragraph {"align":"wide","className":"sd-back-link","style":{"typography":{"fontStyle":"normal","fontWeight":"var:custom|font-weight|bold","textTransform":"uppercase"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"textColor":"brand-500","fontSize":"200"} -->
-<p class="alignwide sd-back-link has-brand-500-color has-text-color has-link-color has-200-font-size" style="font-style:normal;font-weight:var(--wp--custom--font-weight--bold);text-transform:uppercase"><a href="<?php echo esc_url( $sd_news_url ); ?>">&larr; <?php esc_html_e( 'Back to News', 'sd-theme-2026' ); ?></a></p>
-<!-- /wp:paragraph -->
+<!-- wp:group {"tagName":"main","metadata":{"name":"Single Post"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
+<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
-<!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical"}} -->
-<div class="wp-block-group alignwide"><!-- wp:post-title {"level":1,"align":"wide","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","lineHeight":"var:custom|line-height|heading","textTransform":"uppercase","letterSpacing":"1px"}},"textColor":"contrast","fontSize":"600","fontFamily":"heading"} /-->
+	<?php
+	/*
+	 * The breadcrumb bar. Live draws it in the same 58px strip here as on every
+	 * other template — `custom.css:830` only adjusts where it sits relative to
+	 * the sticky masthead, which is not a design difference.
+	 */
+	require __DIR__ . '/breadcrumbs.php';
+	?>
 
-<!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}},"style":{"typography":{"fontStyle":"normal","fontWeight":"var:custom|font-weight|regular","textTransform":"uppercase"},"border":{"left":{"width":"0px","style":"none"}},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|5"}}},"textColor":"neutral-700","fontSize":"200"} /--></div>
+	<!-- wp:group {"tagName":"article","metadata":{"name":"Article"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
+	<article class="wp-block-group alignfull is-style-light-page-section">
+
+		<!-- wp:group {"metadata":{"name":"Article Header"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group">
+
+			<?php
+			/*
+			 * Live's `.post-meta.post-meta-top-first` — the date, then "by" and
+			 * the author, italic and tinted. `core/post-author` carries the
+			 * byline word itself; live lowercases its "By " in CSS, so it is
+			 * authored lowercase here rather than transformed.
+			 */
+			?>
+			<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"},"typography":{"fontStyle":"italic","lineHeight":"var:custom|line-height|body"},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"}}}},"textColor":"brand-500","fontSize":"200","layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-group has-brand-500-color has-text-color has-link-color has-200-font-size" style="font-style:italic;line-height:var(--wp--custom--line-height--body)">
+
+				<!-- wp:post-date {"format":"F j, Y","isLink":false} /-->
+
+				<!-- wp:post-author {"showAvatar":false,"showBio":false,"byline":"<?php esc_attr_e( 'by', 'sd-theme-2026' ); ?>","isLink":true} /-->
+
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:post-title {"level":1,"fontSize":"500"} /-->
+
+			<?php
+			/*
+			 * `.entry-meta > .post-meta.post-meta-top-last` — the categories,
+			 * same italic and same tint as the byline above the title.
+			 */
+			?>
+			<!-- wp:post-terms {"term":"category","prefix":"<?php esc_attr_e( 'Posted in: ', 'sd-theme-2026' ); ?>","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-500"}}}},"textColor":"brand-500","fontSize":"200"} /-->
+
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+
+	</article>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * `.sd-single-post-bottom`. One tinted band, two things inside it.
+	 */
+	?>
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Post Footer"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|60"}},"layout":{"type":"constrained"},"anchor":"related"} -->
+	<section class="wp-block-group alignfull is-style-tinted-page-section" id="related">
+
+		<!-- wp:group {"metadata":{"name":"Related Posts"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group alignwide">
+
+			<!-- wp:heading {"textAlign":"center","metadata":{"name":"Related Heading"},"className":"is-style-section-title","anchor":"h-related"} -->
+			<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-related"><?php esc_html_e( 'Related Posts', 'sd-theme-2026' ); ?></h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:query {"queryId":0,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"exclude","inherit":false,"taxQuery":null,"parents":[]},"align":"wide","layout":{"type":"default"}} -->
+			<div class="wp-block-query alignwide">
+
+				<!-- wp:post-template {"className":"sd-related-posts-query","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16px"}} -->
+					<?php require __DIR__ . '/card-post-grid.php'; ?>
+				<!-- /wp:post-template -->
+
+			</div>
+			<!-- /wp:query -->
+
+		</div>
+		<!-- /wp:group -->
+
+		<?php
+		/*
+		 * `nav.post-navigation`. Core hides whichever link has no adjacent post,
+		 * so the newest and oldest posts render one half and no condition is
+		 * needed here.
+		 *
+		 * No `<nav>` landmark: `core/columns` has no `tagName` support, and a
+		 * group wrapped around it purely to supply one would add a second,
+		 * unlabelled navigation landmark to every post — core's own
+		 * `post-navigation-link` ships without one for the same reason.
+		 */
+		?>
+		<!-- wp:columns {"metadata":{"name":"Post Navigation"},"align":"wide","verticalAlignment":"top","style":{"spacing":{"blockGap":"var:preset|spacing|40","padding":{"top":"var:preset|spacing|40"}},"border":{"top":{"color":"var:preset|color|neutral-300","width":"1px"}}}} -->
+		<div class="wp-block-columns alignwide are-vertically-aligned-top" style="border-top-color:var(--wp--preset--color--neutral-300);border-top-width:1px;padding-top:var(--wp--preset--spacing--40)">
+
+			<!-- wp:column {"verticalAlignment":"top"} -->
+			<div class="wp-block-column is-vertically-aligned-top">
+				<!-- wp:post-navigation-link {"textAlign":"left","type":"previous","label":"<?php esc_attr_e( 'Previous Post', 'sd-theme-2026' ); ?>","showTitle":true,"linkLabel":true,"className":"sd-post-nav","fontSize":"200"} /-->
+			</div>
+			<!-- /wp:column -->
+
+			<!-- wp:column {"verticalAlignment":"top"} -->
+			<div class="wp-block-column is-vertically-aligned-top">
+				<!-- wp:post-navigation-link {"textAlign":"right","label":"<?php esc_attr_e( 'Next Post', 'sd-theme-2026' ); ?>","showTitle":true,"linkLabel":true,"className":"sd-post-nav","fontSize":"200"} /-->
+			</div>
+			<!-- /wp:column -->
+
+		</div>
+		<!-- /wp:columns -->
+
+	</section>
+	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The closing band — `#footer-choose-cta`, which is where live's single post
+	 * ends. This is why `<main>` above carries no bottom padding: the band
+	 * brings its own, and a padding on the wrapper would show as a strip of page
+	 * ground beneath a full-bleed section.
+	 */
+	require __DIR__ . '/why-choose-sd.php';
+	?>
+
+</main>
 <!-- /wp:group -->
-
-<!-- wp:group {"metadata":{"name":"Post Meta"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
-<div class="wp-block-group"><!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
-<div class="wp-block-group"><!-- wp:avatar {"size":60,"style":{"border":{"radius":"100px"}}} /-->
-
-<!-- wp:group {"metadata":{"name":"Author"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group"><!-- wp:post-author-name {"style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold","lineHeight":"var:custom|line-height|snug","textTransform":"uppercase"}},"textColor":"contrast","fontSize":"200","fontFamily":"heading"} /--></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></div>
-<!-- /wp:column -->
-
-<!-- wp:column {"verticalAlignment":"center","width":""} -->
-<div class="wp-block-column is-vertically-aligned-center"><!-- wp:post-featured-image {"aspectRatio":"1","align":"wide","style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} /--></div>
-<!-- /wp:column --></div>
-<!-- /wp:columns --></div>
-<!-- /wp:group -->
-
-<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
-
-<!-- wp:separator {"className":"is-style-separator-thin","style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"backgroundColor":"neutral-300"} -->
-<hr class="wp-block-separator has-text-color has-neutral-300-color has-alpha-channel-opacity has-neutral-300-background-color has-background is-style-separator-thin" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"/>
-<!-- /wp:separator -->
-
-<!-- wp:group {"metadata":{"name":"Post Navigation"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"top"}} -->
-<div class="wp-block-group"><!-- wp:group {"metadata":{"name":"Previous"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained","contentSize":"400px"}} -->
-<div class="wp-block-group"><!-- wp:post-navigation-link {"type":"previous","showTitle":true,"className":"sd-post-nav","style":{"typography":{"textAlign":"left"}},"fontSize":"200"} /--></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"metadata":{"name":"Next"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained","contentSize":"400px"}} -->
-<div class="wp-block-group"><!-- wp:post-navigation-link {"showTitle":true,"className":"sd-post-nav","style":{"typography":{"textAlign":"right"}},"fontSize":"200"} /--></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></main>
-<!-- /wp:group -->
-
