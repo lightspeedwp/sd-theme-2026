@@ -2,7 +2,7 @@
 /**
  * Title: Template: Blog Landing
  * Slug: sd-theme-2026/template-home-blog
- * Description: The blog landing page — the breadcrumb strip, a warm intro band carrying the "Tales from our trails" standfirst and the Browse By Category shelf, then the paginated list of post rows and the value band that closes the page.
+ * Description: The blog landing page — the photographic banner, the breadcrumb strip, a warm intro band carrying the "Tales from our trails" standfirst and the Browse By Category shelf, then the paginated list of post rows and the value band that closes the page.
  * Categories: hidden
  * Keywords: blog, landing, news, index, home, posts, archive, tales
  * Block Types: core/query
@@ -19,7 +19,7 @@
  * browser on 2026-09-16. Live assembles the page from four things:
  *
  *   1. `#lsx-banner` — which on this page holds nothing but the breadcrumb
- *      trail. See "There is no hero banner" below.
+ *      trail. See "The banner is restored" below.
  *   2. `.sd-blog-header` — a warm band carrying the "Tales from our trails"
  *      heading, the italic standfirst and the `#categories-slider` shelf.
  *   3. `.post-wrapper` — twelve post rows over the main query, then
@@ -28,33 +28,43 @@
  *      band, which lives in live's footer region and in this theme's
  *      templates.
  *
- * ## There is no hero banner, and that is measured rather than assumed
+ * ## The banner is restored — a decision, not a measurement
  *
- * Every other landing page in this theme opens on a 454px `core/cover`. This
- * one does not. LSX Banners *is* configured on the blog — `.page-banner`
- * carries `min-height: 450px` as an inline style and points at
+ * Live has no *visible* banner here, and that was measured rather than
+ * assumed. LSX Banners *is* configured on the blog — `.page-banner` carries
+ * `min-height: 450px` as an inline style and points at
  * `uploads/2019/03/blog_header.jpg` — but the child theme overrides the floor
  * to 50px, so the banner computes to a 50px sliver whose only visible content
  * is the breadcrumb bar sitting absolutely inside it. Measured on live
  * 2026-09-16: `.page-banner` height 50px, `#lsx-banner` height 50px,
  * `.breadcrumbs-container` height 58px. The photograph is never seen.
  *
- * So the page opens on the breadcrumb strip. Adding the banner back would be a
- * new design decision, not a translation of this one. → AGENTS.md, "No
- * redesign"
+ * This file previously recorded that as "so the page opens on the breadcrumb
+ * strip, and adding the banner back would be a redesign". **Zared took that
+ * call on 2026-09-16 and ruled the banner in**, so the blog landing now opens
+ * on the same 454px `core/cover` as every other landing page in the theme.
+ * The note is corrected here rather than left to contradict the markup below.
  *
- * ## The `h1` is "Tales from our trails"
+ * It is a restoration of a banner live already configures rather than a new
+ * element, it reuses `is-style-hero-banner` and the archive banner's exact
+ * construction, and it is the blog landing's own funded line — so it is not a
+ * Change-Control Register entry. → AGENTS.md, "Detail that's obviously part of
+ * the element you're already building"
+ *
+ * ## The `h1` is "Blog", in the banner
  *
  * Live puts `<h1 class="archive-title">Blog</h1>` inside
  * `.archive-header-wrapper` and sets that wrapper to `display: none` —
  * measured, not inferred. The same Tour Operator artefact the team and
- * destinations archives carry, and it is handled the same way here: the page
- * gets exactly one `h1`, and it is the heading a reader can actually see.
+ * destinations archives carry. With the banner restored that heading finally
+ * has somewhere visible to sit, so it is the banner title, and the page keeps
+ * exactly one `h1`.
  *
- * That heading is live's `.sd-blog-header h3` — 30px, semi-bold, title case,
- * left-aligned, in the warm brown the tinted band already supplies. Font size
- * 500 (32px) is the nearest token; the level is corrected from `h3` to `h1`
- * because there is no longer a hidden `h1` above it to skip past.
+ * "Tales from our trails" is therefore an `h2`. It is live's
+ * `.sd-blog-header h3` — 30px, semi-bold, title case, left-aligned, in the
+ * warm brown the tinted band already supplies. Font size 500 (32px) is the
+ * nearest token; `h2` is the level that follows the banner's `h1` without
+ * skipping one.
  *
  * The same string opens the homepage news carousel, where it is a centred
  * uppercase `is-style-section-title` — patterns/homepage-tales-from-our-trails.php.
@@ -64,10 +74,11 @@
  *
  * `inherit: true` — the loop is the main query, so Settings → Reading governs
  * how many posts a page holds and the blog's own permalink structure governs
- * pagination. Live runs twelve to a page. Nothing here pins a number, which is
- * task 12.5 in practice: an editor who changes the posts-per-page setting, or
- * publishes, schedules or back-dates a post, sees exactly what they saw
- * before. → LS-2022
+ * pagination. Live runs twelve to a page, and `perPage` is set to 12 to match —
+ * but with `inherit: true` core ignores it, so nothing here actually pins a
+ * number. That is task 12.5 in practice: an editor who changes the
+ * posts-per-page setting, or publishes, schedules or back-dates a post, sees
+ * exactly what they saw before. → LS-2022
  *
  * `core/query-no-results` is written out and, on this install, will not render:
  * FacetWP Blocks Beta returns `''` for every instance of the block sitewide
@@ -108,10 +119,46 @@
 
 	<?php
 	/*
-	 * The breadcrumb bar. On every other template it sits under the banner; on
-	 * this one it *is* the top of the page, because the banner behind it has
-	 * been collapsed to a sliver. Same band, same position relative to the
-	 * content.
+	 * The banner. → template-archive-destination.php for the full reasoning on
+	 * `dimRatio`, the decorative `alt` and the flow-layout content group.
+	 *
+	 * The image is `uploads/2019/07/about-us-banner.jpg` — the old About Us
+	 * banner, nominated 2026-09-16. Live's own blog banner image
+	 * (`uploads/2019/03/blog_header.jpg`) is never visible behind the collapsed
+	 * 50px sliver, so there is no "the live one" to carry across; this is a
+	 * chosen photograph, and swapping it later is a one-line change.
+	 */
+	?>
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+
+		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
+		<div class="wp-block-group alignwide">
+
+			<?php
+			/*
+			 * "Blog" — live's own `<h1 class="archive-title">`, which live
+			 * authors and then hides with `display: none` on
+			 * `.archive-header-wrapper`. Bringing the banner back gives that
+			 * heading somewhere visible to live, so the string is live's rather
+			 * than invented. Authored, not `core/query-title`, for the reason
+			 * template-archive-destination.php sets out.
+			 */
+			?>
+			<!-- wp:heading {"level":1,"className":"is-style-script-accent","fontSize":"800"} -->
+			<h1 class="wp-block-heading is-style-script-accent has-800-font-size"><?php esc_html_e( 'Blog', 'sd-theme-2026' ); ?></h1>
+			<!-- /wp:heading -->
+
+		</div>
+		<!-- /wp:group -->
+
+	</div></section>
+	<!-- /wp:cover -->
+
+	<?php
+	/*
+	 * The breadcrumb bar, directly under the banner — the same band in the same
+	 * position as every other template.
 	 */
 	require __DIR__ . '/breadcrumbs.php';
 	?>
@@ -130,8 +177,8 @@
 		<!-- wp:group {"metadata":{"name":"Standfirst"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
 
-			<!-- wp:heading {"level":1,"fontSize":"500"} -->
-			<h1 class="wp-block-heading has-500-font-size"><?php esc_html_e( 'Tales from our trails', 'sd-theme-2026' ); ?></h1>
+			<!-- wp:heading {"level":2,"fontSize":"500"} -->
+			<h2 class="wp-block-heading has-500-font-size"><?php esc_html_e( 'Tales from our trails', 'sd-theme-2026' ); ?></h2>
 			<!-- /wp:heading -->
 
 			<?php
@@ -183,7 +230,7 @@
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Posts"},"align":"full","className":"is-style-light-page-section","layout":{"type":"constrained"}} -->
 	<section class="wp-block-group alignfull is-style-light-page-section">
 
-		<!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[]},"align":"wide","layout":{"type":"default"}} -->
+		<!-- wp:query {"queryId":0,"query":{"perPage":12,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[]},"align":"wide","layout":{"type":"default"}} -->
 		<div class="wp-block-query alignwide">
 
 			<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|50"}},"layout":{"type":"default"}} -->
@@ -197,7 +244,7 @@
 			 * itself, so the flex row reproduces that without a condition.
 			 */
 			?>
-			<!-- wp:query-pagination {"paginationArrow":"arrow","style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"flex","justifyContent":"center"}} -->
+			<!-- wp:query-pagination {"paginationArrow":"chevron","showLabel":false,"style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"flex","justifyContent":"center"}} -->
 				<!-- wp:query-pagination-previous /-->
 				<!-- wp:query-pagination-numbers /-->
 				<!-- wp:query-pagination-next /-->
@@ -205,7 +252,7 @@
 
 			<!-- wp:query-no-results -->
 				<!-- wp:paragraph {"style":{"typography":{"textAlign":"center"}}} -->
-				<p class="has-text-align-center"><?php esc_html_e( 'No stories yet — watch this space.', 'sd-theme-2026' ); ?></p>
+				<p class="has-text-align-center"><?php esc_html_e( 'No stories yet, check back in regularly as we post often.', 'sd-theme-2026' ); ?></p>
 				<!-- /wp:paragraph -->
 			<!-- /wp:query-no-results -->
 

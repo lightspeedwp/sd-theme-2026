@@ -31,11 +31,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   style variation has described itself as belonging to "the live blog landing" since it was
   written.
 
-  ⚠️ **There is no hero banner on this page, and that is measured.** LSX Banners is
-  configured on the blog and points at `blog_header.jpg`, but the child theme collapses the
-  banner to a 50px sliver, so the photograph is never seen on live. The page therefore opens
-  on the breadcrumb strip. Putting the banner back would be a new design decision rather than
-  a translation — say the word and it is a `core/cover` away.
+- 🏞️ **A photographic banner on the blog landing.** LS-2022 (line 12).
+  `patterns/template-home-blog.php`.
+
+  The page now opens on the same 454px banner as every other landing page in the theme,
+  above the breadcrumb strip, carrying the page title over the old About Us photograph
+  (`uploads/2019/07/about-us-banner.jpg`).
+
+  This reverses a call recorded when the template was written. LSX Banners *is* configured on
+  live's blog and points at `blog_header.jpg`, but the child theme collapses the banner to a
+  50px sliver, so the photograph is never seen there — which is why the first build opened
+  on the breadcrumb strip and logged the banner as a design decision rather than a
+  translation. Zared ruled it in on 2026-09-16.
+
+  **The `h1` moved with it.** Live authors `<h1 class="archive-title">Blog</h1>` and then
+  hides it; with a banner to sit in, that heading is now the visible page title, and
+  *Tales from our trails* steps down to the `h2` that follows it. The page still has exactly
+  one `h1`.
 
 ### Fixed
 
@@ -65,6 +77,29 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   **Template: Blog Landing** alongside the new `templates/home.html`.
 
 ### Changed
+
+- ✍️ **The blog post row and landing page, as authored in the Site Editor.** LS-2022
+  (line 12). `patterns/card-post-list.php` and `patterns/template-home-blog.php`, imported
+  from the Blog Home template override on dev (2026-09-16).
+
+  These are the adjustments made against the real migrated posts rather than the six local
+  fixtures. The row: the image column narrows to 30%, the body column gains a little top
+  padding so the title sits level with the photograph, and the byline opens out — date,
+  author and category now breathe at `spacing|20` while *by* stays tight against the author
+  name. The landing page: pagination switches to chevrons without their labels, and the
+  empty-loop message reads *No stories yet, check back in regularly as we post often.*
+
+  **The byline is composed rather than `core/post-author`.** That block renders its byline
+  word and the name into one container it owns, so the two could not be spaced independently
+  of the gap between the byline's three parts. It is now a literal *by* beside
+  `core/post-author-name`, in their own group.
+
+  ⚠️ **The tag rule's border width is a literal `1px`, deliberately.** `core/post-terms` is
+  a dynamic block, so its styles are resolved by the server-side style engine — which expands
+  `var:preset|…` only, and only for properties that declare `css_vars`. `border.width`
+  declares none. The `var:custom|border-width|200` this row previously carried had therefore
+  never drawn a rule at all. Measured on local 2026-09-16; the reasoning is in the pattern so
+  it is not "corrected" back to a token.
 
 - 📄 **The single blog post page, rebuilt from the live site.** LS-2022 (line 12, Blog
   Templates and Related Posts). `patterns/template-single-post.php` and
