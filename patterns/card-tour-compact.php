@@ -107,7 +107,7 @@
 	<div class="wp-block-group has-200-font-size" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30);line-height:var(--wp--custom--line-height--body)">
 		<!-- wp:post-title {"level":4,"isLink":true,"style":{"typography":{"textAlign":"center"}}} /-->
 
-		<!-- wp:group {"metadata":{"name":"Meta"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+		<!-- wp:group {"metadata":{"name":"Meta"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group">
 
 			<!-- wp:group {"metadata":{"name":"Duration"},"className":"lsx-duration-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|5","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
@@ -122,7 +122,7 @@
 			</div>
 			<!-- /wp:group -->
 
-			<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Styles: ","style":{"typography":{"textAlign":"center","fontStyle":"normal","fontWeight":"var(--wp--custom--font-weight--medium)"},"spacing":{"padding":{"top":"2px","bottom":"2px"}},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"fontSize":"200"} /-->
+			<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Styles: ","style":{"typography":{"textAlign":"center","fontStyle":"normal"},"spacing":{"padding":{"top":"2px","bottom":"2px"}},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"fontSize":"200"} /-->
 
 			<!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour","parents":true}}}},"className":"lsx-destination-to-tour-wrapper","style":{"typography":{"textAlign":"center"},"spacing":{"padding":{"top":"2px","bottom":"2px"}},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"fontSize":"200","prefix":"Destinations:","prefixBold":true} -->
 			<p class="has-text-align-center lsx-destination-to-tour-wrapper has-link-color has-200-font-size" style="padding-top:2px;padding-bottom:2px"></p>

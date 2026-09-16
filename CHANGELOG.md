@@ -12,6 +12,19 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   Safari Expert). `patterns/template-single-team.php`, `inc/review-slider.php`,
   `assets/js/review-slider.js`, `assets/styles/core-group.css`, `functions.php`.
 
+  ⚠️ **The script is enqueued on `wp_enqueue_scripts` at priority 20 and depends on
+  `tour-operator-script` — never on `slick`, and never from a `render_block` filter.**
+  The first pass did both and took every slider on the team single down with it on dev
+  (2026-09-16). `wp_script_is( $handle, 'queue' )` falls through to `recurse_deps()`, so it
+  answers true for any handle that is merely a *dependency* of something queued — and Tour
+  Operator guards its own vendor enqueue with exactly that question at priority 1. A
+  render-time enqueue naming `slick` can land first, because an SEO plugin renders block
+  content during `wp_head` to build its description; TO then registered neither `slick` nor
+  `slick-lightbox`, and `tour-operator-script` — which depends on both — was dropped
+  silently at print time, taking TO's `custom.js`, `sd-enhancements`' `to-slider.js` and
+  this script with it. `sd-enhancements/modules/to-slider.php` already had the right shape;
+  this now matches it.
+
   `sd/trustpilot-reviews` is now wrapped in a `core/group` carrying
   `sd-review-slider is-style-slider-frame` — the frame, because Slick appends its dot row to
   the *parent* of the element it initialises and `styles/sections/slider-frame.json` positions
@@ -56,6 +69,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   size per card, and every meta row on both cards takes a 2px `padding-block` — Zared's
   measurement — which settles "days" against the number beside it and puts the whole meta
   block on one rhythm.
+
+  Both cards' Body group gap came down `S` → `XS` with it (Zared, 2026-09-16): at base
+  the rows are taller than they were at 100, and the old step left the meta reading as
+  separate blocks rather than one stack.
+
+  The travel-style row also lost its `medium` font weight, so the taxonomy and destination
+  values render at the same weight. Only the prefixes are bold now, which is what the card
+  style already says (`& strong`, `& .wp-block-post-terms__prefix`).
 
 - 📐 **The team single's bio sets its own paragraph gap.**
   `patterns/template-single-team.php`. `core/post-content` carries
