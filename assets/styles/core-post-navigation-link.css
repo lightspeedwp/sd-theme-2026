@@ -24,9 +24,11 @@
 }
 
 .sd-post-nav a {
-	color: var(--wp--preset--color--contrast);
+	color: var(--wp--preset--color--neutral-800);
 	font-weight: var(--wp--custom--font-weight--semi-bold);
 	line-height: var(--wp--custom--line-height--snug);
+   font-size: var(--wp--preset--font-size--400);
+   font-family: var(--wp--preset--font-family--heading);
 	text-decoration: none;
 }
 
