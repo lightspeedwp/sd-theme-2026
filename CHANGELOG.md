@@ -25,13 +25,40 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   with the composition rather than being left behind in both.
 
   `styles/sections/cards/special-card.json` was written in August and had no
-  consumer until now. Its `css` field changed once: the band stacks its media and
-  its body in one CSS grid cell instead of absolutely positioning the body, so the
-  row grows to the taller of the two and a long offer name or description pushes
-  the band taller rather than overflowing it — at every width, with no media
-  query, which the `css` field silently unwraps anyway. It also paints a
-  neutral-900 ground, because `core/post-featured-image` renders nothing at all
-  for an offer without one and the band would otherwise collapse.
+  consumer until now. The band is live's, measured: 540px tall, the photograph
+  absolutely positioned as its ground, a 460px panel of copy held against one
+  edge of it and alternating leading edge / trailing edge down the page, the
+  bands butting straight together with no gap. The panel sits in normal flow, so
+  a long offer name or description grows the band rather than overflowing it —
+  at every width, with no media query, which the `css` field silently unwraps
+  anyway. The band also paints a neutral-900 ground, because
+  `core/post-featured-image` renders nothing at all for an offer without one and
+  the band would otherwise collapse.
+
+  **The band addresses its two children as blocks, not by class.** The
+  hand-rolled `special-card__media` / `special-card__body` classes are gone, and
+  with them the unused `special-card__badge` rules; `& > .wp-block-post-featured-image`
+  and `& > .wp-block-group` are as precise, since the band holds exactly one of
+  each, and an editor who rebuilds the band by hand now gets the layout without
+  knowing two invented class names.
+
+  Four things the `css` field cannot express live in `assets/styles/core-group.css`
+  instead, each with a comment saying which limit forced it: the panel's scrim
+  (it has to sit *over* the photograph, not behind it), the edge alternation (it
+  keys off the `core/post-template` `<li>` above the band), the sub-900px stack
+  (`@media`), and the list reset.
+
+  Two deliberate deviations from live, both for consistency across the five Tour
+  Operator archives: the introduction takes `is-style-archive-intro`, and the
+  offer copy is set as running text with no list markers — live renders the
+  authored `<ul>` bullets, which read as a browser default over the photograph
+  rather than as a deliberate list.
+
+  The page title, tagline and introduction are ordinary `core/heading` and
+  `core/paragraph` blocks. They were bound to Tour Operator's settings registry
+  through `sd/to-setting`; no setting was populated on any environment, so every
+  render fell through to the authored copy, and the other four landing pages all
+  author theirs directly.
 
 - ✨ **`patterns/cta-like-what-you-see.php`** — the specials variant of the
   enquiry band. LS-2021.

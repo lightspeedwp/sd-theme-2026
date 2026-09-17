@@ -919,17 +919,71 @@
 /**
  * Special Card — the scrim.
  *
- * Live sets the offer title in gold directly over an undimmed photograph. On
- * the lighter frames that measured 1.9:1 and could not be read at all, so this
- * theme carries a scrim. It lives here rather than in the section style
- * because the card's ground is the image itself: a `background-color` in the
- * JSON would sit *behind* the photograph, not over it.
+ * Live sets the offer copy on an `rgba(26, 18, 5, 0.8)` panel over the
+ * photograph. It lives here rather than in the section style because the
+ * band's ground is the image itself: a `background-color` in the JSON would
+ * sit *behind* the photograph, not over it.
  *
- * Held flat rather than animated — the card is a full-width panel, not a grid
+ * Held flat rather than animated — the band is a full-width panel, not a grid
  * tile, so there is no row of siblings for a hover to differentiate it from.
  */
-.is-style-special-card .special-card__body {
-	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 55%, transparent);
+.is-style-special-card > .wp-block-group {
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 80%, transparent);
+}
+
+/**
+ * Special Card — the alternating edge.
+ *
+ * Live holds the panel against the leading edge of odd bands and the trailing
+ * edge of even ones (`… .lsx-to-archive-item:nth-of-type(even)
+ * .lsx-to-archive-container { justify-content: flex-end }`), which is what
+ * gives the list its rhythm once the bands butt together.
+ *
+ * It cannot live in the section style: the thing being counted is the
+ * `core/post-template` `<li>` *above* the band, and a `css` field can only
+ * describe the band and its descendants.
+ */
+.wp-block-post-template > li:nth-child(even) > .is-style-special-card {
+	justify-content: flex-end;
+}
+
+/**
+ * Special Card — the offer copy carries no list markers.
+ *
+ * Several offers are authored as `<ul>` bullets and several as paragraphs;
+ * live renders both and the bullets read as a stray browser default over the
+ * photograph rather than as a deliberate list. The terms are set as running
+ * copy in both cases. A deliberate deviation from live, agreed 2026-09-17.
+ *
+ * `:where()` so an editor who inserts a genuine list block inside the panel
+ * can still style it.
+ */
+.is-style-special-card :where(ul, ol) {
+	list-style: none;
+	padding-inline-start: 0;
+}
+
+.is-style-special-card :where(ul, ol) li {
+	margin: 0;
+}
+
+/**
+ * Special Card — the sub-900px stack.
+ *
+ * Live drops the 460px panel to 90% of the band and centres it below 900px.
+ * An `@media` block inside a `css` field is unwrapped rather than honoured, so
+ * the query has to be here.
+ */
+@media (max-width: 900px) {
+	.is-style-special-card > .wp-block-group,
+	.wp-block-post-template > li:nth-child(even) > .is-style-special-card > .wp-block-group {
+		max-width: 90%;
+	}
+
+	.is-style-special-card,
+	.wp-block-post-template > li:nth-child(even) > .is-style-special-card {
+		justify-content: center;
+	}
 }
 
 /**
@@ -937,22 +991,18 @@
  *
  * Same Gutenberg `position: relative` reset described above the Media Overlay
  * Card rules — a block-style `css` field compiles to `:root :where(…)` at
- * (0,1,0) and loses to content.css at (0,2,0), so these absolute children drop
- * below their image in the editor and the card reads as a stack. These
- * selectors are (0,3,0) and beat the reset without !important.
+ * (0,1,0) and loses to content.css at (0,2,0), so the photograph drops below
+ * the panel in the editor and the band reads as a stack. These selectors are
+ * (0,3,0) and beat the reset without !important.
  */
-.editor-styles-wrapper .is-style-category-card .category-card__label,
-.editor-styles-wrapper .is-style-special-card .special-card__body {
+.editor-styles-wrapper .is-style-category-card .category-card__label {
 	position: absolute;
 	inset: 0;
 }
 
-.editor-styles-wrapper .is-style-special-card .special-card__badge {
+.editor-styles-wrapper .is-style-special-card > .wp-block-post-featured-image {
 	position: absolute;
-	inset-block-start: 0;
-	inset-inline-end: 0;
-	inset-block-end: auto;
-	inset-inline-start: auto;
+	inset: 0;
 }
 
 /**

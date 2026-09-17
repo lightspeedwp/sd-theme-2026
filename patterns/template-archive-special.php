@@ -59,9 +59,9 @@
  * nothing usable. And on dev **none** of the 42 migrated offers carries a
  * `banner_image_id` row at all — `image_group` holds an empty `banner_image` —
  * while 41 of the 42 carry a featured image. `core/post-featured-image` is
- * therefore both the working route and the one the data supports, and it keeps
- * the image/absolute-body structure `styles/sections/cards/special-card.json`
- * was written against. Recorded on the register as a correction to FR-009.
+ * therefore both the working route and the one the data supports, and it is the
+ * absolutely-positioned ground `styles/sections/cards/special-card.json` draws
+ * the band against. Recorded on the register as a correction to FR-009.
  *
  * ## The meta rows hide themselves, and needed help to
  *
@@ -108,11 +108,13 @@
 	 * runs a find-and-replace over the host and an indirection would still be
 	 * a hardcoded dev host, one step further away.
 	 *
-	 * The heading and the tagline are bound to Tour Operator's settings
-	 * registry through `sd/to-setting` so an editor can change them without a
-	 * deploy (FR-003). Neither setting is populated on dev or local today, so
-	 * both render the authored copy below — which is live's own wording, and
-	 * is the binding's fallback working, not a defect.
+	 * The heading and the tagline are an ordinary `core/heading` and
+	 * `core/paragraph` carrying live's own wording. They were bound to Tour
+	 * Operator's settings registry through `sd/to-setting` until 2026-09-17;
+	 * that was wrong twice over — neither setting is populated on dev or local,
+	 * so every render fell through to the authored copy anyway, and the other
+	 * four Tour Operator landing pages all author theirs directly. Matching
+	 * them is the point: one composition, edited in one place.
 	 */
 	?>
 	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-specials-1920x454.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
@@ -121,11 +123,11 @@
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
 
-			<!-- wp:heading {"level":1,"metadata":{"name":"Page Title","bindings":{"content":{"source":"sd/to-setting","args":{"key":"{post_type}.title"}}}},"className":"is-style-script-accent","fontSize":"800","anchor":"h-specials"} -->
+			<!-- wp:heading {"level":1,"metadata":{"name":"Page Title"},"className":"is-style-script-accent","fontSize":"800","anchor":"h-specials"} -->
 			<h1 class="wp-block-heading is-style-script-accent has-800-font-size" id="h-specials"><?php esc_html_e( 'Specials', 'sd-theme-2026' ); ?></h1>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"metadata":{"name":"Tagline","bindings":{"content":{"source":"sd/to-setting","args":{"key":"{post_type}.tagline"}}}},"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
+			<!-- wp:paragraph {"metadata":{"name":"Tagline"},"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
 			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--medium)"><?php esc_html_e( 'Hotels, Guest Lodges &amp; Camps', 'sd-theme-2026' ); ?></p>
 			<!-- /wp:paragraph -->
 
@@ -139,16 +141,22 @@
 
 	<?php
 	/*
-	 * The introduction, below the banner and above the list (FR-002). Bound to
-	 * the same settings registry as the banner strings, at the shortened length
-	 * the spec asks for.
+	 * The introduction, below the banner and above the list (FR-002). A plain
+	 * `core/paragraph` carrying live's own `.lsx-to-archive-description` copy,
+	 * word for word.
+	 *
+	 * `is-style-archive-intro` is the one deliberate deviation from live on
+	 * this page: live sets the standfirst in the same body face as everything
+	 * else, where the other four Tour Operator archives in this theme open on
+	 * the italic, drop-capped intro. Consistency across the five wins over
+	 * fidelity on one.
 	 */
 	?>
 	<!-- wp:group {"metadata":{"name":"Introduction"},"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--50)">
 
-		<!-- wp:paragraph {"metadata":{"name":"Introduction","bindings":{"content":{"source":"sd/to-setting","args":{"key":"{post_type}.description"}}}},"align":"wide","style":{"typography":{"textAlign":"center"}},"fontSize":"300"} -->
-		<p class="has-text-align-center alignwide has-300-font-size"><?php esc_html_e( 'Our current offers on Africa’s finest lodges, camps and hotels — negotiated directly with the properties we know best. Each one is limited, seasonal and subject to availability, so tell us which appeals and we will build the itinerary around it.', 'sd-theme-2026' ); ?></p>
+		<!-- wp:paragraph {"metadata":{"name":"Introduction"},"align":"wide","className":"is-style-archive-intro"} -->
+		<p class="alignwide is-style-archive-intro"><?php esc_html_e( 'There are loads of great travel deals out there. Depending on when you are travelling and how many nights you are staying, there are some excellent discounts to take advantage of. Here is a hand picked list of the ones that we feel are a good fit.', 'sd-theme-2026' ); ?></p>
 		<!-- /wp:paragraph -->
 
 	</div>
@@ -157,7 +165,14 @@
 	<!-- wp:query {"queryId":0,"query":{"inherit":true,"postType":"special"},"align":"full","metadata":{"name":"Offers"},"style":{"spacing":{"blockGap":"var:preset|spacing|50","padding":{"bottom":"var:preset|spacing|70"}}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-query alignfull" style="padding-bottom:var(--wp--preset--spacing--70)">
 
-		<!-- wp:post-template {"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|50"}},"layout":{"type":"default"}} -->
+		<?php
+		/*
+		 * `blockGap: 0`. Live's bands butt straight up against each other —
+		 * `.lsx-to-archive-item { margin: 0 }` — and the alternating left/right
+		 * panels only read as a rhythm if nothing separates the photographs.
+		 */
+		?>
+		<!-- wp:post-template {"align":"full","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 
 			<?php
 			/*
@@ -165,30 +180,50 @@
 			 * is the section style that draws the card, and it is what
 			 * `SD\Enhancements\Specials::add_band_anchor()` matches on to give
 			 * this group its `special-{slug}` id at render time.
+			 *
+			 * ## No presentational classes on the children
+			 *
+			 * The photograph and the panel carried `special-card__media` and
+			 * `special-card__body` until 2026-09-17. They are gone: the section
+			 * style reaches its two children as `& > .wp-block-post-featured-image`
+			 * and `& > .wp-block-group` instead. The band has exactly one image
+			 * and exactly one group, so the block selectors are as precise as
+			 * the classes were — and an editor who rebuilds this band by hand
+			 * now gets the layout without having to know two invented class
+			 * names. Add a second group inside the band and you break that; add
+			 * it *inside* the panel instead.
 			 */
 			?>
 			<!-- wp:group {"metadata":{"name":"Offer Band"},"className":"is-style-special-card","align":"full","style":{"spacing":{"blockGap":"0","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"default"}} -->
 			<div class="wp-block-group alignfull is-style-special-card" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 
-				<!-- wp:post-featured-image {"aspectRatio":"21/9","className":"special-card__media"} /-->
+				<?php
+				/*
+				 * No `aspectRatio`: the photograph is the band's ground, sized
+				 * by the band, exactly as live's `background-size: cover` is.
+				 * An aspect ratio here would set the band's height from the
+				 * viewport width instead and fight the 540px floor.
+				 */
+				?>
+				<!-- wp:post-featured-image /-->
 
-				<!-- wp:group {"metadata":{"name":"Offer Body"},"className":"special-card__body","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
-				<div class="wp-block-group special-card__body">
+				<!-- wp:group {"metadata":{"name":"Offer Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"default"}} -->
+				<div class="wp-block-group">
 
-					<!-- wp:post-title {"level":2,"style":{"typography":{"textAlign":"center"}}} /-->
+					<!-- wp:post-title {"level":2} /-->
 
-					<!-- wp:group {"metadata":{"name":"Meta"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"constrained"}} -->
+					<!-- wp:group {"metadata":{"name":"Meta"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
 					<div class="wp-block-group">
 
-						<!-- wp:paragraph {"metadata":{"name":"Accommodation","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"accommodation_to_special"}}}},"style":{"typography":{"textAlign":"center"}},"fontSize":"200","prefix":"Accommodation:","prefixBold":true} -->
-						<p class="has-text-align-center has-200-font-size"></p>
+						<!-- wp:paragraph {"metadata":{"name":"Accommodation","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"accommodation_to_special"}}}},"fontSize":"200","prefix":"Accommodation:","prefixBold":true} -->
+						<p class="has-200-font-size"></p>
 						<!-- /wp:paragraph -->
 
-						<!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_special"}}}},"style":{"typography":{"textAlign":"center"}},"fontSize":"200","prefix":"Destinations:","prefixBold":true} -->
-						<p class="has-text-align-center has-200-font-size"></p>
+						<!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_special"}}}},"fontSize":"200","prefix":"Destinations:","prefixBold":true} -->
+						<p class="has-200-font-size"></p>
 						<!-- /wp:paragraph -->
 
-						<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Style: ","style":{"typography":{"textAlign":"center"}},"fontSize":"200"} /-->
+						<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Style: ","fontSize":"200"} /-->
 
 					</div>
 					<!-- /wp:group -->
@@ -201,10 +236,10 @@
 					 * does this.
 					 */
 					?>
-					<!-- wp:post-content {"style":{"typography":{"textAlign":"center"}},"fontSize":"200","layout":{"type":"constrained"}} /-->
+					<!-- wp:post-content {"fontSize":"200","layout":{"type":"default"}} /-->
 
-					<!-- wp:buttons {"metadata":{"name":"Enquire"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|10"}}},"layout":{"type":"flex","justifyContent":"center"}} -->
-					<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--10)"><!-- wp:button {"className":"is-style-fill"} -->
+					<!-- wp:buttons {"metadata":{"name":"Enquire"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|10"}}},"layout":{"type":"flex","justifyContent":"left"}} -->
+					<div class="wp-block-buttons is-content-justification-left" style="margin-top:var(--wp--preset--spacing--10)"><!-- wp:button {"className":"is-style-fill"} -->
 					<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="#to-modal-enquiry"><?php esc_html_e( 'Enquire about this special', 'sd-theme-2026' ); ?></a></div>
 					<!-- /wp:button --></div>
 					<!-- /wp:buttons -->
@@ -217,7 +252,16 @@
 
 		<!-- /wp:post-template -->
 
-		<!-- wp:query-pagination {"align":"wide","layout":{"type":"flex","justifyContent":"center"}} -->
+		<?php
+		/*
+		 * `paginationArrow: chevron` with `showLabel: false` — chevrons alone,
+		 * no "Previous"/"Next" wording, matching `template-home-blog.php`.
+		 * Both attributes live on `core/query-pagination` and inherit down to
+		 * the previous/next children; setting them on the children does
+		 * nothing.
+		 */
+		?>
+		<!-- wp:query-pagination {"paginationArrow":"chevron","showLabel":false,"align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"flex","justifyContent":"center"}} -->
 		<!-- wp:query-pagination-previous /-->
 
 		<!-- wp:query-pagination-numbers /-->
