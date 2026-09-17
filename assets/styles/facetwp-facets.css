@@ -158,10 +158,30 @@
 	background-color: var(--wp--preset--color--neutral-200);
 }
 
-/* Live sets 25px under the keyword box, where the rest of the rail is 3px
-   apart. The facet block wrapper is what carries it, not the input. */
+/* The gap under the keyword box is the **results column's `blockGap`**, so the
+   two columns' second rows start on the same line: "Refine by" and the first
+   card top-align.
+
+   It holds at every width rather than at one, because both stacks are the same
+   two numbers. The rail's first row is the keyword field and the results
+   column's first row is the toolbar, whose tallest child is the sort `select`
+   — and that select is given the field's box exactly (`spacing|10` vertical
+   padding, `font-size|200` on `line-height|button`, a `border-width|100` frame),
+   so both rows resolve to the same height. The "Results" heading beside it is
+   shorter and the toolbar is centre-aligned, so it never sets the height.
+   Computed at 1440: 43.1px + `spacing|40`, both sides. Zared's call, 2026-09-17.
+
+   ⚠️ So this is **not** a free number. `spacing|30` was live's 25px under the
+   keyword box and it left the rail 9.6px high against the results. If the sort
+   control's box changes, or the toolbar grows a taller child than the select,
+   this is what stops agreeing — and the fix is that height, not this gap.
+
+   The rail's own `blockGap` is `spacing|5`; adjacent-sibling margins collapse in
+   flow, so the larger of the two wins and the heading needs no rule of its own. */
+
+/* The facet block wrapper is what carries it, not the input. */
 .sd-search-filters .facet-wrap:has( > .facetwp-type-search ) {
-	margin-block-end: var(--wp--preset--spacing--30);
+	margin-block-end: var(--wp--preset--spacing--40);
 }
 
 /* ============================================
@@ -593,11 +613,12 @@
    `--sd-search-button-size` (the input's outer box).
    ============================================ */
 
-/* Live sets 25px under the keyword box where the rest of the rail is 3px apart.
-   The facet gets this through its `.facet-wrap` block wrapper; the search block
-   is its own form, so it carries it directly. */
+/* The same top-alignment gap the facet twin carries, and for the same reason —
+   recorded once, at `.facet-wrap:has( > .facetwp-type-search )` above. The facet
+   gets it through its `.facet-wrap` block wrapper; the search block is its own
+   form, so it carries it directly. */
 .sd-search-filters .wp-block-search {
-	margin-block-end: var(--wp--preset--spacing--30);
+	margin-block-end: var(--wp--preset--spacing--40);
 }
 
 /* The box. `padding: 0` clears core's 4px inset so the tile can sit flush on
