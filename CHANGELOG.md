@@ -945,15 +945,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `core/button` saves a fixed `<a>`, so a `data-label-expanded` written into the pattern
   would fail block validation the moment the template was opened.
 
-  ⚠️ **The region tabs are links, not `core/tabs`, and two things about them are open.**
+  ⚠️ **The region tabs are links, not `core/tabs`, and one thing about them remains open.**
   WordPress 7.1 does ship `core/tabs` and it was the asked-for block; it is not used because
   a brand's regions are derived per brand (so the panels cannot be authored into one
   template) and because `brand/{brand}/{region}/` is, in the plugin's own words,
   "launch-critical: it feeds the redirect map" — `core/tabs` switches panels on one URL.
-  Separately, **nothing yet narrows the query by the active region**: grepped across
-  sd-enhancements 2026-09-10, the only readers of the `endpoint` query var are the resolver
-  and the tab strip, so today every tab returns the same rows. Both are plugin work, written
-  up in `.github/tasks/brand-region-tabs-core-tabs-conversion-2026-09-10.md`.
+  `SD\Enhancements\Queries::scope_brand_archive_to_region()` now narrows the main query via
+  `post__in`, using the active region's connected accommodation; the template's `core/query`
+  inherits that scope.
 
 - 🔤 **Optima ships. The `heading` preset finally has a real face.** Vanessa Ratcliffe (SD)
   sent the Monotype self-hosting kit on **2026-09-10** — `docs/DS Optima DemiBold/`, MyFonts

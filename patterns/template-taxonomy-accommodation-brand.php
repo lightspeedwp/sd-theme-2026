@@ -469,8 +469,9 @@
 				 * something.
 				 *
 				 * See this file's header for why these are links and not
-				 * `core/tabs`, and for the ⚠️ that they do not yet narrow the
-				 * query.
+				 * `core/tabs`, and for how
+				 * `SD\Enhancements\Queries::scope_brand_archive_to_region()` narrows
+				 * the main query via `post__in`.
 				 *
 				 * The block renders nothing when a brand has fewer than two
 				 * regions — one region is not a choice — so brands like Ilios
