@@ -999,13 +999,46 @@
    `pager` extra instead.
 
    A Pager facet in *Page numbers* mode, so it is a `facetwp/facet` block like
-   the rest and fills the usual `.facetwp-facet` div with `.facetwp-page`
-   children. Live's is dressed by LSX Search into an extra `.lsx-pagination`
+   the rest. Live's is dressed by LSX Search into an extra `.lsx-pagination`
    wrapper, but LSX Search is one of the plugins this rebuild replaces and is
    not in the target stack, so FacetWP's own markup is what is styled.
+
+   ## It is drawn as the site's pagination, because it is the site's pagination
+
+   Revised 2026-09-17 (Zared, LS-4204). This used to be its own thing — a
+   neutral-400 border, a brand-500 current page, `border-radius: 100` and the
+   heading face. Everywhere else on this site — the blog, the archives, every
+   `core/query-pagination` — pagination is the 40x40 square plate ported from
+   live's `.lsx-pagination > .page-numbers`: a 1px primary-500 rule, no radius,
+   transparent fill, and a current page that inverts to a filled primary-500
+   plate. Two pagers that do different things in the same brand is a defect, so
+   this one is now that one, declaration for declaration.
+
+   ⚠️ **The reference is `assets/styles/core-query-pagination-numbers.css`** —
+   it carries the measurement, the colour reasoning (primary-500 at 9.48:1
+   rather than live's taupe at 1.9:1) and why the rule is 1px where live's is
+   2px. Change one file and change the other, or the two pagers drift apart
+   again. ⚠️ **This is a shared class**: the search results page
+   (`patterns/template-page-search.php`) takes these rules too, which is
+   intended.
+
+   ## Two things FacetWP's markup forces
+
+   `render_numbers()` wraps its links in `<div class="facetwp-pager">`
+   (`facetwp/includes/facets/pager.php:78`), so the flex row is that div rather
+   than `.facetwp-facet`. Both carry the row properties: the wrapper is absent
+   in the count-only mode, and the facet div is empty on first paint — FacetWP
+   fills it over AJAX — so neither can be relied on alone.
+
+   ⚠️ **The page links are `<a>` with no `href`** (`:95`), which makes them
+   unreachable by keyboard and invisible to assistive technology as controls.
+   That is FacetWP's markup and CSS cannot fix it; noted here so it is not
+   mistaken for a styling gap. `core/query-pagination` has no such problem,
+   which is one more reason the two should at least look identical.
    ============================================ */
 
-.sd-search-pager .facetwp-facet {
+.sd-search-pager .facetwp-facet,
+.sd-search-pager .facetwp-pager {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
@@ -1017,30 +1050,46 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-inline-size: 2.5em;
+	min-width: 40px;
+	min-height: 40px;
 	margin-right: 0;   /* the flex gap owns it */
-	padding: var(--wp--preset--spacing--5) var(--wp--preset--spacing--10);
-	color: var(--wp--preset--color--neutral-700);
-	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-400);
-	border-radius: var(--wp--preset--border-radius--100);
-	font-family: var(--wp--preset--font-family--heading);
+	padding: 0 0.5em;
+	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--primary-500);
+	border-radius: var(--wp--preset--border-radius--0);
+	background-color: transparent;
+	color: var(--wp--preset--color--primary-500);
+	font-family: var(--wp--preset--font-family--body);
 	font-size: var(--wp--preset--font-size--200);
-	line-height: var(--wp--custom--line-height--button);
-	transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+	line-height: 1;
+	text-decoration: none;
+	transition: background-color 0.25s, border-color 0.25s, color 0.25s;
 }
 
-.sd-search-pager .facetwp-page:not(.active):not(.dots):hover {
-	border-color: var(--wp--preset--color--brand-500);
-	color: var(--wp--preset--color--brand-600);
-}
-
+/* The current page inverts to a filled plate. */
 .sd-search-pager .facetwp-page.active {
-	background-color: var(--wp--preset--color--brand-500);
+	background-color: var(--wp--preset--color--primary-500);
+	border-color: var(--wp--preset--color--primary-500);
 	color: var(--wp--preset--color--base);
-	border-color: var(--wp--preset--color--brand-500);
-	font-weight: var(--wp--custom--font-weight--semi-bold);
 }
 
+/* Live has no hover state on pagination at all; the brand fill is the theme's
+   addition, and it is the same one core-query-pagination-numbers.css makes. */
+.sd-search-pager .facetwp-page:not(.dots):hover,
+.sd-search-pager .facetwp-page:not(.dots):focus {
+	background-color: var(--wp--preset--color--primary-500);
+	border-color: var(--wp--preset--color--primary-500);
+	color: var(--wp--preset--color--base);
+}
+
+/* The ellipsis is a label, not a target — no plate, no border. */
 .sd-search-pager .facetwp-page.dots {
+	min-width: auto;
 	border-color: transparent;
+	background-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sd-search-pager .facetwp-page {
+		transition-duration: 1ms;
+	}
 }
