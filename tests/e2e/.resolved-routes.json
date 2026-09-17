@@ -1,0 +1,22 @@
+{
+	"baseURL": "https://southerndestinations.lightspeedwp.dev",
+	"posts": {
+		"tour": "/tour/south-africa-mozambique/",
+		"special": "/special/thornybush-2026-specials/",
+		"review": "/review/lion-sands-was-truly-a-little-slice-of-heaven/",
+		"post": "/camille-experiences-the-magic-of-bush-and-beach-at-serondella-thornybush-and-santorini-mozambique/",
+		"accommodation": "/accommodation/bagatelle/",
+		"team": "/team/jeannot-blum/",
+		"destination": "/destination/rwanda/kigali/"
+	},
+	"terms": {
+		"post_tag": "/tag/air-conditioning/",
+		"category": "/category/news/",
+		"accommodation-type": "/accommodation-type/safari-lodges/",
+		"continent": "/continent/eastern-africa/",
+		"travel-style": "/travel-style/safari-honeymoons/",
+		"facility": "/facility/available-services/",
+		"accommodation-brand": "/brand/wilderness-safaris/"
+	},
+	"resolvedAt": "2026-09-17T05:36:17.743Z"
+}
