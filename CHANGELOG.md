@@ -326,6 +326,31 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   own count text, set to `([total])` / `(1)` / `(0)` on dev 2026-09-17, because
   they are content rather than presentation. All three land on the
   accommodation-type results page too, which shares the facet and the sheet.
+- 🧪 **A Playwright end-to-end harness for the theme.** `playwright.config.js`,
+  `package.json`, `tests/e2e/`, `.github/workflows/e2e.yml`.
+
+  Four projects — `desktop`, `mobile`, `a11y` and `visual` — against a target chosen by
+  `WP_BASE_URL`, defaulting to dev and refusing to run against production. Follows the org
+  standards in `lightspeedwp/.github` (`docs/TESTING.md`, Playwright Testing Principles):
+  accessible locators first, no XPath, no brittle CSS.
+
+  Routes are resolved from the REST API at start-up rather than hardcoded, so the suite
+  follows content instead of breaking when a post is unpublished; a type with no content in
+  the target environment skips with a stated reason. A shared fixture fails any test whose
+  page emits a PHP notice into the markup or an unexpected console error, so those are
+  caught everywhere rather than needing a spec each.
+
+  Result counts are scoped to `main`. That is not incidental: the header's mega menus
+  contain their own query loops, so a page-wide `.wp-block-post` count returns eighteen
+  items on a search that matched nothing — the scoping is what makes the archive
+  assertions capable of failing at all, and it is what surfaced the empty tour and
+  accommodation archives.
+
+  Current state on dev: 54 passed, 4 failed across `desktop`; 29 passed, 2 failed across
+  `mobile`. Every failure is a real defect, written up in
+  `.github/reports/playwright-harness-2026-09-17.md` and listed in `tests/e2e/README.md`.
+  No visual baselines are committed yet — generating them before those defects are fixed
+  would bake in the broken state.
 
 ### Fixed
 

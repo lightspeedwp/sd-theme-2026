@@ -1,0 +1,29 @@
+{
+	"name": "sd-theme-2026",
+	"version": "0.1.0",
+	"description": "Southern Destinations 2026 block theme — end-to-end test harness.",
+	"license": "GPL-2.0-or-later",
+	"private": true,
+	"engines": {
+		"node": ">=20.0.0",
+		"npm": ">=10.0.0"
+	},
+	"scripts": {
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui",
+		"test:e2e:debug": "playwright test --debug",
+		"test:smoke": "playwright test --project=desktop tests/e2e/templates",
+		"test:parts": "playwright test --project=desktop tests/e2e/parts",
+		"test:responsive": "playwright test --project=mobile",
+		"test:a11y": "playwright test --project=a11y",
+		"test:visual": "playwright test --project=visual",
+		"test:visual:update": "playwright test --project=visual --update-snapshots",
+		"test:report": "playwright show-report tests/e2e/playwright-report",
+		"test:install": "playwright install --with-deps chromium"
+	},
+	"devDependencies": {
+		"@axe-core/playwright": "^4.13.0",
+		"@playwright/test": "^1.63.0",
+		"axe-core": "^4.13.0"
+	}
+}

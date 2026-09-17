@@ -1,0 +1,189 @@
+/**
+ * Global setup — resolve one live permalink per content type before the run.
+ *
+ * Why this exists: the suite has to visit a single tour, a single accommodation,
+ * a populated taxonomy archive and so on, but the slugs differ per environment
+ * and change as content is migrated. Hardcoding them produces a suite that goes
+ * red for reasons that have nothing to do with the theme.
+ *
+ * So: one REST sweep at start-up, cached to `.resolved-routes.json`, read by the
+ * specs. If a type has no content the entry is recorded as `null` and the specs
+ * that need it skip with a stated reason, rather than failing.
+ *
+ * @package SD_Theme_2026
+ * @subpackage Tests
+ */
+
+const fs = require( 'fs' );
+const path = require( 'path' );
+const { request } = require( '@playwright/test' );
+
+const {
+	RESOLVED_ROUTES,
+	RESOLVED_TAXONOMIES,
+} = require( './fixtures/routes.js' );
+
+const CACHE_PATH = path.join( __dirname, '.resolved-routes.json' );
+
+/**
+ * Ask the REST API for the newest published item of a type and return its
+ * permalink path.
+ *
+ * @param {import('@playwright/test').APIRequestContext} api      Request context.
+ * @param {string}                                       restBase Collection endpoint.
+ * @param {string}                                       baseURL  Site origin.
+ * @return {Promise<string|null>} Path with a leading slash, or null if empty.
+ */
+async function resolvePost( api, restBase, baseURL ) {
+	const response = await api.get(
+		`/wp-json/wp/v2/${ restBase }?per_page=1&status=publish&orderby=date&order=desc&_fields=link`
+	);
+
+	if ( ! response.ok() ) {
+		return null;
+	}
+
+	const items = await response.json();
+
+	if ( ! Array.isArray( items ) || 0 === items.length || ! items[ 0 ].link ) {
+		return null;
+	}
+
+	return toPath( items[ 0 ].link, baseURL );
+}
+
+/**
+ * Ask for the term with the most posts in a taxonomy.
+ *
+ * An empty term renders the template's "nothing found" branch, which is not the
+ * path worth covering — so order by count descending and take the fullest.
+ *
+ * @param {import('@playwright/test').APIRequestContext} api      Request context.
+ * @param {string}                                       restBase Collection endpoint.
+ * @param {string}                                       baseURL  Site origin.
+ * @return {Promise<string|null>} Path with a leading slash, or null if empty.
+ */
+async function resolveTerm( api, restBase, baseURL ) {
+	const response = await api.get(
+		`/wp-json/wp/v2/${ restBase }?per_page=1&orderby=count&order=desc&hide_empty=true&_fields=link,count`
+	);
+
+	if ( ! response.ok() ) {
+		return null;
+	}
+
+	const terms = await response.json();
+
+	if ( ! Array.isArray( terms ) || 0 === terms.length || ! terms[ 0 ].link ) {
+		return null;
+	}
+
+	/**
+	 * A term with no posts is no better than no term at all — `hide_empty` is
+	 * advisory on some endpoints, so check the count we asked for.
+	 */
+	if ( 0 === terms[ 0 ].count ) {
+		return null;
+	}
+
+	return toPath( terms[ 0 ].link, baseURL );
+}
+
+/**
+ * Convert an absolute permalink to a path, so specs stay origin-agnostic and
+ * `baseURL` remains the single place the environment is chosen.
+ *
+ * @param {string} link    Absolute URL from the REST API.
+ * @param {string} baseURL Site origin.
+ * @return {string} Path with a leading slash.
+ */
+function toPath( link, baseURL ) {
+	try {
+		return new URL( link, baseURL ).pathname;
+	} catch {
+		return link;
+	}
+}
+
+/**
+ * @param {import('@playwright/test').FullConfig} config Playwright config.
+ */
+module.exports = async function globalSetup( config ) {
+	const baseURL =
+		config.projects[ 0 ]?.use?.baseURL ||
+		process.env.WP_BASE_URL ||
+		'https://southerndestinations.lightspeedwp.dev';
+
+	const api = await request.newContext( {
+		baseURL,
+		timeout: 30 * 1000,
+	} );
+
+	/**
+	 * Fail loudly and early if the target is not up. A hundred timeouts across
+	 * a hundred specs tells you far less than one clear message here.
+	 */
+	const probe = await api.get( '/wp-json/' ).catch( () => null );
+
+	if ( ! probe || ! probe.ok() ) {
+		await api.dispose();
+		throw new Error(
+			`Cannot reach ${ baseURL }. Is the target up?\n` +
+				'  dev:   https://southerndestinations.lightspeedwp.dev (default)\n' +
+				'  local: start the Studio site, then WP_BASE_URL=http://localhost:8903'
+		);
+	}
+
+	const resolved = { baseURL, posts: {}, terms: {}, resolvedAt: new Date().toISOString() };
+	const missing = [];
+
+	await Promise.all(
+		RESOLVED_ROUTES.map( async ( route ) => {
+			resolved.posts[ route.key ] = await resolvePost(
+				api,
+				route.restBase,
+				baseURL
+			);
+
+			if ( ! resolved.posts[ route.key ] ) {
+				missing.push( route.name );
+			}
+		} )
+	);
+
+	await Promise.all(
+		RESOLVED_TAXONOMIES.map( async ( route ) => {
+			resolved.terms[ route.key ] = await resolveTerm(
+				api,
+				route.restBase,
+				baseURL
+			);
+
+			if ( ! resolved.terms[ route.key ] ) {
+				missing.push( route.name );
+			}
+		} )
+	);
+
+	await api.dispose();
+
+	fs.writeFileSync( CACHE_PATH, JSON.stringify( resolved, null, '\t' ) );
+
+	const found =
+		Object.values( resolved.posts ).filter( Boolean ).length +
+		Object.values( resolved.terms ).filter( Boolean ).length;
+	const total = RESOLVED_ROUTES.length + RESOLVED_TAXONOMIES.length;
+
+	/**
+	 * stderr, not stdout. The JSON and JUnit reporters write their payload to
+	 * stdout, and anything else printed there makes the report unparseable —
+	 * which breaks CI in a way that looks like a test failure.
+	 */
+	process.stderr.write(
+		`\n  Target:   ${ baseURL }\n` +
+			`  Resolved: ${ found }/${ total } content routes\n` +
+			( missing.length
+				? `  No content: ${ missing.join( ', ' ) } — those specs will skip\n\n`
+				: '\n' )
+	);
+};
