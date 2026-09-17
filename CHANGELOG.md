@@ -86,6 +86,46 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- 🐛 **Every Gravity Forms submit button hovered to black, and carried a
+  radius.** `style.css`.
+
+  The block's `buttonPrimaryBackgroundColor` attribute sets the resting fill and
+  is the right place for it. It does not reach the hover, which Gravity Forms
+  draws from `--gf-ctrl-btn-bg-color-hover-primary: var(--gf-color-primary-darker)`
+  — a colour it derives in PHP from the fill it was handed. This theme hands it
+  `var(--wp--preset--color--brand-500)`, a custom property rather than a hex, so
+  there is nothing to darken and the derived value collapses to black.
+
+  Both the derived colour and the button token are now set to brand-600, because
+  which of the two the block's inline `<style>` occupies is a Gravity Forms
+  implementation detail and that style sits at (1,2,0) where no class selector
+  can reach it — whichever it writes, the other lands. `--gf-ctrl-btn-radius`
+  goes to `border-radius|0`, matching `core/button`'s `fill` variation. Scoped
+  to `.gform-theme` rather than to the modal, so it holds for every form on the
+  site.
+
+  ⚠️ Gravity Forms is not installed on local, so this is reasoned from the
+  plugin's own framework stylesheet (measured on dev 2026-09-17) and **not yet
+  confirmed in a browser**.
+
+- 🐛 **Taxonomy links underlined on hover, against every card's own
+  instruction.** `assets/styles/core-post-terms.css`,
+  `assets/styles/core-group.css`.
+
+  A site-wide `.wp-block-post-terms a:hover { text-decoration: underline }`
+  inverted the default. `theme.json` sets `elements.link` and `core/post-terms`'
+  own `elements.link` to `textDecoration: none` in both states, but a
+  block-style variation compiles to `:root :where(…)` at (0,0,0) against that
+  rule's (0,2,1) — so every card carrying a taxonomy row underlined it while its
+  own variation file said it should not, and cards were exempted one at a time
+  (`listing-card-list`, `listing-card-compact`, twice over) with the special
+  card next in line.
+
+  The rule and both exemptions are gone. **No hover underline is the default
+  now, for taxonomies and for links generally**; a component that wants one
+  specifies it in its own file, as the mega menu's featured post title and the
+  FacetWP "See N more" toggle do.
+
 - 🐛 **The Specials "Book Special" buttons opened nothing.** LS-2021.
   `patterns/template-archive-special.php`, `parts/modal-special.html`,
   `theme.json`.
