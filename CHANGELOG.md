@@ -8,6 +8,33 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- 🐛 **The brand Read more showed on every brand, whether the story overflowed or not.**
+  LS-2018 (line 8, Lodge / Brand). `assets/styles/core-term-description.css`,
+  `assets/js/intro-collapse.js`.
+
+  Two independent faults, and the first one hid the second.
+
+  The toggle is meant to be revealed only by `.is-enhanced`, which
+  `assets/js/intro-collapse.js` adds after confirming the text is actually clipped. The hide
+  was written as `.sd-intro-collapse__actions { display: none }` — one class, (0,1,0) — and
+  global styles print `body .is-layout-flex { display: flex }` at (0,1,1) for the
+  `core/buttons` layout. So the hide never applied and the button was visible on every brand
+  regardless of what the script decided. Measured on dev at /brand/african-bush-camps/,
+  2026-09-16: `is-enhanced` absent from the container, computed `display: flex` on the
+  actions, and `body .is-layout-flex` named as the winning rule. The hide is now scoped to
+  `.sd-intro-collapse` — (0,2,0), which lands, and which the (0,3,0) reveal still beats.
+
+  Behind that, the overflow test itself over-reported. It compared the text's unclamped
+  height against the height N lines would occupy, derived from the computed `line-height`,
+  with the line count duplicated in the script as `CLAMP_LINES` and kept in step with
+  `-webkit-line-clamp` by hand. Any margin inside the description — the paragraph rhythm on
+  a multi-paragraph term description — counts toward the height but not toward the line
+  count, so the test said "overflowing" on text that was not being cut. It now measures the
+  clamp instead of modelling it: read the height, add `.is-enhanced`, read it again, and keep
+  the class only if the second reading is shorter. Both reads are synchronous within one
+  task, so nothing paints in between. `CLAMP_LINES` and its `FALLBACK_LINE_HEIGHT` are gone —
+  the CSS is now the only place the line count is written.
+
 - 🐛 **The review cards collapsed to a date and a star tile the moment Slick initialised.**
   LS-2020 (line 10). `assets/styles/core-group.css`.
 
@@ -52,6 +79,140 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   this one different.
 
 ### Changed
+
+- 📐 **The brand Read more is italic, ellipsised, closer to the copy, and cuts at ten lines.**
+  LS-2018 (line 8, Lodge / Brand). Zared's call, 2026-09-16.
+  `patterns/template-taxonomy-accommodation-brand.php`,
+  `assets/styles/core-term-description.css`.
+
+  Four adjustments so the control reads as the `core/read-more` on a Tour Operator single —
+  `patterns/destination-summary.php` — which is what the 2026-09-16 restyle set out to match
+  and stopped one step short of.
+
+  The label is now `Read more...`, carrying the ellipsis that pattern uses, and the toggle is
+  set in italics by name. On the destination single the italic is inherited from the wrapping
+  group's inline `font-style`; here the toggle is a sibling of the description rather than a
+  descendant, so inheritance cannot reach it. `inc/intro-collapse.php`'s localised "Read
+  less" stays plain — the ellipsis says the text continues past the cut, which is true of the
+  collapsed state only.
+
+  The story group's `blockGap` drops from `spacing|30` to `spacing|20`, and the group holds
+  exactly the description and the toggle, so that is the gap between those two and nothing
+  else.
+
+  The clamp goes from six lines to ten, because six cut most brand stories mid-thought. With
+  the measurement fix above, /brand/african-bush-camps/ — six lines at the 900px column —
+  now gets no Read more at all, which is the intended behaviour and also live's.
+
+- 📐 **The Brands landing standfirst runs to 1100px, and the measure is set on two blocks
+  because one does nothing.** LS-2018 (line 8, Lodge / Brand).
+  `patterns/template-page-brands.php`.
+
+  Wider than the root `contentSize` (900px), narrower than the 1440px the `alignwide`
+  group around it gets. Zared's call.
+
+  ⚠️ **Setting it on the parent group alone has no visible effect**, which is what it
+  looked like when it was tried in the Site Editor. A constrained layout constrains its
+  *children*, never itself — so a `contentSize` on the group widens the
+  `core/post-content` wrapper and stops. `core/post-content` is itself a constrained
+  container, and with no `contentSize` of its own it falls back to the global 900px and
+  re-caps every paragraph inside the wrapper it was just given. Verified against
+  `wp_get_layout_style()`: a constrained layout emits
+  `… > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width:1100px}`, which
+  reaches the wrapper and not the text. Both layouts carry the value now.
+
+- 🏷️ **The single-brand archive loses its keyword box, result count and sort control, and
+  the region strip moves into the results column.** LS-2018 (line 8, Lodge / Brand).
+  `patterns/template-taxonomy-accommodation-brand.php`,
+  `assets/styles/sd-brand-regions.css`. Zared's call, measured against
+  `/brand/wilderness-safaris/`.
+
+  A brand archive is already a narrow set — Wilderness Safaris, the largest, is a few
+  dozen properties over six countries — and three chrome controls above a list that short
+  read as search furniture rather than as a brand's page. The regions strip and the three
+  checkbox facets are now the whole navigation.
+
+  ⚠️ **The two taxonomy templates are deliberately no longer the same.**
+  `template-taxonomy-accommodation-type.php` keeps all three controls. Do not restore them
+  here for consistency — the divergence is the decision. The FacetWP facets themselves are
+  untouched in `wp_options`, so putting any back is a markup change and nothing else.
+
+  ⚠️ **The `Results` `h2` stays, as `screen-reader-text`.** The cards are `h3`. With no
+  `h2` between them and the rail's own "Refine by", every card title would be announced as
+  a child of the filter rail. The theme adds no CSS for it — checked rather than assumed:
+  `wp_should_load_separate_core_block_assets()` is true on this install, so the monolithic
+  `block-library/style.css` never loads and the class arrives from
+  `block-library/common.css:222`, which is what the enqueued `wp-block-library` handle
+  resolves to. Both files define it, so flipping that setting cannot break it.
+  `#h-results` is kept as a real anchor.
+
+  **The region strip** ran full width above the two columns and now heads the results
+  column, directly over the first card — which is live's own relationship, where the strip
+  sits immediately above `.lsx-to-archive-items`. Its `alignwide` is gone with the move: a
+  block inside a `core/column` has no constrained layout to align against.
+
+- 🎨 **The region strip is live's tinted bar, not an underlined tab rail.** LS-2018 (line
+  8, Lodge / Brand). `assets/styles/sd-brand-regions.css`.
+
+  **The separator is gone** — the `neutral-300` bottom border and the 3px active marker
+  that overlapped it. With the strip inside the results column a full-width line under it
+  separated the strip from the cards it belongs to, and live draws no such line.
+
+  Measured from `sd-lsx-child/assets/css/partials/_single.scss` (compiled at
+  `assets/css/custom.css:2846`) and mapped to tokens: bar `#f0ebe5` → `neutral-200` (the
+  mapping decision 5 already made for the card meta strip), item `#60483b` →
+  `neutral-700`, `border-right: 1px white` → `base`, hover/active bar `#3E3530` →
+  `primary-600`, hover/active type `#cc7f16` → `brand-500` (exact). 14px uppercase 600 →
+  font-size `200`, semi-bold.
+
+  ⚠️ **`gap` is zero and must stay zero.** The separation between segments is the
+  `border-inline-end` hairline, as on live; a gap would put the bar's own tint between
+  segments and leave the hairlines reading as stray ticks. ⚠️ **The ground is on the
+  `<li>`, the type on the `<a>`** — live's anchor carries `margin: 5px 0`, so only the
+  list item paints the bar's full height. `:has()` carries hover and focus up to the `li`
+  for that reason, and degrades correctly: without it the type still changes colour, so
+  the state is never invisible. Focus takes an `accent-400` ring because `brand-500` on
+  `primary-600` is already the current-segment pair.
+
+- 🎨 **The brand story's Read more reads as a link, like every Tour Operator read-more.**
+  LS-2018 (line 8, Lodge / Brand). `patterns/template-taxonomy-accommodation-brand.php`,
+  `assets/styles/core-term-description.css`. Zared's call.
+
+  `is-style-outline` is gone and no button style replaces it; the flat look is scoped CSS
+  on `.sd-intro-collapse__toggle`, because one control does not warrant a theme-wide
+  `is-style-*`. Font size `200` → `300`, matching `patterns/destination-summary.php`.
+
+  ⚠️ **It is still a `core/button` and must stay one.** `assets/js/intro-collapse.js` binds
+  to `.sd-intro-collapse__toggle a` and puts `role="button"`, `tabindex`, `aria-expanded`
+  and `aria-controls` on it; `core/read-more` renders a link to a *post* permalink and
+  there is no post on a taxonomy archive. Only the paint changed. A focus ring is added
+  explicitly — the outline variation's border was carrying it, and a bare `<a>` with no
+  `href` has nothing.
+
+  ⚠️ **The reset answers each property by name** because with the variation gone the anchor
+  falls back to theme.json's `elements.button` (brand-500 fill, heading face, uppercase) —
+  including `font-size: inherit`, since `elements.button` writes the size onto the anchor
+  while `core/button` puts its font-size class on the wrapping `<div>`. No underline in
+  either state: theme.json's `elements.link` sets `textDecoration: none` at rest *and* on
+  hover, so the read-more this imitates is not underlined anywhere on the site.
+
+- 📐 **The accommodation list card's meta rows sit at XS.** LS-2018 (line 8, Lodge /
+  Brand). `patterns/card-accommodation-list.php`. Shared with the accommodation-type
+  archive.
+
+  `blockGap` `spacing|20` (S) → `spacing|10` (XS) on the meta panel. Three short prefixed
+  read-outs at S read as three separate statements rather than one block of facts, and the
+  gap was wider than the leading inside each row. The panel's own inset padding stays at
+  `20` — the two are deliberately no longer the same token, because they are doing
+  different jobs.
+
+- 🎨 **The facet chevrons are a quarter-rem smaller.** LS-2018 (line 8, Lodge / Brand).
+  `assets/styles/facetwp-facets.css`. `2rem` → `1.75rem`, on the collapsible facet
+  headings and the sort select alike — the file's own ⚠️ requires the two to match, since
+  they sit in different type contexts and an `em` value would draw two different chevrons.
+  At `2rem` the box filled the 32.4px heading row exactly and competed with the heading.
+  Still well over the 24px minimum target: the hit area is the whole heading row, not this
+  pseudo-element.
 
 - **The Trustpilot review card carries stars and a linked headline, and clamps the
   extract.** LS-2020 (line 10). `patterns/card-trustpilot-review.php`,
@@ -167,11 +328,50 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   values render at the same weight. Only the prefixes are bold now, which is what the card
   style already says (`& strong`, `& .wp-block-post-terms__prefix`).
 
-- 📐 **The team single's bio sets its own paragraph gap.**
-  `patterns/template-single-team.php`. `core/post-content` carries
-  `blockGap: var:preset|spacing|30` (M) rather than falling to the root gap, which read as a
-  stack of separate statements instead of one passage. On the markup, never in a variation
-  JSON — see AGENTS.md.
+- 📐 **The team single's bio sets its own paragraph gap, and stacks in flow rather than
+  constrained.** LS-2020 (line 10). `patterns/template-single-team.php`.
+
+  `core/post-content` carries `blockGap: var:preset|spacing|30` (M) rather than falling to
+  the root gap, which read as a stack of separate statements instead of one passage. `M` is
+  the same step the meta rows above it use. On the markup, never in a variation JSON — see
+  AGENTS.md.
+
+  Its layout also moved `constrained` → `default`. With `useRootPaddingAwareAlignments` on
+  — theme.json sets it — core adds `has-global-padding` to **every** constrained-layout
+  block and not just the ones at the root
+  (`wp-includes/block-supports/layout.php:1111-1117`), so a constrained `post-content`
+  picked up the root left padding and the bio sat one `spacing|20` in from the Meet heading
+  and the role above it. The column already constrains the measure; this block only needs to
+  stack its children, which flow does, `blockGap` and all.
+
+- 🎨 **The team single's role line is `brand-600` at font-size 400.** LS-2020 (line 10).
+  `patterns/template-single-team.php`.
+
+  Up from body colour at 300, so the consultant's job title reads as a standfirst under the
+  name rather than as another meta row. Zared's call, 2026-09-16. The heading face, the
+  semi-bold weight and `lsx-role-wrapper` are unchanged — that class is Tour Operator's
+  empty-meta hook, not styling, so the whole line still disappears on a member with no role
+  set.
+
+- 🖼️ **The team member portrait is round.** LS-2020 (line 10).
+  `patterns/template-single-team.php`.
+
+  `core/post-featured-image` takes `border-radius` from preset `500` — `9999px`, whose
+  **name** is `round`.
+
+  ⚠️ **Reference radius presets by slug, not by name.** The first pass wrote the value as a
+  raw `var(--wp--preset--border-radius--round)` and the portrait stayed square, because core
+  keys the generated custom properties on the preset's `slug`: the variables block emits
+  `--wp--preset--border-radius--0` through `--wp--preset--border-radius--500` and **no
+  `--round`** (measured against `wp_get_global_stylesheet( [ 'variables' ] )`). So the
+  declaration named a property that does not exist and was dropped at computed-value time.
+  `var:preset|border-radius|500` is both the working form and the authored form the rest of
+  the theme uses — which is the point of the rule: a slug reference is one
+  `theme-orphaned-refs` can check, and a name reference is one it cannot.
+
+  ⚠️ **The crop stays `aspectRatio: 1` and must.** The radius is what makes it a circle, but
+  only the square crop keeps it from being an ellipse. Image crops are `aspectRatio`, never
+  CSS — see AGENTS.md.
 
 ### Fixed
 
@@ -745,15 +945,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `core/button` saves a fixed `<a>`, so a `data-label-expanded` written into the pattern
   would fail block validation the moment the template was opened.
 
-  ⚠️ **The region tabs are links, not `core/tabs`, and two things about them are open.**
+  ⚠️ **The region tabs are links, not `core/tabs`, and one thing about them remains open.**
   WordPress 7.1 does ship `core/tabs` and it was the asked-for block; it is not used because
   a brand's regions are derived per brand (so the panels cannot be authored into one
   template) and because `brand/{brand}/{region}/` is, in the plugin's own words,
   "launch-critical: it feeds the redirect map" — `core/tabs` switches panels on one URL.
-  Separately, **nothing yet narrows the query by the active region**: grepped across
-  sd-enhancements 2026-09-10, the only readers of the `endpoint` query var are the resolver
-  and the tab strip, so today every tab returns the same rows. Both are plugin work, written
-  up in `.github/tasks/brand-region-tabs-core-tabs-conversion-2026-09-10.md`.
+  `SD\Enhancements\Queries::scope_brand_archive_to_region()` now narrows the main query via
+  `post__in`, using the active region's connected accommodation; the template's `core/query`
+  inherits that scope.
 
 - 🔤 **Optima ships. The `heading` preset finally has a real face.** Vanessa Ratcliffe (SD)
   sent the Monotype self-hosting kit on **2026-09-10** — `docs/DS Optima DemiBold/`, MyFonts

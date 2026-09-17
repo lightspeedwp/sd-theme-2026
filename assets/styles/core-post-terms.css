@@ -9,6 +9,34 @@
    enqueued only when a post-terms block actually renders, rather than site-wide
    via the always-loaded Woo sheet (which was bleeding onto blog post terms).
    See the assets/styles audit, finding ②. */
+.wp-block-post-terms a:hover {
+	text-decoration: underline;
+}
+
+/* …except on the listing cards, where it is wrong and where the card's own
+   variation already says so and loses.
+
+   Both `styles/sections/cards/listing-card-list.json` and
+   `listing-card-compact.json` set `elements.link` → `:hover` →
+   `textDecoration: none`; the compact card's description states it outright
+   ("no underline in either state"). Neither lands. A block-style variation
+   compiles to `:root :where(.is-style-…)`, and `:where()` is zero-specificity,
+   so the whole declaration weighs (0,0,0) against the (0,1,1) of the generic
+   rule above — the underline wins on every Type row in every result card. The
+   fix is real specificity here, (0,2,1), which is the same device
+   `assets/styles/core-read-more.css` uses for the card read-more hovers and for
+   the same reason.
+
+   Scoped to the two card variations, not written as a `:not()` on the rule
+   above, so the generic behaviour on a blog post's term list is untouched.
+   Zared's call on the accommodation type row, 2026-09-16; the compact card is
+   included because it is the same defect and its own file already promised the
+   outcome. */
+.is-style-listing-card-list .wp-block-post-terms a:hover,
+.is-style-listing-card-compact .wp-block-post-terms a:hover {
+	text-decoration: none;
+}
+
 .wp-block-post-terms__prefix {
 	font-weight: 600;
 }

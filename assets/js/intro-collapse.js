@@ -30,25 +30,31 @@
  * has no Read more on this page at all, so a dead button would be a regression
  * against live rather than an addition to it.
  *
- * ## The measurement, and why it runs before the clamp
+ * ## The measurement — it measures the clamp, it does not model it
  *
- * The overflow test compares `scrollHeight` against `clientHeight`, which on a
- * `-webkit-box` that is already clamped reports the clamped height for both and
- * always says "no overflow". So the test runs while the element is still
- * unclamped — before `.is-enhanced` is added — and compares the element's
- * natural height against the height six lines would occupy, derived from the
- * computed `line-height`. `getComputedStyle().lineHeight` resolves to a pixel
- * value in every browser that supports the clamp, but returns the string
- * `normal` when no line-height is inherited; the theme sets one
- * (`--wp--custom--line-height--body`) on this block, and the `normal` branch
- * falls back to 1.5 rather than producing `NaN` and clamping nothing.
+ * The test reads the text's height unclamped, adds `.is-enhanced` to apply the
+ * clamp, reads the height again, and keeps the class only if the second
+ * reading is shorter — that is, only if clamping actually hid something. Both
+ * reads are synchronous within one task, so nothing paints in between and the
+ * class is gone again before the frame renders when the text fits.
  *
- * The clamp length is duplicated here as CLAMP_LINES. ⚠️ It must match
- * `-webkit-line-clamp` in assets/styles/core-term-description.css. There is no
- * way to read a `-webkit-line-clamp` value back reliably across browsers, so
- * the two are kept in step by hand; changing one without the other makes the
- * button appear on text that does not need it, or withholds it from text that
- * does.
+ * Two routes were tried first and neither works here:
+ *
+ * `scrollHeight` against `clientHeight` on the clamped element is the obvious
+ * test. A clamped `-webkit-box` reports the clamped height for both, so it
+ * always says "no overflow".
+ *
+ * Comparing the unclamped height against the height N lines *would* occupy,
+ * derived from the computed `line-height`, was what this file did until
+ * 2026-09-16. It has to duplicate the line count from
+ * assets/styles/core-term-description.css and keep it in step by hand, and it
+ * over-reports on any description whose paragraphs carry margins — those count
+ * toward the height but not toward the line count, so the button appeared on
+ * text that was not being cut.
+ *
+ * Measuring the clamp itself has neither problem: the CSS is the only place
+ * the line count is written, and whatever the box does — margins, the drop cap,
+ * `-webkit-box` layout — is present in both readings and cancels out.
  *
  * @package sd-theme-2026
  */
@@ -57,22 +63,12 @@
 	'use strict';
 
 	/**
-	 * Lines the text is clamped to. Must match `-webkit-line-clamp` in
-	 * assets/styles/core-term-description.css.
-	 */
-	var CLAMP_LINES = 6;
-
-	/**
-	 * Fallback line-height multiplier when `getComputedStyle` reports `normal`.
-	 */
-	var FALLBACK_LINE_HEIGHT = 1.5;
-
-	/**
-	 * Slack, in pixels, before an overflow counts.
+	 * Slack, in pixels, before a height difference counts as an overflow.
 	 *
-	 * Sub-pixel rounding means a description that happens to be exactly six
-	 * lines can measure a fraction over. Without this, those get a button that
-	 * reveals nothing.
+	 * Sub-pixel rounding, and the margins that `-webkit-box` lays out where
+	 * block flow would have collapsed them, can leave the two readings a
+	 * fraction apart on text that fits exactly. Without this, those get a
+	 * button that reveals nothing.
 	 */
 	var OVERFLOW_TOLERANCE = 4;
 
@@ -97,20 +93,33 @@
 	}
 
 	/**
-	 * The height the clamped box will occupy, in pixels.
+	 * Whether clamping the text actually hides any of it.
 	 *
-	 * @param {HTMLElement} element The text element, measured unclamped.
-	 * @return {number} Height of CLAMP_LINES lines.
+	 * Applies the clamp to measure it — `.is-enhanced` is what turns
+	 * `-webkit-line-clamp` on — and leaves the class in place when the answer
+	 * is yes, because the caller wants it there and removing it only to add it
+	 * back is a second reflow for nothing. Both `getBoundingClientRect()` calls
+	 * flush layout, so the second reading is of the clamped box.
+	 *
+	 * @param {HTMLElement} container The `.sd-intro-collapse`.
+	 * @param {HTMLElement} text      The `.sd-intro-collapse__text` inside it.
+	 * @return {boolean} True when the text overflows its clamp.
 	 */
-	function clampedHeight( element ) {
-		var styles = window.getComputedStyle( element );
-		var lineHeight = parseFloat( styles.lineHeight );
+	function overflowsClamp( container, text ) {
+		var natural = text.getBoundingClientRect().height;
+		var clamped;
 
-		if ( isNaN( lineHeight ) ) {
-			lineHeight = parseFloat( styles.fontSize ) * FALLBACK_LINE_HEIGHT;
+		container.classList.add( 'is-enhanced' );
+
+		clamped = text.getBoundingClientRect().height;
+
+		if ( natural - clamped > OVERFLOW_TOLERANCE ) {
+			return true;
 		}
 
-		return lineHeight * CLAMP_LINES;
+		container.classList.remove( 'is-enhanced' );
+
+		return false;
 	}
 
 	/**
@@ -148,9 +157,9 @@
 			return;
 		}
 
-		// Measured unclamped — see the header for why this cannot run after
-		// `.is-enhanced` is added.
-		if ( text.scrollHeight <= clampedHeight( text ) + OVERFLOW_TOLERANCE ) {
+		// Applies `.is-enhanced` when it returns true, and leaves the element
+		// untouched when it returns false — see the header for the reasoning.
+		if ( ! overflowsClamp( container, text ) ) {
 			return;
 		}
 
@@ -179,9 +188,13 @@
 
 		button.setAttribute( 'aria-controls', text.id );
 
-		container.classList.add( 'is-enhanced' );
 		setButtonState( button, false );
 
+		/**
+		 * Toggle the expanded state and synchronise the button label.
+		 *
+		 * @param {Event} event The event that activated the toggle.
+		 */
 		function toggleState( event ) {
 			event.preventDefault();
 

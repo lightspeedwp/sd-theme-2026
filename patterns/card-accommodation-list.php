@@ -82,9 +82,17 @@
 			 * prints nothing rather than a stray prefix, and the `prefix` /
 			 * `prefixBold` attributes are `sd-enhancements`' addition to
 			 * `core/paragraph`, not core's.
+			 *
+			 * The rows sit at `spacing|10` (XS), one step in from the `20` (S)
+			 * they carried and from the panel's own inset padding, which stays
+			 * at `20`. Three short prefixed read-outs at S read as three
+			 * separate statements rather than one block of facts, and the gap
+			 * was wider than the leading inside each row. Zared's call,
+			 * 2026-09-16. The gap and the padding are deliberately no longer
+			 * the same token — they are doing different jobs.
 			 */
 			?>
-			<!-- wp:column {"verticalAlignment":"stretch","width":"35%","style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"backgroundColor":"neutral-100","fontSize":"200"} -->
+			<!-- wp:column {"verticalAlignment":"stretch","width":"35%","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"backgroundColor":"neutral-100","fontSize":"200"} -->
 			<div class="wp-block-column is-vertically-aligned-stretch has-neutral-100-background-color has-background has-200-font-size" style="padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);line-height:var(--wp--custom--line-height--body);flex-basis:35%">
 
 				<!-- wp:paragraph {"metadata":{"name":"Price Rating","bindings":{"content":{"source":"sd/post-meta","args":{"key":"price_rating","format":"price-band"}}}},"className":"lsx-price-rating-wrapper","prefix":"Price Rating:","prefixBold":true} -->
