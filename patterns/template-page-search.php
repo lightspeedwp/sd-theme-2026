@@ -2,9 +2,9 @@
 /**
  * Title: Template: Search Results
  * Slug: sd-theme-2026/template-page-search
- * Description: The site search results page — the photographic banner, the breadcrumb strip, then the mixed-post-type result rows behind a Content Type filter rail, a result count and a FacetWP pager. Used by the search template.
+ * Description: The site search results page — the photographic banner, the breadcrumb strip, then the mixed-post-type result rows behind a Content Type filter rail, a result count, a sort control and a FacetWP pager. Used by the search template.
  * Categories: hidden
- * Keywords: template, search, results, query, facetwp, facets, filters, content type
+ * Keywords: template, search, results, query, facetwp, facets, filters, sort, content type
  * Block Types: core/query
  * Template Types: search
  * Post Types: wp_template
@@ -67,11 +67,37 @@
  * value. It sits above "Refine by" for the reason recorded on the accommodation
  * template: searching is not refining.
  *
- * ## 4. No sort control
+ * It is **dressed as that page's field**, though — Zared, 2026-09-17. The two
+ * rails are the same rail and a reader moving between them should not see two
+ * different keyword boxes, so `buttonUseIcon` swaps core's "Search" label for
+ * the magnifier and `assets/styles/facetwp-facets.css` gives the block the
+ * facet field's box and the same brand tile on its trailing edge. Only the
+ * mechanism differs, and the mechanism is not visible.
  *
- * The accommodation page's `sort_` facet sorts on price and title, neither of
- * which means anything across seven post types, and relevance is the only
- * ordering a mixed result set has. The toolbar is the count alone.
+ * ⚠️ That is also why the button here is a **real `<button>`** where the facet's
+ * is an `<i>` with a click handler. The keyboard path on this page runs through
+ * the button as well as Enter; the facet's does not, which is the caveat
+ * recorded against it in the stylesheet.
+ *
+ * ## 4. The sort control
+ *
+ * Added 2026-09-17 at Zared's request; this file previously argued for the
+ * count alone. It is the accommodation page's facet — **`sort_`**, with the
+ * trailing underscore, because `sort` is reserved and FacetWP will not save a
+ * facet under it. A block pointing at `sort` renders nothing at all.
+ *
+ * ⚠️ Two of that facet's four options are accommodation-shaped. Measured on dev
+ * 2026-09-17 it offers Title (A-Z), Title (Z-A), Price (Highest) and Price
+ * (Lowest), and the two price orderings run on `cf/price_rating`, which only
+ * accommodation carries — so choosing one on a mixed result set orders the rows
+ * that have the field and leaves the rest at the tail. The two title orderings
+ * are meaningful across every post type. The option list is a **FacetWP
+ * setting**, not theme markup: trimming it, or registering a second sort facet
+ * for this page, is done in the admin, and nothing here changes if it is.
+ *
+ * ⚠️ Picking any sort replaces relevance ordering, which is the only ranking a
+ * mixed result set has. The facet's own `default_label` ("Sort by") is the
+ * resting state and leaves the main query's relevance order alone.
  *
  * ## 5. Two things the results region does differently
  *
@@ -83,6 +109,12 @@
  * (`([total])`), not CSS — they are content. Both are Zared's calls, 2026-09-17,
  * and both transfer to the accommodation results page, which shares the facet
  * and the stylesheet.
+ *
+ * The toolbar carries no rule beneath it. The `border-bottom` that used to
+ * close it off was removed from `.sd-search-toolbar` on 2026-09-17 (Zared): the
+ * first card's own ground already draws the line, and the rule under a row that
+ * is itself a label and a control read as a third divider. It is a shared
+ * class, so the accommodation results page loses the rule too.
  *
  * The pager facet is **`pager_`**, with the trailing underscore, which is the
  * facet dev actually carries. ⚠️ `template-taxonomy-accommodation-type.php`
@@ -149,7 +181,24 @@
 			<!-- wp:group {"tagName":"aside","metadata":{"name":"Filter Rail"},"className":"sd-search-filters","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
 			<aside class="wp-block-group sd-search-filters">
 
-				<!-- wp:search {"label":"<?php echo esc_attr_x( 'Search', 'search form label', 'sd-theme-2026' ); ?>","showLabel":false,"placeholder":"<?php echo esc_attr_x( 'Search the site…', 'search form placeholder', 'sd-theme-2026' ); ?>","buttonText":"<?php echo esc_attr_x( 'Search', 'search form button', 'sd-theme-2026' ); ?>","buttonPosition":"button-inside"} /-->
+				<?php
+				/*
+				 * The keyword box. `core/search`, not a FacetWP search facet — see
+				 * §3 at the head of this file for why, and why it is nonetheless
+				 * drawn as the accommodation rail's facet field.
+				 *
+				 * `buttonUseIcon` is what makes it look like that field: core then
+				 * renders the button as `<button class="… has-icon" aria-label="…">`
+				 * around `svg.search-icon` rather than the word "Search", which is
+				 * the same glyph-on-a-brand-tile the facet's `<i>` is styled into.
+				 * `buttonText` stays set because that string is what core puts in the
+				 * `aria-label` once the icon replaces the visible label.
+				 *
+				 * No heading, so the fold script leaves it alone — its section test
+				 * requires one, and this control must never be foldable away.
+				 */
+				?>
+				<!-- wp:search {"label":"<?php echo esc_attr_x( 'Search', 'search form label', 'sd-theme-2026' ); ?>","showLabel":false,"placeholder":"<?php echo esc_attr_x( 'Search the site…', 'search form placeholder', 'sd-theme-2026' ); ?>","buttonText":"<?php echo esc_attr_x( 'Search', 'search form button', 'sd-theme-2026' ); ?>","buttonPosition":"button-inside","buttonUseIcon":true} /-->
 
 				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
 				<h2 class="wp-block-heading has-400-font-size" id="h-refine-by"><?php esc_html_e( 'Refine by', 'sd-theme-2026' ); ?></h2>
@@ -202,10 +251,13 @@
 
 				<?php
 				/*
-				 * The toolbar — the count alone, on the leading edge. See the
-				 * head of this file for why there is no sort control, why the
-				 * heading is not uppercase, and where the brackets around the
-				 * number come from.
+				 * The toolbar — the count on the leading edge, the sort on the
+				 * trailing one, on one flex row above the list. The accommodation
+				 * results page's toolbar exactly, and it shares its classes and
+				 * its rules. See the head of this file for what the sort facet's
+				 * options do across seven post types, why the heading is not
+				 * uppercase, where the brackets around the number come from, and
+				 * why the row is no longer ruled off beneath.
 				 *
 				 * ⚠️ `results_count` is a **Pager** facet with its "Pager type"
 				 * set to *Result counts* — the count is a mode of the pager
@@ -230,6 +282,18 @@
 
 					</div>
 					<!-- /wp:group -->
+
+					<?php
+					/*
+					 * The sort control, on the trailing edge — the accommodation
+					 * results page's facet and its stylesheet rules, so the two
+					 * toolbars are one toolbar. → §4 at the head of this file for the
+					 * trailing underscore in `sort_`, for what its four options
+					 * actually do across seven post types, and for what picking one
+					 * costs a relevance-ordered result set.
+					 */
+					?>
+					<!-- wp:facetwp/facet {"facetName":"sort_","facetLabel":"Sort","facetType":"sort","hasHeader":false,"className":"sd-search-sort"} /-->
 
 				</div>
 				<!-- /wp:group -->

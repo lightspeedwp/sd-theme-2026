@@ -99,6 +99,35 @@
    The filter rail
    ============================================ */
 
+/* The keyword field's metrics, named once for the whole rail.
+
+   Two different blocks draw that field — a FacetWP `search` facet on the
+   accommodation results page, a `core/search` on the site search page — and
+   they must come out the same size, so the numbers live on the rail rather than
+   in either control. Both are derived from the input's own line box and its
+   vertical padding, so changing the padding below moves the square submit tile
+   with it instead of leaving two lengths to drift apart.
+
+   The pair differs only in where the border sits. The facet has no wrapper to
+   put one on, so its border is on the input and its tile has to cover the outer
+   height; `core/search` has `.wp-block-search__inside-wrapper`, so the border
+   goes there and the tile fills the wrapper's content box.
+
+   ⚠️ Neither is a spacing token. `spacing|50` was the input's trailing padding
+   until 2026-09-10 and it was wrong for this job: the spacing scale is a
+   viewport clamp (33px → 50px) while the tile's width tracks the field's
+   height, which barely moves. At 390px the clamp gave 33px against a ~44px
+   tile, so the keyword text ran under it. */
+.sd-search-filters {
+	--sd-search-field-height: calc(
+		var(--wp--preset--font-size--200) * var(--wp--custom--line-height--button)
+		+ var(--wp--preset--spacing--10) * 2
+	);
+	--sd-search-button-size: calc(
+		var(--sd-search-field-height) + var(--wp--custom--border-width--100) * 2
+	);
+}
+
 /* FacetWP ships `.facetwp-facet{margin-bottom:40px}`. The rail's rhythm is the
    `blockGap` on the pattern's group instead, per the theme's spacing contract —
    the parent owns the gap and its children carry no margin. */
@@ -410,24 +439,10 @@
    section's own ground rather than a plate, as it is on live.
    ============================================ */
 
-/* The field's own metrics, named once. The submit button is a square the height
-   of the field, so its width *and* the input's trailing clearance both derive
-   from the same three numbers — the input's line box, its vertical padding and
-   its borders. Naming it here rather than writing two lengths keeps them from
-   drifting: change the input's padding or size below and the button follows.
-
-   ⚠️ Not a spacing token. `spacing|50` was the input's `padding-right` until
-   2026-09-10 and it was wrong for this job: the spacing scale is a viewport
-   clamp (33px → 50px) while the button's width tracks the field's height, which
-   barely moves. At 390px the clamp gave 33px against a ~44px button, so the
-   keyword text ran under it. */
-.sd-search-filters .facetwp-type-search {
-	--sd-search-button-size: calc(
-		var(--wp--preset--font-size--200) * var(--wp--custom--line-height--button)
-		+ var(--wp--preset--spacing--10) * 2
-		+ var(--wp--custom--border-width--100) * 2
-	);
-}
+/* `--sd-search-button-size` — the field's outer height, and so the width of the
+   square submit tile and the input's trailing clearance — is declared on
+   `.sd-search-filters` at the head of this file, because the `core/search`
+   twin below has to come out the same size. */
 
 .sd-search-filters .facetwp-type-search .facetwp-input-wrap {
 	display: block;
@@ -530,6 +545,142 @@
 .sd-search-filters .facetwp-icon.f-loading::before {
 	-webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%202a10%2010%200%201%200%2010%2010h-2.5A7.5%207.5%200%201%201%2012%204.5z'/%3E%3C/svg%3E") center / contain no-repeat;
 	mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%202a10%2010%200%201%200%2010%2010h-2.5A7.5%207.5%200%201%201%2012%204.5z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* ============================================
+   The keyword search block — `core/search`
+
+   The site search page's rail carries a plain `core/search` where the
+   accommodation rail carries a FacetWP `search` facet, because there the
+   keyword *is* the query rather than a filter over one; the reasoning is
+   recorded in `patterns/template-page-search.php` §3. Visually the two must not
+   differ, so this section gives the block the facet field's box, the same
+   `--sd-search-*` metrics, and the same brand tile on its trailing edge.
+
+   ## The markup, and what already styles it
+
+   With `buttonPosition: button-inside` and `buttonUseIcon` core renders:
+
+     form.wp-block-search.wp-block-search__button-inside.wp-block-search__icon-button
+       > label.screen-reader-text
+       > div.wp-block-search__inside-wrapper   (display:flex)
+           > input.wp-block-search__input
+           > button.wp-block-search__button.has-icon.wp-element-button
+               > svg.search-icon
+
+   Two sheets get there first. Core's block style puts a `1px solid #949494`
+   border and 4px of padding on the **inside wrapper** and strips the input's
+   own border, and theme.json's `.wp-element-button` styles reach the button —
+   brand-500, uppercase, the button padding and a 2px border. Neither is wrong
+   anywhere else; both are wrong for a field in this rail.
+
+   ## Specificity
+
+   Core's button-inside rules are `.wp-block-search__button-inside .x`, so
+   (0,2,0); theme.json's is `:root :where(.wp-element-button, …)`, so (0,1,0).
+   Every selector here carries `.sd-search-filters .wp-block-search` in front of
+   its target, which is (0,3,0) and wins on specificity rather than on load
+   order — the same reasoning `assets/styles/core-search.css` records for the
+   header search. Nothing here needs `!important`.
+
+   ## Where the border sits
+
+   On the wrapper, not the input — the wrapper is what encloses both the field
+   and the tile, and core has already taken the input's border away under
+   `button-inside`. That is the one structural difference from the facet twin
+   above, and it is why the tile is sized from `--sd-search-field-height` (the
+   wrapper's content box) where the facet's is sized from
+   `--sd-search-button-size` (the input's outer box).
+   ============================================ */
+
+/* Live sets 25px under the keyword box where the rest of the rail is 3px apart.
+   The facet gets this through its `.facet-wrap` block wrapper; the search block
+   is its own form, so it carries it directly. */
+.sd-search-filters .wp-block-search {
+	margin-block-end: var(--wp--preset--spacing--30);
+}
+
+/* The box. `padding: 0` clears core's 4px inset so the tile can sit flush on
+   the trailing edge, the way the facet's absolutely-positioned `<i>` does. */
+.sd-search-filters .wp-block-search .wp-block-search__inside-wrapper {
+	padding: 0;
+	background-color: var(--wp--preset--color--base);
+	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-300);
+	border-radius: var(--wp--preset--border-radius--0);
+}
+
+/* The ring goes on the wrapper, not the input: the border it answers is on the
+   wrapper, and `:focus-within` also covers the submit button — which, unlike
+   the facet's `<i>`, is a real focusable control. Core's
+   `.wp-block-search__button-inside .wp-block-search__input:focus{outline:none}`
+   is left standing on purpose; the ring around the whole box is the focus
+   indicator for both children. */
+.sd-search-filters .wp-block-search .wp-block-search__inside-wrapper:focus-within {
+	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-500);
+	outline-offset: 2px;
+}
+
+/* The field. Transparent rather than `base` so the wrapper owns the ground and
+   there is no second rectangle to keep in step; `min-inline-size: 0` lets the
+   rail shrink below the input's intrinsic width at 390px. */
+.sd-search-filters .wp-block-search .wp-block-search__input {
+	min-inline-size: 0;
+	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
+	background-color: transparent;
+	color: var(--wp--preset--color--neutral-700);
+	border: 0;
+	border-radius: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--200);
+	line-height: var(--wp--custom--line-height--button);
+}
+
+.sd-search-filters .wp-block-search .wp-block-search__input::placeholder {
+	color: var(--wp--preset--color--neutral-500);
+	opacity: 1;   /* Firefox dims placeholders to 0.54 by default */
+}
+
+/* The submit tile — the brand square the facet's `.facetwp-icon` is styled
+   into, built from a real `<button>` this time.
+
+   `flex: 0 0 auto` keeps it from being squeezed by the input beside it, and the
+   square comes from `--sd-search-field-height`, which is the wrapper's content
+   box: the same height the input's line box and padding give, so the tile fills
+   the field exactly without a second set of numbers. `border: 0` and
+   `border-radius: 0` are answering theme.json's element-button styles rather
+   than core's. */
+.sd-search-filters .wp-block-search .wp-block-search__button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	inline-size: var(--sd-search-field-height);
+	block-size: var(--sd-search-field-height);
+	margin: 0;
+	padding: 0;
+	background-color: var(--wp--preset--color--brand-600);
+	color: var(--wp--preset--color--base);
+	border: 0;
+	border-radius: 0;
+	transition: background-color 0.25s ease;
+}
+
+.sd-search-filters .wp-block-search .wp-block-search__button:hover,
+.sd-search-filters .wp-block-search .wp-block-search__button:focus {
+	background-color: var(--wp--preset--color--brand-700);
+}
+
+/* The glyph, at the facet tile's 1.15rem rather than core's floor. The `min-*`
+   pair is not belt-and-braces: core ships
+   `.wp-block-search__button svg{min-width:24px;min-height:24px;width:1.25em}`,
+   and a bare `width` loses to that `min-width` every time. `fill: currentColor`
+   is core's, so the `color` above is what makes the glyph `base`. */
+.sd-search-filters .wp-block-search .wp-block-search__button svg.search-icon {
+	display: block;
+	inline-size: 1.15rem;
+	block-size: 1.15rem;
+	min-width: 0;
+	min-height: 0;
 }
 
 /* ============================================
@@ -681,10 +832,13 @@
    wrapper around the usual `.facetwp-facet` div.
    ============================================ */
 
-.sd-search-toolbar {
-	border-bottom: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-300);
-	padding-bottom: var(--wp--preset--spacing--20);
-}
+/* ⚠️ No `border-bottom`, and no `padding-bottom` for it to sit on. The toolbar
+   was ruled off from a neutral-300 line until 2026-09-17, when Zared removed
+   it: the first card's own ground already draws that edge, and a rule beneath a
+   row that is itself only a label and a control read as a divider between two
+   things that are not separate. The `blockGap` on the results column is what
+   sets the toolbar off from the list now. Shared class, so this is true of the
+   accommodation results page too. */
 
 /* FacetWP's 40px default, which would push the toolbar's own row apart. The
    rail zeroes this too, further up — both are needed, because the two regions
