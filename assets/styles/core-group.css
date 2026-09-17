@@ -285,6 +285,43 @@
 	margin-block: calc(var(--wp--preset--spacing--20) * -1);
 }
 
+/* The gutter between slides, as a number rather than a vendor constant.
+   ---------------------------------------------------------------------------
+   Tour Operator insets every slide by 15px on all four sides —
+   `.wp-block-query.lsx-to-slider .slick-slide,
+    .wp-block-terms-query.lsx-to-slider .slick-slide { padding: 15px !important }`
+   (tour-operator/build/style.css) — which reads as a 30px gutter between any
+   two slides. That is right for the card shelves (tours, accommodation,
+   regions, reviews) and wrong for a shelf whose design is a continuous band,
+   so the constant is restated here as `--sd-slider-slide-gutter` and a shelf
+   that wants a different one sets the token instead of re-fighting the vendor.
+
+   The vendor selector is (0,3,0) and carries `!important`, so ours matches its
+   shape plus our own style class to reach (0,4,0) — the least surprising way
+   past it, and the same move `.sd-slider-flush` below already makes. The
+   fallback is the vendor's own 15px, so a frame that never sets the token
+   renders exactly as it does today.
+
+   `sd-slider-tight` is the band variant: zero gutter, slides butting together.
+   It is *not* `sd-slider-flush` — that one also strips the `.slick-list`
+   padding above, drops the shelf's block margins and forces a flex track,
+   which a normal in-flow shelf does not want. */
+.wp-block-query.lsx-to-slider.is-style-slider-frame .slick-slide,
+.wp-block-terms-query.lsx-to-slider.is-style-slider-frame .slick-slide {
+	padding: var(--sd-slider-slide-gutter, 15px) !important;
+}
+
+/* 28px rather than the frame's 10px: the band's tiles meet the frame edge
+   exactly, where every other shelf keeps the vendor's 15px inset between the
+   artwork and that edge. 10px + 15px is the clearance the card shelves read at,
+   and 28px is that plus a little, which is what the category band was asked
+   for. Nothing else about the tight band changes — the gutter *between* tiles
+   stays 0, which is the whole point of the continuous bar. */
+.is-style-slider-frame.sd-slider-tight {
+	--sd-slider-slide-gutter: 0px;
+	--sd-slider-nav-offset: 28px;
+}
+
 /* Arrows — vertically centred against the shelf, clear of its outer edges. */
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next) {
 	position: absolute !important;
@@ -312,15 +349,24 @@
 
 /* Offset from the button's own half-width rather than a flat -2rem, so the
    target can grow without dragging the chevron in over the shelf: the centre
-   stays 10px outside the frame edge at any --sd-slider-nav-size. That is where
-   the 44px/-2rem pair put it before the arrows were enlarged. */
+   stays `--sd-slider-nav-offset` outside the frame edge at any
+   --sd-slider-nav-size. The 10px fallback is where the 44px/-2rem pair put it
+   before the arrows were enlarged.
+
+   The offset is a token because the clearance a reader sees is not this number
+   alone — it is this number plus the slide's own 15px inset plus the empty
+   margin inside the caret's square box. A shelf that sets
+   `--sd-slider-slide-gutter` to 0 has given the first of those three away, so
+   the chevron ends up sitting almost against the artwork. `.sd-slider-tight`
+   buys it back here rather than re-introducing a gutter it deliberately does
+   not want. Zared, 2026-09-16. */
 .is-style-slider-frame :is(.slick-prev, .swiper-button-prev) {
-	left: calc(var(--sd-slider-nav-size, 56px) / -2 - 10px) !important;
+	left: calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)) !important;
 	right: auto !important;
 }
 
 .is-style-slider-frame :is(.slick-next, .swiper-button-next) {
-	right: calc(var(--sd-slider-nav-size, 56px) / -2 - 10px) !important;
+	right: calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)) !important;
 	left: auto !important;
 }
 

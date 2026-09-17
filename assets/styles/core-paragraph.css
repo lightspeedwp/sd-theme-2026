@@ -75,3 +75,43 @@
 	-webkit-line-clamp: 3;
 	line-clamp: 3;
 }
+
+/*
+ * `is-style-back-link` — the left chevron on the "Back To Blog" link that opens
+ * the blog category archive. → styles/blocks/paragraph/back-link.json
+ *
+ * Here rather than in the style's `css` field because the rule needs
+ * `content: ""`, and a `css` field mangles that declaration and drops the rule
+ * containing it. → AGENTS.md, "Styling lives in JSON"
+ *
+ * The chevron is the same Phosphor `CaretLeft` path the slider frame uses for
+ * its previous control (assets/styles/core-group.css), so the two read as one
+ * icon set. A mask painted with `currentColor` rather than a `background-image`:
+ * the anchor's colour is a token set on the block and its `:hover` colour comes
+ * from the page-section style, and a mask follows both without either being
+ * restated here.
+ *
+ * The anchor's own layout — `inline-flex`, the alignment and the gap — is in
+ * the variation's `css` field, where the editor reads it too. Only this rule is
+ * here, and only because of `content`. `inline-flex` sits on the anchor rather
+ * than the paragraph deliberately: the paragraph is the `alignwide` rail, and
+ * making it a flex container would take the wide alignment off the text.
+ *
+ * `0.75em`, so the chevron tracks the link's font size rather than pinning a
+ * pixel value that only holds at font-size 300.
+ */
+.is-style-back-link a::before {
+	content: "";
+	flex: none;
+	inline-size: 0.75em;
+	block-size: 0.75em;
+	background-color: currentColor;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}

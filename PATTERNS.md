@@ -83,6 +83,7 @@ template — you don't need to place them by hand.
 | **Homepage — Africa's Finest Brands** | The accommodation-brand logo carousel, five at a time. | Brands |
 | **Homepage — The Southern Destinations Difference** | Trustpilot's own review carousel. | Trustpilot |
 | **Homepage — Tales From Our Trails** | The news carousel — three post tiles at a time. | Posts |
+| **Blog — Browse By Category** | The category shelf on the blog landing — five tiles at a time, following the categories that have posts. Add a category and it appears; you never edit the shelf. | Posts |
 
 ### Which four safari gurus?
 
@@ -223,7 +224,6 @@ they always match the tour, lodge or destination they sit on.
 | **Post Loop List** | Posts in a vertical list | Yes |
 | **Post Loop Grid** | Posts in a grid, with the theme's own settings | No |
 | **Post Loop Grid Default** | Posts in a grid, inheriting the page's query | No |
-| **Single Post** | The single blog post layout | Yes |
 
 ---
 
@@ -255,7 +255,8 @@ recognise the name if you meet it in the Site Editor.
 | **Template: Brands Landing** | The *Brands* page — the grid of lodge-operator logos. Attached by the page's slug, so renaming the page to anything other than `brands` detaches it. |
 | **Template: Accommodation Brand Taxonomy** | A single brand's page — its story, its logo, and its accommodation. One template for all twenty-one brands. |
 | **Template: Single Team Member** | A consultant's own page |
-| **Template: Blog Landing (News)** | The news index |
+| **Template: Blog Landing** | The blog landing page — *Tales from our trails*, the category shelf and the list of posts. Used by both the posts index and the generic fallback template. |
+| **Template: Single Post** | A blog post's own page — the byline, the title, the post, then the tinted band carrying three **Related Posts** and the previous/next pager. |
 | **Template: Category** | Category archives |
 | **Template: Archive** | Generic archives |
 | **Template: Search Results** | Search |
