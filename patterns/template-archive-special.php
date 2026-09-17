@@ -79,16 +79,26 @@
  * `core/post-terms` needs none of this — core renders nothing at all when the
  * post has no terms in the taxonomy.
  *
- * ## The enquire button is not finished
+ * ## The enquire button
  *
- * It opens the shared modal through the existing `#to-modal-enquiry` trigger
- * convention, which is all `SD\Enhancements\Enquiry::register_trigger_modal()`
- * needs. The per-band attribute naming *which* offer it is about is **not**
- * emitted yet: whether the form's field takes the offer's name, its slug or its
- * post ID is the line 15/16 owner's decision and it was still open when this
- * shipped. Until it lands the button is complete and inert on that one point,
- * per the enquiry-trigger contract's degraded-behaviour clause — SC-007 is
- * verified when that surface arrives, not waived.
+ * Every band's button points at `#to-modal-modal-enquiry` — the same href the
+ * other six enquiry CTAs in this theme use, and the one
+ * `SD\Enhancements\Enquiry::register_trigger_modal()` actually resolves: it
+ * reads the slug out of the href and registers `parts/modal-enquiry.html` as
+ * the modal's content, so the offer bands open the same Gravity Form 1 dialog,
+ * styled the same way, as every other "Send an Email" on the site.
+ *
+ * ⚠️ It said `#to-modal-enquiry` until 2026-09-17, which is **not** a
+ * template-part slug — the part is `modal-enquiry`. `Enquiry` verifies the slug
+ * resolves to a real `wp_template_part` before rendering it, by design, so the
+ * mismatch registered nothing and all four buttons were inert anchors. The
+ * module deduplicates by slug, so the four bands on a page still print one
+ * dialog between them.
+ *
+ * The per-band attribute naming *which* offer the enquiry is about is still
+ * **not** emitted: whether the form's field takes the offer's name, its slug or
+ * its post ID is the line 15/16 owner's decision and it was open when this
+ * shipped. SC-007 is verified when that surface arrives, not waived.
  */
 
 ?>
@@ -152,8 +162,8 @@
 	 * fidelity on one.
 	 */
 	?>
-	<!-- wp:group {"metadata":{"name":"Introduction"},"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--50)">
+	<!-- wp:group {"metadata":{"name":"Introduction"},"align":"full","className":"is-style-light-page-section","layout":{"type":"constrained","contentSize":"1100px"}} -->
+	<div class="wp-block-group alignfull is-style-light-page-section">
 
 		<!-- wp:paragraph {"metadata":{"name":"Introduction"},"align":"wide","className":"is-style-archive-intro"} -->
 		<p class="alignwide is-style-archive-intro"><?php esc_html_e( 'There are loads of great travel deals out there. Depending on when you are travelling and how many nights you are staying, there are some excellent discounts to take advantage of. Here is a hand picked list of the ones that we feel are a good fit.', 'sd-theme-2026' ); ?></p>
@@ -161,6 +171,16 @@
 
 	</div>
 	<!-- /wp:group -->
+
+	<?php
+	/*
+	 * The offer list sits on the same white band as the introduction above it,
+	 * with its top padding taken off so the two read as one section rather than
+	 * two stacked ones.
+	 */
+	?>
+	<!-- wp:group {"metadata":{"name":"Offers Band"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"padding":{"top":"0"}}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignfull is-style-light-page-section" style="padding-top:0">
 
 	<!-- wp:query {"queryId":0,"query":{"inherit":true,"postType":"special"},"align":"full","metadata":{"name":"Offers"},"style":{"spacing":{"blockGap":"var:preset|spacing|50","padding":{"bottom":"var:preset|spacing|70"}}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-query alignfull" style="padding-bottom:var(--wp--preset--spacing--70)">
@@ -170,9 +190,14 @@
 		 * `blockGap: 0`. Live's bands butt straight up against each other —
 		 * `.lsx-to-archive-item { margin: 0 }` — and the alternating left/right
 		 * panels only read as a rhythm if nothing separates the photographs.
+		 *
+		 * `align: wide`, not full. Live runs the bands edge to edge; here they
+		 * stop at the wide measure so the list sits inside the white band like
+		 * every other archive in this theme rather than breaking out of it.
+		 * Set in the Site Editor 2026-09-17 and reconciled back here.
 		 */
 		?>
-		<!-- wp:post-template {"align":"full","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
+		<!-- wp:post-template {"align":"wide","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 
 			<?php
 			/*
@@ -236,11 +261,11 @@
 					 * does this.
 					 */
 					?>
-					<!-- wp:post-content {"fontSize":"200","layout":{"type":"default"}} /-->
+					<!-- wp:post-content {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"fontSize":"200","layout":{"type":"default"}} /-->
 
 					<!-- wp:buttons {"metadata":{"name":"Enquire"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|10"}}},"layout":{"type":"flex","justifyContent":"left"}} -->
 					<div class="wp-block-buttons is-content-justification-left" style="margin-top:var(--wp--preset--spacing--10)"><!-- wp:button {"className":"is-style-fill"} -->
-					<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="#to-modal-enquiry"><?php esc_html_e( 'Enquire about this special', 'sd-theme-2026' ); ?></a></div>
+					<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Enquire about this special', 'sd-theme-2026' ); ?></a></div>
 					<!-- /wp:button --></div>
 					<!-- /wp:buttons -->
 
@@ -277,6 +302,9 @@
 
 	</div>
 	<!-- /wp:query -->
+
+	</div>
+	<!-- /wp:group -->
 
 	<?php
 	/*

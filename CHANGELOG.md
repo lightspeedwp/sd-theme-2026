@@ -48,17 +48,51 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   keys off the `core/post-template` `<li>` above the band), the sub-900px stack
   (`@media`), and the list reset.
 
-  Two deliberate deviations from live, both for consistency across the five Tour
-  Operator archives: the introduction takes `is-style-archive-intro`, and the
-  offer copy is set as running text with no list markers — live renders the
-  authored `<ul>` bullets, which read as a browser default over the photograph
-  rather than as a deliberate list.
+  One deliberate deviation from live, for consistency across the five Tour
+  Operator archives: the introduction takes `is-style-archive-intro`. Offer copy
+  renders exactly as it was authored, bullets included, as live renders it.
+
+  The introduction and the offer list share one `is-style-light-page-section`
+  band — the list's top padding is off so the two read as a single section —
+  and the bands run to the **wide** measure, not full. Set in the Site Editor
+  and reconciled back into this file 2026-09-17; the DB override is now
+  redundant and should be cleared before deploy.
+
+  ⚠️ **Every offer's copy is one size regardless of how it was authored.**
+  `theme.json` styles `core/paragraph`, and core compiles that block against the
+  bare element selector — `:root :where(p){font-size:…300}`. A direct rule beats
+  inheritance, so raw `<p>` in migrated content rendered a size larger than the
+  `<li>`s beside it, which no rule matches and which inherited preset 200 from
+  `core/post-content`. Offers written as paragraphs (Thornybush) came out
+  visibly larger than offers written as bullets (RockFig, Dulini). Normalised in
+  `assets/styles/core-group.css` with `font-size: inherit` at (0,2,0), so the
+  copy follows the block's own font size and the editor and front end cannot
+  disagree.
 
   The page title, tagline and introduction are ordinary `core/heading` and
   `core/paragraph` blocks. They were bound to Tour Operator's settings registry
   through `sd/to-setting`; no setting was populated on any environment, so every
   render fell through to the authored copy, and the other four landing pages all
   author theirs directly.
+
+### Fixed
+
+- 🐛 **The Specials enquiry buttons opened nothing.** LS-2021.
+  `patterns/template-archive-special.php`.
+
+  Every offer band pointed at `#to-modal-enquiry`, which is not a template-part
+  slug — the part is `modal-enquiry`, and the other six enquiry CTAs in this
+  theme all use `#to-modal-modal-enquiry`.
+  `SD\Enhancements\Enquiry::register_trigger_modal()` verifies the slug resolves
+  to a real `wp_template_part` in the `modals` area before rendering it, by
+  design, so the mismatch registered no dialog and all four buttons were inert
+  in-page anchors. They now open the same Gravity Form 1 dialog, styled the same
+  way, as every other "Send an Email" on the site — one dialog between them,
+  since the module deduplicates by slug.
+
+  Verified on local 2026-09-17: two renders of the band button leave exactly one
+  `to-modal-modal-enquiry` entry in Tour Operator's `modal_contents`, where the
+  old href left none.
 
 - ✨ **`patterns/cta-like-what-you-see.php`** — the specials variant of the
   enquiry band. LS-2021.

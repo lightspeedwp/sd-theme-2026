@@ -948,23 +948,26 @@
 }
 
 /**
- * Special Card — the offer copy carries no list markers.
+ * Special Card — the offer copy is one size, whatever it is authored as.
  *
- * Several offers are authored as `<ul>` bullets and several as paragraphs;
- * live renders both and the bullets read as a stray browser default over the
- * photograph rather than as a deliberate list. The terms are set as running
- * copy in both cases. A deliberate deviation from live, agreed 2026-09-17.
+ * `theme.json` styles `core/paragraph`, and core compiles that block's styles
+ * against the bare element selector — `:root :where(p){font-size:…300}`. A
+ * *direct* rule beats inheritance, so every raw `<p>` in an offer's migrated
+ * content rendered at preset 300 while the `<li>`s beside it, which no rule
+ * matches, inherited preset 200 from the `core/post-content` block. Offers
+ * authored as paragraphs (Thornybush) therefore came out visibly larger than
+ * offers authored as bullets (RockFig, Dulini). Measured on dev 2026-09-17.
  *
- * `:where()` so an editor who inserts a genuine list block inside the panel
- * can still style it.
+ * `inherit` rather than a literal preset, so the copy follows whatever font
+ * size the `core/post-content` block is set to and this never has to be kept
+ * in step by hand. At (0,2,0) it beats the (0,1,0) global rule in both the
+ * editor and the front end, so the two environments cannot disagree.
+ *
+ * The offers keep their authored list markers — the content renders as it was
+ * written, as live renders it.
  */
-.is-style-special-card :where(ul, ol) {
-	list-style: none;
-	padding-inline-start: 0;
-}
-
-.is-style-special-card :where(ul, ol) li {
-	margin: 0;
+.is-style-special-card .wp-block-post-content :where(p, li, ul, ol) {
+	font-size: inherit;
 }
 
 /**
