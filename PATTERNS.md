@@ -205,6 +205,7 @@ only when you want a single tile as a feature.
 | **Card — Tour (Compact)** · **Card — Tour (List)** | Tour tiles, in a grid and in a row |
 | **Card — Accommodation (Compact)** · **Card — Accommodation (List)** | Accommodation tiles |
 | **Card — Destination (Compact)** | Destination tile |
+| **Card — Search Result (List)** | The row the search results page renders, for any kind of result. Same row as Card — Accommodation (List), plus a badge naming what the result is; the meta panel shows accommodation fields on a property and tour fields on a tour, and disappears on anything else. |
 | **Card — Post (Grid)** · **Card — Post (List)** | Blog post tiles |
 | **Card — Category** | Category tile |
 | **Blog Card** · **Blog Card Large** | Post tiles for the news landing page |

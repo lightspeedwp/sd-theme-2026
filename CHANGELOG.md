@@ -8,6 +8,38 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✨ **The search results page.** LS-4175 (line 14, Search).
+  `patterns/template-page-search.php`, `patterns/card-search-result.php`,
+  `styles/sections/cards/listing-card-list.json`,
+  `assets/styles/facetwp-facets.css`.
+
+  `/?s=…` is now the same results page the accommodation-type search is, rather
+  than the three-column blog-card grid that stood in as scaffolding: the search
+  banner over live's own photograph (attachment 51741, already in the media
+  library), the breadcrumb strip, then mixed-post-type result rows behind a
+  Content Type filter rail and a result count.
+
+  **The rows are `patterns/card-accommodation-list.php`'s row, carrying every
+  post type.** A post-type badge sits on the leading corner of the thumbnail;
+  the tinted meta panel shows the accommodation fields on an accommodation and
+  the tour fields on a tour, and is gone entirely on a page, a destination or an
+  article, where the copy column grows into the space and the excerpt is the
+  whole card. Every gate is Block Visibility's Location control on `postType`,
+  which reads the *looped* post inside a `core/post-template` — so one authored
+  card answers for all of them. ⚠️ That makes Block Visibility a render-time
+  dependency of this card; deactivating it shows every gated block.
+
+  The title keeps the card style's 400; the excerpt and the whole meta panel run
+  at 200 — "Base" — which is the one size the row's body text runs at.
+
+  **One filter only.** A result set spanning seven post types has no field in
+  common to refine on, so the rail carries the existing `post_type` facet
+  ("Content Type") and the selected-filter chips, and nothing else. Its
+  behaviour was set to **OR** on dev — a `post_type` facet on AND returns
+  nothing the moment two types are ticked. The keyword box is `core/search`,
+  not a FacetWP search facet: here the keyword *is* the query. There is no sort
+  control; relevance is the only ordering a mixed result set has.
+
 - ✨ **The Specials landing page.** LS-2021 (line 11, Specials).
   `templates/archive-special.html`, `patterns/template-archive-special.php`,
   `patterns/cta-like-what-you-see.php`, `styles/sections/cards/special-card.json`.
@@ -83,6 +115,22 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   through `sd/to-setting`; no setting was populated on any environment, so every
   render fell through to the authored copy, and the other four landing pages all
   author theirs directly.
+
+### Changed
+
+- 💄 **"Results" is no longer set in capitals, and the count beside it matches
+  it.** LS-4175. `patterns/template-page-search.php`,
+  `patterns/template-taxonomy-accommodation-type.php`,
+  `assets/styles/facetwp-facets.css`.
+
+  The heading carries `textTransform: none` against `theme.json`'s uppercase
+  `h2` — right for a section heading, wrong for a label beside a number — and
+  the count is now font-size 400 in neutral-700, the size and colour the heading
+  renders at inside `is-style-light-page-section`, rather than 300 in
+  neutral-500. The brackets around the number are the `results_count` facet's
+  own count text, set to `([total])` / `(1)` / `(0)` on dev 2026-09-17, because
+  they are content rather than presentation. All three land on the
+  accommodation-type results page too, which shares the facet and the sheet.
 
 ### Fixed
 

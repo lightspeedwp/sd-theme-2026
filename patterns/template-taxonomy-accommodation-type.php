@@ -533,8 +533,8 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 					<!-- wp:group {"metadata":{"name":"Result Count"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"bottom"}} -->
 					<div class="wp-block-group">
 
-						<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-results"} -->
-						<h2 class="wp-block-heading has-400-font-size" id="h-results"><?php esc_html_e( 'Results', 'sd-theme-2026' ); ?></h2>
+						<!-- wp:heading {"level":2,"style":{"typography":{"textTransform":"none"}},"fontSize":"400","anchor":"h-results"} -->
+						<h2 class="wp-block-heading has-400-font-size" id="h-results" style="text-transform:none"><?php esc_html_e( 'Results', 'sd-theme-2026' ); ?></h2>
 						<!-- /wp:heading -->
 
 						<?php
