@@ -83,19 +83,17 @@
  * of the fold treatment — the script's section test requires a heading — and
  * leaves it unplated, as live's keyword box is.
  *
- * ⚠️ **The `search_tour` facet does not exist on dev yet.** Measured in
- * `facetwp_settings` 2026-09-17: the only search facet registered is
- * `search_accommodation`. Until it is added in *FacetWP → Settings → Facets*
- * this block renders nothing. The settings it needs:
+ * The facet is registered. Measured in `facetwp_settings` on dev 2026-09-17,
+ * after Zared added it: name `search_tours` — **plural**, and the `facetName`
+ * below has to match it character for character or the block renders nothing —
+ * label "Search - Tours", type `Search`, engine `swp_tours`, placeholder
+ * "Search tours...", relevance `yes`, auto refresh `yes`.
  *
- *   - Name: `search_tour` · Label: `Search` · Type: `Search`
- *   - Search engine: **SearchWP - Tours**, which stores as `swp_tours`
- *     (`facetwp/includes/integrations/searchwp/searchwp.php:202` keys the
- *     dropdown `swp_ . $engine_key`, and `:171` strips the four-character
- *     prefix back off). The engine exists — `searchwp_engines['tours']`,
- *     sourced from `post.tour`, weighting `travel-style` at 90.
- *   - Auto refresh: `no` (it filters on Enter, not per keystroke)
- *   - Relevance: `yes` · Placeholder: `Search tours`
+ * `swp_tours` is **SearchWP - Tours** as it stores:
+ * `facetwp/includes/integrations/searchwp/searchwp.php:202` keys the dropdown
+ * `swp_ . $engine_key` and `:171` strips the four-character prefix back off.
+ * The engine is `searchwp_engines['tours']`, sourced from `post.tour`,
+ * weighting `travel-style` at 90.
  *
  * ⚠️ While you are in there: `search_accommodation` is set to
  * `swp_accommodation_engine`, which resolves to an engine named
@@ -231,16 +229,17 @@
 				/*
 				 * The keyword box — a FacetWP search facet over the Tours
 				 * SearchWP engine, above "Refine by" because searching is not
-				 * refining. Its placeholder and its `auto_refresh: no` are the
+				 * refining. Its placeholder and its `auto_refresh` are the
 				 * facet's own FacetWP settings rather than theme strings, which
 				 * is why there is no copy to translate here.
 				 *
-				 * ⚠️ `search_tour` is not registered on dev yet — §3 at the head
-				 * of this file carries the settings it needs. Until it is, this
-				 * block renders nothing.
+				 * ⚠️ `facetName` is `search_tours`, plural, because that is the
+				 * name the facet is registered under — §3 at the head of this
+				 * file has the rest of its settings as measured. A mismatch here
+				 * renders nothing, silently.
 				 */
 				?>
-				<!-- wp:facetwp/facet {"facetName":"search_tour","facetLabel":"Search","facetType":"search","hasHeader":false} /-->
+				<!-- wp:facetwp/facet {"facetName":"search_tours","facetLabel":"Search - Tours","facetType":"search","hasHeader":false} /-->
 
 				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
 				<h2 class="wp-block-heading has-400-font-size" id="h-refine-by"><?php esc_html_e( 'Refine by', 'sd-theme-2026' ); ?></h2>
@@ -280,19 +279,6 @@
 					<!-- /wp:heading -->
 				<!-- /wp:facetwp/facet -->
 
-				<?php
-				/*
-				 * The selected-filter chips. `user_selections` needs no FacetWP
-				 * configuration — the block's render.php special-cases the name
-				 * and calls `facetwp_display( 'selections' )` — and it renders
-				 * nothing while no filter is active. It is worth carrying
-				 * precisely because the facets fold shut: with a panel closed
-				 * the chips are the only thing that shows what is applied, and
-				 * each one removes its own filter.
-				 */
-				?>
-				<!-- wp:facetwp/facet {"facetName":"user_selections","facetLabel":"Selected filters","facetType":"selections","hasHeader":false,"className":"sd-search-selections"} /-->
-
 			</aside>
 			<!-- /wp:group -->
 
@@ -321,8 +307,8 @@
 					<!-- wp:group {"metadata":{"name":"Result Count"},"style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
 					<div class="wp-block-group">
 
-						<!-- wp:heading {"level":2,"style":{"typography":{"textTransform":"none"}},"fontSize":"400","anchor":"h-results"} -->
-						<h2 class="wp-block-heading has-400-font-size" id="h-results" style="text-transform:none"><?php esc_html_e( 'Results', 'sd-theme-2026' ); ?></h2>
+						<!-- wp:heading {"level":2,"style":{"typography":{"textTransform":"none"},"spacing":{"padding":{"top":"4px","bottom":"0px"}}},"fontSize":"400","anchor":"h-results"} -->
+						<h2 class="wp-block-heading has-400-font-size" id="h-results" style="padding-top:4px;padding-bottom:0px;text-transform:none"><?php esc_html_e( 'Results', 'sd-theme-2026' ); ?></h2>
 						<!-- /wp:heading -->
 
 						<!-- wp:facetwp/facet {"facetName":"results_count","facetLabel":"Result count","facetType":"pager","hasHeader":false,"className":"sd-search-counts"} /-->

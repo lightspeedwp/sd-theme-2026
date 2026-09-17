@@ -2,7 +2,7 @@
 /**
  * Title: Card — Tour (List)
  * Slug: sd-theme-2026/card-tour-list
- * Description: The horizontal tour result row the travel-style and tour searches render — a square thumbnail on the leading third, then a nested split with the title, tagline, excerpt and read-more beside a tinted meta panel carrying the connected destination and the travel styles. Drop it into a Query Loop's post template.
+ * Description: The horizontal tour result row the travel-style and tour searches render — a square thumbnail on the leading third, then a nested split with the title, tagline and excerpt beside a tinted meta panel carrying the connected destination and the travel styles. Drop it into a Query Loop's post template.
  * Categories: sd-theme-2026/card, sd-theme-2026/tour-operator
  * Keywords: card, list, row, tour, search, archive, facetwp, travel style
  * Viewport Width: 1280
@@ -89,6 +89,13 @@
 			 * The copy. No `width` — the column grows into whatever the meta
 			 * panel leaves, which is what keeps this card and the search row
 			 * identical without a second variant to hold in step.
+			 *
+			 * The excerpt runs to 40 words and ends on `/..` rather than on a
+			 * `core/read-more` link (Zared, 2026-09-17). The card's title is
+			 * already a link and the whole row reads as one target, so a second
+			 * "View more" beneath the copy was a redundant tab stop; the
+			 * ellipsis carries the same signal without one. `moreText` is the
+			 * excerpt's own trailing string, not a link.
 			 */
 			?>
 			<!-- wp:column {"style":{"spacing":{"blockGap":"var:preset|spacing|20"}}} -->
@@ -102,9 +109,7 @@
 
 				<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
 				<div class="wp-block-group">
-					<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":45,"fontSize":"200"} /-->
-
-					<!-- wp:read-more {"content":"View more","fontSize":"200"} /-->
+					<!-- wp:post-excerpt {"moreText":"/..","showMoreOnNewLine":false,"excerptLength":40,"fontSize":"200"} /-->
 				</div>
 				<!-- /wp:group -->
 
@@ -119,12 +124,17 @@
 			 * binding prints nothing rather than a stray prefix; `prefix` /
 			 * `prefixBold` are `sd-enhancements`' addition to `core/paragraph`,
 			 * not core's.
+			 *
+			 * `parents: "true"` on the binding walks the connected destination
+			 * up its hierarchy, so a tour attached to a region prints the
+			 * country alongside it rather than the region alone — which is what
+			 * live's Location row shows (Zared, 2026-09-17).
 			 */
 			?>
 			<!-- wp:column {"verticalAlignment":"stretch","width":"35%","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"typography":{"lineHeight":"var:custom|line-height|body"}},"backgroundColor":"neutral-100","fontSize":"200"} -->
 			<div class="wp-block-column is-vertically-aligned-stretch has-neutral-100-background-color has-background has-200-font-size" style="padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);line-height:var(--wp--custom--line-height--body);flex-basis:35%">
 
-				<!-- wp:paragraph {"metadata":{"name":"Location","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour"}}}},"className":"lsx-destination-to-tour-wrapper","prefix":"Location:","prefixBold":true,"fontSize":"200"} -->
+				<!-- wp:paragraph {"metadata":{"name":"Location","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour","parents":"true"}}}},"className":"lsx-destination-to-tour-wrapper","prefix":"Location:","prefixBold":true,"fontSize":"200"} -->
 				<p class="lsx-destination-to-tour-wrapper has-200-font-size"></p>
 				<!-- /wp:paragraph -->
 

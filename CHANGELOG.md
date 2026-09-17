@@ -8,6 +8,46 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✨ **The travel-style term archive.** LS-4204 (line 12, Travel Styles).
+  `templates/taxonomy-travel-style.html`, `patterns/template-taxonomy-travel-style.php`,
+  `patterns/card-tour-list.php`.
+
+  `/travel-style/<slug>/` is now a real term archive. Live has no equivalent —
+  its nearest page is a hacked site search over WooCommerce `product` posts —
+  so this is the search results page's structure applied to one post type: the
+  "Tours & Safaris" banner and standfirst verbatim from live's tour search, the
+  breadcrumb strip (the only place the term is named), then the tour rows behind
+  a keyword facet, a Destinations filter and a Travel Styles filter, with a
+  result count, the shared sort control and a FacetWP pager. It closes on
+  "Why choose Southern Destinations", as the tours archive does.
+
+  **The keyword box is a FacetWP search facet, not `core/search`** — here the
+  keyword narrows what the term returned rather than being the query itself. It
+  is `search_tours`, plural, over the **SearchWP - Tours** engine; the facet was
+  registered on dev 2026-09-17 and the `facetName` has to match it exactly or
+  the block renders nothing, silently.
+
+  **No selected-filter chips on this page.** Two filters over a single post type
+  in an always-visible rail already show what is applied; the chips stay on the
+  search and accommodation pages, where the rails are longer.
+
+  Live's "Price Per Person" slider is deliberately not carried — `price` is an
+  accommodation field in Tour Operator 2.2, so the facet would index empty and
+  hide on every request. **Noted for LS-2033**: a tour price filter needs a
+  price on the tour, which is a data-model question rather than theme work.
+
+  ⚠️ **Plugin dependency.** `travel-style` is registered against six post types
+  and they all carry terms, so the tours-only constraint is a `pre_get_posts` in
+  `sd-enhancements-2026` — `Queries::limit_travel_style_archive()`. With the
+  plugin deactivated this page lists accommodation and reviews through the tour
+  card.
+
+  **The tour row lost its "View more" link.** The excerpt now runs to 40 words
+  and ends on `/..`; the card title is already a link and the whole row reads as
+  one target, so the separate read-more was a redundant tab stop. Its Location
+  row now binds with `parents: "true"`, so a tour attached to a region prints
+  the country alongside it rather than the region alone.
+
 - ✨ **The search results page.** LS-4175 (line 14, Search).
   `patterns/template-page-search.php`, `patterns/card-search-result.php`,
   `styles/sections/cards/listing-card-list.json`,
