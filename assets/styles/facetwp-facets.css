@@ -698,12 +698,22 @@
 /* The count. Live writes it as `Results (200)` — the brackets are literal text
    either side of the number inside one `h3`. Here "Results" is the toolbar's
    own `h2` and the number comes from the facet, so the brackets belong to the
-   facet's count-text setting (`([total])`), not to CSS: they are content, and a
-   count of "0 results" needs different wording rather than the same brackets. */
+   facet's count-text setting, not to CSS: they are content, and a count of
+   "0 results" needs different wording rather than the same brackets. The
+   `results_count` facet's count text was set to `([total])` / `(1)` / `(0)` on
+   dev 2026-09-17 for exactly that reason.
+
+   Size and colour match the "Results" heading beside it — font-size 400 and
+   neutral-700, which is what `is-style-light-page-section` gives a heading —
+   so the pair reads as one label and its value rather than as a heading and a
+   caption. Zared's call, 2026-09-17; it applies wherever this toolbar renders,
+   so the accommodation results page takes it too. The weight is deliberately
+   left at the body weight: same size, same colour, and the semi-bold label
+   still leads. */
 .sd-search-counts .facetwp-facet {
-	color: var(--wp--preset--color--neutral-500);
+	color: var(--wp--preset--color--neutral-700);
 	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--300);
+	font-size: var(--wp--preset--font-size--400);
 	font-variant-numeric: tabular-nums;
 	line-height: var(--wp--custom--line-height--heading);
 }
