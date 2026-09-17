@@ -477,25 +477,25 @@
 					"slug": "body",
 					"fontFamily": "\"Open Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
 					"fontFace": [
-					{
-						"fontFamily": "Open Sans",
-						"fontWeight": "300 700",
-						"fontStyle": "normal",
-						"fontDisplay": "swap",
-						"src": [
-							"file:./assets/fonts/open-sans-variable-normal.woff2"
-						]
-					},
-					{
-						"fontFamily": "Open Sans",
-						"fontWeight": "300 700",
-						"fontStyle": "italic",
-						"fontDisplay": "swap",
-						"src": [
-							"file:./assets/fonts/open-sans-variable-italic.woff2"
-						]
-					}
-				]
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "300 700",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-variable-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "300 700",
+							"fontStyle": "italic",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-variable-italic.woff2"
+							]
+						}
+					]
 				},
 				{
 					"name": "Accent",
@@ -1291,6 +1291,11 @@
 		{
 			"name": "modal-enquiry",
 			"title": "Modal — Enquiry",
+			"area": "modals"
+		},
+		{
+			"name": "modal-special",
+			"title": "Modal — Special",
 			"area": "modals"
 		}
 	]

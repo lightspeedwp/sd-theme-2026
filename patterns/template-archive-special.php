@@ -79,26 +79,34 @@
  * `core/post-terms` needs none of this — core renders nothing at all when the
  * post has no terms in the taxonomy.
  *
- * ## The enquire button
+ * ## The Book Special button
  *
- * Every band's button points at `#to-modal-modal-enquiry` — the same href the
- * other six enquiry CTAs in this theme use, and the one
- * `SD\Enhancements\Enquiry::register_trigger_modal()` actually resolves: it
- * reads the slug out of the href and registers `parts/modal-enquiry.html` as
- * the modal's content, so the offer bands open the same Gravity Form 1 dialog,
- * styled the same way, as every other "Send an Email" on the site.
+ * Every band's button points at `#to-modal-modal-special`, which
+ * `SD\Enhancements\Enquiry::register_trigger_modal()` reads the slug out of and
+ * registers `parts/modal-special.html` against — the same dialog composition as
+ * `parts/modal-enquiry.html`, one Gravity Form apart. This page takes **form 10,
+ * "Specials Form"**, not the general form 1 the other six enquiry CTAs use.
  *
  * ⚠️ It said `#to-modal-enquiry` until 2026-09-17, which is **not** a
- * template-part slug — the part is `modal-enquiry`. `Enquiry` verifies the slug
- * resolves to a real `wp_template_part` before rendering it, by design, so the
+ * template-part slug — parts are `modal-enquiry` and `modal-special`, so the
+ * href carries `modal-` twice. `Enquiry` verifies the slug resolves to a real
+ * `wp_template_part` in the `modals` area before rendering it, by design, so the
  * mismatch registered nothing and all four buttons were inert anchors. The
- * module deduplicates by slug, so the four bands on a page still print one
- * dialog between them.
+ * module deduplicates by slug, so the four bands on a page print one dialog
+ * between them.
  *
- * The per-band attribute naming *which* offer the enquiry is about is still
- * **not** emitted: whether the form's field takes the offer's name, its slug or
- * its post ID is the line 15/16 owner's decision and it was open when this
- * shipped. SC-007 is verified when that surface arrives, not waived.
+ * ## Which offer the enquiry is about is still open
+ *
+ * That one dialog is the reason. Form 10 already carries the field — id 12,
+ * "Name of Offer", hidden, `allowsPrepopulate`, default `{embed_post:post_title}`
+ * (measured on dev 2026-09-17) — but `{embed_post:…}` resolves against the
+ * embedding post, and a modal registered once and printed in the footer of an
+ * **archive** has no embedding post to resolve against. A shared dialog cannot
+ * name the offer whose button opened it.
+ *
+ * Closing it means either a per-band dialog or a script that writes the offer's
+ * name into field 12 on open — behaviour either way, so plugin work, and the
+ * line 15/16 owner's call. SC-007 is verified when that lands, not waived.
  */
 
 ?>
@@ -263,9 +271,9 @@
 					?>
 					<!-- wp:post-content {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"fontSize":"200","layout":{"type":"default"}} /-->
 
-					<!-- wp:buttons {"metadata":{"name":"Enquire"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|10"}}},"layout":{"type":"flex","justifyContent":"left"}} -->
-					<div class="wp-block-buttons is-content-justification-left" style="margin-top:var(--wp--preset--spacing--10)"><!-- wp:button {"className":"is-style-fill"} -->
-					<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Enquire about this special', 'sd-theme-2026' ); ?></a></div>
+					<!-- wp:buttons {"metadata":{"name":"Enquire"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}},"layout":{"type":"flex","justifyContent":"left"}} -->
+					<div class="wp-block-buttons is-content-justification-left" style="margin-top:var(--wp--preset--spacing--30)"><!-- wp:button {"className":"is-style-fill"} -->
+					<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-special"><?php esc_html_e( 'Book Special', 'sd-theme-2026' ); ?></a></div>
 					<!-- /wp:button --></div>
 					<!-- /wp:buttons -->
 

@@ -69,6 +69,15 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   copy follows the block's own font size and the editor and front end cannot
   disagree.
 
+  ⚠️ **Which offer an enquiry is about is still not carried.** Form 10 already
+  has the field — id 12, "Name of Offer", hidden, `allowsPrepopulate`, default
+  `{embed_post:post_title}` (measured on dev 2026-09-17) — but `{embed_post:…}`
+  resolves against the embedding post, and one dialog registered once and
+  printed in an archive's footer has no embedding post to resolve against. A
+  shared dialog cannot name the offer whose button opened it. Closing it means
+  a per-band dialog or a script that writes field 12 on open — behaviour either
+  way, so plugin work. SC-007 is verified when that lands, not waived.
+
   The page title, tagline and introduction are ordinary `core/heading` and
   `core/paragraph` blocks. They were bound to Tour Operator's settings registry
   through `sd/to-setting`; no setting was populated on any environment, so every
@@ -77,22 +86,26 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
-- 🐛 **The Specials enquiry buttons opened nothing.** LS-2021.
-  `patterns/template-archive-special.php`.
+- 🐛 **The Specials "Book Special" buttons opened nothing.** LS-2021.
+  `patterns/template-archive-special.php`, `parts/modal-special.html`,
+  `theme.json`.
 
   Every offer band pointed at `#to-modal-enquiry`, which is not a template-part
-  slug — the part is `modal-enquiry`, and the other six enquiry CTAs in this
-  theme all use `#to-modal-modal-enquiry`.
-  `SD\Enhancements\Enquiry::register_trigger_modal()` verifies the slug resolves
-  to a real `wp_template_part` in the `modals` area before rendering it, by
-  design, so the mismatch registered no dialog and all four buttons were inert
-  in-page anchors. They now open the same Gravity Form 1 dialog, styled the same
-  way, as every other "Send an Email" on the site — one dialog between them,
-  since the module deduplicates by slug.
+  slug — parts are `modal-enquiry` and `modal-special`, so the href carries
+  `modal-` twice. `SD\Enhancements\Enquiry::register_trigger_modal()` verifies
+  the slug resolves to a real `wp_template_part` in the `modals` area before
+  rendering it, by design, so the mismatch registered no dialog at all and the
+  buttons were inert in-page anchors.
 
-  Verified on local 2026-09-17: two renders of the band button leave exactly one
-  `to-modal-modal-enquiry` entry in Tour Operator's `modal_contents`, where the
-  old href left none.
+  They now open **`parts/modal-special.html`** — the same dialog composition as
+  `parts/modal-enquiry.html`, carrying Gravity Form 10, "Specials Form", rather
+  than the general form 1 the other six enquiry CTAs use. Registered in
+  `theme.json` under the `modals` area alongside the other four.
+
+  Verified on local 2026-09-17: the part resolves with `area=modals` and
+  `formId: 10`, and four renders of the band button leave exactly one
+  `to-modal-modal-special` entry in Tour Operator's `modal_contents` — four
+  bands, one dialog — where the old href left none.
 
 - ✨ **`patterns/cta-like-what-you-see.php`** — the specials variant of the
   enquiry band. LS-2021.
