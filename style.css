@@ -495,3 +495,38 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 	--gf-padding-x: var(--wp--preset--spacing--20);
 	--gf-padding-y: var(--wp--preset--spacing--10);
 }
+
+/* Gravity Forms submit button — every form, not just the modal ones
+   -------------------------------------------------------------------------
+   The block's `buttonPrimaryBackgroundColor` attribute sets the resting fill
+   and is the right place for it (see the note above). It does **not** reach
+   the hover, which Gravity Forms draws from a separate token:
+   `--gf-ctrl-btn-bg-color-hover-primary: var(--gf-color-primary-darker)`, and
+   `--gf-color-primary-darker` is a colour Gravity Forms derives in PHP from
+   the fill it was handed. This theme hands it `var(--wp--preset--color--brand-500)`
+   — a custom property, not a hex — so there is nothing to darken and the
+   derived value collapses to black. Every submit button on the site hovered to
+   black. Measured on dev 2026-09-17.
+
+   Both ends are set, because which one the block's inline `<style>` occupies
+   is a Gravity Forms implementation detail and it sits at (1,2,0) where no
+   class selector can reach it: if the inline style writes the derived colour,
+   the first declaration below is the one that lands; if it writes the button
+   token, the second is. Either way the hover resolves to brand-600, and
+   neither needs `!important`.
+
+   `:root .gform-theme` is (0,2,0) against the (0,1,0) of Gravity Forms' own
+   `.gform-theme--framework`, so these win on specificity rather than on
+   stylesheet order — the same reasoning as the block above.
+
+   Scoped to `.gform-theme` rather than to the popup, because the ask was every
+   form submit on the site, not the modal ones. */
+:root .gform-theme {
+	--gf-ctrl-btn-bg-color-hover-primary: var(--wp--preset--color--brand-600);
+	--gf-color-primary-darker: var(--wp--preset--color--brand-600);
+
+	/* Square, like every other button in this theme — `core/button`'s `fill`
+	   variation takes `border-radius|0` in theme.json. Gravity Forms defaults
+	   this to `var(--gf-radius)`, which is 3px. */
+	--gf-ctrl-btn-radius: var(--wp--preset--border-radius--0);
+}

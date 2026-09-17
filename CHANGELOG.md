@@ -6,6 +6,163 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- ✨ **The Specials landing page.** LS-2021 (line 11, Specials).
+  `templates/archive-special.html`, `patterns/template-archive-special.php`,
+  `patterns/cta-like-what-you-see.php`, `styles/sections/cards/special-card.json`.
+  Needs `sd-enhancements-2026` on the same branch — four of this feature's
+  requirements are behaviour and live there.
+
+  `/specials/` is now live's own page rather than the three-column card grid that
+  stood in as scaffolding: the photographic banner and an introduction, then one
+  full-width band per offer carrying the property photograph as its ground, the
+  offer name, a meta row of connections and the offer's **complete** body copy,
+  four to a page, closing on the enquiry band and the value panel.
+
+  `templates/archive-special.html` is now the four-line shell every other archive
+  in this theme already uses, and the `<main>` landmark moved into the pattern
+  with the composition rather than being left behind in both.
+
+  `styles/sections/cards/special-card.json` was written in August and had no
+  consumer until now. The band is live's, measured: 540px tall, the photograph
+  absolutely positioned as its ground, a 460px panel of copy held against one
+  edge of it and alternating leading edge / trailing edge down the page, the
+  bands butting straight together with no gap. The panel sits in normal flow, so
+  a long offer name or description grows the band rather than overflowing it —
+  at every width, with no media query, which the `css` field silently unwraps
+  anyway. The band also paints a neutral-900 ground, because
+  `core/post-featured-image` renders nothing at all for an offer without one and
+  the band would otherwise collapse.
+
+  **The band addresses its two children as blocks, not by class.** The
+  hand-rolled `special-card__media` / `special-card__body` classes are gone, and
+  with them the unused `special-card__badge` rules; `& > .wp-block-post-featured-image`
+  and `& > .wp-block-group` are as precise, since the band holds exactly one of
+  each, and an editor who rebuilds the band by hand now gets the layout without
+  knowing two invented class names.
+
+  Four things the `css` field cannot express live in `assets/styles/core-group.css`
+  instead, each with a comment saying which limit forced it: the panel's scrim
+  (it has to sit *over* the photograph, not behind it), the edge alternation (it
+  keys off the `core/post-template` `<li>` above the band), the sub-900px stack
+  (`@media`), and the list reset.
+
+  One deliberate deviation from live, for consistency across the five Tour
+  Operator archives: the introduction takes `is-style-archive-intro`. Offer copy
+  renders exactly as it was authored, bullets included, as live renders it.
+
+  The introduction and the offer list share one `is-style-light-page-section`
+  band — the list's top padding is off so the two read as a single section —
+  and the bands run to the **wide** measure, not full. Set in the Site Editor
+  and reconciled back into this file 2026-09-17; the DB override is now
+  redundant and should be cleared before deploy.
+
+  ⚠️ **Every offer's copy is one size regardless of how it was authored.**
+  `theme.json` styles `core/paragraph`, and core compiles that block against the
+  bare element selector — `:root :where(p){font-size:…300}`. A direct rule beats
+  inheritance, so raw `<p>` in migrated content rendered a size larger than the
+  `<li>`s beside it, which no rule matches and which inherited preset 200 from
+  `core/post-content`. Offers written as paragraphs (Thornybush) came out
+  visibly larger than offers written as bullets (RockFig, Dulini). Normalised in
+  `assets/styles/core-group.css` with `font-size: inherit` at (0,2,0), so the
+  copy follows the block's own font size and the editor and front end cannot
+  disagree.
+
+  ⚠️ **Which offer an enquiry is about is still not carried.** Form 10 already
+  has the field — id 12, "Name of Offer", hidden, `allowsPrepopulate`, default
+  `{embed_post:post_title}` (measured on dev 2026-09-17) — but `{embed_post:…}`
+  resolves against the embedding post, and one dialog registered once and
+  printed in an archive's footer has no embedding post to resolve against. A
+  shared dialog cannot name the offer whose button opened it. Closing it means
+  a per-band dialog or a script that writes field 12 on open — behaviour either
+  way, so plugin work. SC-007 is verified when that lands, not waived.
+
+  The page title, tagline and introduction are ordinary `core/heading` and
+  `core/paragraph` blocks. They were bound to Tour Operator's settings registry
+  through `sd/to-setting`; no setting was populated on any environment, so every
+  render fell through to the authored copy, and the other four landing pages all
+  author theirs directly.
+
+### Fixed
+
+- 🐛 **Every Gravity Forms submit button hovered to black, and carried a
+  radius.** `style.css`.
+
+  The block's `buttonPrimaryBackgroundColor` attribute sets the resting fill and
+  is the right place for it. It does not reach the hover, which Gravity Forms
+  draws from `--gf-ctrl-btn-bg-color-hover-primary: var(--gf-color-primary-darker)`
+  — a colour it derives in PHP from the fill it was handed. This theme hands it
+  `var(--wp--preset--color--brand-500)`, a custom property rather than a hex, so
+  there is nothing to darken and the derived value collapses to black.
+
+  Both the derived colour and the button token are now set to brand-600, because
+  which of the two the block's inline `<style>` occupies is a Gravity Forms
+  implementation detail and that style sits at (1,2,0) where no class selector
+  can reach it — whichever it writes, the other lands. `--gf-ctrl-btn-radius`
+  goes to `border-radius|0`, matching `core/button`'s `fill` variation. Scoped
+  to `.gform-theme` rather than to the modal, so it holds for every form on the
+  site.
+
+  ⚠️ Gravity Forms is not installed on local, so this is reasoned from the
+  plugin's own framework stylesheet (measured on dev 2026-09-17) and **not yet
+  confirmed in a browser**.
+
+- 🐛 **Taxonomy links underlined on hover, against every card's own
+  instruction.** `assets/styles/core-post-terms.css`,
+  `assets/styles/core-group.css`.
+
+  A site-wide `.wp-block-post-terms a:hover { text-decoration: underline }`
+  inverted the default. `theme.json` sets `elements.link` and `core/post-terms`'
+  own `elements.link` to `textDecoration: none` in both states, but a
+  block-style variation compiles to `:root :where(…)` at (0,0,0) against that
+  rule's (0,2,1) — so every card carrying a taxonomy row underlined it while its
+  own variation file said it should not, and cards were exempted one at a time
+  (`listing-card-list`, `listing-card-compact`, twice over) with the special
+  card next in line.
+
+  The rule and both exemptions are gone. **No hover underline is the default
+  now, for taxonomies and for links generally**; a component that wants one
+  specifies it in its own file, as the mega menu's featured post title and the
+  FacetWP "See N more" toggle do.
+
+- 🐛 **The Specials "Book Special" buttons opened nothing.** LS-2021.
+  `patterns/template-archive-special.php`, `parts/modal-special.html`,
+  `theme.json`.
+
+  Every offer band pointed at `#to-modal-enquiry`, which is not a template-part
+  slug — parts are `modal-enquiry` and `modal-special`, so the href carries
+  `modal-` twice. `SD\Enhancements\Enquiry::register_trigger_modal()` verifies
+  the slug resolves to a real `wp_template_part` in the `modals` area before
+  rendering it, by design, so the mismatch registered no dialog at all and the
+  buttons were inert in-page anchors.
+
+  They now open **`parts/modal-special.html`** — the same dialog composition as
+  `parts/modal-enquiry.html`, carrying Gravity Form 10, "Specials Form", rather
+  than the general form 1 the other six enquiry CTAs use. Registered in
+  `theme.json` under the `modals` area alongside the other four.
+
+  Verified on local 2026-09-17: the part resolves with `area=modals` and
+  `formId: 10`, and four renders of the band button leave exactly one
+  `to-modal-modal-special` entry in Tour Operator's `modal_contents` — four
+  bands, one dialog — where the old href left none.
+
+- ✨ **`patterns/cta-like-what-you-see.php`** — the specials variant of the
+  enquiry band. LS-2021.
+
+  None of the three existing `cta-*` patterns carried this page's wording.
+  `cta-not-sure-where-to-go.php`'s own docblock already recorded why: live's
+  `sd_call_info_section()` takes its title from the caller, `partials/footer-cta.php`
+  switches on body class to pick one of four, a block theme turns that conditional
+  into *which pattern each template includes*, and it names the specials variant as
+  this issue's to write. Same band, one copy string apart — not a fourth design.
+
+### Removed
+
+- 🗑️ **`templates/single-special.html`.** LS-2021. The site does not publish a page
+  per offer; `/special/{slug}/` 301s to the archive, and that redirect is issued by
+  `sd-enhancements-2026` because the theme may not author one.
+
 ### Fixed
 
 - 🐛 **The brand Read more showed on every brand, whether the story overflowed or not.**
