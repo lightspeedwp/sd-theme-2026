@@ -8,6 +8,39 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✨ **The 404 page.** LS-4205. `patterns/template-page-404.php`,
+  `patterns/cta-feeling-lost.php`, `styles/blocks/list/list-plain.json`.
+
+  `patterns/template-page-404.php` was a placeholder — a centred "404 / Page not
+  found" stack with authored copy and a *Back to homepage* button, none of which
+  is on live. It is replaced with live's own page, measured 2026-09-17 against
+  `sd-lsx-child/404.php`: the `404!` banner over *Can't find what you're looking
+  for?*, the warm-grey **Nothing Found** band carrying the standfirst and the
+  search form, the three spelling suggestions on white beneath it, then the
+  enquiry band and the value panel.
+
+  `templates/404.html` is unchanged — it already referenced this pattern.
+
+  **The banner keeps the only `h1`.** Live prints two, one in the banner and one
+  on *Nothing Found*; the second becomes the `h2` that opens the first body
+  section. No copy moves. There is no breadcrumb bar, because live's 404 has
+  none — a trail ending at a page that does not exist points at nothing.
+
+  `patterns/cta-feeling-lost.php` is the fourth and last of live's four enquiry-band
+  headings, and the one `patterns/cta-not-sure-where-to-go.php` predicted when it
+  recorded that a block theme turns the child theme's body-class switch into
+  *which pattern each template includes*. One copy string and one anchor separate
+  the two files; a change to one is a change to both.
+
+  `styles/blocks/list/list-plain.json` is live's `.list-404` — a list with its
+  marker and its hanging indent removed, so the items sit flush on the text rail.
+  The indent is cleared as `padding-inline-start`, the property the UA stylesheet
+  actually sets, so the rule holds in RTL as well as LTR.
+
+  ⚠️ **`padding-left: 150px` on live's `.copy-wrapper` is deliberately not
+  ported** — a raw pixel indent with no token behind it and no responsive floor.
+  If the indent is wanted it is a spacing preset on the inner group, not 150px.
+
 - ✨ **The search results page.** LS-4175 (line 14, Search).
   `patterns/template-page-search.php`, `patterns/card-search-result.php`,
   `styles/sections/cards/listing-card-list.json`,
