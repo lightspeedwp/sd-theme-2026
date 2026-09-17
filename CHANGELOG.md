@@ -6,6 +6,49 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- ✨ **The Specials landing page.** LS-2021 (line 11, Specials).
+  `templates/archive-special.html`, `patterns/template-archive-special.php`,
+  `patterns/cta-like-what-you-see.php`, `styles/sections/cards/special-card.json`.
+  Needs `sd-enhancements-2026` on the same branch — four of this feature's
+  requirements are behaviour and live there.
+
+  `/specials/` is now live's own page rather than the three-column card grid that
+  stood in as scaffolding: the photographic banner and an introduction, then one
+  full-width band per offer carrying the property photograph as its ground, the
+  offer name, a meta row of connections and the offer's **complete** body copy,
+  four to a page, closing on the enquiry band and the value panel.
+
+  `templates/archive-special.html` is now the four-line shell every other archive
+  in this theme already uses, and the `<main>` landmark moved into the pattern
+  with the composition rather than being left behind in both.
+
+  `styles/sections/cards/special-card.json` was written in August and had no
+  consumer until now. Its `css` field changed once: the band stacks its media and
+  its body in one CSS grid cell instead of absolutely positioning the body, so the
+  row grows to the taller of the two and a long offer name or description pushes
+  the band taller rather than overflowing it — at every width, with no media
+  query, which the `css` field silently unwraps anyway. It also paints a
+  neutral-900 ground, because `core/post-featured-image` renders nothing at all
+  for an offer without one and the band would otherwise collapse.
+
+- ✨ **`patterns/cta-like-what-you-see.php`** — the specials variant of the
+  enquiry band. LS-2021.
+
+  None of the three existing `cta-*` patterns carried this page's wording.
+  `cta-not-sure-where-to-go.php`'s own docblock already recorded why: live's
+  `sd_call_info_section()` takes its title from the caller, `partials/footer-cta.php`
+  switches on body class to pick one of four, a block theme turns that conditional
+  into *which pattern each template includes*, and it names the specials variant as
+  this issue's to write. Same band, one copy string apart — not a fourth design.
+
+### Removed
+
+- 🗑️ **`templates/single-special.html`.** LS-2021. The site does not publish a page
+  per offer; `/special/{slug}/` 301s to the archive, and that redirect is issued by
+  `sd-enhancements-2026` because the theme may not author one.
+
 ### Fixed
 
 - 🐛 **The brand Read more showed on every brand, whether the story overflowed or not.**
