@@ -1,0 +1,53 @@
+name: E2E
+
+on:
+  pull_request:
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Target site
+        required: false
+        default: https://southerndestinations.lightspeedwp.dev
+
+# The suite is read-only, but it does hit a shared dev server. One run at a
+# time per branch keeps the load predictable and cancels superseded runs.
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Visual is excluded deliberately: baselines are platform-specific and
+        # there are none committed for Linux. Add a `visual` entry once a set
+        # has been generated on this runner image.
+        project: [ desktop, mobile, a11y ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: Run ${{ matrix.project }}
+        run: npx playwright test --project=${{ matrix.project }}
+        env:
+          WP_BASE_URL: ${{ github.event.inputs.base_url || 'https://southerndestinations.lightspeedwp.dev' }}
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: tests/e2e/playwright-report/
+          retention-days: 14

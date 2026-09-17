@@ -58,3 +58,6 @@ wp-config.php
 tests/**/test-results/
 tests/**/playwright-report/
 tests/**/node_modules/
+
+# Resolved at run time by tests/e2e/global-setup.js
+tests/e2e/.resolved-routes.json
