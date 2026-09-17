@@ -190,6 +190,11 @@
 
 		setButtonState( button, false );
 
+		/**
+		 * Toggle the expanded state and synchronise the button label.
+		 *
+		 * @param {Event} event The event that activated the toggle.
+		 */
 		function toggleState( event ) {
 			event.preventDefault();
 
