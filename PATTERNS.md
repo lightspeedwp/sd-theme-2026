@@ -165,6 +165,7 @@ Drop these into any page body.
 | **CTA — Not Sure Where To Go** | The enquiry band: a script heading over the two office numbers, with "Send us an Email" beneath. | — |
 | **CTA — Tell Us Your Trip Ideas** | The same enquiry band with the heading every tour, lodge and destination page uses. Placed by the tour template; place it by hand only on a page that needs it. | — |
 | **CTA — Inspired By This Property** | The same enquiry band with the heading the accommodation page uses. Placed by the accommodation template; place it by hand only on a page that needs it. | — |
+| **CTA — Feeling Lost** | The same enquiry band with the heading the 404 page uses. Placed by the 404 template; there is rarely a reason to place it by hand. | — |
 | **Why Choose Southern Destinations** | See above. | Trustpilot score |
 | **Trustpilot Score** | The rating badge on its own, in a row — the word, the mark, the stars and the TrustScore line. Already included inside the two patterns above; place it separately only where you want the badge alone. | Trustpilot |
 | **Trustpilot Score — Stacked** | The same badge in a column — the word, the stars, "Based on {n} reviews" and the mark. The arrangement that sits beside a review row; used by the consultant pages' client-feedback band. | Trustpilot |
@@ -261,7 +262,7 @@ recognise the name if you meet it in the Site Editor.
 | **Template: Category** | Category archives |
 | **Template: Archive** | Generic archives |
 | **Template: Search Results** | Search |
-| **Template: 404 Not Found** | 404 |
+| **Template: 404 Not Found** | The "page not found" page — the *404!* banner, the not-found band with a search box, the three spelling suggestions, then the enquiry band and the value panel. Shown for any address that does not resolve; it has no page of its own to edit. |
 | **Template: Page** | The standard page |
 | **Template: Page (Full Width, No Title)** | Full-bleed pages |
 | **Template: Page (With Sidebar)** | Pages with the sidebar |

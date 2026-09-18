@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Plain (No Marker)",
+	"slug": "list-plain",
+	"blockTypes": [
+		"core/list"
+	],
+	"description": "A list with its marker and its hanging indent removed, so the items sit flush on the text rail — live's `.list-404` (`list-style-type: none; padding-left: 0 !important`, sd-lsx-child/assets/css/custom.css), which is how the 404 page's suggestion list is drawn. Live bakes the leading dash into each item's copy rather than using a marker, so the rule only has to get out of the way. Use it where a list is a run of short labelled lines rather than a set of bullets; where a glyph is wanted instead, `is-style-list-check` hangs a tick in the gutter. The indent is cleared as `padding-inline-start`, not `padding-left`, because that is the property the UA stylesheet actually sets — clearing only the physical one would leave the indent in RTL. Neither declaration needs `!important` from `:where()`: nothing in this theme styles `.wp-block-list`, so the only thing to beat is the UA stylesheet, which any author rule outranks. Live needed it because it was overriding Bootstrap.",
+	"styles": {
+		"css": "& { list-style: none; padding-inline-start: 0; }"
+	}
+}
