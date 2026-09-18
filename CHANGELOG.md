@@ -190,6 +190,43 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 🔄 **The mobile menu's phone numbers carry their flags.**
+  LS-2014 (line 2, Header). `parts/mobile-menu.html`,
+  `assets/styles/core-columns.css`.
+
+  The panel listed the four numbers as a second `wp:navigation` (`ref` 65865),
+  which rendered them as four plain text rows. Live shows a flag beside each
+  one. `parts/dropdown-call-us` already holds exactly that — flag, label and
+  `tel:` link per country — and is already the one file the footer, the header
+  dropdown and the safari-expert panel read, so the panel reads it too rather
+  than keeping a fifth copy of the numbers that can drift.
+
+  That part is written for a desktop pop-out: a `width: 20%` first column holding
+  a flag drawn at `100px`, `isStackedOnMobile: false`. In a ~300px panel the 20%
+  resolves to about 60px and the image overflowed it, so the flag column is sized
+  to 28px inside `.sd-mobile-menu` — live's own mark at this width. `!important`
+  is forced on both declarations because `core/column` serialises its width as
+  `style="flex-basis:20%"` and `core/image` serialises its own as
+  `style="width:100px"`, and an inline declaration outranks any selector.
+
+  Two more differences against dev's Site Editor copy are folded in at the same
+  time, so this file can be the one that ships and the override can be reset:
+
+  - **The panel logo is the footer mark, not `core/site-logo`.** The site logo is
+    the dark elephant wordmark, which is the right mark on the header's
+    `neutral-200` band and close to invisible on this panel's `primary-600`. Dev's
+    copy had already swapped it for the light footer logo; this file does the same
+    and uses the same `footer-logo.svg` the colophon does — written out as a
+    literal uploads URL, no attachment ID, exactly as `patterns/footer.php` writes
+    it and for the reason AGENTS.md gives.
+  - **`submenuVisibility: "click"`** replaces the legacy `openSubmenusOnClick`.
+
+  ⚠️ The `margin-top: -36px` on dev's copy is deliberately **not** carried. It was
+  compensating for the overlay inset removed above; with that gone it would drag
+  the panel up under the header band. Reset the override
+  (`wp post delete 65922 --force`, then reload) so this file renders.
+  → `wp-db-override-reconciliation`
+
 - 💄 **The mega-menu panels, finished.** `styles/sections/mega-panel.json`,
   `styles/blocks/navigation/mega-menu-nav.json`,
   `styles/blocks/query/mega-menu-list.json`, `assets/styles/ollie-mega-menu.css`,
@@ -251,6 +288,40 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   accommodation-type results page too, which shares the facet and the sheet.
 
 ### Fixed
+
+- 🐛 **The mobile menu: a black hamburger, and a white frame around the
+  panel.** LS-2014 (line 2, Header). `assets/styles/core-navigation.css`.
+
+  Two defects, one cause each, both measured on dev at 390px on 2026-09-18.
+
+  **The hamburger was black on the dark band.** The trigger sits on the mobile
+  header's `primary-600` row beside the search icon, and the search icon was
+  white while the hamburger was not. An unscoped pair of rules in this file gave
+  `.wp-block-navigation__responsive-container-open` and `…-close` a hardcoded
+  `color: contrast` and a `neutral-200` ground with a 3px radius — so the glyph,
+  which takes `fill: currentColor` from core, was painted black inside a pale
+  box, ignoring the navigation block's own `base` text colour. Both buttons now
+  take `color: inherit` on no ground, under the `is-style-mobile-navigation`
+  scope. Live draws the same mark: white bars on `#41382e`.
+
+  The rules could be moved under that scope rather than duplicated because
+  `is-style-mobile-navigation` is the **only** navigation in this theme that ever
+  emits an overlay — the other twelve `wp:navigation` blocks in `parts/`,
+  `patterns/` and `templates/` all carry `overlayMenu: "never"`.
+
+  **The panel floated in a white frame.** The open overlay had a
+  `spacing.30` gutter from this file, core's white ground, core's 56px top inset
+  on the content wrapper and a `spacing.30` flex gap, which together put ~20px of
+  white on three sides of the dark panel and 56px above it. Live has no frame:
+  the menu is one full-bleed band starting at the header's bottom edge. The
+  overlay now paints `primary-600` at zero padding and zero inset, and the close
+  button moves from the gutter that no longer exists to the panel's top-right
+  corner.
+
+  ⚠️ **This is what the `margin-top: -36px` on the Site Editor's copy of
+  `mobile-menu` was compensating for.** Reconcile that override away when the
+  header and mobile-menu parts are pulled back into theme files, or the negative
+  margin will drag the panel up under the header band now that the inset is gone.
 
 - 🐛 **The mega menu's "Featured" columns showed the newest item, not the
   featured one.** `parts/mega-menu-{tours,accommodation,destinations}.html`.
