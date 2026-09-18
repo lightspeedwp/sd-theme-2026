@@ -190,6 +190,52 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 💄 **The mega-menu panels, finished.** `styles/sections/mega-panel.json`,
+  `styles/blocks/navigation/mega-menu-nav.json`,
+  `styles/blocks/query/mega-menu-list.json`, `assets/styles/ollie-mega-menu.css`,
+  `parts/mega-menu-{tours,accommodation,destinations}.html`.
+
+  Five changes to the four fold-out panels, all on Zared's instruction. The
+  sixth — the Featured columns querying the wrong posts — is under **Fixed**.
+
+  **The row hairlines are gone.** A neutral-300 `border-bottom` sat on every
+  `.wp-block-navigation-item` and on every query row's `<li>`. Both are removed;
+  the row padding alone separates the labels now. The two variations describe
+  the same row on different markup and were changed together, as their
+  descriptions require. The **column** hairlines stay — a different rule,
+  between columns rather than between rows, and still in the stylesheet.
+
+  **The panel takes the header's shadow.** `shadow|300`, the same preset
+  `styles/sections/header.json` carries, so the panel reads as the header band
+  continuing downward rather than as a second object with its own edge
+  treatment. It is a `0 4px 8px` drop, so it falls on the panel's bottom edge —
+  the only edge the header is not already sitting on.
+
+  **The side padding is back.** The panel is not a root-level block: it renders
+  inside Ollie's `.wp-block-ollie-mega-menu__menu-container`, which
+  `assets/styles/ollie-mega-menu.css` pins to `inset-inline: 0`. So
+  `useRootPaddingAwareAlignments` never reached it, and below `wideSize` the
+  columns ran flush to the window edge. The variation now sets `spacing|20` on
+  both inline sides — theme.json's own `styles.spacing.padding`, so a panel's
+  columns line up with the header above them. Change one and change the other.
+
+  **More air above and below**: block padding goes `spacing|20` → `spacing|40`.
+
+  **The featured card is styled, and styled in the variation.** Its resting
+  rules moved out of `ollie-mega-menu.css`: heading face at semi-bold,
+  `line-height|heading`, no letter-spacing, a contrast title over a neutral-700
+  excerpt at `line-height|body`. The card is the synced pattern `wp_block`
+  65890 — ordinary core blocks, so a variation reaches it, and a variation is
+  the only one of the two that renders in the Site Editor. It was the last
+  thing in a panel still styled front-end only. `font-size` is deliberately
+  absent from the title: the pattern sets `fontSize: "300"` and core emits
+  `.has-300-font-size` with `!important`, so a declaration would silently lose.
+  The title now hovers **brand-600 with no underline**, the same token the query
+  rows hover to — the rule it replaces *added* an underline. That one stays in
+  the stylesheet because a `css` field strips `:hover`, and it needs no
+  `!important`: (0,3,0) against the variation's unmarked (0,1,0) and
+  theme.json's (0,2,0).
+
 - 💄 **"Results" is no longer set in capitals, and the count beside it matches
   it.** LS-4175. `patterns/template-page-search.php`,
   `patterns/template-taxonomy-accommodation-type.php`,
@@ -205,6 +251,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   accommodation-type results page too, which shares the facet and the sheet.
 
 ### Fixed
+
+- 🐛 **The mega menu's "Featured" columns showed the newest item, not the
+  featured one.** `parts/mega-menu-{tours,accommodation,destinations}.html`.
+
+  Each Featured column ran a plain `orderBy: date, order: desc` query, so it
+  printed whatever was published last. Tour Operator already has the mechanism:
+  `Query_Loop::query_args_filter()` matches `/(lsx|facts)-(.*?)-query/` against
+  the **post-template's** `className` and, for a `featured-*` key, swaps in a
+  `featured = true` meta query and pre-resolves the set through
+  `posts_pre_query`. The columns now carry `lsx-featured-tours-query`,
+  `lsx-featured-accommodation-query`, `lsx-featured-destinations-query` and —
+  on the "Featured Specials" list, which had the same contradiction between its
+  heading and its query — `lsx-featured-special-query`.
+
+  ⚠️ **This is why those four queries no longer carry `queryId: 0`.** That
+  filter caches its result in `$saved_queries[$queryId]` and *reads* the cache
+  before it looks at the className, so one panel's featured args would have been
+  handed to every other `queryId: 0` query on the page — and 23 of the theme's
+  24 query blocks carry `queryId: 0`. Measured on local 2026-09-18: a featured
+  tour query followed by a plain `destination` query, both at `queryId: 0`,
+  rendered the tour twice. The four are now 6502–6505, and re-measured the same
+  day the destination query returns a destination again.
+
+  **"From the Blog" on the About panel is unchanged.** It queries `post`, and
+  Tour Operator has no `featured-post` key — there is no featured flag on a core
+  post for it to read.
 
 - 🐛 **Every Gravity Forms submit button hovered to black, and carried a
   radius.** `style.css`.
