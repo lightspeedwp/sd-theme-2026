@@ -1,0 +1,59 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "FAQ",
+	"slug": "faq",
+	"blockTypes": [
+		"core/accordion"
+	],
+	"description": "The disclosure list for `patterns/faq-section.php` — one `core/accordion` holding one `core/accordion-item` per question. LS-4215.\n\nReuses `styles/blocks/accordion/call-us-dropdown.json`'s token vocabulary (neutral-300/600/800, base, border-radius-200, shadow-300, spacing-10, the shared font-weight/letter-spacing/line-height customs) rather than inventing new visual decisions, per FR-007 — this is deliberate consistency, not copy-paste laziness.\n\n⚠️ **Does NOT carry `call-us-dropdown.json`'s `.wp-block-accordion-panel[hidden]{display:none !important;}` override, and must not.** That override trades away `beforematch` — a closed panel can no longer be opened by in-page Find or a `#hash` link — which is the right trade for four phone numbers in a header and the wrong one here: a visitor following `#faq-{slug}` from elsewhere on the site, or using Ctrl+F to find an answer, must be able to land on a closed question and have it open. Left at core's default `hidden=\"until-found\"` behaviour (`content-visibility:hidden`, not `display:none`), which supports exactly that. See research.md R-02 in specs/002-faq-system.\n\nAlso omits `call-us-dropdown.json`'s pop-out positioning rules (`position:absolute`, `inset-*`, `z-index`) — those exist there because that accordion opens a floating panel over a header bar. An FAQ panel is a normal in-flow disclosure; it should push following content down when open, which is the default `core/accordion-panel` behaviour with nothing overridden.",
+	"styles": {
+		"blocks": {
+			"core/accordion-heading": {
+				"typography": {
+					"fontWeight": "var(--wp--custom--font-weight--semi-bold)",
+					"letterSpacing": "var(--wp--custom--letter-spacing--none)"
+				}
+			},
+			"core/accordion-panel": {
+				"color": {
+					"background": "var(--wp--preset--color--base)",
+					"text": "var(--wp--preset--color--neutral-800)"
+				},
+				"border": {
+					"color": "var(--wp--preset--color--neutral-300)",
+					"radius": "var(--wp--preset--border-radius--200)",
+					"style": "solid",
+					"width": "var(--wp--custom--border-width--100)"
+				},
+				"shadow": "var(--wp--preset--shadow--300)",
+				"spacing": {
+					"margin": {
+						"top": "0",
+						"bottom": "0"
+					},
+					"padding": {
+						"top": "var(--wp--preset--spacing--10)",
+						"right": "var(--wp--preset--spacing--20)",
+						"bottom": "var(--wp--preset--spacing--10)",
+						"left": "var(--wp--preset--spacing--20)"
+					}
+				},
+				"typography": {
+					"fontWeight": "var(--wp--custom--font-weight--regular)",
+					"letterSpacing": "var(--wp--custom--letter-spacing--none)",
+					"lineHeight": "var(--wp--custom--line-height--snug)",
+					"textTransform": "none"
+				}
+			},
+			"core/paragraph": {
+				"color": {
+					"text": "var(--wp--preset--color--neutral-600)"
+				},
+				"typography": {
+					"letterSpacing": "var(--wp--custom--letter-spacing--narrow)"
+				}
+			}
+		}
+	}
+}

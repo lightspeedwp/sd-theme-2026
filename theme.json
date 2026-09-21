@@ -1274,6 +1274,11 @@
 			"area": "uncategorized"
 		},
 		{
+			"name": "faq-section",
+			"title": "FAQ Section Heading",
+			"area": "uncategorized"
+		},
+		{
 			"name": "modal-tour",
 			"title": "Modal — Tour",
 			"area": "modals"

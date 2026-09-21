@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "FAQ Section",
+	"slug": "faq-section",
+	"blockTypes": [ "core/group" ],
+	"description": "The wrapping section for patterns/faq-section.php (LS-4215). Carries one rule the block-attribute layer can't express: measured 2026-09-21 against a running install, a `core/accordion` with zero `core/accordion-item`s does NOT render nothing on its own — it leaves an empty `<div class=\"wp-block-accordion …\"></div>` in place, with the shared 'Frequently asked questions' heading still visible above it. That violates FR-002 (specs/002-faq-system/spec.md), which requires the whole section to render nothing when a page's FAQ content has been fully emptied — an editor deleting every question/answer pair (User Story 2, Scenario 3) rather than removing the pattern instance outright.\n\nA *pattern* has no runtime logic once inserted — it becomes ordinary page content, so this can't be fixed in patterns/faq-section.php itself. `:has()` on this section's own wrapper, watching for an empty `.is-style-faq` accordion, is the mechanism: this is one of the four documented exceptions in AGENTS.md's \"Styling lives in JSON\" rule for the `css` field — a selector-level rule (an ancestor watching a descendant's emptiness) that structured `styles` props cannot express at all. `!important` because the `css` field compiles to `:root :where(…)` at specificity (0,1,0), same reasoning as styles/blocks/accordion/call-us-dropdown.json and styles/blocks/navigation/main-navigation.json — nothing else currently sets `display` here, but this keeps the rule correct if that ever changes.\n\nDoes not attempt to hide a *manually emptied pattern instance that also had its template-part heading reference removed* — an editor would have to actively delete the heading block too, which is a different, deliberate action outside FR-002's scope (FR-002 is about an empty accordion, not arbitrary partial deletion).",
+	"styles": {
+		"css": "&:has(.is-style-faq:empty){display:none !important;}"
+	}
+}
