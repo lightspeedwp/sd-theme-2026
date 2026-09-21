@@ -13,6 +13,8 @@ One placement of `patterns/faq-section.php` on a page or template.
 |---|---|---|
 | Placement | Implicit — which page/template the pattern was inserted on | Not stored; determined by where the pattern markup lives |
 | Presence | Existence of the pattern insertion in the page's block markup | Absence = no FAQ section for that page (FR-002) |
+| Shared heading | `wp:template-part` reference to `parts/faq-section.html` inside the pattern | The **only** genuinely shared/synced piece — identical wording and styling on every placement by design, since a template part is one entity site-wide |
+| Question/answer content | The pattern's own `core/accordion`, sibling to the template-part reference, inside the same wrapping `<section>` | Independent per placement — this is what stays non-synced per Q3; the accordion deliberately does **not** live inside the template part |
 
 No identity, no relationships, no lifecycle beyond ordinary post-content editing. There is
 no central registry of "which pages have FAQs" — an editor finds out by opening the page.

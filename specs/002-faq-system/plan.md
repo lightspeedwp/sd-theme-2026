@@ -26,14 +26,20 @@ The pattern is composed of:
    (that file's own warning: right for a header phone-number disclosure, wrong for a FAQ,
    where in-page find and `#hash` links opening a closed answer is exactly the behaviour to
    keep).
-2. A new template part, `parts/faq-section.html`, carrying the "Frequently asked questions"
-   heading and an empty `core/accordion` scaffold that editors fill with
-   `core/accordion-item`s — the vehicle for FR-001's "shared structure across placements,
-   independent content per placement" (Q3).
-3. A new pattern, `patterns/faq-section.php`, that references the template part and is what
-   gets inserted on each of the nine approved placements plus the general FAQ page. Because
-   it is a plain (non-synced) pattern reference, each insertion is copied at insert time and
-   edited independently — exactly the Q3 answer.
+2. A new template part, `parts/faq-section.html`, carrying **only** the shared "Frequently
+   asked questions" heading — deliberately *not* the accordion itself. A template part is a
+   single shared entity site-wide; putting per-page-editable accordion content inside it
+   would silently make that content synced across every placement, contradicting Q3. The
+   heading is genuinely invariant sitewide, so it's the one piece that belongs in shared
+   structure.
+3. A new pattern, `patterns/faq-section.php`, that wraps a reference to that template part
+   together with its own `core/accordion` (one placeholder `core/accordion-item` for
+   editors to duplicate/edit) inside one `<section>`. Because the pattern itself is a plain
+   (non-synced) reference, each of the nine placements gets an independent copy — the
+   template-part heading stays identical everywhere, the accordion content does not.
+   Implemented this way (rather than "part = heading + accordion scaffold") once it became
+   clear the naive version would have made accordion content shared, not independent — see
+   tasks.md T003's note.
 4. A new page-composition pattern, `patterns/template-page-faq.php`, and template
    `templates/page-faq.html`, for the general FAQ page (FR-008), following the thin-template
    → composition-pattern convention already used by every other template in this theme

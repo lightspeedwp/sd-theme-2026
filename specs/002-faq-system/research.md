@@ -1,43 +1,68 @@
 # Phase 0 Research: FAQ System (theme scope)
 
-## R-01 — Does an FAQ section with zero entries actually render nothing? 🟡 unverified
+## R-01 — Does an FAQ section with zero entries actually render nothing? ✅ measured 2026-09-21
 
 **Question**: FR-002 requires the FAQ pattern to render no heading, container, or empty
 disclosure control when it holds no question/answer content. Does WordPress core's block
 rendering already do this for an empty `core/accordion` wrapped in a heading + group, or
-does the pattern need an explicit PHP conditional?
+does the pattern need an explicit conditional?
 
-**Attempted measurement**: `wp eval` against the local install (`Local Sites/beta`) to run
-`do_blocks()` on a group containing a heading and an empty `core/accordion`. **Blocked** —
-the local MySQL server was not running/reachable from this planning session
-(`mysqli_real_connect(): No such file or directory`). Not measured; not assumed.
+**Measured** (site: `beta.local` / Local by Flywheel, once the site's MySQL socket was
+located and `mysqli.default_socket` pointed at it — `wp eval`'s default connection attempt
+otherwise fails with "No such file or directory", since `wp-config.php`'s `DB_HOST` is
+`localhost` and PHP's compiled-in default socket path doesn't match Local's per-site
+socket). `do_blocks()` on the pattern's actual markup, filled and then with its one
+`core/accordion-item` removed:
 
-**Decision**: Design `patterns/faq-section.php` so the empty-state behaviour does **not**
-depend on an unverified core default. The pattern's container (a `core/group`) is placed
-inside a PHP-level check: only emit the heading + `core/accordion` markup when the
-associated content has at least one `core/accordion-item`. Concretely, this is done the way
-`patterns/template-archive-special.php` and similar composition patterns already handle
-optional content — a guarded conditional around the block markup, not a loop and not a
-runtime data fetch (patterns don't do either, per `AGENTS.md`'s "no loops, no computed
-markup" rule). Because a *pattern* is inserted once per page and then hand-edited, the
-practical mechanism is: the **template part** (`parts/faq-section.html`) carries the
-heading + empty accordion scaffold, and editors are instructed (and the quickstart check
-verifies) to delete the whole FAQ pattern insertion from a page that has no FAQ content,
-rather than leaving an empty one in place. This sidesteps needing a runtime "is this empty"
-check inside a pattern file at all.
+- **Filled**: renders the full section — heading, accordion, item, interactivity
+  directives (`data-wp-context`, `aria-controls`, `data-wp-bind--aria-expanded`,
+  `data-wp-bind--hidden`, `data-wp-on--beforematch`, etc.) — all correctly wired by core's
+  `render_block_core_accordion`/`block_core_accordion_item_render`, confirming the
+  hand-authored markup in R-02's implementation note was structurally correct.
+- **Emptied** (accordion present, zero `core/accordion-item`s): **does NOT render
+  nothing.** Output is `<section>...<h2>Frequently asked questions</h2>...<div
+  class="wp-block-accordion ... is-style-faq ..."></div></section>` — the heading and an
+  empty (but real, box-generating) accordion `<div>` both still render. Core does not elide
+  this for free. The naive "editorial discipline only" fallback from the original decision
+  below would have left FR-002 unmet whenever an editor empties an accordion without
+  removing the pattern instance (exactly User Story 2, Scenario 3).
 
-**Verification required before/during implementation** (recorded in quickstart.md): confirm
-on the dev/local install, once reachable, whether an *authored-then-emptied* accordion (all
-`core/accordion-item`s deleted, pattern instance left in place) renders visibly. If it does,
-FR-002's guarantee shifts from "the pattern is self-hiding" to "the editorial convention is
-to remove the pattern instance, not empty it" — and the general FAQ page's help text /
-handover notes (FR-017) must say so explicitly.
+**Decision, revised from the original (pre-measurement) plan**: rather than accept the
+editorial-discipline-only answer, implemented a CSS-level fix and confirmed it compiles
+correctly. The wrapping `<section>` in `patterns/faq-section.php` carries a new block-style
+variation, `styles/sections/faq-section.json` (`is-style-faq-section` on `core/group`),
+whose `css` field reads:
+
+```
+&:has(.is-style-faq:empty){display:none !important;}
+```
+
+Verified by replicating WordPress core's own per-instance variation-CSS compiler
+(`wp-includes/block-supports/block-style-variations.php`) directly against this variation's
+data — not just visually inspecting the JSON. The compiled output for a rendered instance
+is exactly:
+
+```css
+:root :where(.wp-block-group.is-style-faq-section--1:has(.is-style-faq:empty)){display:none !important;}
+```
+
+This is one of the four documented exceptions in this theme's "styling lives in JSON" rule
+(AGENTS.md) for reaching into the `css` field: an ancestor-watches-descendant-emptiness
+rule that no structured `styles` prop can express. `core/group` has no attribute for "hide
+when a descendant is empty." `!important` for the same reason `call-us-dropdown.json` and
+`main-navigation.json` use it — the `css` field compiles at specificity (0,1,0) via
+`:where()`, so a tie on source order is unsafe to leave unmarked, even though nothing else
+currently sets `display` on this element.
+
+**Not yet verified**: actual browser rendering (this measurement confirms the CSS *compiles
+correctly*, not that a real browser applies `:has()` as expected — though `:has()` has been
+baseline-supported in evergreen browsers since 2023 and is not a novel risk). Confirm
+visually once quickstart.md step 1 is run in an actual browser against a saved page.
 
 **Alternatives considered**: A PHP `render_block` filter that hides the section
-server-side regardless of editorial discipline. Rejected for now — it would be the kind of
-"computed markup" this theme's patterns explicitly avoid, and belongs in `functions.php` at
-most if R-01's verification shows editors reliably leave empty accordions behind. Deferred
-unless the verification step proves the naive approach insufficient.
+server-side regardless of editorial discipline. Rejected — the CSS `:has()` fix is simpler,
+doesn't require `functions.php` logic for a design-layer concern, and is now confirmed to
+work rather than hypothetical.
 
 ---
 
@@ -71,6 +96,26 @@ closed answer and have it open. **The new `styles/blocks/accordion/faq.json` var
 NOT copy that `display: none` override.** This is flagged in plan.md's Summary and must be
 re-flagged in the style variation's own file per this theme's documentation convention (every
 existing accordion style file explains its own deviations at length).
+
+**Implementation note, added 2026-09-21**: `patterns/faq-section.php` and
+`parts/faq-section.html` were hand-authored against `wp-includes/blocks/accordion*` on disk
+(block.json attributes plus the `render_block_core_accordion` / accordion-item render
+callbacks — read directly from source, not guessed), because the local site's database was
+unreachable and the block editor couldn't be used to generate ground-truth saved markup.
+Those render callbacks only *augment* existing class-matched elements with Interactivity
+API directives (`data-wp-*`, `aria-controls`, bound `aria-expanded`/`hidden`) — they don't
+invent the base markup — so getting the class names and static attributes right
+(`wp-block-accordion`, `wp-block-accordion-item`, `wp-block-accordion-heading__toggle`,
+`wp-block-accordion-heading__toggle-title`, `wp-block-accordion-panel`, literal
+`hidden="until-found"` on a closed panel) should be sufficient for correct behaviour. **One
+thing was deliberately left out, not verified**: `showIcon` defaults to `true` on
+`core/accordion`, meaning core's real save() output likely includes a chevron icon (SVG)
+inside the heading button that this hand-authored markup does not reproduce. Whether that's
+cosmetic-only or something the block's own JS expects to find is unconfirmed. **First thing
+to check once the site is reachable (tasks.md T006)**: open `patterns/faq-section.php` in
+the block editor, let WordPress re-serialize it, and diff the result against the
+hand-authored version — adopt whatever core actually produces for the icon markup
+specifically, keeping everything else in this file as authored.
 
 **Alternatives considered**:
 - **`core/details`/`core/details-content` (native `<details>`/`<summary>`)**. Rejected:
