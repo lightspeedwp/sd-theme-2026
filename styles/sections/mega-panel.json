@@ -3,13 +3,17 @@
 	"version": 3,
 	"title": "Mega Menu Panel",
 	"slug": "mega-panel",
-	"blockTypes": [ "core/group" ],
-	"description": "The fold-out panel behind a header mega menu — the group at the root of parts/mega-menu-*.html. Carries the panel's own frame: its vertical padding and the size of its column headings. Everything else about a panel lives in one of three other places, deliberately. The row contract is in styles/blocks/{navigation/mega-menu-nav,query/mega-menu-list}.json. The column hairlines, the featured card and the hover flips are in assets/styles/ollie-mega-menu.css, keyed off the sd-mega-panel class, because a sibling border, a pseudo-state and a media query are the three things a css field cannot hold. And every blockGap stays on the block markup, per AGENTS.md — a variation's own blockGap is emitted nowhere, and a nested one is emitted on the front end only, so the editor and the front end would disagree.",
+	"blockTypes": [
+		"core/group"
+	],
+	"description": "The fold-out panel behind a header mega menu — the group at the root of parts/mega-menu-*.html. Carries the panel's own frame: its padding on all four sides, the drop shadow along its bottom edge, and the size of its column headings, plus the resting appearance of the featured card in the third column.\n\n**Inline padding is load-bearing.** The panel is not a root-level block — it renders inside Ollie's `.wp-block-ollie-mega-menu__menu-container`, which assets/styles/ollie-mega-menu.css pins to `inset-inline: 0`. So `useRootPaddingAwareAlignments` never reaches it and the columns ran to the viewport edges at any width below `wideSize`. `spacing|20` is the root padding from theme.json's `styles.spacing.padding`, so the panel's columns line up with the header's content above them. Change one and change the other.\n\n**The shadow is the header's.** `shadow|300` is the same preset styles/sections/header.json carries, so the panel reads as the header band continuing downward rather than as a second object with its own edge treatment. It is a `0 4px 8px` drop, so it falls on the panel's bottom edge, which is the only edge not covered by the header sitting on top of it.\n\nThe row contract is in styles/blocks/{navigation/mega-menu-nav,query/mega-menu-list}.json. Neither carries a row divider any more — the hairlines came off both on 2026-09-18.\n\nThe featured card's **resting** styles are in the `css` field here, scoped to `.sd-mega-panel__featured`, rather than in assets/styles/ollie-mega-menu.css where they sat until 2026-09-18: the card is a synced pattern (`wp_block` 65890) made of ordinary core blocks, so a variation reaches it, and a variation is the only one of the two that renders in the Site Editor. `font-size` is deliberately absent from the title — the pattern sets `fontSize: \"300\"` on it and core emits `.has-300-font-size` with `!important`, so a declaration here would silently lose. Its `:hover` is still in the stylesheet, because a css field strips `:hover` outright.\n\nThe column hairlines and the panel's placement stay in assets/styles/ollie-mega-menu.css, keyed off the `sd-mega-panel` class, because a sibling border and a media query are two of the things a css field cannot hold. And every blockGap stays on the block markup, per AGENTS.md — a variation's own blockGap is emitted nowhere, and a nested one is emitted on the front end only, so the editor and the front end would disagree.",
 	"styles": {
 		"spacing": {
 			"padding": {
-				"top": "var:preset|spacing|20",
-				"bottom": "var:preset|spacing|20"
+				"top": "var:preset|spacing|40",
+				"right": "var:preset|spacing|20",
+				"bottom": "var:preset|spacing|40",
+				"left": "var:preset|spacing|20"
 			}
 		},
 		"blocks": {
@@ -19,6 +23,7 @@
 				}
 			}
 		},
-		"css": "& .wp-block-heading{font-size:var(--wp--preset--font-size--300) !important;}"
+		"css": "& .wp-block-heading{font-size:var(--wp--preset--font-size--300) !important;} & .sd-mega-panel__featured .wp-block-post-featured-image{margin-block:0 var(--wp--preset--spacing--20);} & .sd-mega-panel__featured .wp-block-post-title{margin-block:0 var(--wp--preset--spacing--10);font-family:var(--wp--preset--font-family--heading);font-weight:var(--wp--custom--font-weight--semi-bold);line-height:var(--wp--custom--line-height--heading);letter-spacing:var(--wp--custom--letter-spacing--none);text-transform:none;} & .sd-mega-panel__featured .wp-block-post-title a{color:var(--wp--preset--color--contrast);text-decoration:none;transition:color 0.25s ease;} & .sd-mega-panel__featured .wp-block-post-excerpt{margin-block:0;color:var(--wp--preset--color--neutral-700);line-height:var(--wp--custom--line-height--body);}",
+		"shadow": "var:preset|shadow|300"
 	}
 }

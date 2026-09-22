@@ -230,6 +230,88 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   Slug, filename and the 454px floor are unchanged, and no template references
   the pattern yet, so nothing else moves. Rolling the per-post-type templates
   onto it, and the Playwright harness with them, is the next step.
+- 🔄 **The mobile menu's phone numbers carry their flags.**
+  LS-2014 (line 2, Header). `parts/mobile-menu.html`,
+  `assets/styles/core-columns.css`.
+
+  The panel listed the four numbers as a second `wp:navigation` (`ref` 65865),
+  which rendered them as four plain text rows. Live shows a flag beside each
+  one. `parts/dropdown-call-us` already holds exactly that — flag, label and
+  `tel:` link per country — and is already the one file the footer, the header
+  dropdown and the safari-expert panel read, so the panel reads it too rather
+  than keeping a fifth copy of the numbers that can drift.
+
+  That part is written for a desktop pop-out: a `width: 20%` first column holding
+  a flag drawn at `100px`, `isStackedOnMobile: false`. In a ~300px panel the 20%
+  resolves to about 60px and the image overflowed it, so the flag column is sized
+  to 28px inside `.sd-mobile-menu` — live's own mark at this width. `!important`
+  is forced on both declarations because `core/column` serialises its width as
+  `style="flex-basis:20%"` and `core/image` serialises its own as
+  `style="width:100px"`, and an inline declaration outranks any selector.
+
+  Two more differences against dev's Site Editor copy are folded in at the same
+  time, so this file can be the one that ships and the override can be reset:
+
+  - **The panel logo is the footer mark, not `core/site-logo`.** The site logo is
+    the dark elephant wordmark, which is the right mark on the header's
+    `neutral-200` band and close to invisible on this panel's `primary-600`. Dev's
+    copy had already swapped it for the light footer logo; this file does the same
+    and uses the same `footer-logo.svg` the colophon does — written out as a
+    literal uploads URL, no attachment ID, exactly as `patterns/footer.php` writes
+    it and for the reason AGENTS.md gives.
+  - **`submenuVisibility: "click"`** replaces the legacy `openSubmenusOnClick`.
+
+  ⚠️ The `margin-top: -36px` on dev's copy is deliberately **not** carried. It was
+  compensating for the overlay inset removed above; with that gone it would drag
+  the panel up under the header band. Reset the override
+  (`wp post delete 65922 --force`, then reload) so this file renders.
+  → `wp-db-override-reconciliation`
+
+- 💄 **The mega-menu panels, finished.** `styles/sections/mega-panel.json`,
+  `styles/blocks/navigation/mega-menu-nav.json`,
+  `styles/blocks/query/mega-menu-list.json`, `assets/styles/ollie-mega-menu.css`,
+  `parts/mega-menu-{tours,accommodation,destinations}.html`.
+
+  Five changes to the four fold-out panels, all on Zared's instruction. The
+  sixth — the Featured columns querying the wrong posts — is under **Fixed**.
+
+  **The row hairlines are gone.** A neutral-300 `border-bottom` sat on every
+  `.wp-block-navigation-item` and on every query row's `<li>`. Both are removed;
+  the row padding alone separates the labels now. The two variations describe
+  the same row on different markup and were changed together, as their
+  descriptions require. The **column** hairlines stay — a different rule,
+  between columns rather than between rows, and still in the stylesheet.
+
+  **The panel takes the header's shadow.** `shadow|300`, the same preset
+  `styles/sections/header.json` carries, so the panel reads as the header band
+  continuing downward rather than as a second object with its own edge
+  treatment. It is a `0 4px 8px` drop, so it falls on the panel's bottom edge —
+  the only edge the header is not already sitting on.
+
+  **The side padding is back.** The panel is not a root-level block: it renders
+  inside Ollie's `.wp-block-ollie-mega-menu__menu-container`, which
+  `assets/styles/ollie-mega-menu.css` pins to `inset-inline: 0`. So
+  `useRootPaddingAwareAlignments` never reached it, and below `wideSize` the
+  columns ran flush to the window edge. The variation now sets `spacing|20` on
+  both inline sides — theme.json's own `styles.spacing.padding`, so a panel's
+  columns line up with the header above them. Change one and change the other.
+
+  **More air above and below**: block padding goes `spacing|20` → `spacing|40`.
+
+  **The featured card is styled, and styled in the variation.** Its resting
+  rules moved out of `ollie-mega-menu.css`: heading face at semi-bold,
+  `line-height|heading`, no letter-spacing, a contrast title over a neutral-700
+  excerpt at `line-height|body`. The card is the synced pattern `wp_block`
+  65890 — ordinary core blocks, so a variation reaches it, and a variation is
+  the only one of the two that renders in the Site Editor. It was the last
+  thing in a panel still styled front-end only. `font-size` is deliberately
+  absent from the title: the pattern sets `fontSize: "300"` and core emits
+  `.has-300-font-size` with `!important`, so a declaration would silently lose.
+  The title now hovers **brand-600 with no underline**, the same token the query
+  rows hover to — the rule it replaces *added* an underline. That one stays in
+  the stylesheet because a `css` field strips `:hover`, and it needs no
+  `!important`: (0,3,0) against the variation's unmarked (0,1,0) and
+  theme.json's (0,2,0).
 
 - 💄 **"Results" is no longer set in capitals, and the count beside it matches
   it.** LS-4175. `patterns/template-page-search.php`,
@@ -246,6 +328,66 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   accommodation-type results page too, which shares the facet and the sheet.
 
 ### Fixed
+
+- 🐛 **The mobile menu: a black hamburger, and a white frame around the
+  panel.** LS-2014 (line 2, Header). `assets/styles/core-navigation.css`.
+
+  Two defects, one cause each, both measured on dev at 390px on 2026-09-18.
+
+  **The hamburger was black on the dark band.** The trigger sits on the mobile
+  header's `primary-600` row beside the search icon, and the search icon was
+  white while the hamburger was not. An unscoped pair of rules in this file gave
+  `.wp-block-navigation__responsive-container-open` and `…-close` a hardcoded
+  `color: contrast` and a `neutral-200` ground with a 3px radius — so the glyph,
+  which takes `fill: currentColor` from core, was painted black inside a pale
+  box, ignoring the navigation block's own `base` text colour. Both buttons now
+  take `color: inherit` on no ground, under the `is-style-mobile-navigation`
+  scope. Live draws the same mark: white bars on `#41382e`.
+
+  The rules could be moved under that scope rather than duplicated because
+  `is-style-mobile-navigation` is the **only** navigation in this theme that ever
+  emits an overlay — the other twelve `wp:navigation` blocks in `parts/`,
+  `patterns/` and `templates/` all carry `overlayMenu: "never"`.
+
+  **The panel floated in a white frame.** The open overlay had a
+  `spacing.30` gutter from this file, core's white ground, core's 56px top inset
+  on the content wrapper and a `spacing.30` flex gap, which together put ~20px of
+  white on three sides of the dark panel and 56px above it. Live has no frame:
+  the menu is one full-bleed band starting at the header's bottom edge. The
+  overlay now paints `primary-600` at zero padding and zero inset, and the close
+  button moves from the gutter that no longer exists to the panel's top-right
+  corner.
+
+  ⚠️ **This is what the `margin-top: -36px` on the Site Editor's copy of
+  `mobile-menu` was compensating for.** Reconcile that override away when the
+  header and mobile-menu parts are pulled back into theme files, or the negative
+  margin will drag the panel up under the header band now that the inset is gone.
+
+- 🐛 **The mega menu's "Featured" columns showed the newest item, not the
+  featured one.** `parts/mega-menu-{tours,accommodation,destinations}.html`.
+
+  Each Featured column ran a plain `orderBy: date, order: desc` query, so it
+  printed whatever was published last. Tour Operator already has the mechanism:
+  `Query_Loop::query_args_filter()` matches `/(lsx|facts)-(.*?)-query/` against
+  the **post-template's** `className` and, for a `featured-*` key, swaps in a
+  `featured = true` meta query and pre-resolves the set through
+  `posts_pre_query`. The columns now carry `lsx-featured-tours-query`,
+  `lsx-featured-accommodation-query`, `lsx-featured-destinations-query` and —
+  on the "Featured Specials" list, which had the same contradiction between its
+  heading and its query — `lsx-featured-special-query`.
+
+  ⚠️ **This is why those four queries no longer carry `queryId: 0`.** That
+  filter caches its result in `$saved_queries[$queryId]` and *reads* the cache
+  before it looks at the className, so one panel's featured args would have been
+  handed to every other `queryId: 0` query on the page — and 23 of the theme's
+  24 query blocks carry `queryId: 0`. Measured on local 2026-09-18: a featured
+  tour query followed by a plain `destination` query, both at `queryId: 0`,
+  rendered the tour twice. The four are now 6502–6505, and re-measured the same
+  day the destination query returns a destination again.
+
+  **"From the Blog" on the About panel is unchanged.** It queries `post`, and
+  Tour Operator has no `featured-post` key — there is no featured flag on a core
+  post for it to read.
 
 - 🐛 **Every Gravity Forms submit button hovered to black, and carried a
   radius.** `style.css`.

@@ -184,7 +184,14 @@
    (styles/sections/mega-panel.json), so it renders in the Site Editor. A
    `padding-block: spacing|40` rule lived here until 2026-08-28 and was already
    dead by then — the parts had begun setting `spacing|20` as an inline style,
-   which outranks any stylesheet. */
+   which outranks any stylesheet.
+
+   The variation carries all four sides as of 2026-09-18. The inline pair is the
+   load-bearing half: `inset-inline: 0` above makes the panel's containing block
+   the viewport, so `useRootPaddingAwareAlignments` never reaches it and the
+   columns ran flush to the window edge at every width below `wideSize`. The
+   value is theme.json's own root padding, so a panel's columns line up with the
+   header above them — see the variation's description. */
 
 /* The gap between columns is **not** set here. It is `blockGap` on the columns
    block in each part, per AGENTS.md, "blockGap belongs on the block markup".
@@ -295,26 +302,34 @@
 
 /* The featured card
    ---------------------------------------------------------------------------
-   One post, image over title over a clamped excerpt. */
-.sd-mega-panel__featured .wp-block-post-featured-image {
-	margin-block-end: var(--wp--preset--spacing--20);
-}
+   One post, image over title over a clamped excerpt. The card is the synced
+   pattern `wp_block` 65890, which is ordinary core blocks — so its **resting**
+   styles moved to `is-style-mega-panel` (styles/sections/mega-panel.json) on
+   2026-09-18, for the reason the "Link lists" note above gives: a variation's
+   `css` field renders in the Site Editor and nothing in this file does. The
+   card was the last thing in a panel still styled only on the front end.
 
-.sd-mega-panel__featured .wp-block-post-title {
-	margin-block: 0 var(--wp--preset--spacing--10);
-}
+   What is left here is the hover, because a `css` field strips `:hover`.
 
-.sd-mega-panel__featured .wp-block-post-title a {
-	text-decoration: none;
-}
+   `brand-600` and **no** underline, on Zared's instruction — the same token the
+   query rows above hover to, so the two link shapes in a panel behave alike.
+   The underline is turned off explicitly rather than left unset: this rule
+   replaced one that *added* an underline on hover, and theme.json's
+   `elements.link:hover` would otherwise decide it.
 
+   `:focus-visible` as well as `:hover`, so a keyboard user gets the same
+   change on top of the UA focus ring.
+
+   No `!important` here, and none needed. The variation's resting `color` is a
+   plain declaration compiled to `:root :where(…)` at (0,1,0) — unlike the query
+   rows', which is marked — and theme.json's `elements.link:hover` sits at
+   (0,2,0). This selector is (0,3,0), so it wins on specificity alone. If the
+   resting rule in mega-panel.json is ever marked, this one has to be marked
+   with it. */
 .sd-mega-panel__featured .wp-block-post-title a:hover,
 .sd-mega-panel__featured .wp-block-post-title a:focus-visible {
-	text-decoration: underline;
-}
-
-.sd-mega-panel__featured .wp-block-post-excerpt {
-	color: var(--wp--preset--color--neutral-700);
+	color: var(--wp--preset--color--brand-600);
+	text-decoration: none;
 }
 
 /* Below the header breakpoint the desktop navigation is hidden altogether
