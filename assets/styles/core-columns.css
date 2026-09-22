@@ -12,3 +12,42 @@
 		width: 100%;
 	}
 }
+
+
+/* The Call Us rows inside the mobile menu panel
+   ===========================================================================
+   `parts/mobile-menu.html` renders `parts/dropdown-call-us` so the four numbers
+   have exactly one source — the same part the footer, the safari-expert panel
+   and the header dropdown read. That part is written for a desktop pop-out: a
+   two-column row whose first column is `width: 20%` holding a flag drawn at
+   `100px`, with `isStackedOnMobile: false` so the flag stays beside the number.
+
+   In a ~300px panel that 20% resolves to about 60px, and a 100px image inside a
+   60px column overflows it — the flags ran into the numbers. The column keeps
+   its `is-not-stacked-on-mobile` promise (stacking them would put a 100px flag
+   on a row of its own, four times over, and stretch the panel); the flag is
+   sized down to the panel instead.
+
+   28px is live's mark, measured on the mobile menu at 390px: the flags there
+   are small marks that identify the number, not images in their own right.
+   Scoped to `.sd-mobile-menu` so the desktop pop-out, the footer and the
+   safari-expert panel keep the 100px the part asks for.
+
+   `!important` is forced on both declarations, and by the same thing in each
+   case: these are the two properties WordPress writes **inline**. `core/column`
+   serialises its `width` attribute as `style="flex-basis:20%"` on the column,
+   and `core/image` serialises `width`/`aspectRatio` as `style="width:100px;…"`
+   on the `<img>` (`wp-includes/blocks/post-featured-image.php` does the same
+   for its own). An inline declaration outranks any author stylesheet selector,
+   so specificity cannot win this — only `!important` can. The alternative is a
+   second copy of the part cut down for mobile, which is the drift this reuse
+   exists to prevent. → .claude/skills/wp-blockstyle-css-field */
+.sd-mobile-menu .wp-block-columns > .wp-block-column:first-child {
+	flex-basis: 28px !important;
+	flex-grow: 0;
+}
+
+.sd-mobile-menu .wp-block-columns > .wp-block-column:first-child .wp-block-image img {
+	width: 100% !important;
+	height: auto;
+}
