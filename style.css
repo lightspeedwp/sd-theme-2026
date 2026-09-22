@@ -222,6 +222,93 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 	}
 }
 
+/* Hero banner — the phone stack
+   -------------------------------------------------------------------------
+   Live's inner-page banner is two layouts, not one, and the switch is at
+   768px (`sd-lsx-child/assets/css/custom.css`:324-360). Measured on live at
+   1440px and at 390px on `/destination/botswana/moremi-game-reserve/`:
+
+   - From 768px up, `.page-banner-image` is `position: absolute` with
+     `top: 0; bottom: 0`, so the photograph fills the band and the title sits
+     over it in white. That is what `core/cover` does natively, so nothing
+     here touches it.
+
+   - Below 768px, live gives the image a `bottom` offset so it shrinks to a
+     strip at the top (122px at a 390px viewport) and `.container` takes an
+     opaque `#ece9e3` ground underneath it, with the title in `#cc7f16` and
+     the tagline in `#60483b`. The palette resolves those to `neutral-200`,
+     `brand-500` and `neutral-700` — the same mapping
+     `patterns/template-single-accommodation.php` records for `#ece9e3` and
+     `patterns/itinerary-stay.php` for `#60483b`.
+
+   This block is the second layout. It lives here and not in the `css` field
+   of `styles/sections/hero-banner.json` because `@media` does not survive
+   that field — it compiles to a dead selector, measured on WP 7.0 and
+   written up in `styles/blocks/search/header-search.json`.
+
+   Specificity: the section style's `css` field is wrapped in `:where()`, so
+   every rule below outranks it on the class count alone. Core's own
+   `.wp-block-cover img.wp-block-cover__image-background` is the one to beat
+   for the image, which is why that selector carries the block class as well.
+
+   `min-height` is the single `!important` here and the only one needed. The
+   454px floor arrives as an inline `style` attribute on the cover — every
+   banner pattern in this theme picks its own floor, so it cannot move into
+   the shared section style — and an inline declaration outranks a stylesheet
+   at any specificity.
+--------------------------------------------- */
+
+@media (max-width: 767px) {
+	.wp-block-cover.is-style-hero-banner {
+		display: block;
+		min-height: 0 !important;
+		padding: 0;
+		background-color: var(--wp--preset--color--neutral-200);
+	}
+
+	.wp-block-cover.is-style-hero-banner > .wp-block-cover__image-background {
+		position: relative;
+		inset: auto;
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 3 / 1;
+		object-fit: cover;
+	}
+
+	/* The scrim is a full-bleed overlay on a photograph that is no longer
+	   full-bleed. Nothing to dim once the type has left the image. */
+	.wp-block-cover.is-style-hero-banner > .wp-block-cover__background {
+		display: none;
+	}
+
+	/* The section style paints the banner's type `base` for the photograph it
+	   normally sits on. On the plate that is white on near-white, so the
+	   default is reset on the container rather than per block — a date, a term
+	   list or a button added to the banner later inherits the fix. Only the
+	   title, which the style colours by element, needs naming. */
+	.wp-block-cover.is-style-hero-banner > .wp-block-cover__inner-container {
+		padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--20);
+		color: var(--wp--preset--color--neutral-700);
+	}
+
+	.wp-block-cover.is-style-hero-banner .wp-block-post-title,
+	.wp-block-cover.is-style-hero-banner .wp-block-heading,
+	.wp-block-cover.is-style-hero-banner a:where(:not(.wp-element-button)) {
+		color: var(--wp--preset--color--brand-500);
+	}
+
+	/* Live steps the tagline from 30px to 24px here (custom.css:380-386) while
+	   the title's clamp takes 60px down to 48px on its own.
+	   `is-style-subheading-large` rests at font-size 500; one step down to 400
+	   is the same move. Fluid typography lands it at ~20px at a 390px viewport
+	   rather than live's flat 24px — the scale is doing its job, and matching
+	   the step matters more here than matching the absolute value. */
+	.wp-block-cover.is-style-hero-banner > .wp-block-cover__inner-container p {
+		font-size: var(--wp--preset--font-size--400);
+	}
+}
+
 /* Table
 --------------------------------------------- */
 

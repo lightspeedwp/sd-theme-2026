@@ -190,6 +190,46 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 💄 **The page hero banner is now live's banner, and it unstacks on phones.**
+  `patterns/hero-page-banner.php`, `styles/sections/hero-banner.json`,
+  `style.css`.
+
+  The pattern used to port the About Us tree's `lsx-blocks/lsx-banner-box` —
+  centred, an uppercase eyebrow over an uppercase title. That device is not what
+  live puts at the top of a page. Measured at 1440px on `/about-us/`,
+  `/tour/luxury-adventure-cape-town-vic-falls-botswana/` and
+  `/destination/botswana/moremi-game-reserve/`, all three render the same thing:
+  LSX Banners' `#lsx-banner .page-banner`, left-aligned on the container, the
+  title in Joe Hand at 60px/200 with `.tagline` under it in the heading face at
+  30px/600. The banner-box only ever appeared inside the content of the About
+  children. So the pattern is now that device — `core/post-title` under
+  `is-style-script-accent` at font-size 800 over an `is-style-subheading-large`
+  strapline, in the flow-layout `alignwide` group the archive banners already
+  use — which makes it the same composition as
+  `patterns/template-archive-destination.php` rather than a second species.
+
+  **Live's banner is two layouts, and only the desktop one was built.** Below
+  768px live gives `.page-banner-image` a `bottom` offset so the photograph
+  shrinks to a strip (122px at a 390px viewport) and the title and tagline drop
+  onto an opaque `#ece9e3` plate underneath it in `#cc7f16` and `#60483b`
+  (`sd-lsx-child/assets/css/custom.css`:324-360). The palette resolves those to
+  neutral-200, brand-500 and neutral-700. That second layout is now a
+  `@media (max-width: 767px)` block in `style.css`, **not** in the section
+  style's `css` field — `@media` compiles to a dead selector there, as
+  `styles/blocks/search/header-search.json` records. Every rule in it is written
+  to outrank `:root :where(.wp-block-cover.is-style-hero-banner)`, which is what
+  the field actually compiles to; `min-height` is the one `!important`, because
+  the 454px floor arrives as an inline attribute on the block.
+
+  The strapline is authored, not bound. Live's subtitle comes from the
+  `banner_subtitle` post meta with per-post-type fallbacks
+  (`sd-lsx-child/classes/class-sd-banner-integration.php`:52-71) — a binding
+  source, which is `sd-enhancements` work, and that filter is not firing on live
+  today in any case.
+
+  Slug, filename and the 454px floor are unchanged, and no template references
+  the pattern yet, so nothing else moves. Rolling the per-post-type templates
+  onto it, and the Playwright harness with them, is the next step.
 - 🔄 **The mobile menu's phone numbers carry their flags.**
   LS-2014 (line 2, Header). `parts/mobile-menu.html`,
   `assets/styles/core-columns.css`.
