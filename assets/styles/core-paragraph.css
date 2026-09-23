@@ -22,7 +22,10 @@
  * the top of the letter level with line one's capitals and its foot on line
  * two's baseline, both to within half a pixel. `em` keeps that true as the
  * fluid body size changes; Optima's ascent + descent is exactly 1em, which is
- * why `line-height: 1` adds no leading to account for.
+ * why `line-height: 1` adds no leading to account for. The `-0.2em` bottom
+ * margin pulls the float's box up inside the two lines it spans: at full height
+ * (1.09em, ~66px) it pushed line three aside as well. Only the part below the
+ * baseline is given up, so no part of the letter itself is lost.
  *
  * Two reasons this is not in the block style's `css` field:
  *
@@ -45,6 +48,7 @@
 	.is-style-archive-intro::first-letter {
 		float: left;
 		margin-block-start: 0.09em;
+		margin-block-end: -0.2em;
 		margin-inline-end: 0.3rem;
 		color: var(--wp--preset--color--brand-500);
 		font-family: var(--wp--preset--font-family--heading);
