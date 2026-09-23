@@ -352,9 +352,9 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   archives.
 
 - ⭐ **Single accommodation: the stars sit under "This property is rated",
-  centred.** LS-2017. `patterns/template-single-accommodation.php`,
-  `assets/styles/core-group.css`. The rating group becomes a vertical flex,
-  matching live's `.centered-rating`. The empty `<p>` the parser splits off in
+  aligned left.** LS-2017. `patterns/template-single-accommodation.php`,
+  `assets/styles/core-group.css`. The rating group becomes a vertical flex
+  starting at the left edge (live centres it; Zared's call). The empty `<p>` the parser splits off in
   front of `.rating-stars` is hidden, so it doesn't double the gap.
 
 - 🏢 **Brands page brought in from the dev Site Editor override.** LS-2018.

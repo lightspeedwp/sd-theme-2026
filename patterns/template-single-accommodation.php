@@ -370,10 +370,11 @@
 						 * reference would not render. The heading sits inside
 						 * the wrapper because live gates it on the rating alone.
 						 *
-						 * **The stars sit under the label, centred** — live's
-						 * `.centered-rating` is a block `h3` over an inline run
-						 * of stars at `text-align: center` (custom.css:2676), so
-						 * the group is a vertical flex centred on its axis. It
+						 * **The stars sit under the label, aligned left** — live's
+						 * `.centered-rating` is a block `h3` over a run of stars
+						 * (custom.css:2676), so the group is a vertical flex.
+						 * Live centres the pair; this starts them at the left
+						 * edge (Zared's call, 2026-09-23). It
 						 * was a wrapping row until 2026-09-23, which put the
 						 * stars beside the label wherever the box was wide
 						 * enough. The empty `<p>` the parser leaves in front of
@@ -386,15 +387,15 @@
 						 * desktop page this was measured from.
 						 */
 						?>
-						<!-- wp:group {"metadata":{"name":"Rating"},"className":"lsx-rating-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+						<!-- wp:group {"metadata":{"name":"Rating"},"className":"lsx-rating-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} -->
 						<div class="wp-block-group lsx-rating-wrapper">
 
 							<!-- wp:heading {"textAlign":"center","level":2,"metadata":{"name":"Rating Label"},"style":{"typography":{"textTransform":"uppercase","letterSpacing":"var:custom|letter-spacing|heading"}},"fontSize":"300"} -->
 							<h2 class="wp-block-heading has-text-align-center has-300-font-size" style="letter-spacing:var(--wp--custom--letter-spacing--heading);text-transform:uppercase"><?php esc_html_e( 'This property is rated:', 'sd-theme-2026' ); ?></h2>
 							<!-- /wp:heading -->
 
-							<!-- wp:paragraph {"metadata":{"name":"Rating Stars","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"rating"}}}},"style":{"typography":{"textAlign":"center"}},"fontSize":"200"} -->
-							<p class="has-text-align-center has-200-font-size"></p>
+							<!-- wp:paragraph {"metadata":{"name":"Rating Stars","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"rating"}}}},"style":{"typography":{"textAlign":"left"}},"fontSize":"200"} -->
+							<p class="has-text-align-left has-200-font-size"></p>
 							<!-- /wp:paragraph -->
 
 						</div>

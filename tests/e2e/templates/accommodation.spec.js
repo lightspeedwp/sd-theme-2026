@@ -20,7 +20,8 @@
  * badge — accent-500, contrast text, top-right — on a property with a
  * published connected special.
  *
- * **The single's rating** stacks the stars under "This property is rated".
+ * **The single's rating** stacks the stars under "This property is rated",
+ * aligned left.
  *
  * **The brands page** is three logos across with its section heading hidden,
  * as the Site Editor override on dev had it; **a one-region brand** still
@@ -196,9 +197,8 @@ test.describe( 'Single accommodation', () => {
 
 		expect( row.y, 'the stars sit beside the label, not under it' ).toBeGreaterThanOrEqual( label.y + label.height - 1 );
 
-		const labelCentre = label.x + label.width / 2;
-		const rowCentre = row.x + row.width / 2;
-		expect( Math.abs( labelCentre - rowCentre ), 'the stars are not centred under the label' ).toBeLessThanOrEqual( 2 );
+		const box = await wrapper.boundingBox();
+		expect( Math.abs( row.x - box.x ), 'the stars are not aligned to the left edge' ).toBeLessThanOrEqual( 2 );
 	} );
 } );
 
