@@ -107,10 +107,17 @@ test.describe( 'Modals', () => {
 			 * than none — it reads as an empty name.
 			 */
 			for ( const ref of ( labelledBy || '' ).split( /\s+/ ).filter( Boolean ) ) {
-				await expect(
-					page.locator( `[id="${ ref.replace( /"/g, '\\"' ) }"]` ),
+				/**
+				 * Compared as a plain id, not built into a selector — an id
+				 * holding quotes or backslashes would otherwise need escaping.
+				 */
+				expect(
+					await page.evaluate(
+						( refId ) => null !== document.getElementById( refId ),
+						ref
+					),
 					`dialog ${ id } is labelled by #${ ref }, which does not exist`
-				).toBeAttached();
+				).toBe( true );
 			}
 		}
 
