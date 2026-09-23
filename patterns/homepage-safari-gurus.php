@@ -44,11 +44,13 @@
  * ids. Binding by slug in the plugin keeps the pattern portable and the curated
  * list declared once.
  *
- * **The term is empty on dev as of 2026-08-26.** Until somebody tags the four
- * people, the filter deliberately stands aside and this row renders the four
- * most recent team members instead of nothing — see the fallback note on that
- * method. Ordering (`date`/`asc`) is set here rather than there, and reproduces
- * live's order once the tagging is done.
+ * **The four are tagged on dev as of 2026-09-23** — Liesl Matthews, Lise
+ * Kargaard, Camille Rowe and Ilze Fox, the four live's homepage shows, each
+ * keeping the role they already had. Any environment where the term is still
+ * empty gets the filter's fallback: it stands aside and the row renders the
+ * first four team members instead of nothing — see the note on that method.
+ * Ordering (`date`/`asc`) is set here rather than there, and reproduces live's
+ * order: Liesl, Lise, Camille, Ilze.
  *
  * ## The card is the Team Member Card style, used the way live's homepage uses it
  *

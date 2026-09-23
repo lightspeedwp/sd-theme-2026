@@ -63,6 +63,28 @@ brand-500 itself is a Change-Control Register entry. */
 }
 
 
+/* Plain Link — label only, turning accent-500 on hover and focus.
+   The `:hover`/`:focus` blocks in the JSON partner are never emitted: the
+   block-style-variation compiler keeps only the variation's base declarations,
+   so on the homepage gurus card the links stayed white (measured on dev
+   2026-09-23). Live's value is `.lsx-to-single-link a:hover { color: #e6ad10 }`,
+   which is accent-500 exactly. The background is restated because the button
+   element's own `:hover` would otherwise lay a brand-600 plate behind the label.
+   Pairs with styles/blocks/button/link-plain.json */
+.wp-block-button.is-style-link-plain .wp-block-button__link:hover,
+.wp-block-button.is-style-link-plain .wp-block-button__link:focus {
+	background-color: transparent;
+	color: var(--wp--preset--color--accent-500);
+}
+
+/* On the team member card the three links sit one step up the scale from the
+   variation's 300. Scoped to the card because the category template uses the
+   same variation at its base size. → patterns/homepage-safari-gurus.php */
+.is-style-team-member-card .wp-block-button.is-style-link-plain .wp-block-button__link {
+	font-size: var(--wp--preset--font-size--400);
+}
+
+
 /* The header's enquiry action — `.sd-header__cta`
    ===========================================================================
    Live's `#menu-top-menu-right .cta-btn` is a 55px-tall plate that fills the

@@ -241,6 +241,19 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
 	color: inherit;
 }
 
+/* The 28px glyph plus `spacing|5` on each side is a 36px box — under the 44px
+   touch-target floor the Playwright responsive suite enforces (org standard;
+   WCAG 2.5.5). A minimum box rather than more padding, so the glyph stays
+   where it is drawn and only the hit area grows. 44 is the accessibility
+   floor, not a design value, so it is a literal. */
+.is-style-mobile-navigation .wp-block-navigation__responsive-container-open,
+.is-style-mobile-navigation .wp-block-navigation__responsive-container-close {
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+}
+
 .is-style-mobile-navigation .wp-block-navigation__responsive-container-open svg {
 	width: 28px;
 	height: 28px;
