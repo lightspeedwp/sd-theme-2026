@@ -184,17 +184,21 @@
 				 * source's `prefix` and `suffix` args. The spaces sit here, outside
 				 * the translation calls, so a translator cannot drop the one thing
 				 * holding the words apart.
+				 *
+				 * Both take base explicitly, for the same reason the section title
+				 * does: inherited, they pick up the Light Page Section's neutral-700
+				 * and are barely legible on the photograph.
 				 */
 				?>
 				<!-- wp:group {"metadata":{"name":"TrustScore line"},"className":"sd-trustpilot__line","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
 				<div class="wp-block-group sd-trustpilot__line">
 
-					<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","fontSize":"100"} -->
-					<p class="sd-trustpilot__score has-100-font-size"></p>
+					<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","textColor":"base","fontSize":"100"} -->
+					<p class="sd-trustpilot__score has-base-color has-text-color has-100-font-size"></p>
 					<!-- /wp:paragraph -->
 
-					<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","fontSize":"100"} -->
-					<p class="sd-trustpilot__count has-100-font-size"></p>
+					<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","textColor":"base","fontSize":"100"} -->
+					<p class="sd-trustpilot__count has-base-color has-text-color has-100-font-size"></p>
 					<!-- /wp:paragraph -->
 
 				</div>

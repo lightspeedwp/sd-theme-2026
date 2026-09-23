@@ -438,6 +438,21 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- 🐛 **The safari gurus' card links turn yellow on hover.** LS-2030 (line 20).
+  `assets/styles/core-button.css`, `patterns/homepage-safari-gurus.php`.
+
+  The Plain Link variation's `:hover`/`:focus` colour was never emitted — the
+  block-style-variation compiler keeps only a variation's base declarations —
+  so the three links on each gurus card stayed white. The flip now lives in
+  `core-button.css` beside the other variations' flips, at accent-500, which is
+  live's `#e6ad10` exactly. It applies to the category template's Plain Link
+  too, which had the same gap. On the team member card the links also go one
+  step up the scale, from font size 300 to 400.
+
+  The row itself now shows the four gurus live shows — Liesl, Lise, Camille
+  and Ilze, in live's order — because they are tagged `safari-guru` on dev;
+  the plugin filter that curates it was already in place.
+
 - 🐛 **Carousel arrows no longer push the page sideways on laptops.** LS-2030
   (line 20, responsive QA). `assets/styles/core-group.css`.
 
