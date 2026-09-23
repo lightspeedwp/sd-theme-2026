@@ -123,7 +123,9 @@ test.describe( 'Accommodation list card', () => {
 		test.skip( 0 === excerpts.length, `${ target } renders no cards` );
 
 		for ( const text of excerpts ) {
-			const words = text.replace( /…|&hellip;/g, ' ' ).trim().split( /\s+/ ).filter( Boolean );
+			// Split the way wp_trim_words() counts (wp-includes/formatting.php): on
+			// ASCII whitespace only. `\s` would also split a non-breaking space.
+			const words = text.replace( /…|&hellip;/g, ' ' ).trim().split( /[\n\r\t ]+/ ).filter( Boolean );
 			expect( words.length, `excerpt runs ${ words.length } words: "${ text.trim() }"` ).toBeLessThanOrEqual( 40 );
 		}
 	} );

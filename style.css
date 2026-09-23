@@ -306,6 +306,7 @@ a.more-link {
 	}
 
 	.wp-block-cover.is-style-hero-banner .wp-block-post-title,
+	.wp-block-cover.is-style-hero-banner .wp-block-query-title,
 	.wp-block-cover.is-style-hero-banner .wp-block-heading,
 	.wp-block-cover.is-style-hero-banner a:where(:not(.wp-element-button)) {
 		color: var(--wp--preset--color--brand-500);
