@@ -63,3 +63,10 @@ tests/**/node_modules/
 
 # Resolved at run time by tests/e2e/global-setup.js
 tests/e2e/.resolved-routes.json
+
+# Saved admin session for the `editor` project. An auth-state file is a
+# credential — the org standard forbids committing one.
+tests/e2e/.auth/
+
+# Recorded axe baseline is environment-specific and regenerated, not authored.
+tests/e2e/a11y/.a11y-baseline.local.json

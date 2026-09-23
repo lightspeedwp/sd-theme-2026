@@ -7,6 +7,10 @@
  * WCAG and all of the part that regresses silently. A clean run means "nothing
  * obviously broken", not "accessible".
  *
+ * The gate compares against a recorded baseline rather than demanding zero, per
+ * the org rule. See utils/axe.js for why, and a11y-baseline.json for the debt it
+ * currently tolerates. Fix violations; never widen the baseline to go green.
+ *
  * Third-party widgets are excluded in utils/dynamic-regions.js. Nothing the
  * theme or sd-enhancements renders is excluded.
  *
@@ -15,33 +19,35 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
-const { STATIC_ROUTES, RESOLVED_ROUTES } = require( '../fixtures/routes.js' );
-const { scan, formatViolations } = require( '../utils/axe.js' );
+const {
+	STATIC_ROUTES,
+	RESOLVED_ROUTES,
+	RESOLVED_TAXONOMIES,
+	SYNTHETIC_ROUTES,
+} = require( '../fixtures/routes.js' );
+const { scan, assertNoNewViolations } = require( '../utils/axe.js' );
 const { assertHeadingHierarchy } = require( '../utils/page-contract.js' );
 
-test.describe( 'Accessibility — static routes', () => {
+test.describe( 'Accessibility — static routes @a11y', () => {
 	for ( const route of STATIC_ROUTES ) {
-		test( `${ route.name } has no WCAG 2.1 AA violations`, async ( {
+		test( `${ route.name } introduces no new WCAG 2.2 AA violations`, async ( {
 			page,
 			visit,
 		} ) => {
 			await visit( route.path );
 
-			const results = await scan( page );
-
-			expect(
-				results.violations,
-				`${ route.path } (${ route.template })\n\n${ formatViolations(
-					results.violations
-				) }`
-			).toEqual( [] );
+			assertNoNewViolations(
+				await scan( page ),
+				route.path,
+				route.template
+			);
 		} );
 	}
 } );
 
-test.describe( 'Accessibility — single templates', () => {
+test.describe( 'Accessibility — single templates @a11y', () => {
 	for ( const route of RESOLVED_ROUTES ) {
-		test( `${ route.name } has no WCAG 2.1 AA violations`, async ( {
+		test( `${ route.name } introduces no new WCAG 2.2 AA violations`, async ( {
 			page,
 			visit,
 			routes,
@@ -51,19 +57,61 @@ test.describe( 'Accessibility — single templates', () => {
 
 			await visit( target );
 
-			const results = await scan( page );
-
-			expect(
-				results.violations,
-				`${ target } (${ route.template })\n\n${ formatViolations(
-					results.violations
-				) }`
-			).toEqual( [] );
+			/**
+			 * Keyed by post type, not by permalink. The resolved slug changes
+			 * as content is migrated, and a baseline keyed on it would go
+			 * stale every time the newest tour changed.
+			 */
+			assertNoNewViolations(
+				await scan( page ),
+				`single:${ route.key }`,
+				route.template
+			);
 		} );
 	}
 } );
 
-test.describe( 'Accessibility — structure', () => {
+test.describe( 'Accessibility — taxonomy archives @a11y', () => {
+	for ( const route of RESOLVED_TAXONOMIES ) {
+		test( `${ route.name } introduces no new WCAG 2.2 AA violations`, async ( {
+			page,
+			visit,
+			routes,
+		} ) => {
+			const target = routes.term( route.key );
+			test.skip( ! target, `No populated term in ${ route.key }` );
+
+			await visit( target );
+
+			assertNoNewViolations(
+				await scan( page ),
+				`taxonomy:${ route.key }`,
+				route.template
+			);
+		} );
+	}
+} );
+
+test.describe( 'Accessibility — search and 404 @a11y', () => {
+	for ( const route of SYNTHETIC_ROUTES ) {
+		test( `${ route.name } introduces no new WCAG 2.2 AA violations`, async ( {
+			page,
+			visit,
+		} ) => {
+			await visit( route.path, {
+				expectStatus: route.expectStatus || 200,
+			} );
+
+			assertNoNewViolations(
+				await scan( page ),
+				route.path,
+				route.template
+			);
+		} );
+	}
+} );
+
+test.describe( 'Accessibility — structure @a11y', () => {
 	test( 'front page heading hierarchy has no skipped levels', async ( {
 		page,
 		visit,

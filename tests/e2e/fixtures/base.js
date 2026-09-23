@@ -137,6 +137,17 @@ const test = base.test.extend( {
 				 * @return {string|null} Term archive path, or null when absent.
 				 */
 				term: ( key ) => resolved.terms[ key ] || null,
+
+				/**
+				 * A page assigned to a custom page template, resolved at
+				 * start-up — these templates render nowhere until a page
+				 * opts into them, so there is no fixed URL.
+				 *
+				 * @param {string} file Template file, e.g. 'page-brands.html'.
+				 * @return {string|null} Path, or null when no page uses it.
+				 */
+				pageTemplate: ( file ) =>
+					( resolved.pageTemplates || {} )[ file ] || null,
 			} );
 		},
 		{ scope: 'worker' },

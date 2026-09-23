@@ -90,6 +90,49 @@ async function resolveTerm( api, restBase, baseURL ) {
 }
 
 /**
+ * Find one page per custom page template.
+ *
+ * `templates/page-brands.html` and friends only render when a page is actually
+ * assigned to them, so there is no fixed URL to test. Ask the pages endpoint
+ * which pages carry which template and take the first of each.
+ *
+ * @param {import('@playwright/test').APIRequestContext} api     Request context.
+ * @param {string}                                       baseURL Site origin.
+ * @return {Promise<Object<string, string>>} Template slug to path.
+ */
+async function resolvePageTemplates( api, baseURL ) {
+	const response = await api.get(
+		'/wp-json/wp/v2/pages?per_page=100&status=publish&_fields=link,template'
+	);
+
+	if ( ! response.ok() ) {
+		return {};
+	}
+
+	const pages = await response.json();
+
+	if ( ! Array.isArray( pages ) ) {
+		return {};
+	}
+
+	const found = {};
+
+	for ( const page of pages ) {
+		/**
+		 * An empty `template` means the default hierarchy, which page.html
+		 * already covers through STATIC_ROUTES.
+		 */
+		if ( ! page.template || found[ page.template ] ) {
+			continue;
+		}
+
+		found[ page.template ] = toPath( page.link, baseURL );
+	}
+
+	return found;
+}
+
+/**
  * Convert an absolute permalink to a path, so specs stay origin-agnostic and
  * `baseURL` remains the single place the environment is chosen.
  *
@@ -134,7 +177,13 @@ module.exports = async function globalSetup( config ) {
 		);
 	}
 
-	const resolved = { baseURL, posts: {}, terms: {}, resolvedAt: new Date().toISOString() };
+	const resolved = {
+		baseURL,
+		posts: {},
+		terms: {},
+		pageTemplates: {},
+		resolvedAt: new Date().toISOString(),
+	};
 	const missing = [];
 
 	await Promise.all(
@@ -165,6 +214,8 @@ module.exports = async function globalSetup( config ) {
 		} )
 	);
 
+	resolved.pageTemplates = await resolvePageTemplates( api, baseURL );
+
 	await api.dispose();
 
 	fs.writeFileSync( CACHE_PATH, JSON.stringify( resolved, null, '\t' ) );
@@ -179,9 +230,12 @@ module.exports = async function globalSetup( config ) {
 	 * stdout, and anything else printed there makes the report unparseable —
 	 * which breaks CI in a way that looks like a test failure.
 	 */
+	const pageTemplateCount = Object.keys( resolved.pageTemplates ).length;
+
 	process.stderr.write(
 		`\n  Target:   ${ baseURL }\n` +
 			`  Resolved: ${ found }/${ total } content routes\n` +
+			`  Page templates in use: ${ pageTemplateCount }\n` +
 			( missing.length
 				? `  No content: ${ missing.join( ', ' ) } — those specs will skip\n\n`
 				: '\n' )

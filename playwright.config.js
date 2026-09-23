@@ -3,22 +3,40 @@
  *
  * Target selection
  * ----------------
- * `WP_BASE_URL` chooses the environment. It defaults to the dev site, which is
- * the only environment carrying real migrated content (366 accommodations, 122
- * destinations, 112 reviews). Local Studio holds six tours and nothing else, so
- * archive and taxonomy assertions are meaningless there.
+ * `WP_BASE_URL` chooses the environment, read from `.env` at the theme root (see
+ * `.env.example`). It defaults to the dev site, which is the only environment
+ * carrying real migrated content. Local Studio holds six tours and nothing else,
+ * so archive and taxonomy assertions are meaningless there.
  *
  *   npm run test:e2e                                        # dev (default)
  *   WP_BASE_URL=http://localhost:8903 npm run test:e2e      # local Studio
  *
  * Never point this at southerndestinations.com. The suite is read-only, but the
- * live site is the client's production site and is not a test target.
+ * live site is the client's production site and is not a test target. The one
+ * deliberate exception is the `parity` project, which reads a small sample of
+ * live pages to compare content against — it is opt-in and never navigates with
+ * production as `baseURL`.
+ *
+ * Project matrix
+ * --------------
+ * Breakpoints follow the org standard in `lightspeedwp/.github`
+ * (`agents/testing-agent/CROSS_BROWSER_AND_RESPONSIVE_TESTING.md`): mobile
+ * 375×667, tablet 768×1024, desktop 1280×800, wide 1920×1080 (optional).
+ *
+ * The same standard asks for Chromium, Firefox and WebKit as a minimum. Running
+ * the whole suite three times over triples the load on a shared dev host for
+ * very little signal, so Firefox and WebKit run the `@smoke` subset — the
+ * routes where an engine difference would actually show — and Chromium carries
+ * the full sweep.
  *
  * @package SD_Theme_2026
  * @subpackage Tests
  */
 
 const { defineConfig, devices } = require( '@playwright/test' );
+const { loadEnv, hasAdminCredentials } = require( './tests/e2e/utils/env.js' );
+
+loadEnv();
 
 const baseURL =
 	process.env.WP_BASE_URL || 'https://southerndestinations.lightspeedwp.dev';
@@ -28,6 +46,21 @@ if ( /southerndestinations\.com/i.test( baseURL ) ) {
 		'Refusing to run: WP_BASE_URL points at the production site. Use dev or local.'
 	);
 }
+
+/**
+ * Opt-in projects. Both cost something someone else pays for — `wide` costs
+ * runtime, `parity` costs requests against the client's production site — so
+ * neither runs unless asked for.
+ */
+const runWide = 'true' === process.env.SD_RUN_WIDE;
+const runParity = 'true' === process.env.SD_RUN_PARITY;
+
+/**
+ * Functional specs, run at every breakpoint that opts in with `@responsive`.
+ */
+const FUNCTIONAL = [ 'templates/**/*.spec.js', 'parts/**/*.spec.js', 'forms/**/*.spec.js' ];
+
+const chrome = devices[ 'Desktop Chrome' ];
 
 module.exports = defineConfig( {
 	testDir: './tests/e2e',
@@ -104,35 +137,85 @@ module.exports = defineConfig( {
 	},
 
 	projects: [
+		/**
+		 * Signs in once and saves the session. Everything in `editor` depends
+		 * on it. Skips itself when no credentials are set, rather than failing
+		 * the run — the test user is temporary by design.
+		 */
+		...( hasAdminCredentials()
+			? [ { name: 'setup', testMatch: /auth\.setup\.js/ } ]
+			: [] ),
+
 		{
 			name: 'desktop',
-			testMatch: [ 'templates/**/*.spec.js', 'parts/**/*.spec.js' ],
-			use: {
-				...devices[ 'Desktop Chrome' ],
-				viewport: { width: 1440, height: 900 },
-			},
+			testMatch: FUNCTIONAL,
+			use: { ...chrome, viewport: { width: 1280, height: 800 } },
 		},
 
 		/**
 		 * Responsive adaptations only — the estimate does not fund bespoke
-		 * mobile designs, so this checks that layouts adapt without breaking,
-		 * not that they match a separate mobile comp. Specs opt in with
+		 * mobile or tablet designs, so these check that layouts adapt without
+		 * breaking, not that they match a separate comp. Specs opt in with
 		 * `@responsive` in the title.
 		 */
 		{
-			name: 'mobile',
-			testMatch: [ 'templates/**/*.spec.js', 'parts/**/*.spec.js' ],
+			name: 'tablet',
+			testMatch: FUNCTIONAL,
 			grep: /@responsive/,
-			use: { ...devices[ 'Pixel 7' ] },
+			use: { ...chrome, viewport: { width: 768, height: 1024 }, isMobile: false },
+		},
+		{
+			name: 'mobile',
+			testMatch: FUNCTIONAL,
+			grep: /@responsive/,
+			use: { ...devices[ 'Pixel 7' ], viewport: { width: 375, height: 667 } },
+		},
+		...( runWide
+			? [
+					{
+						name: 'wide',
+						testMatch: FUNCTIONAL,
+						grep: /@responsive/,
+						use: {
+							...chrome,
+							viewport: { width: 1920, height: 1080 },
+						},
+					},
+			  ]
+			: [] ),
+
+		/**
+		 * Engine coverage. `@smoke` is the subset where a rendering-engine
+		 * difference would plausibly show — not a second full pass.
+		 */
+		{
+			name: 'firefox',
+			testMatch: FUNCTIONAL,
+			grep: /@smoke/,
+			use: { ...devices[ 'Desktop Firefox' ], viewport: { width: 1280, height: 800 } },
+		},
+		{
+			name: 'webkit',
+			testMatch: FUNCTIONAL,
+			grep: /@smoke/,
+			use: { ...devices[ 'Desktop Safari' ], viewport: { width: 1280, height: 800 } },
+		},
+
+		/**
+		 * The responsive contract itself — horizontal overflow, touch target
+		 * size, and layout survival under browser font scaling. Drives its own
+		 * viewports, so it is not duplicated across the breakpoint projects.
+		 */
+		{
+			name: 'responsive',
+			testMatch: 'responsive/**/*.spec.js',
+			use: { ...chrome },
 		},
 
 		{
 			name: 'a11y',
 			testMatch: 'a11y/**/*.spec.js',
-			use: {
-				...devices[ 'Desktop Chrome' ],
-				viewport: { width: 1440, height: 900 },
-			},
+			use: { ...chrome, viewport: { width: 1280, height: 800 } },
 		},
 
 		/**
@@ -143,11 +226,46 @@ module.exports = defineConfig( {
 		{
 			name: 'visual',
 			testMatch: 'visual/**/*.spec.js',
-			use: {
-				...devices[ 'Desktop Chrome' ],
-				viewport: { width: 1440, height: 900 },
-			},
+			use: { ...chrome, viewport: { width: 1280, height: 800 } },
 		},
+
+		/**
+		 * Signed-in checks. The one that matters: whether a Site Editor
+		 * database override is shadowing a theme template file — the documented
+		 * trap in AGENTS.md, and the suspected cause of the front page having
+		 * no `main` landmark.
+		 */
+		...( hasAdminCredentials()
+			? [
+					{
+						name: 'editor',
+						testMatch: 'editor/**/*.spec.js',
+						dependencies: [ 'setup' ],
+						use: {
+							...chrome,
+							viewport: { width: 1280, height: 800 },
+							storageState: './tests/e2e/.auth/admin.json',
+						},
+					},
+			  ]
+			: [] ),
+
+		/**
+		 * Live-vs-rebuild parity, on a sample. Opt-in with SD_RUN_PARITY=true
+		 * because it reads the client's production site — a handful of GETs,
+		 * serially, never on every run.
+		 */
+		...( runParity
+			? [
+					{
+						name: 'parity',
+						testMatch: 'parity/**/*.spec.js',
+						fullyParallel: false,
+						workers: 1,
+						use: { ...chrome, viewport: { width: 1280, height: 800 } },
+					},
+			  ]
+			: [] ),
 	],
 
 	snapshotPathTemplate:

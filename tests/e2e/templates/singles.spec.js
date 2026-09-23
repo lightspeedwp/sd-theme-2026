@@ -18,7 +18,9 @@ const {
 
 test.describe( 'Single templates', () => {
 	for ( const route of RESOLVED_ROUTES ) {
-		test( `${ route.name } (${ route.template }) renders @responsive`, async ( {
+		test( `${ route.name } (${ route.template }) renders @responsive${
+			route.smoke ? ' @smoke' : ''
+		}`, async ( {
 			page,
 			visit,
 			routes,

@@ -3,20 +3,29 @@
 	"posts": {
 		"tour": "/tour/south-africa-mozambique/",
 		"special": "/special/thornybush-2026-specials/",
-		"review": "/review/lion-sands-was-truly-a-little-slice-of-heaven/",
-		"post": "/camille-experiences-the-magic-of-bush-and-beach-at-serondella-thornybush-and-santorini-mozambique/",
-		"accommodation": "/accommodation/bagatelle/",
+		"destination": "/destination/rwanda/kigali/",
 		"team": "/team/jeannot-blum/",
-		"destination": "/destination/rwanda/kigali/"
+		"accommodation": "/accommodation/bagatelle/",
+		"post": "/camille-experiences-the-magic-of-bush-and-beach-at-serondella-thornybush-and-santorini-mozambique/",
+		"review": "/review/lion-sands-was-truly-a-little-slice-of-heaven/"
 	},
 	"terms": {
+		"accommodation-brand": "/brand/wilderness-safaris/",
+		"accommodation-type": "/accommodation-type/safari-lodges/",
 		"post_tag": "/tag/air-conditioning/",
 		"category": "/category/news/",
-		"accommodation-type": "/accommodation-type/safari-lodges/",
-		"continent": "/continent/eastern-africa/",
 		"travel-style": "/travel-style/safari-honeymoons/",
 		"facility": "/facility/available-services/",
-		"accommodation-brand": "/brand/wilderness-safaris/"
+		"continent": "/continent/eastern-africa/"
 	},
-	"resolvedAt": "2026-09-17T05:36:17.743Z"
+	"pageTemplates": {
+		"page-templates/template-full-width-no-margins.php": "/thank-you-for-subscribing/",
+		"brands.php": "/brands/",
+		"page-no-title": "/about-us/why-book-with-us/",
+		"template-archive.php": "/african-honeymoons/",
+		"page-templates/template-sitemap.php": "/sitemap/",
+		"page-templates/template-full-width.php": "/terms-conditions/",
+		"template-reviews.php": "/reviews/"
+	},
+	"resolvedAt": "2026-09-22T17:24:39.301Z"
 }

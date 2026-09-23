@@ -18,7 +18,9 @@ const {
 
 test.describe( 'Static routes', () => {
 	for ( const route of STATIC_ROUTES ) {
-		test( `${ route.name } (${ route.template }) renders @responsive`, async ( {
+		test( `${ route.name } (${ route.template }) renders @responsive${
+			route.smoke ? ' @smoke' : ''
+		}`, async ( {
 			page,
 			visit,
 		} ) => {
