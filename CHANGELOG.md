@@ -326,6 +326,61 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   own count text, set to `([total])` / `(1)` / `(0)` on dev 2026-09-17, because
   they are content rather than presentation. All three land on the
   accommodation-type results page too, which shares the facet and the sheet.
+- 🧪 **A Playwright end-to-end harness for the theme.** `playwright.config.js`,
+  `package.json`, `tests/e2e/`, `.github/workflows/e2e.yml`.
+
+  Four projects — `desktop`, `mobile`, `a11y` and `visual` — against a target chosen by
+  `WP_BASE_URL`, defaulting to dev and refusing to run against production. Follows the org
+  standards in `lightspeedwp/.github` (`docs/TESTING.md`, Playwright Testing Principles):
+  accessible locators first, no XPath, no brittle CSS.
+
+  Routes are resolved from the REST API at start-up rather than hardcoded, so the suite
+  follows content instead of breaking when a post is unpublished; a type with no content in
+  the target environment skips with a stated reason. A shared fixture fails any test whose
+  page emits a PHP notice into the markup or an unexpected console error, so those are
+  caught everywhere rather than needing a spec each.
+
+  Result counts are scoped to `main`. That is not incidental: the header's mega menus
+  contain their own query loops, so a page-wide `.wp-block-post` count returns eighteen
+  items on a search that matched nothing — the scoping is what makes the archive
+  assertions capable of failing at all, and it is what surfaced the empty tour and
+  accommodation archives.
+
+  Current state on dev: 54 passed, 4 failed across `desktop`; 29 passed, 2 failed across
+  `mobile`. Every failure is a real defect, written up in
+  `.github/reports/playwright-harness-2026-09-17.md` and listed in `tests/e2e/README.md`.
+  No visual baselines are committed yet — generating them before those defects are fixed
+  would bake in the broken state.
+- 🧪 **The Playwright harness extended to tablet, responsive, editor and parity checks.**
+  `playwright.config.js`, `package.json`, `.env.example`, `.gitignore`,
+  `tests/e2e/{auth.setup.js,editor,parity,responsive,forms,templates/page-variants.spec.js}`,
+  `tests/e2e/utils/{env.js,axe.js,parity.js}`, `.github/workflows/e2e.yml`.
+
+  The project matrix now follows the org breakpoints: `desktop` 1280, `tablet` 768×1024,
+  `mobile` at the Pixel 7 profile, 375×667, and an opt-in `wide` at 1920 (`SD_RUN_WIDE`).
+  `firefox` and `webkit` run the `@smoke` subset. `responsive` checks horizontal overflow at
+  all four widths, 44×44 header touch targets and 120%/150% text scaling. `editor` signs in
+  through a `setup` project and lists every theme template and part that a Site Editor
+  database override is shadowing — the documented trap, now measured instead of suspected.
+  `parity` (opt-in, `SD_RUN_PARITY`, one worker, read-only) checks that live's navigation
+  routes still resolve and that sampled pages keep their `h1` and substance.
+  `forms/enquiry.spec.js` stops at the submit boundary and never sends valid data, because
+  a real submission reaches Salesforce. `templates/page-variants.spec.js` covers the four
+  custom page templates and archive pagination. Credentials come from a gitignored `.env`
+  and the saved session never enters the repository.
+
+  The axe gate is now a baseline comparison, as the org rule requires, and it **reports
+  without failing until a baseline has been recorded** — the same rule as
+  `sd-enhancements-2026`. CI is `workflow_dispatch` only until the full test pass, and it
+  gains `tablet`, `responsive` and a secrets-gated `editor` job.
+
+  The 2026-09-23 shakedown against dev fixed eight test bugs before recording anything as a
+  defect. Among them: a "tour offers an enquiry route" check that passed on the header's
+  "Contact Us" link and could not fail, FacetWP's no-results `<li>` counted as a search
+  result, a Gravity Forms validation check read before the AJAX response arrived, and a
+  `serial` parity suite that hid the navigation check behind any content difference.
+  Current state on dev and the defect list, grouped by template:
+  `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
 

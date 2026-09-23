@@ -22,6 +22,8 @@ dist/
 .mcp.json
 .env
 .env.*
+# ...but the placeholder template must ship — the org standard requires it.
+!.env.example
 wp-config.php
 
 # Commercially-licensed font faces.
@@ -58,3 +60,10 @@ wp-config.php
 tests/**/test-results/
 tests/**/playwright-report/
 tests/**/node_modules/
+
+# Resolved at run time by tests/e2e/global-setup.js
+tests/e2e/.resolved-routes.json
+
+# Saved admin session for the `editor` project. An auth-state file is a
+# credential — the org standard forbids committing one.
+tests/e2e/.auth/
