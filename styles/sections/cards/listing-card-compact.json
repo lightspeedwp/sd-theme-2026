@@ -6,7 +6,7 @@
 	"blockTypes": [
 		"core/group"
 	],
-	"description": "The related-items card carried by the carousels on every Tour Operator single — \"Tours in Botswana\", \"Accommodation in Botswana\", the destination rail. A landscape image sits above a tinted panel that centres the title and the taxonomy read-outs. Measured from `.single .site-main > .lsx-to-section .lsx-to-widget-item-wrap` on 2026-08-20: panel #ECE9E3 (neutral-200), padding 2.4rem 2rem 4.25rem, centred, title #60483B at 23px, image 360x168 rendered at 204px tall. Live hides the read-more inside the carousel and that is kept — the whole panel is the target. The deep bottom padding is live's, and it is what leaves room for the read-more on the non-carousel placements of the same card. Taxonomy rows are core/post-terms, which renders a <div> with a `.wp-block-post-terms__prefix` span rather than the <p><strong> the meta rows use, so the panel's type rules are repeated for it. **Every link in the card is one colour**: `neutral-800`, `brand-600` on hover, no underline in either state — title, brand, type, travel style and connected destination alike. That includes the linked title, which therefore reads a step darker than the `neutral-700` on `elements.heading`; the heading colour is the fallback for the placements where the title is not a link. It replaced a `neutral-700` default plus a per-block `primary-500` on the Type row that left the four link rows at three different colours (dev, 2026-09-01). Set here rather than on each card so the three compact cards cannot drift; a card that overrides `elements.link` on one row is re-introducing the problem. Two things this style deliberately does not hold: the hover lift — a 4px rise and 200 → 300 on the shadow scale, in assets/styles/core-group.css because the `css` field strips `:hover` outright and mis-compiles `@media` — and the brand-500 Phosphor star masks that replace Tour Operator's rating PNGs, which are in the same file because a `css` field cannot carry a relative asset URL. The last css rule hides the empty paragraphs the accommodation card's rating row leaves behind: one where the HTML parser split the bound `<p>` in front of the `<div class=\"rating-stars\">` Tour Operator emits inside it, and the Rating Authority paragraph on a property whose `rating_type` is empty or \"Unspecified\" — TO's binding returns '' for both. Each is a zero-width flex item that still takes a gap on either side, so the row read as trailing space after the stars. `:empty` and not `:not(:has(> *))` here — these are bound paragraphs with no authored content, so they hold no whitespace text node and `:empty` matches, which is the opposite of the groups in post-grid-card.json. A prefixed paragraph whose *value* is empty is a different problem and is not solved here: TO prepends the prefix with no test on the value, so `<p><strong>Regions:</strong> </p>` is not `:empty` and is indistinguishable from a real one-word value. That case is handled where it can be — by the `(lsx|facts)-*-wrapper` classes on the pattern's own rows, which TO removes server-side before the paragraph renders.",
+	"description": "The related-items card carried by the carousels on every Tour Operator single — \"Tours in Botswana\", \"Accommodation in Botswana\", the destination rail. A landscape image sits above a tinted panel that centres the title and the taxonomy read-outs. Measured from `.single .site-main > .lsx-to-section .lsx-to-widget-item-wrap` on 2026-08-20: panel #ECE9E3 (neutral-200), padding 2.4rem 2rem 4.25rem, centred, title #60483B at 23px, image 360x168 rendered at 204px tall. Live hides the read-more inside the carousel and that is kept — the whole panel is the target. The deep bottom padding is live's, and it is what leaves room for the read-more on the non-carousel placements of the same card. Taxonomy rows are core/post-terms, which renders a <div> with a `.wp-block-post-terms__prefix` span rather than the <p><strong> the meta rows use, so the panel's type rules are repeated for it. **Every read-out link in the card is one colour**: `brand-600`, `brand-700` on hover, no underline in either state — brand, type, travel style, connected destination and the excerpt's more link alike (Zared's, 2026-09-23). Live paints those rows `#cc7f16` (brand-500); brand-600 is the same orange a step darker. **The linked title is the exception**: `neutral-700` at rest, as live's `#60483b` title is (measured on /destination/botswana/chobe-national-park/, 2026-09-23), then `brand-700` on hover like the rest. It is set under `blocks.core/post-title` so it outranks the card's `elements.link`. It replaced a `neutral-800` for every link, which before that replaced a `neutral-700` default plus a per-block `primary-500` on the Type row that left the four link rows at three different colours (dev, 2026-09-01). **Every line of body copy is font size 200**, set on the card root and again on `core/paragraph` and `core/post-excerpt`. The root alone is not enough: theme.json gives `core/paragraph` size 300 globally, which compiles to `:root :where(p)` and beats inheritance, so each bound meta paragraph (price rating, destination, rating) rendered at 300 while the `core/post-terms` rows, which are `<div>`s, inherited 200. One card showed two sizes. The nested block rule outranks the global one — measured on local 2026-09-23: a plain paragraph in the card went from 19.01px to 15.88px. The heading keeps its own size under `elements.heading`. Set here rather than on each card so the three compact cards cannot drift; a card that overrides `elements.link` on one row is re-introducing the problem. Two things this style deliberately does not hold: the hover lift — a 4px rise and 200 → 300 on the shadow scale, in assets/styles/core-group.css because the `css` field strips `:hover` outright and mis-compiles `@media` — and the brand-500 Phosphor star masks that replace Tour Operator's rating PNGs, which are in the same file because a `css` field cannot carry a relative asset URL. The last css rule hides the empty paragraphs the accommodation card's rating row leaves behind: one where the HTML parser split the bound `<p>` in front of the `<div class=\"rating-stars\">` Tour Operator emits inside it, and the Rating Authority paragraph on a property whose `rating_type` is empty or \"Unspecified\" — TO's binding returns '' for both. Each is a zero-width flex item that still takes a gap on either side, so the row read as trailing space after the stars. `:empty` and not `:not(:has(> *))` here — these are bound paragraphs with no authored content, so they hold no whitespace text node and `:empty` matches, which is the opposite of the groups in post-grid-card.json. A prefixed paragraph whose *value* is empty is a different problem and is not solved here: TO prepends the prefix with no test on the value, so `<p><strong>Regions:</strong> </p>` is not `:empty` and is indistinguishable from a real one-word value. That case is handled where it can be — by the `(lsx|facts)-*-wrapper` classes on the pattern's own rows, which TO removes server-side before the paragraph renders.",
 	"styles": {
 		"color": {
 			"background": "var:preset|color|neutral-200"
@@ -18,6 +18,9 @@
 				"bottom": "0",
 				"left": "0"
 			}
+		},
+		"typography": {
+			"fontSize": "var:preset|font-size|200"
 		},
 		"elements": {
 			"heading": {
@@ -34,17 +37,43 @@
 			},
 			"link": {
 				"color": {
-					"text": "var:preset|color|neutral-800"
+					"text": "var:preset|color|brand-600"
 				},
 				"typography": {
 					"textDecoration": "none"
 				},
 				":hover": {
 					"color": {
-						"text": "var:preset|color|brand-600"
+						"text": "var:preset|color|brand-700"
 					},
 					"typography": {
 						"textDecoration": "none"
+					}
+				}
+			}
+		},
+		"blocks": {
+			"core/paragraph": {
+				"typography": {
+					"fontSize": "var:preset|font-size|200"
+				}
+			},
+			"core/post-excerpt": {
+				"typography": {
+					"fontSize": "var:preset|font-size|200"
+				}
+			},
+			"core/post-title": {
+				"elements": {
+					"link": {
+						"color": {
+							"text": "var:preset|color|neutral-700"
+						},
+						":hover": {
+							"color": {
+								"text": "var:preset|color|brand-700"
+							}
+						}
 					}
 				}
 			}

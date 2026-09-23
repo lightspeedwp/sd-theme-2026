@@ -251,18 +251,20 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
    `.wp-block-cover img.wp-block-cover__image-background` is the one to beat
    for the image, which is why that selector carries the block class as well.
 
-   `min-height` is the single `!important` here and the only one needed. The
-   454px floor arrives as an inline `style` attribute on the cover — every
-   banner pattern in this theme picks its own floor, so it cannot move into
-   the shared section style — and an inline declaration outranks a stylesheet
-   at any specificity.
+   `min-height` and `padding` are the two `!important`s here and the only ones
+   needed. Both arrive as an inline `style` attribute on the cover — every
+   banner pattern in this theme picks its own floor, and most of the templates
+   still write their own desktop padding inline — and an inline declaration
+   outranks a stylesheet at any specificity. Left to the inline padding, the
+   cover showed a band of plate above the photograph. The 430px phone floor in
+   `assets/styles/core-cover.css` excludes this style for the same reason.
 --------------------------------------------- */
 
 @media (max-width: 767px) {
 	.wp-block-cover.is-style-hero-banner {
 		display: block;
 		min-height: 0 !important;
-		padding: 0;
+		padding: 0 !important;
 		background-color: var(--wp--preset--color--neutral-200);
 	}
 

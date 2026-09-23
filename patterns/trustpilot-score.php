@@ -2,7 +2,7 @@
 /**
  * Title: Trustpilot Score
  * Slug: sd-theme-2026/trustpilot-score
- * Description: The Trustpilot rating badge — the band word, the Trustpilot mark, the star tile and the TrustScore line. Reads the live score through the sd/trustpilot binding source; inherits its colours from whatever it is placed on, except the TrustScore line, which is pinned to neutral-900 for legibility.
+ * Description: The Trustpilot rating badge — the band word, the Trustpilot mark, the star tile and the TrustScore line. Reads the live score through the sd/trustpilot binding source; the band word and Trustpilot mark use currentColor and inherit the colour of their placement, while the star tile keeps its fixed Trustpilot colour and the TrustScore line is pinned to neutral-900 for legibility.
  * Categories: sd-theme-2026/testimonial
  * Keywords: trustpilot, reviews, rating, score, stars, badge, trust
  * Viewport Width: 520

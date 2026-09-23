@@ -32,11 +32,14 @@ const CACHE_PATH = path.join( __dirname, '.resolved-routes.json' );
  * @param {import('@playwright/test').APIRequestContext} api      Request context.
  * @param {string}                                       restBase Collection endpoint.
  * @param {string}                                       baseURL  Site origin.
+ * @param {string}                                       [query]  Extra query string, e.g. `parent=0`.
  * @return {Promise<string|null>} Path with a leading slash, or null if empty.
  */
-async function resolvePost( api, restBase, baseURL ) {
+async function resolvePost( api, restBase, baseURL, query = '' ) {
 	const response = await api.get(
-		`/wp-json/wp/v2/${ restBase }?per_page=1&status=publish&orderby=date&order=desc&_fields=link`
+		`/wp-json/wp/v2/${ restBase }?per_page=1&status=publish&orderby=date&order=desc&_fields=link${
+			query ? `&${ query }` : ''
+		}`
 	);
 
 	if ( ! response.ok() ) {
@@ -196,7 +199,8 @@ module.exports = async function globalSetup( config ) {
 				resolved.posts[ route.key ] = await resolvePost(
 					api,
 					route.restBase,
-					baseURL
+					baseURL,
+					route.query
 				);
 
 				if ( ! resolved.posts[ route.key ] ) {

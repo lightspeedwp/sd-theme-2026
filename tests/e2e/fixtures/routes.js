@@ -70,7 +70,8 @@ const STATIC_ROUTES = [
  * `restBase` is the collection endpoint; `key` is how specs look the result up
  * on the resolved-routes object. `optional` entries do not fail the run when the
  * environment has no such content — local Studio holds tours only, so every
- * other type is legitimately empty there.
+ * other type is legitimately empty there. An optional `query` string is appended
+ * to the collection request to narrow it (see `country` and `region`).
  */
 const RESOLVED_ROUTES = [
 	{
@@ -91,6 +92,33 @@ const RESOLVED_ROUTES = [
 		key: 'destination',
 		name: 'single destination',
 		restBase: 'destination',
+		template: 'single-destination.html',
+		optional: true,
+	},
+	/**
+	 * A country and a region, resolved separately. `destination` above is
+	 * whichever destination is newest, which may be either, so on its own it
+	 * cannot promise the regions shelf (a country's) or the accommodation shelf
+	 * (a region's) is on the page. `query` is appended to the REST request:
+	 * a country is a top-level destination, a region has a parent.
+	 *
+	 * Both resolve through `single-destination.html` — `single-country` and
+	 * `single-region` are assignable templates, and no destination is assigned
+	 * one on dev — so all three share the same section partials.
+	 */
+	{
+		key: 'country',
+		name: 'single country',
+		restBase: 'destination',
+		query: 'parent=0',
+		template: 'single-destination.html',
+		optional: true,
+	},
+	{
+		key: 'region',
+		name: 'single region',
+		restBase: 'destination',
+		query: 'parent_exclude=0',
 		template: 'single-destination.html',
 		optional: true,
 	},

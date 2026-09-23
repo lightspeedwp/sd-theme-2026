@@ -122,10 +122,10 @@
 			</div>
 			<!-- /wp:group -->
 
-			<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Styles: ","style":{"typography":{"textAlign":"center","fontStyle":"normal"},"spacing":{"padding":{"top":"2px","bottom":"2px"}},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"fontSize":"200"} /-->
+			<!-- wp:post-terms {"term":"travel-style","prefix":"Travel Styles: ","style":{"typography":{"textAlign":"center","fontStyle":"normal"},"spacing":{"padding":{"top":"2px","bottom":"2px"}}},"fontSize":"200"} /-->
 
-			<!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour","parents":true}}}},"className":"lsx-destination-to-tour-wrapper","style":{"typography":{"textAlign":"center"},"spacing":{"padding":{"top":"2px","bottom":"2px"}},"elements":{"link":{"color":{"text":"var:preset|color|brand-500"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"fontSize":"200","prefix":"Destinations:","prefixBold":true} -->
-			<p class="has-text-align-center lsx-destination-to-tour-wrapper has-link-color has-200-font-size" style="padding-top:2px;padding-bottom:2px"></p>
+			<!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour","parents":true}}}},"className":"lsx-destination-to-tour-wrapper","style":{"typography":{"textAlign":"center"},"spacing":{"padding":{"top":"2px","bottom":"2px"}}},"fontSize":"200","prefix":"Destinations:","prefixBold":true} -->
+			<p class="has-text-align-center lsx-destination-to-tour-wrapper has-200-font-size" style="padding-top:2px;padding-bottom:2px"></p>
 			<!-- /wp:paragraph -->
 
 		</div>

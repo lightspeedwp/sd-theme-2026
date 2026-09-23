@@ -8,6 +8,31 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✅ **`tests/e2e/templates/destinations.spec.js`, and country and region
+  routes.** LS-2016 (line 6, Destinations). `tests/e2e/fixtures/routes.js`,
+  `tests/e2e/global-setup.js`.
+
+  The suite used to resolve one destination, the newest, which could be a
+  country or a region. It now also resolves a country (`parent=0`) and a
+  region (`parent_exclude=0`) through a new optional `query` on each route, so
+  the render contract in `singles.spec.js` covers all three.
+
+  The new spec checks two things on each of the three. **The banner** is the
+  hero banner: one `<h1>`, no strapline, at least 454px on desktop with the
+  photograph filling it. On phones it sits on the neutral-200 plate with the
+  title in brand-500, a 3:1 strip above the title and no padding.
+  **The listing cards** (and the modal cards in the page): every paragraph,
+  taxonomy row and excerpt is font size 200, read-out links are brand-600,
+  linked titles are neutral-700, and a link hovers to brand-700. Colours and
+  sizes are compared against the resolved preset, not a literal.
+
+  Run against dev before this branch deployed, the banner and card checks fail
+  on the old markup, and the card failures list the break row by row: price
+  rating, destination and rating paragraphs at 19.01px (size 300) instead of
+  15.88px. On local, where only a country exists, the banner checks pass
+  against the new markup and fail against the old one (a 360px floor, 26.6px
+  of inline padding on phones).
+
 - ✅ **`tests/e2e/templates/front-page.spec.js`.** LS-2031 (line 21, QA).
   Five checks on the homepage's per-screen-size swaps, run at phone, tablet
   and desktop width: exactly one hero, at live's height for that screen, with
@@ -200,6 +225,42 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 📱 **Destination pages take the hero banner and its phone layout.** LS-2016
+  (line 6, Destinations). `patterns/destination-banner.php`.
+
+  The banner on every destination, country and region page is now
+  `patterns/hero-page-banner.php`'s markup, configured for destinations. It
+  keeps Tour Operator's `banner_image_id` binding, with the featured image as
+  the fallback, and drops the strapline, because live shows none on a
+  destination at any width (measured on /destination/botswana/ and
+  /destination/botswana/moremi-game-reserve/). Below 768px the photograph
+  shrinks to a strip and the title sits beneath it in brand-500 on the
+  warm-grey plate, as on live. The floor goes from 360px to the hero's 454px.
+  The inline spacing-40 padding is gone, because the phone layout could not
+  override it. Tour Operator's replacement image keeps the class the phone
+  layout targets, so this works on a bound banner. All three templates
+  `require` this one file.
+
+- 🐛 **Listing cards are one type size again, with brand-600 links.** LS-2016
+  (line 6, Destinations). `styles/sections/cards/listing-card-compact.json`,
+  `styles/sections/cards/listing-card-list.json`, `patterns/card-tour-compact.php`.
+
+  theme.json's `core/paragraph` default of font size 300 beat the size 200 a
+  card sets on its body. Every bound meta paragraph (price rating,
+  destination, rating, a destination's country or regions) rendered at 300,
+  while the taxonomy rows beside it inherited 200. Both card styles now pin
+  body copy to 200 on the card, on `core/paragraph` and on `core/post-excerpt`.
+  This covers the accommodation, tour and destination compact cards, the
+  accommodation units, the three modal cards and the list and search-result
+  rows. Headings keep their own size, and a paragraph that sets its own
+  size keeps it.
+
+  Links in both styles go from neutral-800 (compact) and neutral-700 (list) to
+  **brand-600, brand-700 on hover**. The linked title stays **neutral-700**,
+  as live's `#60483b` title does, and hovers to brand-700. The tour compact
+  card's own brand-500 link colours on its travel-style and destination rows
+  are removed, so they follow the style like every other card.
 
 - 💄 **The destinations landing page: finalisation pass.** LS-2016 (line 6,
   Destinations). `patterns/template-archive-destination.php`,
@@ -471,6 +532,19 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
+
+- 🐛 **The hero banner's phone stack no longer gaps above the photograph or
+  under the strapline.** LS-2016 (line 6, Destinations). `style.css`,
+  `assets/styles/core-cover.css`, `patterns/destination-banner.php`.
+
+  Measured on dev's `/destinations/` at 390px. The band of plate above the
+  image was the template's inline spacing-40 padding, which beat the phone
+  stack's `padding: 0`. Fifteen templates still write their banner padding
+  inline, so the phone stack now sets it with `!important`, the same way it
+  already sets `min-height`. The ~130px of empty plate under the strapline
+  came from the theme's own 430px cover floor below 782px. That rule
+  outranked the phone stack's `min-height: 0` on class count, so it now skips
+  `is-style-hero-banner`.
 
 - 🐛 **The safari gurus' card links turn yellow on hover.** LS-2030 (line 20).
   `assets/styles/core-button.css`, `patterns/homepage-safari-gurus.php`.
