@@ -27,7 +27,8 @@ const { mainContent } = require( '../utils/page-contract.js' );
  * "Send us an Email" — on live as well as dev — so `email` has to be in here;
  * without it the only thing that ever matched was the header's "Contact Us".
  */
-const ENQUIRY_LABEL = /enquir|contact|book|email/i;
+const ENQUIRY_LABEL =
+	/enquir|contact|book (?:now|a|this|your)\b|send (?:us )?an? e-?mail|e-?mail us/i;
 
 /**
  * Gravity Forms' own wrapper. There is no accessible handle for "the form
@@ -128,6 +129,19 @@ test.describe( 'Enquiry form', () => {
 			0 === ( await submit.count() ),
 			'Contact form has no submit control'
 		);
+
+		/**
+		 * Guard before the empty submit. With no required field there is
+		 * nothing to stop the POST, and the Salesforce feed would run.
+		 */
+		const requiredFields = form.locator(
+			'.gfield_contains_required, .gfield--required, [aria-required="true"], [required]'
+		);
+
+		expect(
+			await requiredFields.count(),
+			'the contact form has no required fields — not submitting it empty, the Salesforce feed would run'
+		).toBeGreaterThan( 0 );
 
 		/**
 		 * Submitting empty. Gravity Forms rejects this at validation, before

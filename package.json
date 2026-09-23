@@ -26,8 +26,8 @@
 		"test:a11y:baseline": "SD_UPDATE_A11Y_BASELINE=true playwright test --project=a11y",
 		"test:editor": "playwright test --project=editor",
 		"test:parity": "SD_RUN_PARITY=true playwright test --project=parity",
-		"test:visual": "playwright test --project=visual",
-		"test:visual:update": "playwright test --project=visual --update-snapshots",
+		"test:visual": "SD_RUN_VISUAL=true playwright test --project=visual",
+		"test:visual:update": "SD_RUN_VISUAL=true playwright test --project=visual --update-snapshots",
 		"test:report": "playwright show-report tests/e2e/playwright-report",
 		"test:install": "playwright install --with-deps chromium firefox webkit"
 	},

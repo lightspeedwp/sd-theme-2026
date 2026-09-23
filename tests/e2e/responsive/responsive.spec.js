@@ -164,18 +164,21 @@ test.describe( 'Browser font scaling', () => {
 			}, scale );
 
 			/**
-			 * Let reflow settle before measuring — the assertion is about the
-			 * settled layout, not the frame mid-reflow.
+			 * The assertion is about the settled layout, not the frame
+			 * mid-reflow: wait for webfonts, then poll the measurement.
 			 */
-			await page.waitForTimeout( 250 );
+			await page.evaluate( () => document.fonts.ready );
 
-			const { scrollWidth, clientWidth } = await documentWidths( page );
+			await expect
+				.poll(
+					async () => {
+						const { scrollWidth, clientWidth } = await documentWidths( page );
 
-			expect(
-				scrollWidth,
-				`the front page overflows at ${ scale }% text size ` +
-					`(${ scrollWidth }px against ${ clientWidth }px)`
-			).toBeLessThanOrEqual( clientWidth + 1 );
+						return scrollWidth - clientWidth;
+					},
+					{ message: `the front page overflows at ${ scale }% text size` }
+				)
+				.toBeLessThanOrEqual( 1 );
 		} );
 	}
 } );

@@ -49,6 +49,20 @@ test.describe( 'Keyboard', () => {
 		await visit( '/' );
 
 		const link = page.locator( 'header.wp-block-template-part a[href]' ).first();
+
+		const read = () =>
+			link.evaluate( ( node ) => {
+				const style = window.getComputedStyle( node );
+
+				return {
+					outlineStyle: style.outlineStyle,
+					outlineWidth: style.outlineWidth,
+					outlineColor: style.outlineColor,
+					boxShadow: style.boxShadow,
+				};
+			} );
+
+		const before = await read();
 		await link.focus();
 
 		/**
@@ -56,20 +70,24 @@ test.describe( 'Keyboard', () => {
 		 * focus regression, and it is invisible until someone tries to use
 		 * the site without a mouse.
 		 */
-		const indicator = await link.evaluate( ( node ) => {
-			const style = window.getComputedStyle( node );
+		const indicator = await read();
 
-			return {
-				outlineStyle: style.outlineStyle,
-				outlineWidth: style.outlineWidth,
-				boxShadow: style.boxShadow,
-			};
-		} );
-
+		/**
+		 * Focus has to change something. A shadow the link already wore
+		 * unfocused is decoration, not an indicator, and an outline in a
+		 * transparent colour is not visible.
+		 */
+		const transparent = /^(transparent|rgba\([^)]*,\s*0\))$/;
 		const hasOutline =
 			'none' !== indicator.outlineStyle &&
-			'0px' !== indicator.outlineWidth;
-		const hasShadow = 'none' !== indicator.boxShadow;
+			'0px' !== indicator.outlineWidth &&
+			! transparent.test( indicator.outlineColor ) &&
+			( before.outlineStyle !== indicator.outlineStyle ||
+				before.outlineWidth !== indicator.outlineWidth ||
+				before.outlineColor !== indicator.outlineColor );
+		const hasShadow =
+			'none' !== indicator.boxShadow &&
+			before.boxShadow !== indicator.boxShadow;
 
 		expect(
 			hasOutline || hasShadow,
@@ -104,7 +122,15 @@ test.describe( 'Keyboard', () => {
 		await toggle.focus();
 		await expect( toggle ).toBeFocused();
 
-		if ( 'true' !== ( await toggle.getAttribute( 'aria-expanded' ) ) ) {
+		/**
+		 * Give an open-on-focus handler a moment to run before deciding —
+		 * reading once can catch it mid-update and Enter would then shut it.
+		 */
+		const openedOnFocus = await expect( toggle )
+			.toHaveAttribute( 'aria-expanded', 'true', { timeout: 750 } )
+			.then( () => true, () => false );
+
+		if ( ! openedOnFocus ) {
 			await page.keyboard.press( 'Enter' );
 		}
 

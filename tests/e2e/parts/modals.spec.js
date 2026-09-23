@@ -106,10 +106,10 @@ test.describe( 'Modals', () => {
 			 * An `aria-labelledby` pointing at a missing element is worse
 			 * than none — it reads as an empty name.
 			 */
-			if ( labelledBy ) {
+			for ( const ref of ( labelledBy || '' ).split( /\s+/ ).filter( Boolean ) ) {
 				await expect(
-					page.locator( `#${ labelledBy }` ),
-					`dialog ${ id } is labelled by #${ labelledBy }, which does not exist`
+					page.locator( `[id="${ ref.replace( /"/g, '\\"' ) }"]` ),
+					`dialog ${ id } is labelled by #${ ref }, which does not exist`
 				).toBeAttached();
 			}
 		}

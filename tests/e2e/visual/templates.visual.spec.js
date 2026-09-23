@@ -117,7 +117,7 @@ for ( const viewport of VIEWPORTS ) {
 				await test
 					.expect( page )
 					.toHaveScreenshot(
-						`${ route.template }-${ viewport.name }.png`,
+						`${ route.name.toLowerCase().replace( /[^a-z0-9]+/g, '-' ) }-${ viewport.name }.png`,
 						{
 							fullPage: true,
 							mask: masksFor( page ),

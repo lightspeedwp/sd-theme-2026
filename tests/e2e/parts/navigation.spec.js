@@ -17,6 +17,18 @@ const { test, expect } = require( '../fixtures/base.js' );
 
 const MEGA_MENU_TOGGLE = '.wp-block-ollie-mega-menu__toggle';
 
+/**
+ * Move the pointer to the bottom-left of the current viewport, clear of the
+ * header. A fixed coordinate falls outside short viewports.
+ *
+ * @param {import('@playwright/test').Page} page
+ */
+async function parkPointer( page ) {
+	const { height } = page.viewportSize() || { height: 600 };
+
+	await page.mouse.move( 5, height - 5 );
+}
+
 test.describe( 'Mega menu', () => {
 	test.beforeEach( async ( { visit, page } ) => {
 		await visit( '/' );
@@ -26,7 +38,7 @@ test.describe( 'Mega menu', () => {
 		 * cursor left sitting over the nav from a previous action makes the
 		 * next assertion read the wrong state.
 		 */
-		await page.mouse.move( 5, 860 );
+		await parkPointer( page );
 	} );
 
 	/**
@@ -75,7 +87,7 @@ test.describe( 'Mega menu', () => {
 			).toBeVisible();
 
 			// Move away so the next iteration starts from a closed state.
-			await page.mouse.move( 5, 860 );
+			await parkPointer( page );
 
 			await expect(
 				toggle,
@@ -99,7 +111,15 @@ test.describe( 'Mega menu', () => {
 
 		await toggle.focus();
 
-		if ( 'true' !== ( await toggle.getAttribute( 'aria-expanded' ) ) ) {
+		/**
+		 * Give an open-on-focus handler a moment to run before deciding —
+		 * reading once can catch it mid-update and Enter would then shut it.
+		 */
+		const openedOnFocus = await expect( toggle )
+			.toHaveAttribute( 'aria-expanded', 'true', { timeout: 750 } )
+			.then( () => true, () => false );
+
+		if ( ! openedOnFocus ) {
 			await page.keyboard.press( 'Enter' );
 		}
 
@@ -194,13 +214,12 @@ test.describe( 'Mobile menu', () => {
 		 * inside it, or a keyboard user is tabbing through the page behind
 		 * an overlay they cannot see past.
 		 */
-		const focusInside = await dialog.evaluate( ( node ) =>
-			node.contains( document.activeElement )
-		);
-
-		expect( focusInside, 'focus stayed outside the open mobile menu' ).toBe(
-			true
-		);
+		await expect
+			.poll(
+				() => dialog.evaluate( ( node ) => node.contains( document.activeElement ) ),
+				{ message: 'focus stayed outside the open mobile menu' }
+			)
+			.toBe( true );
 
 		await page.keyboard.press( 'Escape' );
 

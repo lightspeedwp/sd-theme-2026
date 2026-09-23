@@ -34,6 +34,7 @@ const {
 	assertNoNewViolations,
 	formatViolations,
 	hasBaseline,
+	UPDATE_BASELINE,
 } = require( '../utils/axe.js' );
 const { assertHeadingHierarchy } = require( '../utils/page-contract.js' );
 
@@ -72,7 +73,7 @@ function reportOnly( results, route, template ) {
  * @param {string} template Template file, for messages.
  */
 function check( results, route, template ) {
-	if ( hasBaseline() ) {
+	if ( UPDATE_BASELINE || hasBaseline() ) {
 		assertNoNewViolations( results, route, template );
 
 		return;
@@ -203,12 +204,28 @@ test.describe( 'Accessibility — structure @a11y', () => {
 		const navNames = await page
 			.getByRole( 'navigation' )
 			.evaluateAll( ( nodes ) =>
-				nodes.map(
-					( node ) =>
-						node.getAttribute( 'aria-label' ) ||
-						node.getAttribute( 'aria-labelledby' ) ||
-						''
-				)
+				/**
+				 * The computed name, not the attribute: two landmarks
+				 * labelled by different ids that point at the same heading
+				 * share a name, and an id that resolves to nothing is no name.
+				 * A `nav` takes its name from `aria-labelledby`, then
+				 * `aria-label` — never from its content.
+				 */
+				nodes.map( ( node ) => {
+					const labelledBy = ( node.getAttribute( 'aria-labelledby' ) || '' )
+						.split( /\s+/ )
+						.filter( Boolean );
+
+					if ( labelledBy.length ) {
+						return labelledBy
+							.map( ( id ) => document.getElementById( id )?.textContent || '' )
+							.join( ' ' )
+							.replace( /\s+/g, ' ' )
+							.trim();
+					}
+
+					return ( node.getAttribute( 'aria-label' ) || '' ).trim();
+				} )
 			);
 
 		const unnamed = navNames.filter( ( name ) => '' === name );

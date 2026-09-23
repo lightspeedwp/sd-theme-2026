@@ -44,6 +44,13 @@ setup( 'authenticate as an administrator', async ( { page, baseURL } ) => {
 	 * returning a non-200, so assert on where we landed, not on status.
 	 */
 	const loginError = page.locator( '#login_error' );
+	const adminBar = page.locator( '#wpadminbar' );
+
+	/**
+	 * Wait for whichever outcome arrives. Checking the error straight after
+	 * the click reads the page before the POST has come back.
+	 */
+	await adminBar.or( loginError ).first().waitFor( { timeout: 30 * 1000 } );
 
 	if ( await loginError.count() ) {
 		const message = ( await loginError.innerText() ).trim();

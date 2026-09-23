@@ -48,12 +48,39 @@ if ( /southerndestinations\.com/i.test( baseURL ) ) {
 }
 
 /**
+ * Allowlist, not just a production denylist. `auth.setup.js` submits the admin
+ * credentials to whatever `baseURL` is, and the CI workflow takes the target as
+ * a free-text dispatch input — an arbitrary host would receive them.
+ */
+const ALLOWED_HOSTS = [ 'southerndestinations.lightspeedwp.dev', 'localhost', '127.0.0.1' ];
+const baseHost = ( () => {
+	try {
+		return new URL( baseURL ).hostname;
+	} catch {
+		return '';
+	}
+} )();
+
+if ( ! ALLOWED_HOSTS.includes( baseHost ) ) {
+	throw new Error(
+		`Refusing to run: WP_BASE_URL host "${ baseHost || baseURL }" is not an approved target ` +
+			`(${ ALLOWED_HOSTS.join( ', ' ) }).`
+	);
+}
+
+/**
  * Opt-in projects. Both cost something someone else pays for — `wide` costs
  * runtime, `parity` costs requests against the client's production site — so
  * neither runs unless asked for.
  */
 const runWide = 'true' === process.env.SD_RUN_WIDE;
 const runParity = 'true' === process.env.SD_RUN_PARITY;
+
+/**
+ * Visual is opt-in too: baselines are platform- and host-specific, and a full
+ * run on a machine without them would only write new snapshots or fail.
+ */
+const runVisual = 'true' === process.env.SD_RUN_VISUAL;
 
 /**
  * Functional specs, run at every breakpoint that opts in with `@responsive`.
@@ -223,11 +250,15 @@ module.exports = defineConfig( {
 		 * different content. Snapshots are keyed by host so the two cannot
 		 * overwrite each other.
 		 */
-		{
-			name: 'visual',
-			testMatch: 'visual/**/*.spec.js',
-			use: { ...chrome, viewport: { width: 1280, height: 800 } },
-		},
+		...( runVisual
+			? [
+					{
+						name: 'visual',
+						testMatch: 'visual/**/*.spec.js',
+						use: { ...chrome, viewport: { width: 1280, height: 800 } },
+					},
+			  ]
+			: [] ),
 
 		/**
 		 * Signed-in checks. The one that matters: whether a Site Editor
@@ -268,6 +299,8 @@ module.exports = defineConfig( {
 			: [] ),
 	],
 
-	snapshotPathTemplate:
-		'./tests/e2e/visual/__screenshots__/{arg}-{projectName}-{platform}{ext}',
+	snapshotPathTemplate: `./tests/e2e/visual/__screenshots__/${ baseHost.replace(
+		/[^a-z0-9.-]/gi,
+		'-'
+	) }/{arg}-{projectName}-{platform}{ext}`,
 } );

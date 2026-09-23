@@ -222,8 +222,7 @@ test.describe( 'Live parity @parity', () => {
 		 */
 		const missing = [ ...new Set( liveLabels.map( normalise ) ) ]
 			.filter( ( label ) => 2 < label.length && 30 > label.length )
-			.filter( ( label ) => ! rebuiltSet.has( label ) )
-			.slice( 0, 40 );
+			.filter( ( label ) => ! rebuiltSet.has( label ) );
 
 		/**
 		 * Reported, not asserted to zero. Live's navigation includes campaign
@@ -240,7 +239,11 @@ test.describe( 'Live parity @parity', () => {
 
 			process.stderr.write(
 				`\n  ⚠️ ${ missing.length } live navigation label(s) not found on the rebuild:\n` +
-					`     ${ missing.join( ', ' ) }\n` +
+					`     ${ missing.slice( 0, 40 ).join( ', ' ) }` +
+					( 40 < missing.length
+						? ` … and ${ missing.length - 40 } more (see the annotation)`
+						: '' ) +
+					'\n' +
 					'     Review these — some are deliberate (WooCommerce, campaigns), some are not.\n'
 			);
 		}

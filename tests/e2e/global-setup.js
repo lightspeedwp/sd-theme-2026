@@ -177,46 +177,58 @@ module.exports = async function globalSetup( config ) {
 		);
 	}
 
-	const resolved = {
-		baseURL,
-		posts: {},
-		terms: {},
-		pageTemplates: {},
-		resolvedAt: new Date().toISOString(),
-	};
-	const missing = [];
+	let resolved;
+	let missing;
 
-	await Promise.all(
-		RESOLVED_ROUTES.map( async ( route ) => {
-			resolved.posts[ route.key ] = await resolvePost(
-				api,
-				route.restBase,
-				baseURL
+	try {
+		resolved = {
+			baseURL,
+			posts: {},
+			terms: {},
+			pageTemplates: {},
+			resolvedAt: new Date().toISOString(),
+		};
+		missing = [];
+		const requiredMissing = [];
+
+		await Promise.all(
+			RESOLVED_ROUTES.map( async ( route ) => {
+				resolved.posts[ route.key ] = await resolvePost(
+					api,
+					route.restBase,
+					baseURL
+				);
+
+				if ( ! resolved.posts[ route.key ] ) {
+					( route.optional ? missing : requiredMissing ).push( route.name );
+				}
+			} )
+		);
+
+		await Promise.all(
+			RESOLVED_TAXONOMIES.map( async ( route ) => {
+				resolved.terms[ route.key ] = await resolveTerm(
+					api,
+					route.restBase,
+					baseURL
+				);
+
+				if ( ! resolved.terms[ route.key ] ) {
+					( route.optional ? missing : requiredMissing ).push( route.name );
+				}
+			} )
+		);
+
+		if ( requiredMissing.length ) {
+			throw new Error(
+				`No content for required route(s): ${ requiredMissing.join( ', ' ) } on ${ baseURL }.`
 			);
+		}
 
-			if ( ! resolved.posts[ route.key ] ) {
-				missing.push( route.name );
-			}
-		} )
-	);
-
-	await Promise.all(
-		RESOLVED_TAXONOMIES.map( async ( route ) => {
-			resolved.terms[ route.key ] = await resolveTerm(
-				api,
-				route.restBase,
-				baseURL
-			);
-
-			if ( ! resolved.terms[ route.key ] ) {
-				missing.push( route.name );
-			}
-		} )
-	);
-
-	resolved.pageTemplates = await resolvePageTemplates( api, baseURL );
-
-	await api.dispose();
+		resolved.pageTemplates = await resolvePageTemplates( api, baseURL );
+	} finally {
+		await api.dispose();
+	}
 
 	fs.writeFileSync( CACHE_PATH, JSON.stringify( resolved, null, '\t' ) );
 

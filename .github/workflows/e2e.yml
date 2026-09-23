@@ -65,6 +65,10 @@ jobs:
     # are not exposed to fork pull requests, so this only runs for branches on
     # this repository — the same gate as the plugin's e2e-admin job.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    # The admin credentials live on this environment, not as repository
+    # secrets, and its deployment-branch rule admits trusted branches only —
+    # so a manual dispatch against an arbitrary ref cannot read them.
+    environment: e2e-editor
     # `secrets` cannot be read in a job-level `if`, so they are lifted into the
     # environment and checked per step. Without them the config drops the
     # `setup` and `editor` projects entirely, and `--project=editor` would fail
