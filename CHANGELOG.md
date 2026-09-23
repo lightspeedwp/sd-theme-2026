@@ -8,6 +8,17 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✅ **`tests/e2e/templates/front-page.spec.js`.** LS-2031 (line 21, QA).
+  Five checks on the homepage's per-screen-size swaps, run at phone, tablet
+  and desktop width: exactly one hero, at live's height for that screen, with
+  the guest quote only where live shows it; each main panel exactly once, with
+  its photograph above the copy and no white-on-white text on phones; the
+  intro monogram and "Start here" hidden on phones only; every shown arrow's
+  SVG mask resolving to a rendered definition; and the carousel arrows kept
+  inside the viewport across 1200–1440px, the band the fixed breakpoints miss.
+  Run against dev before this branch deployed, they fail in exactly the five
+  places the branch changes and pass everywhere else.
+
 - ✨ **The travel-style term archive.** LS-4204 (line 12, Travel Styles).
   `templates/taxonomy-travel-style.html`, `patterns/template-taxonomy-travel-style.php`,
   `patterns/card-tour-list.php`.
@@ -189,6 +200,49 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 📱 **The homepage takes live's phone and tablet layouts.** LS-2030
+  (line 20, responsive QA). `patterns/homepage-hero.php`,
+  `patterns/homepage-main-content.php`, `patterns/homepage-dream-trip.php`,
+  `assets/styles/core-cover.css`.
+
+  Measured on live at 320–991px, 2026-09-23. The hero is now three covers
+  sharing one rotating pool, one per Block Visibility screen size: 720px on
+  desktop as before; **544px on tablet**, with the title at font-size 600 and
+  the guest quote kept, which is what live holds across 768–991px; and a
+  **153px phone banner** carrying the title alone at font-size 500, rendered
+  from the `medium_large` crop rather than the 1690px original. The inherited
+  `max-width: 781px` cover floor of 430px now skips any cover that carries a
+  Block Visibility screen-size class, or it would have flattened the tablet
+  hero and inflated the phone one. The intro monogram and "Start here" hide on
+  phones, as live's `hidden-xs` does. Each of the four photograph panels loses its scrim on
+  phones: the photograph becomes an image above the copy, a short rule sits
+  over a centred heading, and the body text turns from white to the body
+  colour. Each panel therefore has a phone-only copy after it, built from the
+  same strings and links. The swap is Block Visibility's `screenSize` control —
+  desktop copies hide on *small*, phone copies on *medium* and *large* — which
+  is the same split as live's Bootstrap `hidden-xs`. The phone arrows declare
+  their own `sd-arrow-mobile-*` mask ids, because the desktop copies that own
+  `sd-arrow-*` are `display: none` on a phone, and a mask referenced from a
+  hidden subtree does not paint.
+
+  ⚠️ The panel copy now exists twice. Editing a panel's text means editing its
+  phone copy as well.
+
+- 💄 **The homepage's Site Editor edits are back in the theme.** LS-2030 (line 20,
+  responsive QA). `patterns/homepage-main-content.php`,
+  `patterns/homepage-sd-difference.php`.
+
+  Dev carried a `front-page` override (`wp_template` 65959, saved 2026-09-17)
+  with every homepage pattern expanded inline. Diffed pattern by pattern against
+  the rendered theme files, only two changes were design edits, and both are
+  width fixes: the four photograph panels' wrapper is now `alignwide` with zero
+  inline padding, and the Trustpilot TrustBox sits in an `alignwide` group so it
+  is no longer held to the 900px content measure. The rest was editor noise and
+  was not imported — pattern-header `description`/`categories` copied into block
+  metadata on insert, core's `align` → `typography.textAlign` migration,
+  `queryId`/`excludeCurrent` defaults, and `home_url()` rendered as the dev host.
+  `templates/front-page.html` stays a list of pattern references, unchanged.
 
 - 💄 **The page hero banner is now live's banner, and it unstacks on phones.**
   `patterns/hero-page-banner.php`, `styles/sections/hero-banner.json`,
@@ -383,6 +437,18 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
+
+- 🐛 **Carousel arrows no longer push the page sideways on laptops.** LS-2030
+  (line 20, responsive QA). `assets/styles/core-group.css`.
+
+  The arrows sit 38px outside a slider frame by design, and an `alignwide`
+  shelf runs to ~18px from the viewport edge below ~1434px — so the next
+  arrow overhung the viewport and the whole document scrolled: 20px at 1280,
+  19px at 1366, on every page with a Slider Frame shelf. The offset is now
+  `max()`-clamped to the gap between the frame and the viewport edge, less a
+  9px allowance for a classic scrollbar (`--sd-slider-nav-edge`). Measured on
+  dev: the overflow goes to 0 at 1280 and 1366, and 1440 and 1920 render
+  pixel-identical to before.
 
 - 🐛 **The mobile menu: a black hamburger, and a white frame around the
   panel.** LS-2014 (line 2, Header). `assets/styles/core-navigation.css`.

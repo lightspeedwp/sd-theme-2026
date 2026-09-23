@@ -87,10 +87,27 @@
  *
  * ⚠️ The three copies must stay identical. Editing one means editing all three.
  */
+
+/*
+ * Phone-only copies. Under 768px live drops each panel's scrim: the photograph
+ * becomes an image above the copy, a short rule sits over a centred heading,
+ * and the body text turns from white to the body colour. Scrim, background
+ * image and text colour are all block attributes, which no viewport rule can
+ * change, so each panel is swapped rather than restyled — the desktop panel
+ * hides on Block Visibility's *small* screen size and a "(mobile)" copy after
+ * it hides on *medium* and *large*. That is live's own `hidden-xs` split.
+ *
+ * ⚠️ The panel copy is therefore written twice. Editing a panel's text means
+ * editing its "(mobile)" copy too.
+ *
+ * The phone arrows carry their own `sd-arrow-mobile-*` mask ids. On a phone the
+ * desktop panels that declare `sd-arrow-*` are `display: none`, and a mask
+ * referenced from a hidden subtree does not paint — the arrow would vanish.
+ */
 ?>
-<!-- wp:group {"metadata":{"name":"Homepage - Main content"},"className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|0"}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group is-style-light-page-section">
-	<!-- wp:group {"metadata":{"name":"Explore the destinations"},"align":"wide","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-explore-bg-img.jpg","source":"file"},"backgroundSize":"cover"}},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"metadata":{"name":"Homepage - Main content"},"align":"wide","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|0","padding":{"right":"var:preset|spacing|0","left":"var:preset|spacing|0"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignwide is-style-light-page-section" style="padding-right:var(--wp--preset--spacing--0);padding-left:var(--wp--preset--spacing--0)">
+	<!-- wp:group {"metadata":{"name":"Explore the destinations"},"align":"wide","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-explore-bg-img.jpg","source":"file"},"backgroundSize":"cover"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:columns {"align":"wide"} -->
 		<div class="wp-block-columns alignwide">
@@ -134,7 +151,44 @@
 		<!-- /wp:columns -->
 	</div>
 	<!-- /wp:group -->
-	<!-- wp:group {"metadata":{"name":"Review lodges and camps"},"align":"wide","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-accommodation-bg-img.jpg","source":"file"},"backgroundSize":"cover"}},"layout":{"type":"constrained"}} -->
+
+	<!-- wp:group {"metadata":{"name":"Explore the destinations (mobile)"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"right":"var:preset|spacing|20","bottom":"var:preset|spacing|60","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true,"medium":true}}}}]}} -->
+	<div class="wp-block-group alignwide" style="padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--20)">
+		<!-- wp:image {"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-explore-bg-img.jpg" alt="" style="aspect-ratio:16/7;object-fit:cover"/></figure>
+		<!-- /wp:image -->
+
+		<!-- wp:group {"metadata":{"name":"Copy"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
+			<!-- wp:separator {"backgroundColor":"neutral-300"} -->
+			<hr class="wp-block-separator has-text-color has-neutral-300-color has-alpha-channel-opacity has-neutral-300-background-color has-background"/>
+			<!-- /wp:separator -->
+
+			<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent"} -->
+			<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Explore the destinations...', 'sd-theme-2026' ); ?></h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"align":"center"} -->
+			<p class="has-text-align-center"><?php esc_html_e( 'Our Africa and safari gurus are ready to provide you with their insights and advice on which destinations to include on your must-see list.', 'sd-theme-2026' ); ?></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}}},"textColor":"accent-400"} -->
+			<p class="has-text-align-center has-accent-400-color has-text-color has-link-color"><a href="<?php echo esc_url( home_url( '/destinations/' ) ); ?>"><?php esc_html_e( 'Take a look at our pick of inspiring destinations', 'sd-theme-2026' ); ?></a></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:group {"layout":{"type":"flex","justifyContent":"center"}} -->
+			<div class="wp-block-group">
+				<!-- wp:outermost/icon-block {"iconName":""} -->
+				<div class="wp-block-outermost-icon-block"><div class="icon-container" style="width:48px;transform:rotate(0deg) scaleX(1) scaleY(1)"><svg xmlns="http://www.w3.org/2000/svg" xmlns-xlink="http://www.w3.org/1999/xlink" width="43" height="24"><defs><path id="sd-arrow-mobile-shape" d="M.629.666H13.27V24H.63z"></path></defs><g fill="none" fill-rule="evenodd"><g transform="translate(29 -.665)"><mask id="sd-arrow-mobile-mask" fill="#fff"><use xlink:href="#sd-arrow-mobile-shape"></use></mask><path d="M3.866 24c1.294-.719 2.292-1.305 3-1.637.753-.695 2.054-2.619 3.784-5.766 1.785-3.271 2.657-5.357 2.62-6.198-.034-.782-2.993-2.448-6.146-5.683C3.972 1.481 3.57 1.341 2.91 1.37 2.127 1.404.597.171.63.892L2.327 2.97c1.626 1.374 1.62 2.174 3.248 3.609 2.387 2.245 3.597 3.758 3.634 4.6.026.601-.345 1.761-1.116 3.421-.828 1.723-1.445 2.774-1.907 3.215-.272.675-.376 1.041-.37 1.161l.012.301c-.057.062-.455.622-1.197 1.558-.632.69-.912 1.184-.899 1.484.016.361.21.654.581.878-.288.314-.455.623-.447.803" fill="#D78B17" mask="url(#sd-arrow-mobile-mask)"></path></g><path d="M42.024 10.063c0-.446-.545-1.288-1.685-2.527-.99-1.04-1.784-1.784-2.379-2.18-4.509-3.024-7.086-4.56-7.78-4.56-.05 0-.05.05-.05.1 0 .148.347.544 1.091 1.238.693.694 1.19 1.14 1.486 1.338l3.717 2.825c1.041.842 2.131 1.982 3.32 3.518l-.198.397c-1.982 1.338-5.402 1.982-10.308 1.982h-1.486c-.149 0-.05.248-.446.248-.298 0-.446-.05-.446-.198v-.05c-.843.05-1.933-.05-3.37-.198-1.636-.199-2.726-.298-3.37-.298-.545 0-1.784.2-2.329.2-.248 0-1.933-.249-4.956-.794l-.198.446-.446-.694c-.149.15-.298.198-.545.198-.347 0-.892-.149-1.537-.446-.693-.347-1.189-.495-1.536-.495a.84.84 0 0 0-.496.148c-.94-.148-1.387-.248-1.437-.248h-.347c-1.486-.644-3.27-.99-5.302-.99-.347 0-.694 0-.942.05 0 1.09 0 1.634-.049 1.684 2.032.892 4.51 1.586 7.334 2.081 1.19.198 3.717.496 7.582.942l3.767.594c1.437.05 2.478.1 3.221.1l6.591.247.15-.446c.246.446.742.694 1.485.694.942 0 2.478-.198 4.66-.545 2.13-.396 3.666-.743 4.558-1.04.05.247.198-.248.248-.447l.495.446c.05-.148.397-.446.991-.892.942-.743.645-.892.793-1.635.1-.347.15-.644.15-.793" fill="#D78B17"></path></g></svg></div></div>
+				<!-- /wp:outermost/icon-block -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"metadata":{"name":"Review lodges and camps"},"align":"wide","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-accommodation-bg-img.jpg","source":"file"},"backgroundSize":"cover"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:columns {"align":"wide"} -->
 		<div class="wp-block-columns alignwide">
@@ -178,7 +232,44 @@
 		<!-- /wp:columns -->
 	</div>
 	<!-- /wp:group -->
-	<!-- wp:group {"metadata":{"name":"Choose your safari"},"align":"wide","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-experience-bg-img.jpg","source":"file"},"backgroundSize":"cover"}},"layout":{"type":"constrained"}} -->
+
+	<!-- wp:group {"metadata":{"name":"Review lodges and camps (mobile)"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"right":"var:preset|spacing|20","bottom":"var:preset|spacing|60","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true,"medium":true}}}}]}} -->
+	<div class="wp-block-group alignwide" style="padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--20)">
+		<!-- wp:image {"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-accommodation-bg-img.jpg" alt="" style="aspect-ratio:16/7;object-fit:cover"/></figure>
+		<!-- /wp:image -->
+
+		<!-- wp:group {"metadata":{"name":"Copy"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
+			<!-- wp:separator {"backgroundColor":"neutral-300"} -->
+			<hr class="wp-block-separator has-text-color has-neutral-300-color has-alpha-channel-opacity has-neutral-300-background-color has-background"/>
+			<!-- /wp:separator -->
+
+			<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent"} -->
+			<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Review the lodges & camps…', 'sd-theme-2026' ); ?></h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"align":"center"} -->
+			<p class="has-text-align-center"><?php esc_html_e( 'Which properties are best for your travel style and budget? Are you getting the best rate available? Are there specials you may not know about? As safari experts with more than 20 years experience and a vast network of hand-picked properties and operators at our fingertips, booking with us will give you the assurance you’re looking for.', 'sd-theme-2026' ); ?></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-500"}}}},"textColor":"accent-500"} -->
+			<p class="has-text-align-center has-accent-500-color has-text-color has-link-color"><a href="<?php echo esc_url( home_url( '/accommodation/' ) ); ?>"><?php esc_html_e( 'Explore Africa’s finest lodges, safaris and boutique hotels…', 'sd-theme-2026' ); ?></a></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:group {"layout":{"type":"flex","justifyContent":"center"}} -->
+			<div class="wp-block-group">
+				<!-- wp:outermost/icon-block {"iconName":""} -->
+				<div class="wp-block-outermost-icon-block"><div class="icon-container" style="width:48px;transform:rotate(0deg) scaleX(1) scaleY(1)"><svg xmlns="http://www.w3.org/2000/svg" xmlns-xlink="http://www.w3.org/1999/xlink" width="43" height="24"><defs><path id="sd-arrow-mobile-shape" d="M.629.666H13.27V24H.63z"></path></defs><g fill="none" fill-rule="evenodd"><g transform="translate(29 -.665)"><mask id="sd-arrow-mobile-mask" fill="#fff"><use xlink:href="#sd-arrow-mobile-shape"></use></mask><path d="M3.866 24c1.294-.719 2.292-1.305 3-1.637.753-.695 2.054-2.619 3.784-5.766 1.785-3.271 2.657-5.357 2.62-6.198-.034-.782-2.993-2.448-6.146-5.683C3.972 1.481 3.57 1.341 2.91 1.37 2.127 1.404.597.171.63.892L2.327 2.97c1.626 1.374 1.62 2.174 3.248 3.609 2.387 2.245 3.597 3.758 3.634 4.6.026.601-.345 1.761-1.116 3.421-.828 1.723-1.445 2.774-1.907 3.215-.272.675-.376 1.041-.37 1.161l.012.301c-.057.062-.455.622-1.197 1.558-.632.69-.912 1.184-.899 1.484.016.361.21.654.581.878-.288.314-.455.623-.447.803" fill="#D78B17" mask="url(#sd-arrow-mobile-mask)"></path></g><path d="M42.024 10.063c0-.446-.545-1.288-1.685-2.527-.99-1.04-1.784-1.784-2.379-2.18-4.509-3.024-7.086-4.56-7.78-4.56-.05 0-.05.05-.05.1 0 .148.347.544 1.091 1.238.693.694 1.19 1.14 1.486 1.338l3.717 2.825c1.041.842 2.131 1.982 3.32 3.518l-.198.397c-1.982 1.338-5.402 1.982-10.308 1.982h-1.486c-.149 0-.05.248-.446.248-.298 0-.446-.05-.446-.198v-.05c-.843.05-1.933-.05-3.37-.198-1.636-.199-2.726-.298-3.37-.298-.545 0-1.784.2-2.329.2-.248 0-1.933-.249-4.956-.794l-.198.446-.446-.694c-.149.15-.298.198-.545.198-.347 0-.892-.149-1.537-.446-.693-.347-1.189-.495-1.536-.495a.84.84 0 0 0-.496.148c-.94-.148-1.387-.248-1.437-.248h-.347c-1.486-.644-3.27-.99-5.302-.99-.347 0-.694 0-.942.05 0 1.09 0 1.634-.049 1.684 2.032.892 4.51 1.586 7.334 2.081 1.19.198 3.717.496 7.582.942l3.767.594c1.437.05 2.478.1 3.221.1l6.591.247.15-.446c.246.446.742.694 1.485.694.942 0 2.478-.198 4.66-.545 2.13-.396 3.666-.743 4.558-1.04.05.247.198-.248.248-.447l.495.446c.05-.148.397-.446.991-.892.942-.743.645-.892.793-1.635.1-.347.15-.644.15-.793" fill="#D78B17"></path></g></svg></div></div>
+				<!-- /wp:outermost/icon-block -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"metadata":{"name":"Choose your safari"},"align":"wide","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-experience-bg-img.jpg","source":"file"},"backgroundSize":"cover"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:columns {"align":"wide"} -->
 		<div class="wp-block-columns alignwide">
@@ -222,7 +313,44 @@
 		<!-- /wp:columns -->
 	</div>
 	<!-- /wp:group -->
-	<!-- wp:group {"metadata":{"name":"Ask us"},"align":"wide","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-dream-trip-bg-img.jpg","source":"file"},"backgroundSize":"cover"}},"layout":{"type":"constrained"}} -->
+
+	<!-- wp:group {"metadata":{"name":"Choose your safari (mobile)"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"right":"var:preset|spacing|20","bottom":"var:preset|spacing|60","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true,"medium":true}}}}]}} -->
+	<div class="wp-block-group alignwide" style="padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--20)">
+		<!-- wp:image {"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-experience-bg-img.jpg" alt="" style="aspect-ratio:16/7;object-fit:cover"/></figure>
+		<!-- /wp:image -->
+
+		<!-- wp:group {"metadata":{"name":"Copy"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
+			<!-- wp:separator {"backgroundColor":"neutral-300"} -->
+			<hr class="wp-block-separator has-text-color has-neutral-300-color has-alpha-channel-opacity has-neutral-300-background-color has-background"/>
+			<!-- /wp:separator -->
+
+			<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent"} -->
+			<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Choose your safari experience…', 'sd-theme-2026' ); ?></h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"align":"center"} -->
+			<p class="has-text-align-center"><?php esc_html_e( 'There’s so much more to an African safari than seeing animals from the back of a game drive vehicle! The options are endless for special, never to be repeated encounters and experiences.', 'sd-theme-2026' ); ?></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}}},"textColor":"accent-400"} -->
+			<p class="has-text-align-center has-accent-400-color has-text-color has-link-color"><a href="<?php echo esc_url( home_url( '/tours/' ) ); ?>"><?php esc_html_e( 'Take a look at some of our latest tours for inspiration', 'sd-theme-2026' ); ?></a></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:group {"layout":{"type":"flex","justifyContent":"center"}} -->
+			<div class="wp-block-group">
+				<!-- wp:outermost/icon-block {"iconName":""} -->
+				<div class="wp-block-outermost-icon-block"><div class="icon-container" style="width:48px;transform:rotate(0deg) scaleX(1) scaleY(1)"><svg xmlns="http://www.w3.org/2000/svg" xmlns-xlink="http://www.w3.org/1999/xlink" width="43" height="24"><defs><path id="sd-arrow-mobile-shape" d="M.629.666H13.27V24H.63z"></path></defs><g fill="none" fill-rule="evenodd"><g transform="translate(29 -.665)"><mask id="sd-arrow-mobile-mask" fill="#fff"><use xlink:href="#sd-arrow-mobile-shape"></use></mask><path d="M3.866 24c1.294-.719 2.292-1.305 3-1.637.753-.695 2.054-2.619 3.784-5.766 1.785-3.271 2.657-5.357 2.62-6.198-.034-.782-2.993-2.448-6.146-5.683C3.972 1.481 3.57 1.341 2.91 1.37 2.127 1.404.597.171.63.892L2.327 2.97c1.626 1.374 1.62 2.174 3.248 3.609 2.387 2.245 3.597 3.758 3.634 4.6.026.601-.345 1.761-1.116 3.421-.828 1.723-1.445 2.774-1.907 3.215-.272.675-.376 1.041-.37 1.161l.012.301c-.057.062-.455.622-1.197 1.558-.632.69-.912 1.184-.899 1.484.016.361.21.654.581.878-.288.314-.455.623-.447.803" fill="#D78B17" mask="url(#sd-arrow-mobile-mask)"></path></g><path d="M42.024 10.063c0-.446-.545-1.288-1.685-2.527-.99-1.04-1.784-1.784-2.379-2.18-4.509-3.024-7.086-4.56-7.78-4.56-.05 0-.05.05-.05.1 0 .148.347.544 1.091 1.238.693.694 1.19 1.14 1.486 1.338l3.717 2.825c1.041.842 2.131 1.982 3.32 3.518l-.198.397c-1.982 1.338-5.402 1.982-10.308 1.982h-1.486c-.149 0-.05.248-.446.248-.298 0-.446-.05-.446-.198v-.05c-.843.05-1.933-.05-3.37-.198-1.636-.199-2.726-.298-3.37-.298-.545 0-1.784.2-2.329.2-.248 0-1.933-.249-4.956-.794l-.198.446-.446-.694c-.149.15-.298.198-.545.198-.347 0-.892-.149-1.537-.446-.693-.347-1.189-.495-1.536-.495a.84.84 0 0 0-.496.148c-.94-.148-1.387-.248-1.437-.248h-.347c-1.486-.644-3.27-.99-5.302-.99-.347 0-.694 0-.942.05 0 1.09 0 1.634-.049 1.684 2.032.892 4.51 1.586 7.334 2.081 1.19.198 3.717.496 7.582.942l3.767.594c1.437.05 2.478.1 3.221.1l6.591.247.15-.446c.246.446.742.694 1.485.694.942 0 2.478-.198 4.66-.545 2.13-.396 3.666-.743 4.558-1.04.05.247.198-.248.248-.447l.495.446c.05-.148.397-.446.991-.892.942-.743.645-.892.793-1.635.1-.347.15-.644.15-.793" fill="#D78B17"></path></g></svg></div></div>
+				<!-- /wp:outermost/icon-block -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"metadata":{"name":"Ask us"},"align":"wide","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-dream-trip-bg-img.jpg","source":"file"},"backgroundSize":"cover"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:columns {"align":"wide"} -->
 		<div class="wp-block-columns alignwide">
@@ -252,6 +380,30 @@
 
 		</div>
 		<!-- /wp:columns -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"metadata":{"name":"Ask us (mobile)"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"right":"var:preset|spacing|20","bottom":"var:preset|spacing|60","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true,"medium":true}}}}]}} -->
+	<div class="wp-block-group alignwide" style="padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--20)">
+		<!-- wp:image {"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-dream-trip-bg-img.jpg" alt="" style="aspect-ratio:16/7;object-fit:cover"/></figure>
+		<!-- /wp:image -->
+
+		<!-- wp:group {"metadata":{"name":"Copy"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
+			<!-- wp:separator {"backgroundColor":"neutral-300"} -->
+			<hr class="wp-block-separator has-text-color has-neutral-300-color has-alpha-channel-opacity has-neutral-300-background-color has-background"/>
+			<!-- /wp:separator -->
+
+			<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent"} -->
+			<h2 class="wp-block-heading has-text-align-center is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Ask us to design your dream trip to Africa!', 'sd-theme-2026' ); ?></h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"align":"center"} -->
+			<p class="has-text-align-center"><?php esc_html_e( 'There’s no pressure and no obligation, just passionate people ready to make your trip a reality…', 'sd-theme-2026' ); ?></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
 	</div>
 	<!-- /wp:group -->
 </div>

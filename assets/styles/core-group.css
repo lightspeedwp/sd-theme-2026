@@ -360,13 +360,41 @@
    the chevron ends up sitting almost against the artwork. `.sd-slider-tight`
    buys it back here rather than re-introducing a gutter it deliberately does
    not want. Zared, 2026-09-16. */
+/* …but never further out than the viewport allows. The offset above assumes
+   the page has room either side of the frame, and a wide frame does not: at
+   1280px an `alignwide` shelf sits ~18px from the viewport edge, so an arrow
+   38px out pushed the document to 1300px and the whole page scrolled
+   sideways. Live never shows this only because its shelf is inset ~100px.
+
+   The frame is the arrows' containing block (`position: relative` above), so
+   inside `left`/`right` 100% is the frame's width and (100vw - 100%) / 2 is
+   the gap from its edge to the viewport's. `max()` keeps the design offset
+   wherever that gap can hold it — every width from ~1434px up renders exactly
+   as before — and walks the arrow in by only as much as it has to below that.
+
+   Two assumptions, both true of every shelf in this theme today: the frame is
+   centred in the viewport (so the gap is the same both sides), and `100vw`
+   counts a classic scrollbar that the layout width does not. The latter is
+   what `--sd-slider-nav-edge` absorbs — half of the widest desktop scrollbar
+   (Windows, 17px), so the arrow clears the viewport with or without one.
+   Measured on dev 2026-09-23. */
+.is-style-slider-frame {
+	--sd-slider-nav-edge: 9px;
+}
+
 .is-style-slider-frame :is(.slick-prev, .swiper-button-prev) {
-	left: calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)) !important;
+	left: max(
+		calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)),
+		calc((100% - 100vw) / 2 + var(--sd-slider-nav-edge))
+	) !important;
 	right: auto !important;
 }
 
 .is-style-slider-frame :is(.slick-next, .swiper-button-next) {
-	right: calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)) !important;
+	right: max(
+		calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)),
+		calc((100% - 100vw) / 2 + var(--sd-slider-nav-edge))
+	) !important;
 	left: auto !important;
 }
 
