@@ -43,8 +43,8 @@
  * strip, and adding the banner back would be a redesign". **Zared took that
  * call on 2026-09-16 and ruled the banner in**, so the blog landing now opens
  * on a `core/cover` like every other landing page in the theme — at the 360px
- * floor the Tour Operator singles use rather than the 400px the page landings
- * do, for the reason recorded on the block itself.
+ * floor every hero banner in the theme now shares (the page landings came
+ * down to it from 400px on 2026-09-23).
  * The note is corrected here rather than left to contradict the markup below.
  *
  * It is a restoration of a banner live already configures rather than a new
@@ -130,13 +130,11 @@
 	 * 50px sliver, so there is no "the live one" to carry across; this is a
 	 * chosen photograph, and swapping it later is a one-line change.
 	 *
-	 * **360px, not the 400px the page landings use** — ruled 2026-09-16, with
-	 * the category archive, because the banner was crowding the first post row
-	 * off the fold on both. It is the floor the two Tour Operator singles
-	 * already carry (patterns/destination-banner.php,
-	 * patterns/template-single-tour.php), so the list pages now open at the
-	 * same height as the pages they lead to. The two blog pages move together:
-	 * a step in banner height between the landing and a category would read as
+	 * **360px** — ruled 2026-09-16 for this page and the category archive,
+	 * because the banner was crowding the first post row off the fold on both,
+	 * and made the floor for every hero banner in the theme on 2026-09-23. The
+	 * two blog pages move together: a step in banner height between the landing
+	 * and a category would read as
 	 * a mistake. → patterns/template-category.php
 	 */
 	?>

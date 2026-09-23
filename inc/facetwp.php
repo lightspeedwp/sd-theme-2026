@@ -98,3 +98,57 @@ function enqueue_search_filters_script( $block_content ) {
 	return $block_content;
 }
 add_filter( 'render_block_facetwp/facet', __NAMESPACE__ . '\\enqueue_search_filters_script' );
+
+/**
+ * Enqueue the filter flyout script when a facet is rendered.
+ *
+ * The script at assets/js/filter-flyout.js turns the filter rail into a "Filters" button and
+ * a FacetWP Flyout panel on phones, and gives the add-on's panel the dialog
+ * semantics and focus handling it lacks. Presentation of FacetWP's markup, in
+ * the same sense as the fold script above: the add-on and the facets work
+ * without it, and deactivating the theme leaves them working, just laid out
+ * as the add-on ships them.
+ *
+ * Lazy by the same mechanism as the fold script. The script checks for
+ * `FWP.flyout` itself and does nothing without it, so enqueuing it where the
+ * add-on is inactive costs one small request and changes nothing on screen.
+ *
+ * The two strings are the panel's accessible name and live's close bar label,
+ * printed ahead of the script so they belong to this theme's text domain.
+ *
+ * @param string $block_content The block's rendered markup, returned unchanged.
+ * @return string
+ */
+function enqueue_filter_flyout_script( $block_content ) {
+	$relative = 'assets/js/filter-flyout.js';
+	$handle   = 'sd-theme-2026-filter-flyout';
+
+	if ( wp_script_is( $handle, 'enqueued' ) ) {
+		return $block_content;
+	}
+
+	wp_enqueue_script(
+		$handle,
+		get_theme_file_uri( $relative ),
+		array(),
+		asset_version( $relative ),
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
+	);
+
+	wp_add_inline_script(
+		$handle,
+		'window.sdFilterFlyout = ' . wp_json_encode(
+			array(
+				'label' => __( 'Filters', 'sd-theme-2026' ),
+				'close' => __( 'Close Filters', 'sd-theme-2026' ),
+			)
+		) . ';',
+		'before'
+	);
+
+	return $block_content;
+}
+add_filter( 'render_block_facetwp/facet', __NAMESPACE__ . '\\enqueue_filter_flyout_script' );

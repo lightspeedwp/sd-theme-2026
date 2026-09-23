@@ -89,8 +89,9 @@
  *     without keeping the endpoint would take those URLs off the site.
  *
  * So the sanctioned block is used: `sd/brand-regions` renders the strip as
- * links, marks the active one with `aria-current="page"`, hides itself when a
- * brand has fewer than two regions, and needs no JavaScript. LS-2528 (Done)
+ * links, marks the active one with `aria-current="page"`, renders a one-tab
+ * strip for a one-region brand (hiding itself only when there are none), and
+ * needs no JavaScript. LS-2528 (Done)
  * built it. → The full note on what a `core/tabs` conversion would take, and
  * the query gap below, is in `.github/tasks/`.
  *
@@ -144,8 +145,8 @@
 	 * label leaking into the design.
 	 */
 	?>
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-brands-1920x454.png","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-brands-1920x454.png" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-brands-1920x454.png","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-brands-1920x454.png" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
@@ -365,6 +366,20 @@
 
 				<?php
 				/*
+				 * The phone trigger for the filter flyout — the note is on
+				 * patterns/template-taxonomy-accommodation-type.php.
+				 */
+				?>
+				<!-- wp:buttons {"metadata":{"name":"Filters Trigger"},"className":"sd-filters-toggle facetwp-flyout-open","layout":{"type":"flex","justifyContent":"stretch"}} -->
+				<div class="wp-block-buttons sd-filters-toggle facetwp-flyout-open">
+					<!-- wp:button {"tagName":"button","width":100} -->
+					<div class="wp-block-button has-custom-width wp-block-button__width-100"><button type="button" class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Filters', 'sd-theme-2026' ); ?></button></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+
+				<?php
+				/*
 				 * ⚠️ **No keyword box.** The accommodation-type page opens its
 				 * rail with a `search_accommodation` facet above "Refine by";
 				 * this one deliberately does not. Zared's call, 2026-09-16,
@@ -473,10 +488,11 @@
 				 * `SD\Enhancements\Queries::scope_brand_archive_to_region()` narrows
 				 * the main query via `post__in`.
 				 *
-				 * The block renders nothing when a brand has fewer than two
-				 * regions — one region is not a choice — so brands like Ilios
-				 * Travel (one property) simply do not get a strip, and the cards
-				 * close the gap. `label` names the landmark for a screen reader;
+				 * **A one-region brand gets a one-tab strip**, since 2026-09-23
+				 * (Zared's call). The block used to render nothing below two
+				 * regions — one region is not a choice — but the strip is this
+				 * page's frame, and /brand/time-tide/ read as broken without it.
+				 * Only a brand with no regions at all renders none. `label` names the landmark for a screen reader;
 				 * the block falls back to "Regions" if it is empty, but it is
 				 * set here so the string belongs to this theme's text domain
 				 * rather than the plugin's.

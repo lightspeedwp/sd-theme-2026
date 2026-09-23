@@ -8,6 +8,48 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 📱 **The filter rail collapses to a "Filters" button on phones.** LS-2024
+  (line 14, Search and Filtering), raised during LS-2017.
+  `assets/js/filter-flyout.js`, `inc/facetwp.php`,
+  `assets/styles/facetwp-facets.css`, and the four rail patterns
+  (`template-taxonomy-accommodation-type`, `template-taxonomy-accommodation-brand`,
+  `template-taxonomy-travel-style`, `template-page-search`).
+
+  Below 782px, where core stacks the columns, each rail shows only a
+  full-width "Filters" button — live's `.facetwp-filters-button`. The button
+  opens the rail's facets in the FacetWP Flyout add-on's off-canvas panel,
+  styled like live's: a neutral-200 panel from the left, a primary-600 "Close
+  Filters ×" bar and a 20% fog. The script gives the add-on's panel what it
+  lacks: a dialog role and name, a real close button, focus moved in and
+  trapped, Escape to close, focus returned to the trigger, and `aria-expanded`
+  on the trigger. It limits the panel to the rail's own facets, so the sort
+  facet stays in the results toolbar. The collapse applies only once
+  `FWP.flyout` is present, so without the add-on or without JavaScript the
+  rail is unchanged.
+
+- 🏷️ **"On Special" badge on the accommodation list card.** LS-2017 (line 7,
+  Accommodation). `patterns/card-accommodation-list.php`,
+  `styles/sections/cards/listing-card-list.json`.
+
+  The badge ports live's `.special-tag`: an 80px square on the image's
+  top-right corner, accent-500 (live's `#e6ad10`), heading face in capitals.
+  The text is contrast, not live's white, which fails AA on that yellow. It
+  is bound to `sd/post-meta`'s new `flag` format on
+  `special_to_accommodation`, so it shows only when the property has a
+  published connected special. It appears on the type and brand archives.
+
+- ✅ **`tests/e2e/templates/accommodation.spec.js` and
+  `tests/e2e/utils/hero-banner.js`.** LS-2017, LS-2018.
+
+  `hero-banner.js` holds the hero banner contract as a reusable suite: one
+  `<h1>`, the 360px floor, no inline padding, the photograph filling the band
+  on desktop, and the phone stack. `accommodation.spec.js` runs it on all five
+  accommodation templates. It also checks: live's type order on the landing
+  grid, a 40-word excerpt ceiling, the badge's colours and corner, no bare
+  empty badge, stars under the rating label, the brands grid at three across
+  with its heading hidden, a region strip on a one-region brand, and the
+  filter flyout at 1280 and 390, including the focus trap and Escape.
+
 - ✅ **`tests/e2e/templates/tours.spec.js`, and mega-menu chevron checks in
   the header spec.** LS-2019 (line 9, Tour). `tests/e2e/parts/header.spec.js`.
 
@@ -283,6 +325,43 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 📐 **Hero banner floor 400 → 360px, everywhere.** LS-2017 (Zared's call).
+  `patterns/hero-page-banner.php`, `styles/sections/hero-banner.json` and every
+  banner that repeats the floor (destinations, tours, specials, team, search,
+  404, blog, category, accommodation). Before, only the single accommodation
+  used 360; now all banners do. `tours.spec.js` and `destinations.spec.js`
+  expect 360.
+
+- 🖼️ **Accommodation banners are the hero banner, phone stack included.**
+  LS-2017, LS-2018. The accommodation archive, single, type archive, brand
+  archive and brands page drop their inline spacing-40 padding, so the phone
+  stack in `style.css` applies. The single also moves from `dimRatio: 0` /
+  `isDark: false` to `dimRatio: 100`, as the single tour did.
+
+- 🔢 **The accommodation landing lists types in live's order.** LS-2017.
+  `patterns/template-archive-accommodation.php`. Live's `get_terms()` passes no
+  `orderby`, so its order is whatever MySQL returns for the `featured` meta
+  join. It isn't recoverable from migrated data, so the order is written down:
+  an `include` list of the twelve featured term IDs, which core's term
+  template orders with `FIELD()`. ⚠️ A newly featured type now needs its ID
+  added to that list.
+
+- ✂️ **Accommodation list card excerpt 45 → 40 words.** LS-2017.
+  `patterns/card-accommodation-list.php`. Applies to the type and brand
+  archives.
+
+- ⭐ **Single accommodation: the stars sit under "This property is rated",
+  centred.** LS-2017. `patterns/template-single-accommodation.php`,
+  `assets/styles/core-group.css`. The rating group becomes a vertical flex,
+  matching live's `.centered-rating`. The empty `<p>` the parser splits off in
+  front of `.rating-stars` is hidden, so it doesn't double the gap.
+
+- 🏢 **Brands page brought in from the dev Site Editor override.** LS-2018.
+  `patterns/template-page-brands.php`, from dev `wp_template` 65956: three
+  logos across, zero cell padding, `large` logos, and the section heading
+  hidden with core block visibility. The banner keeps the theme's hero device.
+  Reset the override on dev after deploy.
 
 - 🖼️ **The hero banner is 400px, not 454.** LS-2019 (line 9, Tour), found on
   the tours pages. `styles/sections/hero-banner.json`,

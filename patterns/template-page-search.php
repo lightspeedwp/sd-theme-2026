@@ -29,7 +29,7 @@
  * photograph is already in the media library (attachment 51741, uploaded
  * 2019-08-30) — so it is addressed by its uploads URL like every other banner
  * in this theme rather than ported into `assets/images/` as theme chrome. It is
- * the same cover device, `dimRatio`, overlay colour and 400px floor the three
+ * the same cover device, `dimRatio`, overlay colour and 360px floor the three
  * Tour Operator archives carry; → `template-archive-destination.php` for why
  * each of those is what it is.
  *
@@ -126,8 +126,8 @@
 <!-- wp:group {"tagName":"main","metadata":{"name":"Search Results"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
 <main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-search-tc-faq-1920x454.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-search-tc-faq-1920x454.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-search-tc-faq-1920x454.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-search-tc-faq-1920x454.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
@@ -180,6 +180,20 @@
 
 			<!-- wp:group {"tagName":"aside","metadata":{"name":"Filter Rail"},"className":"sd-search-filters","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
 			<aside class="wp-block-group sd-search-filters">
+
+				<?php
+				/*
+				 * The phone trigger for the filter flyout — the note is on
+				 * patterns/template-taxonomy-accommodation-type.php.
+				 */
+				?>
+				<!-- wp:buttons {"metadata":{"name":"Filters Trigger"},"className":"sd-filters-toggle facetwp-flyout-open","layout":{"type":"flex","justifyContent":"stretch"}} -->
+				<div class="wp-block-buttons sd-filters-toggle facetwp-flyout-open">
+					<!-- wp:button {"tagName":"button","width":100} -->
+					<div class="wp-block-button has-custom-width wp-block-button__width-100"><button type="button" class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Filters', 'sd-theme-2026' ); ?></button></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
 
 				<?php
 				/*

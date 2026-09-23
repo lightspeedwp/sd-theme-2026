@@ -1284,6 +1284,13 @@
 	align-items: center;
 }
 
+/* The empty paragraph the parser splits off in front of `.rating-stars` (note
+   2 above). Harmless in a row, but in the single accommodation's vertical
+   rating stack it is a flex item, and the block gap lands on both sides of it. */
+.lsx-rating-wrapper > p:empty {
+	display: none;
+}
+
 .rating-stars figure {
 	/* The <img> is hidden below, so the figure carries its own box. 20px is
 	   TO's own inline width on the image it replaces. */

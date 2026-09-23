@@ -2,7 +2,7 @@
 /**
  * Title: Hero Banner
  * Slug: sd-theme-2026/hero-page-banner
- * Description: The one inner-page banner — a full-bleed featured image on a 400px floor carrying the page title in the Joe Hand script face with an optional strapline under it. Over the photograph from 768px up; below it, on a neutral-200 plate, on phones. One pattern for every post type and template.
+ * Description: The one inner-page banner — a full-bleed featured image on a 360px floor carrying the page title in the Joe Hand script face with an optional strapline under it. Over the photograph from 768px up; below it, on a neutral-200 plate, on phones. One pattern for every post type and template.
  * Categories: sd-theme-2026/hero, sd-theme-2026/pages, sd-theme-2026/tour-operator
  * Keywords: hero, banner, page header, title, tagline, cover
  * Viewport Width: 1400
@@ -69,12 +69,11 @@
  *
  * ## Why a fixed floor and not an aspect ratio
  *
- * **400px as of 2026-09-23**, down from 454 (Zared's call — it read too tall on
- * the tours pages). Live's own computed height is 380px (38rem against a 10px
- * root); 454 was the height live *serves the image at* (1920x454), not the
- * height it shows it at. 400 sits closer to live without matching it, because
- * this rebuild's type and spacing run larger than live's and the title and
- * strapline need the extra room at the bottom of the band.
+ * **360px as of 2026-09-23** (Zared's call). It was 454 until the tours pass
+ * that morning, then 400, and came down again to the 360 the single
+ * accommodation banner already stood on, which read best. Live's own computed
+ * height is 380px (38rem against a 10px root); 454 was the height live *serves
+ * the image at* (1920x454), not the height it shows it at.
  *
  * `is-style-hero-banner` pins the same floor so a short image cannot collapse
  * the band, and every banner pattern repeats it as `minHeight` — change all of
@@ -99,8 +98,8 @@
  */
 
 ?>
-<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner"},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
+<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner"},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
 	<?php
 	/*

@@ -49,13 +49,22 @@
  * → flagged on LS-2033, not resolved here, because changing the homepage band
  * is not this line item.
  *
- * ## Four across, not five
+ * ## Three across
  *
  * The homepage shelf runs five-up because it is a carousel of a fixed height.
- * This is a static grid of twenty-one logos at the content measure, where five
- * across leaves the wordmarks too small to read; four is the widest that keeps
- * them legible. Live's own grid is four across at 1140. Core's grid layout
- * handles the reflow, so no breakpoint is authored.
+ * This is a static grid of twenty-one logos. It was four across (live's own
+ * grid at 1140) until Zared set it to three in the Site Editor on dev on
+ * 2026-09-16, with the cell padding taken to zero and the logos at the `large`
+ * size so they fill the wider cells — brought into this file 2026-09-23 from
+ * that override (dev `wp_template` 65956). Core's grid layout handles the
+ * reflow, so no breakpoint is authored.
+ *
+ * ## The section heading is hidden, not removed
+ *
+ * The same override hid "Our preferred safari lodge operators" with core's
+ * block visibility (`metadata.blockVisibility: false`) rather than deleting
+ * it, so an editor can bring it back from the List View without retyping it.
+ * It renders nothing on the front end.
  *
  * ## The copy comes from the page, not from here
  *
@@ -86,8 +95,8 @@
 	 * above the title, which is the section this page belongs to.
 	 */
 	?>
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-brands-1920x454.png","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-brands-1920x454.png" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-brands-1920x454.png","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-brands-1920x454.png" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
@@ -184,17 +193,17 @@
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Brands Grid"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|40","padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"},"anchor":"brands"} -->
 	<section class="wp-block-group alignfull" id="brands" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--80)">
 
-		<!-- wp:heading {"textAlign":"center","className":"is-style-section-title","anchor":"h-our-preferred-operators"} -->
+		<!-- wp:heading {"textAlign":"center","metadata":{"blockVisibility":false},"className":"is-style-section-title","anchor":"h-our-preferred-operators"} -->
 		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-our-preferred-operators"><?php esc_html_e( 'Our preferred safari lodge operators', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:terms-query {"termQuery":{"perPage":21,"taxonomy":"accommodation-brand","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
 		<div class="wp-block-terms-query alignwide">
 
-			<!-- wp:term-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":4}} -->
-				<!-- wp:group {"metadata":{"name":"Brand Logo"},"style":{"spacing":{"blockGap":"0","padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center","verticalAlignment":"center"}} -->
-				<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
-					<!-- wp:sd/term-image {"sizeSlug":"medium","isLink":true} /-->
+			<!-- wp:term-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3}} -->
+				<!-- wp:group {"metadata":{"name":"Brand Logo"},"style":{"spacing":{"blockGap":"0","padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center","verticalAlignment":"center"}} -->
+				<div class="wp-block-group" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+					<!-- wp:sd/term-image {"sizeSlug":"large","isLink":true} /-->
 				</div>
 				<!-- /wp:group -->
 			<!-- /wp:term-template -->
