@@ -294,6 +294,97 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
 	right: var(--wp--preset--spacing--20);
 }
 
+/* No hairline under the top-level rows.
+   ---------------------------------------------------------------------------
+   The variation's hairline is on `core/navigation-link`, and Specials is the only
+   top-level row that is a link rather than a submenu. So the only divider in the
+   closed menu was the one between Specials and About Us, and it read as a stray.
+   Removed from the top level only (Zared, 2026-09-23); the rows inside an open
+   dropdown keep theirs.
+
+   Here rather than in the variation because `styles.blocks.core/navigation-link`
+   cannot tell a top-level link from a nested one. The variation compiles to
+   `:root :where(.is-style-mobile-navigation--N .wp-block-navigation-link)` at
+   (0,1,0); this is (0,3,0). */
+.is-style-mobile-navigation .wp-block-navigation__container > .wp-block-navigation-link {
+	border-bottom: 0;
+}
+
+/* Parent rows: the label is a link, the rest of the row opens the dropdown.
+   ---------------------------------------------------------------------------
+   `parts/mobile-menu.html` sets `submenuVisibility: "hover"`, not `"click"`. In
+   click mode core renders the whole parent as one `<button>`, so Destinations,
+   Tours & Safaris, Accommodation and About Us could open their lists but could
+   never reach their own pages. In hover mode core renders an `<a>` for the label
+   and a separate `button.wp-block-navigation-submenu__toggle` for the chevron
+   (`wp-includes/blocks/navigation-submenu.php`), and the toggle still gets
+   `actions.toggleMenuOnClick`. Core's hover handlers return early on
+   `pointerType === "touch"`, so a tap never opens a list by hovering.
+
+   Below, the row becomes a wrapping flex line. The link shrinks to its label, the
+   toggle grows over the rest of the row, and the list wraps onto its own line.
+   A tap on the words follows the link; a tap anywhere else on the row opens the
+   dropdown (Zared, 2026-09-23). The chevron stays where it was drawn: at the end
+   of the row, centred in the last 60px.
+
+   Everything is prefixed with the open overlay so it outranks the shared
+   `.is-menu-open` link and icon rules higher up this file (0,4,0), and core's
+   overlay `flex-direction: column` on `.wp-block-navigation-item` (0,4,0). */
+.wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child {
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: stretch;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child > .wp-block-navigation-item__content {
+	flex: 0 1 auto;
+	width: auto;
+	padding-inline-end: 15px;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child > .wp-block-navigation-submenu__toggle {
+	position: static;
+	display: flex;
+	flex: 1 1 0;
+	align-self: stretch; /* core sets `center` on the icon, which left a 16px strip */
+	align-items: center;
+	justify-content: flex-end;
+	width: auto;
+	min-width: 60px;
+	height: auto;
+	margin: 0;
+	padding: 0 22px 0 0;
+	cursor: pointer;
+}
+
+body.rtl .wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child > .wp-block-navigation-submenu__toggle {
+	padding: 0 0 0 22px;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child > .wp-block-navigation-submenu__toggle svg {
+	flex: none;
+	width: 16px;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child > .wp-block-navigation__submenu-container {
+	flex-basis: 100%;
+}
+
+/* The pressed/hover tint spans the whole row, as it did when the row was one
+   button. Without this it covers only the shrunk label, and because a tap
+   leaves `:hover` set on touch, every opened row showed a label-sized pill. */
+.wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child > .wp-block-navigation-item__content {
+	border-start-end-radius: 0;
+	border-end-end-radius: 0;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child:hover > .wp-block-navigation-submenu__toggle,
+.wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child.current-menu-item > .wp-block-navigation-submenu__toggle {
+	background: color-mix(in srgb, currentColor, transparent 97%);
+	border-start-end-radius: var(--wp--preset--border-radius--200);
+	border-end-end-radius: var(--wp--preset--border-radius--200);
+}
+
 
 /* Footer Navigation — the terms links in the colophon
    ===========================================================================

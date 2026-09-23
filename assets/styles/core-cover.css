@@ -6,9 +6,14 @@
    544px on tablet and 153px on phones, each measured on live. This floor would
    flatten the tablet copy to 430px between 768 and 781px and inflate the phone
    copy to 430px, so any cover carrying a screen-size hide class is left out.
-   Those classes are the plugin's own, not a theme helper. */
+   Those classes are the plugin's own, not a theme helper.
+
+   The hero banner is left out for the same reason: below 768px it is the
+   phone stack in style.css — a 3:1 strip over a plate sized by its content —
+   and this floor, which outranks that block's `min-height: 0` on class count,
+   left ~130px of empty plate under the strapline. */
 @media (max-width: 781px) {
-	.wp-block-cover:not(.has-aspect-ratio):not(.block-visibility-hide-small-screen):not(.block-visibility-hide-medium-screen):not(.block-visibility-hide-large-screen) {
+	.wp-block-cover:not(.has-aspect-ratio):not(.is-style-hero-banner):not(.block-visibility-hide-small-screen):not(.block-visibility-hide-medium-screen):not(.block-visibility-hide-large-screen) {
 		min-height: 430px !important;
 	}
 }

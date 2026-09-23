@@ -8,6 +8,30 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✅ **`tests/e2e/templates/destinations.spec.js`, and country and region
+  routes.** LS-2016 (line 6, Destinations). `tests/e2e/fixtures/routes.js`,
+  `tests/e2e/global-setup.js`.
+
+  The suite used to resolve one destination, the newest, which could be a
+  country or a region. It now also resolves a country (`parent=0`) and a
+  region (`parent_exclude=0`) through a new optional `query` on each route, so
+  the render contract in `singles.spec.js` covers all three.
+
+  The new spec checks two things on each of the three. **The banner** is the
+  hero banner: one `<h1>`, no strapline, at least 454px on desktop with the
+  photograph filling it. On phones it sits on the neutral-200 plate with the
+  title in brand-500, a 3:1 strip above the title and no padding.
+  **The listing cards** (and the modal cards in the page): every paragraph,
+  taxonomy row and excerpt is font size 200, read-out links are brand-600,
+  linked titles are neutral-700, and a link hovers to brand-700. Colours and
+  sizes are compared against the resolved preset, not a literal.
+
+  Run against dev before this branch deployed, the banner and card checks fail
+  on the old markup, and the card failures list the break row by row: price
+  rating, destination and rating paragraphs at 19.01px (size 300) instead of
+  15.88px. On local, where only a country exists, the banner checks pass
+  against the new markup and fail against the old one (a 360px floor, 26.6px
+  of inline padding on phones).
 - ✨ **`Header Search Dropdown`, the mobile header's search.** LS-2014 (line 2,
   Header). `styles/blocks/search/header-search-dropdown.json`,
   `assets/styles/core-search.css`.
@@ -243,6 +267,106 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 📱 **Mobile menu review: parent rows link to their pages, and the panel is
+  tidied.** LS-2014 (line 2, Header), found while on LS-2016.
+  `parts/mobile-menu.html`, `assets/styles/core-navigation.css`,
+  `assets/styles/core-columns.css`.
+
+  - **Parent rows link to their pages.** The panel's navigation goes from
+    `submenuVisibility: "click"` to `"hover"`. In click mode, core renders each
+    parent as a single `<button>`, so Destinations, Tours & Safaris,
+    Accommodation and About Us could open their lists but never reach their
+    own pages. In hover mode core renders the label as an `<a>` and a separate
+    toggle button for the chevron. The row is now a flex line: the link shrinks
+    to its label and the toggle fills the rest of the row. Tap the words to go
+    to the page; tap anywhere else on the row to open the dropdown. Core's
+    hover handlers ignore touch pointers, so a tap never opens a list by hover.
+    The pressed tint still spans the whole row.
+  - **No dividers in the closed menu.** The `is-style-separator-thin` between
+    the navigation and "Get in touch" is gone. So is the hairline under
+    Specials: it is the only top-level row that is a link rather than a
+    submenu, so it was the only row that picked up the variation's border.
+    Rows inside an open dropdown keep theirs.
+  - **Call us today.** The heading goes up two steps on the scale (font size
+    `100` → `300`). The heading and the numbers now sit in a vertical flex
+    group with a `spacing|20` gap. They were flush at 0px, because theme.json
+    gives every template part `margin-top: 0 !important`. The four numbers are
+    now `spacing|20` apart (were 0px), each label sits on its number with no
+    gap (was `spacing|5`), and the flags are 36px (were 28px). The part is
+    shared with the footer, the header dropdown and the safari-expert panel,
+    so these three are CSS scoped to `.sd-mobile-menu`, not changes to the part.
+  - **White logo.** Attachment 36261 (`2017/12/footer-logo.png`) replaces the
+    colour `footer-logo.svg` on the dark panel.
+
+- 📱 **Destination pages take the hero banner and its phone layout.** LS-2016
+  (line 6, Destinations). `patterns/destination-banner.php`.
+
+  The banner on every destination, country and region page is now
+  `patterns/hero-page-banner.php`'s markup, configured for destinations. It
+  keeps Tour Operator's `banner_image_id` binding, with the featured image as
+  the fallback, and drops the strapline, because live shows none on a
+  destination at any width (measured on /destination/botswana/ and
+  /destination/botswana/moremi-game-reserve/). Below 768px the photograph
+  shrinks to a strip and the title sits beneath it in brand-500 on the
+  warm-grey plate, as on live. The floor goes from 360px to the hero's 454px.
+  The inline spacing-40 padding is gone, because the phone layout could not
+  override it. Tour Operator's replacement image keeps the class the phone
+  layout targets, so this works on a bound banner. All three templates
+  `require` this one file.
+
+- 🐛 **Listing cards are one type size again, with brand-600 links.** LS-2016
+  (line 6, Destinations). `styles/sections/cards/listing-card-compact.json`,
+  `styles/sections/cards/listing-card-list.json`, `patterns/card-tour-compact.php`.
+
+  theme.json's `core/paragraph` default of font size 300 beat the size 200 a
+  card sets on its body. Every bound meta paragraph (price rating,
+  destination, rating, a destination's country or regions) rendered at 300,
+  while the taxonomy rows beside it inherited 200. Both card styles now pin
+  body copy to 200 on the card, on `core/paragraph` and on `core/post-excerpt`.
+  This covers the accommodation, tour and destination compact cards, the
+  accommodation units, the three modal cards and the list and search-result
+  rows. Headings keep their own size, and a paragraph that sets its own
+  size keeps it.
+
+  Links in both styles go from neutral-800 (compact) and neutral-700 (list) to
+  **brand-600, brand-700 on hover**. The linked title stays **neutral-700**,
+  as live's `#60483b` title does, and hovers to brand-700. The tour compact
+  card's own brand-500 link colours on its travel-style and destination rows
+  are removed, so they follow the style like every other card.
+
+- 💄 **The destinations landing page: finalisation pass.** LS-2016 (line 6,
+  Destinations). `patterns/template-archive-destination.php`,
+  `patterns/trustpilot-score.php`.
+
+  **The banner is now the hero banner pattern, so it gets the phone layout.**
+  The archive banner uses `patterns/hero-page-banner.php`'s markup, with the
+  two changes that pattern allows for an archive: the landing's own photograph
+  instead of a featured image, and a typed-in `<h1>` instead of the post title.
+  Below 768px the photograph now shrinks to a strip and the title and
+  strapline sit on the warm-grey plate beneath it, as on live and on every
+  single. The page's old inline top and bottom padding is gone. The phone
+  layout could not override it, so it left a band of plate above the
+  photograph. On desktop the banner now takes the section style's padding.
+
+  **The destination tiles are 3:2 landscape, as live crops them**, not square.
+  The change applies to this page only. The shared tile,
+  `patterns/card-media-overlay.php`, also appears in the regions grid on
+  country pages and in the destinations list on team pages, and both stay
+  square. So the landing writes the tile out in full with the new crop, next
+  to a note to keep the two copies in step.
+
+  **The intro band's columns are 50/50**, not 55% and auto, so the safari
+  expert card uses its wide layout on desktop: the portrait beside the name
+  and the actions. That switch happens once the card has 576px, which a half
+  column gives it from a viewport of about 1240px up. Between 782px and about
+  1240px the card keeps its narrow layout.
+
+  **The Trustpilot badge in the expert card is easier to read.** "Excellent"
+  goes from font size 100 to 200. The TrustScore and the review count go from
+  the inherited neutral-700 to neutral-900, which matches the black badge live
+  uses in this spot. The badge only appears inside the expert card, so this
+  applies to every page that shows the card: the destination, tour and
+  accommodation singles and the tour archive, as well as this page.
 - 🔄 **The header, captured from dev's Site Editor copy.** LS-2014 (line 2,
   Header). `patterns/header.php`, `style.css`.
 
@@ -531,6 +655,18 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- 🐛 **The hero banner's phone stack no longer gaps above the photograph or
+  under the strapline.** LS-2016 (line 6, Destinations). `style.css`,
+  `assets/styles/core-cover.css`, `patterns/destination-banner.php`.
+
+  Measured on dev's `/destinations/` at 390px. The band of plate above the
+  image was the template's inline spacing-40 padding, which beat the phone
+  stack's `padding: 0`. Fifteen templates still write their banner padding
+  inline, so the phone stack now sets it with `!important`, the same way it
+  already sets `min-height`. The ~130px of empty plate under the strapline
+  came from the theme's own 430px cover floor below 782px. That rule
+  outranked the phone stack's `min-height: 0` on class count, so it now skips
+  `is-style-hero-banner`.
 - 🐛 **The mobile menu: an extra search field, no flags, a clipped logo.**
   LS-2014 (line 2, Header). `parts/mobile-menu.html`.
 

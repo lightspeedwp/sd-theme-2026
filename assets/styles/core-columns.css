@@ -28,8 +28,9 @@
    on a row of its own, four times over, and stretch the panel); the flag is
    sized down to the panel instead.
 
-   28px is live's mark, measured on the mobile menu at 390px: the flags there
-   are small marks that identify the number, not images in their own right.
+   36px is Zared's call from the mobile-menu review of 2026-09-23 — "a little"
+   up from live's 28px, measured on the mobile menu at 390px. The flags there
+   are still small marks that identify the number, not images in their own right.
    Scoped to `.sd-mobile-menu` so the desktop pop-out, the footer and the
    safari-expert panel keep the 100px the part asks for.
 
@@ -43,11 +44,40 @@
    second copy of the part cut down for mobile, which is the drift this reuse
    exists to prevent. → .claude/skills/wp-blockstyle-css-field */
 .sd-mobile-menu .wp-block-columns > .wp-block-column:first-child {
-	flex-basis: 28px !important;
+	flex-basis: 36px !important;
 	flex-grow: 0;
 }
 
 .sd-mobile-menu .wp-block-columns > .wp-block-column:first-child .wp-block-image img {
 	width: 100% !important;
 	height: auto;
+}
+
+/* The four numbers are spaced apart, and each label sits tight on its number.
+   Both from the same 2026-09-23 review; measured on dev at 390px before it,
+   the numbers ran on at 0px from one another and each label stood 4px
+   (`spacing|5`) above its number, so the list read as one block of eight lines.
+
+   Both belong on the part's markup and are here because the part is shared:
+   `blockGap` on the part's groups and columns would respace the desktop
+   pop-out, the footer and the safari-expert panel too, and those are not what
+   was asked for. The same reason as the flag rules above.
+
+   The rows get `gap` rather than margins. The panel's `div.wp-block-template-part`
+   has no layout of its own, so there is no `blockGap` to set on it, and theme.json
+   gives every template part `margin-top: 0 !important` — margin spacing is the
+   thing that loses there. `is-style-call-us-navigation` lays the same part out the
+   same way in the header dropdown.
+
+   The label-to-number gap is core's flow-layout rule,
+   `.wp-container-core-column-is-layout-‹hash› > * + *` at (0,1,0) + (0,0,0). The
+   selector below is (0,4,0) and wins on specificity, with no `!important`. */
+.sd-mobile-menu .wp-block-template-part {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--20);
+}
+
+.sd-mobile-menu .wp-block-columns > .wp-block-column:last-child > * + * {
+	margin-block-start: 0;
 }
