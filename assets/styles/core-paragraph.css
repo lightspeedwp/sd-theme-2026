@@ -16,10 +16,13 @@
  * digit — floated left and *upright*, undoing the
  * paragraph's italic for the one character.
  *
- * The line box is *not* live's 28px. A line box shorter than the glyph lets
- * the letter overflow upward past the first line; `0.85` makes the box about
- * 47px, the height of two 24px body lines (16px × 1.5), so the cap sits
- * across the first two lines instead of above them.
+ * Sized to the text, not copied from live's 55px / 28px line box, which sits
+ * the cap above line one. Measured on dev 2026-09-23 (paragraph 19px / 1.5,
+ * Optima): a `3.2em` cap on a `line-height: 1` box, pushed down `0.09em`, puts
+ * the top of the letter level with line one's capitals and its foot on line
+ * two's baseline, both to within half a pixel. `em` keeps that true as the
+ * fluid body size changes; Optima's ascent + descent is exactly 1em, which is
+ * why `line-height: 1` adds no leading to account for.
  *
  * Two reasons this is not in the block style's `css` field:
  *
@@ -41,13 +44,13 @@
 @media (min-width: 900px) {
 	.is-style-archive-intro::first-letter {
 		float: left;
-		margin-block-start: 0.25rem;
+		margin-block-start: 0.09em;
 		margin-inline-end: 0.3rem;
 		color: var(--wp--preset--color--brand-500);
 		font-family: var(--wp--preset--font-family--heading);
-		font-size: 3.4375rem;
+		font-size: 3.2em;
 		font-style: normal;
-		line-height: 0.85;
+		line-height: 1;
 	}
 }
 
