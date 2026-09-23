@@ -327,3 +327,119 @@
 		transition: none;
 	}
 }
+
+
+/* Header Search Dropdown — the mobile bar's drop-down
+   ===========================================================================
+   Paired with styles/blocks/search/header-search-dropdown.json, which holds the
+   trigger's design. This is the mechanism, in this file for the same reasons
+   as the fold-out above (a `css` field cannot carry it legibly), plus one
+   more: it relies on `:has()`, which a single-line JSON string would hide.
+
+   Live's `#mobile-searchform`, measured at 390px on 2026-09-23: a white band
+   flush under the dark bar, holding a 50px field inset 10px from each edge,
+   `border: 1px solid #ddd`, no radius. The band is drawn here as a spread
+   `box-shadow` on the field rather than as a wrapper, because `core/search`
+   renders no element between the field and the form that could carry it.
+
+   ## The positioning context is the bar, not the form
+
+   Core's closed state puts `overflow: hidden` on the form *and* on the inside
+   wrapper. An absolutely positioned field whose containing block is one of
+   those would be clipped to nothing even when open. So both stay `static`,
+   and the containing block is the full-width bar group that holds the search —
+   found with `:has()` off the registered style class, so no bespoke hook class
+   is needed in the markup. `overflow: hidden` on a non-positioned ancestor does
+   not clip a descendant whose containing block lies outside it.
+
+   ## The state model
+
+   As with the fold-out: closed is the base rule and agrees with core's
+   `!important` collapse (`width: 0`, no inline padding or border); open is
+   `:not(.wp-block-search__searchfield-hidden)` and only there does anything
+   get overridden. The reveal is a `clip-path` wipe downwards, so the band
+   appears to drop out of the bar. Closing is immediate — core zeroes the width
+   `!important` the moment the class returns, and there is nothing to animate
+   against that. */
+.wp-block-group.alignfull:has(> .wp-block-group > .wp-block-search.is-style-header-search-dropdown) {
+	position: relative;
+}
+
+.wp-block-search.is-style-header-search-dropdown,
+.wp-block-search.is-style-header-search-dropdown .wp-block-search__inside-wrapper {
+	position: static;
+}
+
+/* The trigger's shape, as on the fold-out: a 44×44 floor for the touch-target
+   check and the same 32px magnifier. */
+.wp-block-search.is-style-header-search-dropdown .wp-block-search__button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	margin-inline-start: 0;
+	box-shadow: none;
+	transition: color 0.25s ease;
+}
+
+.wp-block-search.is-style-header-search-dropdown .wp-block-search__button svg.search-icon {
+	display: block;
+	width: 32px;
+	height: 32px;
+	min-width: 32px;
+	min-height: 32px;
+}
+
+/* The panel, closed. (0,3,0), to clear style.css's (0,2,1) form-control rule —
+   see "Specificity" at the top of this file. `pointer-events: none` as well as
+   the clip, so a closed field can never catch a tap; core already takes it out
+   of the tab order and the accessibility tree.
+
+   ⚠️ Not `visibility: hidden`. Core's `openSearchInput` calls `input.focus()`
+   in the same tick it flips the state, before the Interactivity API has
+   re-rendered the class — so at that instant the field is still in its closed
+   styles, and a `visibility: hidden` element refuses focus. Measured on local
+   2026-09-23: with it, the field opened but focus stayed on the trigger. */
+.wp-block-search.is-style-header-search-dropdown .wp-block-search__input {
+	position: absolute;
+	top: calc(100% + var(--wp--preset--spacing--10));
+	inset-inline: var(--wp--preset--spacing--10);
+	z-index: 100;
+	box-sizing: border-box;
+	min-height: var(--wp--custom--header--nav-link-height);
+	margin: 0;
+	pointer-events: none;
+	clip-path: inset(calc(-1 * var(--wp--preset--spacing--10)) calc(-1 * var(--wp--preset--spacing--10)) calc(100% + var(--wp--preset--spacing--10)) calc(-1 * var(--wp--preset--spacing--10)));
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--neutral-800);
+	font-size: var(--wp--preset--font-size--200);
+	border: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-300);
+	border-radius: 0;
+	box-shadow: 0 0 0 var(--wp--preset--spacing--10) var(--wp--preset--color--base);
+	padding-block: var(--wp--preset--spacing--10);
+}
+
+/* The panel, open. `width: auto` hands the width to the two insets; core's
+   closed rule had it at `0 !important`, which no longer applies once the
+   hidden class is gone. */
+.wp-block-search.is-style-header-search-dropdown:not(.wp-block-search__searchfield-hidden) .wp-block-search__input {
+	width: auto;
+	pointer-events: auto;
+	clip-path: inset(calc(-1 * var(--wp--preset--spacing--10)));
+	padding-inline: var(--wp--preset--spacing--20);
+	transition: clip-path 0.3s ease-in-out;
+}
+
+/* Focus ring as on the fold-out: 2px brand-500, 3.17:1 on the white field. */
+.wp-block-search.is-style-header-search-dropdown .wp-block-search__input:focus,
+.wp-block-search.is-style-header-search-dropdown .wp-block-search__input:focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-500);
+	outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-search.is-style-header-search-dropdown:not(.wp-block-search__searchfield-hidden) .wp-block-search__input {
+		transition: none;
+	}
+}

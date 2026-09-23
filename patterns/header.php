@@ -69,7 +69,9 @@
  *
  * `core/group` supports `position: sticky` natively, so it travels in the
  * block's own `style.position` and stays editable in the Site Editor. Live
- * sticks the whole header at `top: 0`, so no offset.
+ * sticks the desktop header at `top: 0`, so no offset — and only the desktop
+ * header: at phone width live's masthead scrolls away, so the mobile group
+ * below carries no `style.position`.
  *
  * Live also compresses the stuck header by 22px (`.scrolled #masthead
  * { margin-top: -22px }`). That needs a scroll listener to toggle a class, which
@@ -86,21 +88,21 @@
  * The outer wrapper is the landmark; this is its content.
  */
 ?>
-<!-- wp:group {"metadata":{"name":"Header","patternName":"sd-theme-2026/header","description":"Site header — the logo beside a right-hand cluster carrying the Trustpilot mark, the Call Us numbers and the enquiry action, above the mega-menu navigation and a fold-out search. Sticks on scroll.","categories":["header","sd-theme-2026/menu"]},"align":"full","className":"is-style-header","style":{"spacing":{"blockGap":"0"},"position":{"type":"sticky","top":"0px"}},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"metadata":{"name":"Header - Desktop","patternName":"sd-theme-2026/header","description":"Site header — the logo beside a right-hand cluster carrying the Trustpilot mark, the Call Us numbers and the enquiry action, above the mega-menu navigation and a fold-out search. Sticks on scroll.","categories":["header","sd-theme-2026/menu"]},"align":"full","className":"is-style-header","style":{"spacing":{"blockGap":"0"},"position":{"type":"sticky","top":"0px"}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"medium":true,"small":true}}}}]}} -->
 <div class="wp-block-group alignfull is-style-header"><!-- wp:columns {"verticalAlignment":"center","align":"wide"} -->
-<div class="wp-block-columns alignwide are-vertically-aligned-center"><!-- wp:column {"verticalAlignment":"center","width":"30%"} -->
-<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:30%"><!-- wp:site-logo {"width":300,"className":"sd-header__logo"} /--></div>
+<div class="wp-block-columns alignwide are-vertically-aligned-center"><!-- wp:column {"verticalAlignment":"center","width":"22%"} -->
+<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:22%"><!-- wp:site-logo {"width":300,"align":"left","className":"sd-header__logo"} /--></div>
 <!-- /wp:column -->
 
 <!-- wp:column {"verticalAlignment":"center","style":{"spacing":{"blockGap":"var:preset|spacing|10"}}} -->
 <div class="wp-block-column is-vertically-aligned-center"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"}} -->
 <div class="wp-block-group alignwide"><!-- wp:group {"metadata":{"name":"Trustpilot"},"className":"sd-trustpilot","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"right":"var:preset|spacing|20"}}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
 <div class="wp-block-group sd-trustpilot" style="padding-right:var(--wp--preset--spacing--20)"><!-- wp:image {"width":"100px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
-<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' ) ); ?>" alt="Trustpilot" style="width:100px;height:auto"/></a></figure>
+<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:100px;height:auto"/></a></figure>
 <!-- /wp:image -->
 
 <!-- wp:image {"width":"143px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__stars"} -->
-<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-5.svg' ) ); ?>" alt="Rated 5 out of 5 on Trustpilot" style="width:143px;height:auto"/></a></figure>
+<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-5.svg' ) ); ?>" alt="<?php esc_attr_e( 'Rated 5 out of 5 on Trustpilot', 'sd-theme-2026' ); ?>" style="width:143px;height:auto"/></a></figure>
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 
@@ -141,23 +143,24 @@
  * Drawing it as a `::before` on the toggle would fix that and lose the
  * editor-visible block; the block was preferred.
  *
- * ⚠️ Phosphor's phone glyph, the same path used in homepage-dream-trip.php,
- * homepage-lets-make-it-happen.php and cta-not-sure-where-to-go.php. Written
- * out rather than echoed from a variable, as core's patterns do; if it changes
- * it changes in all four.
+ * Phosphor's phone glyph in its **fill** weight at 24px, as dev's Site Editor
+ * copy had it (captured 2026-09-23). ⚠️ That makes it diverge from the
+ * outline weight still used in homepage-dream-trip.php,
+ * homepage-lets-make-it-happen.php and cta-not-sure-where-to-go.php — the
+ * header change was an editor decision, and those three were not touched.
  */
 ?>
 <!-- wp:group {"metadata":{"name":"Call Us"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
-<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","iconColor":"brand-500","width":"20px"} -->
-<div class="wp-block-outermost-icon-block"><div class="icon-container has-brand-500-color" style="width:20px;transform:rotate(0deg) scaleX(1) scaleY(1)"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"></path></svg></div></div>
+<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","iconColor":"brand-500","width":"24px"} -->
+<div class="wp-block-outermost-icon-block"><div class="icon-container has-brand-500-color" style="width:24px;transform:rotate(0deg) scaleX(1) scaleY(1)"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M231.88,175.08A56.26,56.26,0,0,1,176,224C96.6,224,32,159.4,32,80A56.26,56.26,0,0,1,80.92,24.12a16,16,0,0,1,16.62,9.52l21.12,47.15,0,.12A16,16,0,0,1,117.39,96c-.18.27-.37.52-.57.77L96,121.45c7.49,15.22,23.41,31,38.83,38.51l24.34-20.71a8.12,8.12,0,0,1,.75-.56,16,16,0,0,1,15.17-1.4l.13.06,47.11,21.11A16,16,0,0,1,231.88,175.08Z"></path></svg></div></div>
 <!-- /wp:outermost/icon-block -->
 
-<!-- wp:navigation {"ref":65909,"overlayMenu":"never","ariaLabel":"<?php esc_attr_e( 'Call us', 'sd-theme-2026' ); ?>","className":"is-style-call-us-navigation","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"},"spacing":{"blockGap":"0"}},"textColor":"brand-500","fontSize":"300"} /--></div>
+<!-- wp:navigation {"ref":65909,"textColor":"brand-500","overlayMenu":"never","className":"is-style-call-us-navigation","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--bold)","fontStyle":"normal"},"spacing":{"blockGap":"0"}},"fontSize":"300","ariaLabel":"<?php esc_attr_e( 'Call us', 'sd-theme-2026' ); ?>"} /--></div>
 <!-- /wp:group -->
 
 <!-- wp:buttons {"className":"sd-header__cta","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"stretch"}} -->
 <div class="wp-block-buttons sd-header__cta"><!-- wp:button {"className":"is-style-fill","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)">Get in touch</a></div>
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)"><?php esc_html_e( 'Get in touch', 'sd-theme-2026' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->
@@ -167,12 +170,52 @@
 <div class="wp-block-group"><!-- wp:navigation {"ref":65876,"overlayMenu":"never","className":"is-style-main-navigation","style":{"spacing":{"blockGap":"0px"}},"fontSize":"200"} /--></div>
 <!-- /wp:group -->
 
-<!-- wp:search {"label":"Search","showLabel":false,"placeholder":"Search tours, lodges, destinations…","buttonText":"Search","buttonPosition":"button-only","buttonUseIcon":true,"className":"is-style-header-search"} /-->
-
-<!-- wp:group {"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true}}}}]}} -->
-<div class="wp-block-group"><!-- wp:navigation {"ref":65877,"overlayMenu":"always","icon":"menu","className":"is-style-mobile-navigation","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","justifyContent":"right"},"ariaLabel":"Main navigation","mobileMenuSlug":"mobile-menu"} /--></div>
-<!-- /wp:group --></div>
+<!-- wp:search {"label":"<?php esc_attr_e( 'Search', 'sd-theme-2026' ); ?>","showLabel":false,"placeholder":"<?php esc_attr_e( 'Search tours, lodges, destinations…', 'sd-theme-2026' ); ?>","buttonText":"<?php esc_attr_e( 'Search', 'sd-theme-2026' ); ?>","buttonPosition":"button-only","buttonUseIcon":true,"className":"is-style-header-search"} /--></div>
 <!-- /wp:group --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns --></div>
+<!-- /wp:group -->
+
+<?php
+/*
+ * The mobile header — its own group, not the desktop one reflowed.
+ *
+ * Captured from dev's Site Editor copy, 2026-09-23. Below Block Visibility's
+ * `large` breakpoint the desktop group above is hidden and this one takes over:
+ * Trustpilot and the logo stacked on the `neutral-200` band, then a full-width
+ * `primary-600` bar holding the search trigger and the menu toggle — live's
+ * arrangement at phone width.
+ *
+ * **Not sticky.** Live's mobile header scrolls away with the page
+ * (`#masthead` is `position: relative` at 390px, measured 2026-09-23), so this
+ * group carries no `style.position`. Only the desktop group sticks.
+ *
+ * The search is `is-style-header-search-dropdown`, not `is-style-header-search`:
+ * the field drops down as a full-width band under the bar, as live's does,
+ * instead of unrolling leftwards over the toggle. The mechanism is in
+ * assets/styles/core-search.css.
+ */
+?>
+<!-- wp:group {"metadata":{"name":"Header - Mobile"},"align":"full","style":{"spacing":{"blockGap":"0"}},"backgroundColor":"neutral-200","layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true}}}}]}} -->
+<div class="wp-block-group alignfull has-neutral-200-background-color has-background"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+<div class="wp-block-group alignwide" style="padding-top:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20)"><!-- wp:group {"metadata":{"name":"Trustpilot"},"className":"sd-trustpilot","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"right":"var:preset|spacing|20"}}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group sd-trustpilot" style="padding-right:var(--wp--preset--spacing--20)"><!-- wp:image {"width":"100px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo","style":{"layout":{"selfStretch":"fixedNoShrink","flexSize":"90px"}}} -->
+<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:100px;height:auto"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"width":"143px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__stars","style":{"layout":{"selfStretch":"fixedNoShrink","flexSize":"120px"}}} -->
+<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-5.svg' ) ); ?>" alt="<?php esc_attr_e( 'Rated 5 out of 5 on Trustpilot', 'sd-theme-2026' ); ?>" style="width:143px;height:auto"/></a></figure>
+<!-- /wp:image --></div>
+<!-- /wp:group -->
+
+<!-- wp:site-logo {"width":240,"align":"left"} /--></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"metadata":{"name":"Header Utilities"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"top":"var:preset|spacing|5","bottom":"var:preset|spacing|5"}},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"backgroundColor":"primary-600","textColor":"base","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull has-base-color has-primary-600-background-color has-text-color has-background has-link-color" style="padding-top:var(--wp--preset--spacing--5);padding-bottom:var(--wp--preset--spacing--5)"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"}} -->
+<div class="wp-block-group alignwide"><!-- wp:search {"label":"<?php esc_attr_e( 'Search', 'sd-theme-2026' ); ?>","showLabel":false,"placeholder":"<?php esc_attr_e( 'Search tours, lodges, destinations…', 'sd-theme-2026' ); ?>","buttonText":"<?php esc_attr_e( 'Search', 'sd-theme-2026' ); ?>","buttonPosition":"button-only","buttonUseIcon":true,"className":"is-style-header-search-dropdown","style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base"} /-->
+
+<!-- wp:navigation {"ref":65877,"textColor":"base","overlayMenu":"always","icon":"menu","className":"is-style-mobile-navigation","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","justifyContent":"right"},"ariaLabel":"<?php esc_attr_e( 'Main navigation', 'sd-theme-2026' ); ?>","mobileMenuSlug":"mobile-menu"} /--></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
 <!-- /wp:group -->

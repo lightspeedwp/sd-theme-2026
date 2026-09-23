@@ -360,7 +360,7 @@
 			 * child-less navigation block would otherwise do.
 			 */
 			?>
-			<!-- wp:navigation {"overlayMenu":"never","className":"is-style-footer-navigation","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","justifyContent":"right"}} -->
+			<!-- wp:navigation {"overlayMenu":"never","ariaLabel":"<?php esc_attr_e( 'Legal', 'sd-theme-2026' ); ?>","className":"is-style-footer-navigation","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","justifyContent":"right"}} -->
 				<!-- wp:navigation-link {"label":"<?php esc_attr_e( 'Privacy Policy', 'sd-theme-2026' ); ?>","url":"<?php echo esc_url( home_url( '/privacy-policy/' ) ); ?>","kind":"custom"} /-->
 				<!-- wp:navigation-link {"label":"<?php esc_attr_e( 'Terms & Conditions', 'sd-theme-2026' ); ?>","url":"<?php echo esc_url( home_url( '/terms-conditions/' ) ); ?>","kind":"custom"} /-->
 			<!-- /wp:navigation -->

@@ -387,12 +387,10 @@
    and the rows — the `menu` area's `area_tag` is `div` — so these are
    descendant selectors, not child ones.
 
-   Hairlines between rows, not around them, so the list reads as one object. */
-.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container .wp-block-group + .wp-block-group {
-	border-block-start: var(--wp--custom--border-width--100) solid var(--wp--preset--color--neutral-200);
-}
+   No hairlines between the rows — removed 2026-09-23 on Zared's instruction.
+   The hover tint below is what separates one number from the next.
 
-/* The tint, so a four-row list reads as four targets. `:focus-within` as well
+   The tint, so a four-row list reads as four targets. `:focus-within` as well
    as `:hover`, so the row a keyboard user is on is the row that lights up —
    live has neither, which is what makes its four numbers hard to scan.
 

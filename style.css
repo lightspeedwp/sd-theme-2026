@@ -206,19 +206,30 @@ a.more-link {
 	display: none;
 }
 
-/* Sticky header */
+/* Sticky header — desktop only
 
-body:not(.wp-admin) header:has(>.is-position-sticky) {
-	position: sticky;
-	top: calc( 0px + var( --wp-admin--admin-bar--height, 0px ) );
-	z-index: 100;
-}
+   A sticky group can only stick inside its parent, and its parent here is the
+   template part's own `<header>`, which is exactly as tall as it is. So the
+   wrapper is what has to stick; the block's `position: sticky` is the flag that
+   asks for it.
 
-/* Account for admin bar on mobile */
+   ⚠️ The media query is load-bearing. The header pattern holds a sticky desktop
+   band and a non-sticky mobile band, and Block Visibility hides whichever one
+   does not apply with `display: none` — but a hidden element still matches
+   `:has()`, so without the query the wrapper stuck at every width and took the
+   mobile band with it. Live's mobile header scrolls away (measured at 390px,
+   2026-09-23).
 
-@media (max-width: 600px) {
-	header:has(>.is-position-sticky) {
-		top: 0;
+   992px is Block Visibility's `large` breakpoint on dev, which is what deploys
+   to live. Local's is 1200px, so on local between 992px and 1199px the mobile
+   band renders and sticks; that is a local settings drift, not a theme bug.
+   The plugin's breakpoints are global settings with no CSS variable to read,
+   so if `large` is changed there, change it here. */
+@media (min-width: 992px) {
+	body:not(.wp-admin) header:has(> .is-position-sticky) {
+		position: sticky;
+		top: calc( 0px + var( --wp-admin--admin-bar--height, 0px ) );
+		z-index: 100;
 	}
 }
 
