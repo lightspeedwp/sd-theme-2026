@@ -82,8 +82,9 @@
  *
  * ## No padding set here
  *
- * `is-style-hero-banner` carries spacing-90 block and spacing-20 inline, and the
- * mobile stack in `style.css` has to override it. An inline `style` attribute on
+ * `is-style-hero-banner` carries spacing-90 top, spacing-50 bottom (90 until
+ * 2026-09-23 — it left the title sitting too high) and spacing-20 inline, and
+ * the mobile stack in `style.css` has to override it. An inline `style` attribute on
  * the block would outrank a stylesheet at any specificity and force an
  * `!important` into that media query for no gain, so the padding stays where the
  * style already puts it. `minHeight` is the one exception — see the note beside

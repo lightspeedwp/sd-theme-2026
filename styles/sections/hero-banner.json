@@ -13,7 +13,7 @@
 			"padding": {
 				"top": "var:preset|spacing|90",
 				"right": "var:preset|spacing|20",
-				"bottom": "var:preset|spacing|90",
+				"bottom": "var:preset|spacing|50",
 				"left": "var:preset|spacing|20"
 			}
 		},
