@@ -1,0 +1,44 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Header Search Dropdown",
+	"slug": "header-search-dropdown",
+	"description": "The mobile header's search — live's `#mobile-searchform`, which drops down as a full-width band under the dark menu bar rather than unrolling sideways. Measured on live at 390px, 2026-09-23: the band sits flush under the bar, the field is inset 10px from either edge, 50px tall, square-cornered, with a 1px light border on white.\n\n## Why not `header-search`\n\n`header-search` unrolls the field leftwards over the header row. On the mobile bar the row holds nothing but the search trigger and the menu toggle, so there is nowhere for it to unroll into: it either overhangs the viewport or squeezes the toggle. Dropping the field below the bar is live's answer and needs no arithmetic about the furniture to the trigger's right.\n\n## What is here, and what is in CSS\n\nHere: the trigger's design, as structured `elements.button` so the editor renders it and the `css` field's `:hover` strip does not apply — a white magnifier on the `primary-600` bar, brand-500 on hover and focus (3.96:1 against `primary-600`, clearing WCAG 1.4.11's 3:1 for a non-text control).\n\nThe drop-down mechanism — the panel's geometry, its two states, the bar as its positioning context via `:has()`, the icon sizing and the reduced-motion opt-out — is in assets/styles/core-search.css, scoped to `.is-style-header-search-dropdown`. It uses `:has()` and a transition on `clip-path`; neither belongs in a single-line JSON string.\n\n## No JavaScript\n\nAs with `header-search`: `buttonPosition: button-only` makes `core/search` a disclosure natively. Core toggles `wp-block-search__searchfield-hidden` on the form, binds `aria-expanded`, closes on Escape and focus-out, and turns the trigger into the submit button once the field is open.",
+	"blockTypes": [
+		"core/search"
+	],
+	"styles": {
+		"elements": {
+			"button": {
+				"color": {
+					"background": "transparent",
+					"text": "var:preset|color|base"
+				},
+				"border": {
+					"width": "0",
+					"radius": "0"
+				},
+				"spacing": {
+					"padding": {
+						"top": "var:preset|spacing|5",
+						"right": "var:preset|spacing|5",
+						"bottom": "var:preset|spacing|5",
+						"left": "var:preset|spacing|5"
+					}
+				},
+				":hover": {
+					"color": {
+						"background": "transparent",
+						"text": "var:preset|color|brand-500"
+					}
+				},
+				":focus": {
+					"color": {
+						"background": "transparent",
+						"text": "var:preset|color|brand-500"
+					}
+				}
+			}
+		}
+	}
+}

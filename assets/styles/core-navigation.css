@@ -314,8 +314,10 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
    links stay locked to `inherit` on hover. The selector below is (0,4,0), so it
    out-specifies the core reset.
 
-   `neutral-300` is live's hover exactly — `#DCD6C9` against the token's
-   `#DFD7CC`, a distance of 4. The resting colour is `neutral-400` rather than
+   `brand-400`, orange like every footer link hover since 2026-09-23, on
+   Zared's instruction. It measures 5.75:1 on the colophon's `primary-600`;
+   `brand-500`, the brand orange itself, is 3.96:1 there and fails AA. Live's
+   own hover is `neutral-300`. The resting colour is `neutral-400` rather than
    live's `#847C73`, which fails WCAG AA on this ground; the measurements are in
    styles/sections/footer-colophon.json.
 
@@ -338,7 +340,7 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .wp-block-navig
    layout gap, so footer-navigation.json cannot own this number. */
 .wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item__content:hover,
 .wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item__content:focus-visible {
-	color: var(--wp--preset--color--neutral-300);
+	color: var(--wp--preset--color--brand-400);
 }
 
 .wp-block-navigation.is-style-footer-navigation .wp-block-navigation-item:not(:last-child) {

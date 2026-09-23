@@ -8,6 +8,48 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✨ **`Header Search Dropdown`, the mobile header's search.** LS-2014 (line 2,
+  Header). `styles/blocks/search/header-search-dropdown.json`,
+  `assets/styles/core-search.css`.
+
+  Live's `#mobile-searchform` drops down as a full-width band under the dark
+  menu bar; ours unrolled sideways, which on a bar holding only the trigger and
+  the menu toggle has nowhere to go. Measured on live at 390px: field inset 10px
+  from both edges, 50px tall, square-cornered, 1px light border on white. The
+  new style reproduces that. The field is positioned against the bar (found with
+  `:has()` off the style class, so no hook class in the markup) because core's
+  closed state puts `overflow: hidden` on both the form and its wrapper. The band
+  is a spread `box-shadow` on the field, and the reveal is a `clip-path` wipe.
+  Core still owns the disclosure: `aria-expanded`, Escape, focus-out, and the
+  trigger becoming the submit button once open.
+
+  ⚠️ **Not `visibility: hidden` for the closed state.** Core calls
+  `input.focus()` in the same tick it opens, before the class re-renders, and a
+  hidden field refuses focus. Measured on local: focus stayed on the trigger.
+  `pointer-events: none` does the same job without that problem.
+
+- ✅ **Header and footer specs.** LS-2014. `tests/e2e/parts/header.spec.js`,
+  `tests/e2e/parts/footer.spec.js`, `tests/e2e/utils/contrast.js`.
+
+  Header, at 1280px: exactly one band rendered, and it sticks; the logo sits
+  wholly inside the band; the Call Us pop-out has a zero radius and no rule
+  between rows (skips where menu 65909 is absent, i.e. local). At 390px: exactly
+  one band rendered, and it scrolls away; the logo fits; the search opens under
+  the bar, inside the viewport, with no horizontal scroll, takes focus, and
+  returns it on Escape. In the mobile menu panel: no search field, four flags
+  that load beside four `tel:` links, and the panel and its logo start on
+  screen.
+
+  Footer: every text link in the widget area hovers to `brand-700`, the "Follow
+  Us" labels too, and every colophon link hovers to `brand-400` at ≥ 4.5:1
+  against the colophon's computed ground. axe never hovers, which is how a
+  failing hover shipped. The new `contrast.js` resolves palette slugs through the
+  browser, so the specs never hardcode a hex value.
+
+  Run against local, where these changes live: 23 passed, 1 skipped (the Call Us
+  check; menu 65909 does not exist locally). On dev they will fail until this
+  branch deploys and the overrides below are reset. That is expected.
+
 - ✅ **`tests/e2e/templates/front-page.spec.js`.** LS-2031 (line 21, QA).
   Five checks on the homepage's per-screen-size swaps, run at phone, tablet
   and desktop width: exactly one hero, at live's height for that screen, with
@@ -200,6 +242,57 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 🔄 **The header, captured from dev's Site Editor copy.** LS-2014 (line 2,
+  Header). `patterns/header.php`, `style.css`.
+
+  Dev's `wp_template_part` override `header` (post 65914, edited 2026-09-04)
+  replaced this file's single responsive band with two groups that Block
+  Visibility swaps: **Header - Desktop** (above `large`), and **Header - Mobile**
+  (Trustpilot and logo stacked on `neutral-200`, then a `primary-600` bar with
+  the search and the menu toggle). The mobile navigation's no-op visibility
+  wrapper was dropped. The logo column is 22%, the phone icon is Phosphor's fill
+  weight at 24px (⚠️ now unlike the outline weight in the three homepage/CTA
+  patterns), and every copy string and alt text is wrapped for translation.
+  `fontWeight` on the Call Us navigation is `var(--wp--custom--font-weight--bold)`
+  rather than the editor's raw `700`: `var:custom|…` is dropped on a dynamic
+  block, and the previous file's copy of it had been silently doing nothing.
+
+  **The mobile header no longer sticks,** matching live, whose masthead is
+  `position: relative` at 390px. That took two changes. The mobile group carries
+  no `style.position`, and `style.css`'s wrapper rule
+  (`header:has(> .is-position-sticky)`) now sits inside `@media (min-width:
+  992px)`: the hidden desktop band still matches `:has()`, so the wrapper stuck
+  at every width. 992px is Block Visibility's `large` on dev. Local's is 1200px,
+  so local disagrees between 992px and 1199px.
+
+- 💄 **The Call Us pop-out is square-cornered, with no rules between the
+  numbers.** LS-2014 (line 2, Header).
+  `styles/blocks/navigation/call-us-navigation.json`,
+  `assets/styles/ollie-mega-menu.css`. The radius goes from
+  `border-radius|200` to `0`, and the `neutral-200` hairline between rows is
+  removed; the row hover tint still separates them. The safari-expert panel's
+  accordion copy of the numbers (`is-style-call-us-dropdown`, in
+  `assets/styles/core-accordion.css`) keeps its hairlines. It is not the header.
+
+- ♿ **Footer links hover orange, and pass AA doing it.** LS-2014.
+  `styles/sections/site-footer.json`, `styles/sections/footer-colophon.json`,
+  `styles/blocks/navigation/footer-navigation.json`,
+  `assets/styles/core-navigation.css`, `assets/styles/core-group.css`.
+
+  The widget area's `neutral-500` hover measured **2.93:1** on the photograph's
+  pale band and failed. No single orange passes on both footer grounds, so there
+  are two:
+
+  | Ground | Hover | Ratio | `brand-500` there |
+  |---|---|---|---|
+  | Widget band (≈ `neutral-200`) | `brand-700` | 5.81:1 | 2.92:1 ✗ |
+  | Colophon (`primary-600`) | `brand-400` | 5.75:1 | 3.96:1 ✗ |
+
+  The colophon's old `neutral-300` hover already passed (8.8:1). It changes so
+  that every footer link hovers orange. The "Follow Us" labels are pinned to
+  `neutral-700 !important` by the section's `css` field, which also strips
+  `:hover`, so their hover is a separate `!important` rule in `core-group.css`.
 
 - 📱 **The homepage takes live's phone and tablet layouts.** LS-2030
   (line 20, responsive QA). `patterns/homepage-hero.php`,
@@ -437,6 +530,22 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
+
+- 🐛 **The mobile menu: an extra search field, no flags, a clipped logo.**
+  LS-2014 (line 2, Header). `parts/mobile-menu.html`.
+
+  The panel's own `core/search` is removed; the header bar's search is the only
+  one now. The missing flags and the clipped logo were **not** theme-file bugs.
+  Dev renders its Site Editor override `mobile-menu` (post 65922, 2026-08-28),
+  which predates the flags and carries the `margin-top: -36px` recorded below.
+  Measured on dev at 390px: the panel starts at y = −36px, its logo at
+  y = −15px, and it has 0 flags. This file has had the flags and no negative
+  margin since the change recorded further down, so resetting the override fixes
+  both.
+
+- ♿ **The footer's terms navigation has an accessible name.** LS-2014.
+  `patterns/footer.php`. `ariaLabel: "Legal"`. It was the one unnamed
+  navigation landmark on every page, and the a11y structure spec flagged it.
 
 - 🐛 **The safari gurus' card links turn yellow on hover.** LS-2030 (line 20).
   `assets/styles/core-button.css`, `patterns/homepage-safari-gurus.php`.
