@@ -8,6 +8,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✅ **`tests/e2e/templates/tours.spec.js`, and mega-menu chevron checks in
+  the header spec.** LS-2019 (line 9, Tour). `tests/e2e/parts/header.spec.js`.
+
+  Banners on the tours archive, the tour single and the travel-style archive:
+  the hero banner, one `<h1>`, between the 400px floor and the old 454, no
+  inline padding, the photograph filling the band on desktop, and the phone
+  stack (plate, brand-500 title, neutral-700 strapline, 3:1 strip) at 375px.
+  The landing grid: two columns, 3:2 tiles, the tiles in term-ID order and,
+  where REST exposes the meta, exactly the featured terms. The itinerary: no
+  visible `Card Link`, no comma after a lodge with no destination, and only
+  top-level destinations on the country line. The highlights: the list fills
+  the wide band, and its checks are brand-500.
+
+  Header: no chevron beside a top-level label in either Ollie markup, the
+  chevron back on a keyboard-focused toggle, and the underline held while a
+  panel is open. `destinations.spec.js` now expects the 400px floor.
+
 - ✅ **`tests/e2e/templates/destinations.spec.js`, and country and region
   routes.** LS-2016 (line 6, Destinations). `tests/e2e/fixtures/routes.js`,
   `tests/e2e/global-setup.js`.
@@ -266,6 +283,47 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 🖼️ **The hero banner is 400px, not 454.** LS-2019 (line 9, Tour), found on
+  the tours pages. `styles/sections/hero-banner.json`,
+  `patterns/hero-page-banner.php` and every banner pattern pinned at 454.
+
+  Too tall against live, which computes 380px (38rem on a 10px root). 454 was
+  the size live *serves the image at* (1920x454). 400 sits closer to live
+  without matching it, because this rebuild's type runs larger. The section
+  style and all thirteen banner patterns change together so the banners stay
+  one height. The template-home-blog and category banners (360px) are unchanged.
+
+- 🗺️ **The tour templates use the hero banner, phone stack included.** LS-2019.
+  `patterns/template-archive-tour.php`, `patterns/template-single-tour.php`,
+  `patterns/template-taxonomy-travel-style.php`.
+
+  The same device as the destinations pages. The inline spacing-40 padding is
+  gone from all three, and so is the tour single's own 360px, `dimRatio: 0`
+  cover. The phone stack in `style.css` now reaches them: a 3:1 strip of
+  photograph with the title and strapline on the neutral-200 plate. The tours
+  archive strapline is medium rather than semi-bold, as on every other banner.
+  The travel-style archive changes only its banner.
+
+- 🧭 **The tours landing runs two columns of 3:2 tiles, in live's order.**
+  LS-2019. `patterns/template-archive-tour.php`.
+
+  Two across, as live and the accommodation archive run, through the term
+  card's existing `$sd_card_aspect_ratio` (`3/2`, the destinations landing's
+  crop). Live orders the ten featured travel styles by term ID: its
+  `get_terms()` call (sd-lsx-child/includes/template-tags.php:258) passes no
+  `orderby`, which `WP_Term_Query` resolves to `t.term_id ASC`. So Safari
+  Honeymoons comes first. The terms query is now `orderBy: "id"` instead of
+  `name`. The selection is unchanged: the `featured` filter in
+  `sd-enhancements-2026` already matched live's ten, name for name.
+
+- ✅ **Tour highlights run the wide measure, with brand-500 checks.** LS-2019.
+  `patterns/template-single-tour.php`, `assets/styles/core-group.css`,
+  `styles/sections/highlights-list.json`.
+
+  The list group was `alignwide` but *constrained*, which clamped the `<ul>`
+  back to the content measure. It is flow layout now. The check-circle is
+  brand-500 rather than live's gold accent-500.
 
 - 📱 **Mobile menu review: parent rows link to their pages, and the panel is
   tidied.** LS-2014 (line 2, Header), found while on LS-2016.
@@ -654,6 +712,67 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
+
+- 🐛 **The itinerary no longer prints "Card Link" for a missing destination.**
+  LS-2019 (line 9, Tour). `patterns/itinerary-stay.php`,
+  `assets/styles/core-group.css`.
+
+  Tour Operator leaves an empty field's `Card Link` placeholder in place and
+  hides it by rewriting the `itin-<field>-wrapper` class around it. The
+  `itinerary-location` paragraph had no wrapper of its own, and
+  `itin-location-wrapper` sat on the second line instead. So a stay with no
+  published destination hid the wrong line and printed the placeholder: five
+  of nine rows on dev's /tour/namibia-wonderland/. The destination now has its
+  own wrapper and renders blank, as live does. The comma after the lodge is
+  drawn only when a visible destination follows it; live leaves it dangling.
+
+- 🐛 **The itinerary's second line names only the stay's country.** LS-2019.
+  `patterns/itinerary-stay.php`, with `sd-enhancements-2026`
+  (`modules/itinerary.php`).
+
+  It was the tour's whole `destination_to_tour` connection on every row. With
+  `parents: true` that should have been countries only. But `parents` only
+  drops destinations that *have* a parent, so unparented draft regions from
+  WETU ("Okonjima Nature Reserve", "Etosha South") came through, linked to
+  draft permalinks. Each row now carries an `itinerary-country` slot, filled
+  per stay by the plugin, as live's `lsx_to_itinerary_country()` did. The slot
+  holds the stay's destination's published top-level ancestor. It is hidden
+  when there is none.
+
+- 🐛 **The header nav's mega-menu chevrons are hidden again.** LS-2014 (line
+  2, Header), found on LS-2019. `styles/blocks/navigation/main-navigation.json`,
+  `assets/styles/core-navigation.css`.
+
+  Ollie Menu Designer 0.3.x (on dev, and on local from 2026-09-23) renders a
+  mega menu with a URL as an `<a>` plus a sibling toggle `<button>` holding the
+  chevron. The block style hid the chevron only inside the link, so it came
+  back beside each label, outside the underline. It is now hidden in the
+  button too. It shows again only while the button has keyboard focus, so the
+  Tab stop is never invisible. The open-panel underline keyed off
+  `aria-expanded` on the link; 0.3.x moved that to the button, and the rule now
+  follows it through `:has()`.
+
+- 🐛 **Mobile menu parent rows are back to label-links-to-page, rest of the
+  row opens the dropdown.** LS-2014 (line 2, Header). `parts/mobile-menu.html`,
+  `assets/styles/core-navigation.css`.
+
+  Merge `49bdcb6` (develop into `feature/ls-2016-6-destinations`) resolved a
+  conflict on the panel's `wp:navigation` line by taking develop's copy. That
+  correctly dropped the search block, which develop had moved to the header
+  dropdown. It also put `submenuVisibility` back to `"click"`, while keeping
+  the parent-row CSS from `b94995f`, which was written for hover-mode markup.
+  In click mode the whole row is a single `<button>` carrying both
+  `.wp-block-navigation-item__content` and `.wp-block-navigation-submenu__toggle`,
+  so it picked up both rule sets. The label sat against the right edge with no
+  padding, and no parent row could reach its own page. Dev has been serving
+  this combination.
+
+  The part is `"hover"` again. The parent-row rules are now keyed to
+  `.open-on-hover-click`, which core adds only to hover-mode rows, so a future
+  change back to click falls back to the shared layout and can't reproduce
+  this. Hover-to-open under a mouse is fixed in `sd-enhancements-2026`
+  (`modules/mobile-menu.php`), because it is an Interactivity directive, not a
+  style.
 
 - 🐛 **The hero banner's phone stack no longer gaps above the photograph or
   under the strapline.** LS-2016 (line 6, Destinations). `style.css`,

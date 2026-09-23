@@ -2,7 +2,7 @@
 /**
  * Title: Itinerary Stay
  * Slug: sd-theme-2026/itinerary-stay
- * Description: One row of the tour summary's itinerary list — a numbered marker beside the night count, the lodge and the destination. Repeated once per stay by Tour Operator's itinerary binding.
+ * Description: One row of the tour summary's itinerary list — a numbered marker beside the night count, the lodge and the destination, with the stay's country beneath. Repeated once per stay by Tour Operator's itinerary binding.
  * Categories: sd-theme-2026/tour-operator
  * Keywords: itinerary, tour, stay, night, lodge, summary
  * Viewport Width: 500
@@ -41,6 +41,7 @@
  * | `itinerary-title`  (h1–h6)  | `lsx_to_itinerary_title()`             |
  * | `itinerary-accommodation`   | `lsx_to_itinerary_accommodation()`     |
  * | `itinerary-location`        | `lsx_to_itinerary_destinations()`      |
+ * | `itinerary-country`         | `sd-enhancements`, per row (see below) |
  *
  * Two conventions come with that mechanism and both are load-bearing:
  *
@@ -57,6 +58,22 @@
  *    inside `.lsx-itinerary-wrapper` (tour-operator/build/style.css, last
  *    rule), which is why the list in the template carries that class.
  *
+ * ## Empty fields — why a missing value renders blank, not "Card Link"
+ *
+ * The two conventions above only work together. An empty field is *not*
+ * substituted: its paragraph keeps the literal `Card Link`, and the only thing
+ * that stops it showing is the `hidden` class landing on a wrapper *around that
+ * paragraph*. The rewrite is a regex on the class name, applied to every match
+ * in the row, so the wrapper has to be named for the field it holds and for
+ * nothing else.
+ *
+ * Until 2026-09-23 `itinerary-location` had no wrapper of its own, and
+ * `itin-location-wrapper` sat on the country line instead. A stay with no
+ * published destination — measured on dev, five of the nine rows on
+ * /tour/namibia-wonderland/ — therefore hid the country line and printed
+ * "Card Link" in the destination's place. Live prints nothing there, which is
+ * what this does now: the destination has its own `itin-location-wrapper`.
+ *
  * ## The row reads as one sentence
  *
  * Rebuilt on dev 2026-09-01 to match live's reading order: the night count, the
@@ -65,11 +82,16 @@
  * a quieter second line beneath.
  *
  * That is why `itinerary-location` sits *inside* the accommodation wrapper,
- * beside the comma, rather than in a block of its own: the comma has to belong
- * to the lodge, so that a stay with no lodge drops the comma with it when Tour
- * Operator marks `itin-accommodation-wrapper` hidden. The `itin-location-wrapper`
- * group below carries something different — the `destination_to_tour`
- * connection, the tour's parent destinations, not the stay's.
+ * beside the comma: the comma has to belong to the lodge, so that a stay with
+ * no lodge drops the comma with it when Tour Operator marks
+ * `itin-accommodation-wrapper` hidden. The comma is also dropped when the
+ * *destination* is hidden — it is drawn only while the next sibling is a
+ * visible `itin-location-wrapper` (assets/styles/core-group.css). Live leaves a
+ * dangling ", " there; that is a defect, not a design.
+ *
+ * The second line is the stay's **country** — live's `.itinerary-country`,
+ * the parent of the stay's destination — in `itin-country-wrapper`, filled by
+ * `sd-enhancements`. See the note at that block.
  *
  * ## Wrapping — the row breaks on the word, not on the term
  *
@@ -194,9 +216,22 @@
 				<p class="itinerary-accommodation has-300-font-size" style="margin-top:0;margin-bottom:0">Card Link</p>
 				<!-- /wp:paragraph -->
 
-				<!-- wp:paragraph {"metadata":{"name":"Destination Value"},"className":"itinerary-location","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|neutral-700"}}}},"textColor":"neutral-700","fontSize":"300"} -->
+				<?php
+				/*
+				 * The stay's own destination, in its own `itin-location-wrapper`
+				 * — the class Tour Operator rewrites to `hidden` when the stay
+				 * has no published destination. Until 2026-09-23 that class
+				 * was on the country line below instead, so an empty location
+				 * hid the *wrong* group and left this paragraph printing its
+				 * literal "Card Link". See "Empty fields" at the head of this
+				 * file.
+				 */
+				?>
+				<!-- wp:group {"metadata":{"name":"Destination"},"className":"itin-location-wrapper","layout":{"type":"default"}} -->
+				<div class="wp-block-group itin-location-wrapper"><!-- wp:paragraph {"metadata":{"name":"Destination Value"},"className":"itinerary-location","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|neutral-700"}}}},"textColor":"neutral-700","fontSize":"300"} -->
 				<p class="itinerary-location has-neutral-700-color has-text-color has-link-color has-300-font-size" style="margin-top:0;margin-bottom:0">Card Link</p>
-				<!-- /wp:paragraph -->
+				<!-- /wp:paragraph --></div>
+				<!-- /wp:group -->
 
 			</div>
 			<!-- /wp:group -->
@@ -206,14 +241,28 @@
 
 		<?php
 		/*
-		 * The tour's parent destinations, from the `destination_to_tour`
-		 * connection — not the stay's own location, which is on the lodge line
-		 * above. Quieter and smaller, so it reads as a footnote to the row.
+		 * The stay's country, on a quieter line of its own — live's
+		 * `lsx_to_itinerary_country()` (sd-lsx-child/includes/template-tags.php:642),
+		 * drawn as `.itinerary-country { display: block; font-size: 13px }`
+		 * (custom.css:2387).
+		 *
+		 * The paragraph is authored empty and filled per row by
+		 * `SD\Enhancements\Itinerary::fill_countries()`, which also rewrites
+		 * `itin-country-wrapper` to `hidden itin-country-wrapper` on a stay with no
+		 * country — the same convention Tour Operator uses for its own fields.
+		 * Tour Operator has no country field, which is why this is the plugin's.
+		 * With the plugin inactive the line is simply blank.
+		 *
+		 * Until 2026-09-23 this line was the tour's `destination_to_tour`
+		 * connection with `parents: true` — the same list on every row, and not
+		 * only countries: `parents` drops a destination *with* a parent, so the
+		 * unparented draft regions WETU imported ("Okonjima Nature Reserve",
+		 * "Etosha South") came through as well, linked to draft permalinks.
 		 */
 		?>
-		<!-- wp:group {"metadata":{"name":"Destination"},"className":"itin-location-wrapper","style":{"spacing":{"blockGap":"0"},"elements":{"link":{"color":{"text":"var:preset|color|neutral-700"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"textColor":"neutral-700","layout":{"type":"constrained","justifyContent":"left"}} -->
-		<div class="wp-block-group itin-location-wrapper has-neutral-700-color has-text-color has-link-color"><!-- wp:paragraph {"metadata":{"name":"Destinations","bindings":{"content":{"source":"lsx/post-connection","args":{"key":"destination_to_tour","parents":true}}}},"style":{"typography":{"fontStyle":"normal","fontWeight":"400"}},"fontSize":"200","prefixBold":true} -->
-		<p class="has-200-font-size" style="font-style:normal;font-weight:400"></p>
+		<!-- wp:group {"metadata":{"name":"Country"},"className":"itin-country-wrapper","style":{"spacing":{"blockGap":"0"},"elements":{"link":{"color":{"text":"var:preset|color|neutral-700"},":hover":{"color":{"text":"var:preset|color|brand-600"}}}}},"textColor":"neutral-700","layout":{"type":"constrained","justifyContent":"left"}} -->
+		<div class="wp-block-group itin-country-wrapper has-neutral-700-color has-text-color has-link-color"><!-- wp:paragraph {"metadata":{"name":"Country Value"},"className":"itinerary-country","style":{"typography":{"fontStyle":"normal","fontWeight":"400"}},"fontSize":"200"} -->
+		<p class="itinerary-country has-200-font-size" style="font-style:normal;font-weight:400"></p>
 		<!-- /wp:paragraph --></div>
 		<!-- /wp:group -->
 

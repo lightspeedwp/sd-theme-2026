@@ -2,7 +2,7 @@
 /**
  * Title: Destination — Banner
  * Slug: sd-theme-2026/destination-banner
- * Description: The destination single's opening banner — the hero banner configured for destinations: Tour Operator's banner_image_id photograph on a 454px floor with the destination title alone over it and no strapline. Over the photograph from 768px up; below it, on a neutral-200 plate, on phones.
+ * Description: The destination single's opening banner — the hero banner configured for destinations: Tour Operator's banner_image_id photograph on a 400px floor with the destination title alone over it and no strapline. Over the photograph from 768px up; below it, on a neutral-200 plate, on phones.
  * Categories: sd-theme-2026/tour-operator
  * Keywords: destination, banner, hero, cover, single
  * Viewport Width: 1400
@@ -22,7 +22,7 @@
  *
  * ## On patterns/hero-page-banner.php since 2026-09-23
  *
- * This is that pattern's markup — the 454px floor, `dimRatio: 100` against the
+ * This is that pattern's markup — the 400px floor, `dimRatio: 100` against the
  * section style's scrim, the flow-layout content group and the script-face
  * `<h1>` — so the phone stack in `style.css` ("Hero banner — the phone stack")
  * applies here as it does on the destinations archive: below 768px the
@@ -63,8 +63,8 @@
  *   down rather than left to look like an oversight.
  */
 ?>
-<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
+<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
 	<?php
 	/*
