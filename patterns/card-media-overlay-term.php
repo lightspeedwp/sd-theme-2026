@@ -63,7 +63,9 @@
  *
  * Square stays the default because it is what most grids want. The accommodation
  * archive is the exception: it runs two columns rather than three, and a square
- * tile at that width is a very tall photograph, so it asks for `16/9`. That is
+ * tile at that width is a very tall photograph, so it asks for `16/9`. The
+ * tours archive went two-up on 2026-09-23 and asks for `3/2`, the destinations
+ * landing's crop. That is
  * expressed as `$sd_card_aspect_ratio`, read once below and defaulted to `"1"`
  * — an includer sets it immediately before the `require`, and the variable is
  * undefined (so the default applies) when WordPress buffers this file to

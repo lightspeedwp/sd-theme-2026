@@ -82,7 +82,7 @@
  * ## The height is the singles' height
  *
  * 360px, which is what patterns/destination-banner.php and
- * patterns/template-single-tour.php both set, rather than the 454px the page
+ * patterns/template-single-tour.php both set, rather than the 400px the page
  * landing banners use. Ruled 2026-09-16: the category archive is a list page
  * and the banner was crowding the first row off the fold. The blog landing
  * moved with it — patterns/template-home-blog.php — because the two are one

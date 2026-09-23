@@ -43,7 +43,7 @@
  * strip, and adding the banner back would be a redesign". **Zared took that
  * call on 2026-09-16 and ruled the banner in**, so the blog landing now opens
  * on a `core/cover` like every other landing page in the theme — at the 360px
- * floor the Tour Operator singles use rather than the 454px the page landings
+ * floor the Tour Operator singles use rather than the 400px the page landings
  * do, for the reason recorded on the block itself.
  * The note is corrected here rather than left to contradict the markup below.
  *
@@ -130,7 +130,7 @@
 	 * 50px sliver, so there is no "the live one" to carry across; this is a
 	 * chosen photograph, and swapping it later is a one-line change.
 	 *
-	 * **360px, not the 454px the page landings use** — ruled 2026-09-16, with
+	 * **360px, not the 400px the page landings use** — ruled 2026-09-16, with
 	 * the category archive, because the banner was crowding the first post row
 	 * off the fold on both. It is the floor the two Tour Operator singles
 	 * already carry (patterns/destination-banner.php,

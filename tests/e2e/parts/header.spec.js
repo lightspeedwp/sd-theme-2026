@@ -173,6 +173,75 @@ test.describe( 'Header — desktop', () => {
 
 		expect( ruled, `rows still carrying a top rule: ${ ruled.join( '; ' ) }` ).toEqual( [] );
 	} );
+
+	/**
+	 * Live's header nav has no chevrons. Ollie Menu Designer 0.3.x moved the
+	 * mega-menu chevron out of the link into a sibling toggle button, where the
+	 * block style's hide rule no longer reached it — so it reappeared beside
+	 * each label, outside the hover underline. Both markups are covered: the
+	 * icon inside the link (0.2.x, or a mega menu with no URL) and the icon in
+	 * the toggle button (0.3.x with a URL).
+	 */
+	test.describe( 'mega-menu chevrons', () => {
+		const ROW = '.is-style-main-navigation > .wp-block-navigation__container > .wp-block-ollie-mega-menu';
+		const ICON = [
+			`${ ROW } > .wp-block-navigation-item__content > .wp-block-ollie-mega-menu__toggle-icon`,
+			`${ ROW } > .wp-block-ollie-mega-menu__submenu-toggle > .wp-block-ollie-mega-menu__toggle-icon`,
+		].join( ', ' );
+
+		test( 'no chevron shows beside a top-level label', async ( { page } ) => {
+			const icons = page.locator( ICON );
+			test.skip( 0 === ( await icons.count() ), 'No mega menus in the main navigation' );
+
+			const shown = await icons.evaluateAll( ( els ) =>
+				els
+					.filter( ( el ) => 'none' !== getComputedStyle( el ).display )
+					.map( ( el ) => el.closest( 'li' ).querySelector( '.wp-block-navigation-item__label' )?.textContent.trim() )
+			);
+
+			expect( shown, `chevrons visible beside: ${ shown.join( ', ' ) }` ).toEqual( [] );
+		} );
+
+		test( 'a keyboard-focused toggle shows its chevron, so the Tab stop is visible', async ( {
+			page,
+		} ) => {
+			const toggle = page.locator( `${ ROW } > .wp-block-ollie-mega-menu__submenu-toggle` ).first();
+			test.skip(
+				0 === ( await toggle.count() ),
+				'No split link-and-toggle mega menu (Ollie Menu Designer below 0.3)'
+			);
+
+			/** A keypress first, so the programmatic focus counts as keyboard focus. */
+			await page.keyboard.press( 'Shift' );
+			await toggle.focus();
+
+			await expect( toggle.locator( '.wp-block-ollie-mega-menu__toggle-icon' ) ).not.toHaveCSS( 'display', 'none' );
+		} );
+
+		test( 'the label keeps its underline while its panel is open', async ( { page } ) => {
+			const row = page.locator( ROW ).filter( {
+				has: page.locator( ':scope > .wp-block-ollie-mega-menu__submenu-toggle' ),
+			} ).first();
+			test.skip( 0 === ( await row.count() ), 'No split link-and-toggle mega menu' );
+
+			const link = row.locator( ':scope > .wp-block-navigation-item__content' );
+			const underline = () =>
+				link.evaluate( ( el ) => getComputedStyle( el, '::after' ).transform );
+
+			expect( await underline(), 'the underline is drawn at rest' ).toBe( 'matrix(1, 0, 0, 0, 0, 0)' );
+
+			/**
+			 * Set the state the plugin sets on open, rather than hovering: a
+			 * hover would satisfy the link's own `:hover` rule and prove
+			 * nothing about the open state.
+			 */
+			await row
+				.locator( ':scope > .wp-block-ollie-mega-menu__submenu-toggle' )
+				.evaluate( ( el ) => el.setAttribute( 'aria-expanded', 'true' ) );
+
+			await expect.poll( underline ).toBe( 'matrix(1, 0, 0, 1, 0, 0)' );
+		} );
+	} );
 } );
 
 /**

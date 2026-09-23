@@ -64,22 +64,41 @@
 
 	<?php
 	/*
-	 * The banner. → template-archive-destination.php for the full reasoning on
-	 * `dimRatio`, the decorative `alt` and the flow-layout content group.
+	 * The banner — the destinations archive's, block for block, since
+	 * 2026-09-23. That makes it `patterns/hero-page-banner.php` with the two
+	 * substitutions an archive makes (this archive's photograph by `url`, an
+	 * authored `<h1>`), so the phone stack in `style.css` ("Hero banner — the
+	 * phone stack") applies: below 768px the photograph is a 3:1 strip and the
+	 * title and strapline sit on the neutral-200 plate beneath it.
+	 *
+	 * Two things changed to get there, and both matter on phones:
+	 *
+	 *  - **No inline padding.** The cover used to write spacing-40 top and
+	 *    bottom as a `style` attribute. The phone stack resets padding with
+	 *    `!important`, but the section style's spacing-90 is what the desktop
+	 *    band is composed against, and an inline value is one more thing to
+	 *    fight. → the same note on template-archive-destination.php
+	 *  - **The strapline is medium, not semi-bold.** The destinations banner,
+	 *    the hero pattern and nine of the theme's ten `is-style-subheading-large`
+	 *    straplines are medium; this was the outlier
+	 *    (template-taxonomy-travel-style.php said so).
+	 *
+	 * → template-archive-destination.php for `dimRatio`, the decorative `alt`
+	 * and the flow-layout content group.
 	 */
 	?>
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/11/header-tours-big5.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/11/header-tours-big5.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/11/header-tours-big5.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner"},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/11/header-tours-big5.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
 
-			<!-- wp:heading {"level":1,"className":"is-style-script-accent","fontSize":"800"} -->
+			<!-- wp:heading {"level":1,"metadata":{"name":"Title"},"className":"is-style-script-accent","fontSize":"800"} -->
 			<h1 class="wp-block-heading is-style-script-accent has-800-font-size"><?php esc_html_e( 'Tours & Safaris', 'sd-theme-2026' ); ?></h1>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontFamily":"heading"} -->
-			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php esc_html_e( 'Trip ideas to inspire your own!', 'sd-theme-2026' ); ?></p>
+			<!-- wp:paragraph {"metadata":{"name":"Strapline"},"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
+			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--medium)"><?php esc_html_e( 'Trip ideas to inspire your own!', 'sd-theme-2026' ); ?></p>
 			<!-- /wp:paragraph -->
 
 		</div>
@@ -180,26 +199,56 @@
 	 * renders, so this grid degrades to eleven visible tiles rather than to
 	 * nothing.
 	 *
-	 * ## Three columns, where live runs two
+	 * ## Live's order: by term ID, not by name
 	 *
-	 * A deliberate departure, decided 2026-08-28: the rebuild's archives share
-	 * one grid, and the destinations archive is three-up. Ten tiles at three
-	 * columns leave a row of one; that is the trade accepted for one tile shape
-	 * and one column count across every Tour Operator archive.
+	 * Live's tiles run Safari Honeymoons, Beach & Safari Vacations, Family
+	 * Safaris, Fly-in Safaris, Gorilla Trekking, Luxury Big Five Safaris, Luxury
+	 * Rail Travel, Migration Safaris, Self-Drive Vacations, Walking Safaris —
+	 * measured 2026-09-23. That is not alphabetical. It is what
+	 * `sd_travel_style_archive()` (sd-lsx-child/includes/template-tags.php:258)
+	 * gets from `get_terms()` with `meta_key => 'featured'` and **no
+	 * `orderby`**, which `WP_Term_Query` resolves to `t.term_id ASC`
+	 * (wp-includes/class-wp-term-query.php:938): the order the terms were
+	 * created in. Safari Honeymoons is simply the oldest.
+	 *
+	 * So `orderBy` is `id`, which is the same `t.term_id` branch. Core's term
+	 * template passes `orderBy` straight into `WP_Term_Query`
+	 * (wp-includes/blocks/term-template.php:29), and `id` is also in the REST
+	 * terms endpoint's `orderby` enum, so the editor preview orders the same
+	 * way. `term_id` would work on the front end and fail the REST request.
+	 * The selection is still the plugin's featured filter above; the two
+	 * together are live's query, reproduced, with no term IDs in the template.
+	 *
+	 * Not `include` with a hand-ordered ID list, which is core's other way to
+	 * fix an order: the IDs differ between local, dev and live, and a list
+	 * would silently drop a term added later.
+	 *
+	 * ## Two columns and a 3:2 crop, as live runs them
+	 *
+	 * Three-up until 2026-09-23, when the rebuild's archives shared one column
+	 * count. The accommodation archive went two-up on 2026-09-04 and this now
+	 * follows it and live (Zared's call): ten tiles in five pairs, with no row
+	 * of one.
+	 *
+	 * The tiles are **3:2 landscape**, the destinations landing's crop, through
+	 * the card's one parameter, `$sd_card_aspect_ratio`. The travel-style
+	 * thumbnails are 554×368 originals, which is 3:2 almost exactly, so the crop
+	 * keeps the whole frame. The accommodation archive asks for `16/9` the same
+	 * way; the card's default stays square. → card-media-overlay-term.php
 	 *
 	 * `perPage: 12` is a ceiling above the twelve terms that exist, not a page
 	 * size — there is no term pagination block, and live pages nothing here
 	 * either (`disable_archive_pagination` is on in the `tour` settings).
-	 * Alphabetical by name, as the destinations grid is.
 	 */
+	$sd_card_aspect_ratio = '3/2';
 	?>
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Travel Styles"},"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
 	<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
 
-		<!-- wp:terms-query {"termQuery":{"perPage":12,"taxonomy":"travel-style","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"align":"wide","className":"sd-featured-terms-query","layout":{"type":"default"}} -->
+		<!-- wp:terms-query {"termQuery":{"perPage":12,"taxonomy":"travel-style","order":"asc","orderBy":"id","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"align":"wide","className":"sd-featured-terms-query","layout":{"type":"default"}} -->
 		<div class="wp-block-terms-query alignwide sd-featured-terms-query">
 
-			<!-- wp:term-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
+			<!-- wp:term-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":2,"minimumColumnWidth":null}} -->
 				<?php require __DIR__ . '/card-media-overlay-term.php'; ?>
 			<!-- /wp:term-template -->
 

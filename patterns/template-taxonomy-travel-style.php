@@ -68,9 +68,16 @@
  * `<!-- wp:query-title {"type":"archive","level":1,"showPrefix":false,"className":"is-style-script-accent","fontSize":"800"} /-->`
  * and the standfirst can stay as it is.
  *
- * The standfirst is authored at `font-weight: medium`, which is what nine of
- * the ten `is-style-subheading-large` standfirsts in this theme carry. The
- * tours archive is the outlier at `semi-bold`; it is not the precedent.
+ * The standfirst is authored at `font-weight: medium`, which is what the
+ * `is-style-subheading-large` standfirsts in this theme carry. (The tours
+ * archive was the outlier at `semi-bold` until 2026-09-23.)
+ *
+ * **The banner is the hero banner, phone stack included, since 2026-09-23** —
+ * the 400px floor and no inline padding, so `style.css` ("Hero banner — the
+ * phone stack") takes over below 768px exactly as it does on the tours
+ * archive: a 3:1 strip of photograph, the title and standfirst on the
+ * neutral-200 plate beneath it. The spacing-40 padding the cover used to write
+ * inline is gone; the section style's spacing-90 is the desktop padding.
  *
  * ## 3. The rail is the tour search, Destinations and Travel Styles
  *
@@ -161,8 +168,8 @@
 <!-- wp:group {"tagName":"main","metadata":{"name":"Travel Style Results"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
 <main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/09/tour-search-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/09/tour-search-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/09/tour-search-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/09/tour-search-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">

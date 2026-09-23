@@ -2,7 +2,7 @@
 /**
  * Title: Hero Banner
  * Slug: sd-theme-2026/hero-page-banner
- * Description: The one inner-page banner — a full-bleed featured image on a 454px floor carrying the page title in the Joe Hand script face with an optional strapline under it. Over the photograph from 768px up; below it, on a neutral-200 plate, on phones. One pattern for every post type and template.
+ * Description: The one inner-page banner — a full-bleed featured image on a 400px floor carrying the page title in the Joe Hand script face with an optional strapline under it. Over the photograph from 768px up; below it, on a neutral-200 plate, on phones. One pattern for every post type and template.
  * Categories: sd-theme-2026/hero, sd-theme-2026/pages, sd-theme-2026/tour-operator
  * Keywords: hero, banner, page header, title, tagline, cover
  * Viewport Width: 1400
@@ -69,12 +69,17 @@
  *
  * ## Why a fixed floor and not an aspect ratio
  *
- * 454px is the height live serves the banner image at (1920x454), and
- * `is-style-hero-banner` pins it so a short image cannot collapse the band. The
- * cover crops rather than letterboxes, which is what live does. Live's own
- * computed height is 380px (38rem against a 10px root), but 454 is the floor
- * every other banner in this theme already stands on and changing it here would
- * make this pattern the odd one out on the day it is meant to replace them.
+ * **400px as of 2026-09-23**, down from 454 (Zared's call — it read too tall on
+ * the tours pages). Live's own computed height is 380px (38rem against a 10px
+ * root); 454 was the height live *serves the image at* (1920x454), not the
+ * height it shows it at. 400 sits closer to live without matching it, because
+ * this rebuild's type and spacing run larger than live's and the title and
+ * strapline need the extra room at the bottom of the band.
+ *
+ * `is-style-hero-banner` pins the same floor so a short image cannot collapse
+ * the band, and every banner pattern repeats it as `minHeight` — change all of
+ * them together, or the banners stop being one height. The cover crops rather
+ * than letterboxes, which is what live does.
  *
  * ## No padding set here
  *
@@ -94,8 +99,8 @@
  */
 
 ?>
-<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner"},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
+<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner"},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
 	<?php
 	/*

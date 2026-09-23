@@ -101,54 +101,57 @@
 
 	<?php
 	/*
-	 * The banner.
+	 * The banner — `patterns/hero-page-banner.php`, configured for tours, and
+	 * block for block `patterns/destination-banner.php` plus the strapline.
 	 *
-	 * `is-style-hero-banner` owns the ground, the scrim and the type colours, as
-	 * it does on the destination archive. Two things differ from that placement
-	 * and both are measured:
+	 * ## Since 2026-09-23 this is the hero banner, phone stack included
 	 *
-	 *  - **608px, not the style's 454px.** `body:not(.home) #lsx-banner
-	 *    .page-banner-wrap .page-banner { min-height: 38rem }` from 768px up
-	 *    (custom.css:324). The cover serialises `minHeight` as an inline style,
-	 *    which outranks the style's `css` field, so this is one attribute rather
-	 *    than a variant.
-	 *  - **The image is the tour's banner image, not its featured image.** Tour
-	 *    Operator's `Bindings::render_banner_block()` swaps a cover's background
-	 *    for the `banner_image_id` meta whenever the cover carries an
+	 * It was its own cover: a 360px floor, `dimRatio: 0`, `isDark: false` and
+	 * spacing-40 padding written inline. Those four are gone, and with them the
+	 * reason the phone layout never reached this page — the inline padding
+	 * outranked the stack's reset and left a band of plate above the
+	 * photograph. It now carries the hero pattern's 400px floor, `dimRatio: 100`
+	 * against the section style's scrim, and no inline padding, so the phone
+	 * stack in `style.css` ("Hero banner — the phone stack") applies here as it
+	 * does on every destination page: below 768px the photograph shrinks to a
+	 * 3:1 strip and the title and strapline drop onto the neutral-200 plate in
+	 * brand-500 and neutral-700. That is live's tour banner at 390px.
+	 *
+	 * The comment this replaced recorded live's `min-height: 38rem` (380px at
+	 * live's 10px root, custom.css:324) as "608px"; that was the rem read
+	 * against a 16px root. The theme-wide floor is now 400px, closer to live's
+	 * 380 — see the note in the hero pattern.
+	 *
+	 * ## The two substitutions, the same ones the destination banner makes
+	 *
+	 * 1. **The image is the tour's banner image, not only its featured image.**
+	 *    Tour Operator's `Bindings::render_banner_block()` swaps a cover's
+	 *    background for the `banner_image_id` meta whenever the cover carries an
 	 *    `lsx/post-meta` binding — the args are only a marker; the key it reads
-	 *    is fixed. `useFeaturedImage` stays on underneath as the fallback: a
-	 *    tour with no banner image set keeps its thumbnail rather than
-	 *    rendering an empty scrim.
+	 *    is fixed. Its replacement `<img>` keeps the
+	 *    `wp-block-cover__image-background` class the phone stack targets.
+	 *    `useFeaturedImage` stays on underneath as the fallback.
+	 * 2. **The strapline stays — this is the one single that has one.** Live
+	 *    hides `.tagline` on every single and puts it back only on
+	 *    `.single-lsx-to-tour` (custom.css:1787). It is `banner_subtitle`
+	 *    ("13 Nights"), reached through `sd/banner`'s `subtitle` key; the
+	 *    authored text is an editor placeholder.
 	 *
-	 * The title is the Joe Hand script line at 60px/200 that live gives every
-	 * non-home banner (custom.css:366) — `is-style-script-accent` at font-size
-	 * 800 — and the tagline is the heading face at 30px (custom.css:378), which is
-	 * `is-style-subheading-large` plus the family and weight — medium (500)
-	 * rather than live's 600, set on dev 2026-08-28. Exactly
-	 * the pairing patterns/template-archive-destination.php uses, so the archive
-	 * and the single read as one device.
-	 *
-	 * The tagline is `banner_subtitle` ("13 Nights"), reached through
-	 * `sd/banner`'s `subtitle` key. Live gates it on post type —
-	 * `.single #lsx-banner .banner-content .tagline { display: none }` with
-	 * `.single-lsx-to-tour` putting it back (custom.css:1787) — which in a block
-	 * theme is simply: it is in the tour template and not in the others.
-	 *
-	 * A flow layout, not constrained, so `alignwide` reaches the children
-	 * instead of being re-clamped to the content measure. Same reasoning as the
-	 * destinations archive banner, which has the note in full.
+	 * The title is `is-style-script-accent` at font-size 800 and the strapline
+	 * `is-style-subheading-large` at medium weight, exactly the pairing every
+	 * other banner in the theme uses.
 	 */
 	?>
-	<!-- wp:cover {"useFeaturedImage":true,"dimRatio":0,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","isDark":false,"align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull is-light has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
-		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
+		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
 
-			<!-- wp:post-title {"level":1,"metadata":{"name":"Tour Title"},"className":"is-style-script-accent","fontSize":"800"} /-->
+			<!-- wp:post-title {"level":1,"metadata":{"name":"Title"},"className":"is-style-script-accent","fontSize":"800"} /-->
 
-			<!-- wp:paragraph {"metadata":{"name":"Tour Tagline","bindings":{"content":{"source":"sd/banner","args":{"key":"subtitle"}}}},"className":"is-style-subheading-large","style":{"typography":{"fontStyle":"normal","fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
-			<p class="is-style-subheading-large has-heading-font-family" style="font-style:normal;font-weight:var(--wp--custom--font-weight--medium)"><?php esc_html_e( 'Nights', 'sd-theme-2026' ); ?></p>
+			<!-- wp:paragraph {"metadata":{"name":"Strapline","bindings":{"content":{"source":"sd/banner","args":{"key":"subtitle"}}}},"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
+			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--medium)"><?php esc_html_e( 'Nights', 'sd-theme-2026' ); ?></p>
 			<!-- /wp:paragraph -->
 
 		</div>
@@ -431,6 +434,14 @@
 	 *    place to hang the list's styling from, which is why
 	 *    `is-style-highlights-list` is on the group and not on the paragraph.
 	 *
+	 * **The list runs the wide measure, as of 2026-09-23** (Zared's call). The
+	 * group was already `alignwide`, but it was a *constrained* group, and a
+	 * constrained group clamps every unaligned child back to `contentSize` —
+	 * so the `<ul>` sat on the narrow measure inside a wide box. It is flow
+	 * layout now, which hands the list the full wide rail; the two-column run
+	 * from 768px up (assets/styles/core-group.css) spreads across it. The
+	 * heading above stays on the section's own constrained measure, centred.
+	 *
 	 * `lsx-highlights-wrapper` removes the band, heading included, on a tour
 	 * with no highlights — verified locally 2026-08-28 against a tour with the
 	 * field set and the same tour with it deleted.
@@ -443,7 +454,7 @@
 		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-tour-highlights"><?php esc_html_e( 'Tour Highlights', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 
-		<!-- wp:group {"metadata":{"name":"Highlights List"},"align":"wide","className":"is-style-highlights-list","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained"}} -->
+		<!-- wp:group {"metadata":{"name":"Highlights List"},"align":"wide","className":"is-style-highlights-list","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide is-style-highlights-list"><!-- wp:paragraph {"metadata":{"name":"Highlights","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"highlights"}}}},"fontSize":"200"} -->
 		<p class="has-200-font-size"></p>
 		<!-- /wp:paragraph --></div>

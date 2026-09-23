@@ -18,6 +18,35 @@ const { test, expect } = require( '../fixtures/base.js' );
 const MEGA_MENU_TOGGLE = '.wp-block-ollie-mega-menu__toggle';
 
 /**
+ * The row a toggle belongs to — the thing a visitor actually points at.
+ *
+ * Ollie Menu Designer 0.3.x renders a mega menu that has a URL as a label link
+ * plus a separate toggle button, and the header hides that button's chevron
+ * (live has none), so the button is a zero-size box that `hover()` can never
+ * reach. The menu opens on hover of the row, which is what a mouse does, so
+ * the row is hovered and `aria-expanded` is still read off the toggle. Under
+ * 0.2.x the toggle *was* the row's only child, and hovering the row is the
+ * same gesture.
+ *
+ * @param {import('@playwright/test').Locator} toggle A mega-menu toggle.
+ * @return {import('@playwright/test').Locator} Its `li.wp-block-ollie-mega-menu`.
+ */
+function rowOf( toggle ) {
+	return toggle.locator( 'xpath=ancestor::li[contains(concat(" ", @class, " "), " wp-block-ollie-mega-menu ")][1]' );
+}
+
+/**
+ * The row's visible label — the toggle's own text is empty when it holds only
+ * a hidden chevron.
+ *
+ * @param {import('@playwright/test').Locator} toggle A mega-menu toggle.
+ * @return {Promise<string>} Label text.
+ */
+async function labelOf( toggle ) {
+	return ( await rowOf( toggle ).locator( '.wp-block-navigation-item__label' ).first().innerText() ).trim();
+}
+
+/**
  * Move the pointer to the bottom-left of the current viewport, clear of the
  * header. A fixed coordinate falls outside short viewports.
  *
@@ -59,7 +88,7 @@ test.describe( 'Mega menu', () => {
 
 		for ( let index = 0; index < count; index++ ) {
 			const toggle = toggles.nth( index );
-			const label = ( await toggle.innerText() ).trim();
+			const label = await labelOf( toggle );
 			const dropdownId = await toggle.getAttribute( 'aria-controls' );
 
 			expect(
@@ -74,7 +103,7 @@ test.describe( 'Mega menu', () => {
 				`dropdown #${ dropdownId } for "${ label }" is not in the DOM`
 			).toBeAttached();
 
-			await toggle.hover();
+			await rowOf( toggle ).hover();
 
 			await expect(
 				toggle,
@@ -107,7 +136,7 @@ test.describe( 'Mega menu', () => {
 		page,
 	} ) => {
 		const toggle = page.locator( MEGA_MENU_TOGGLE ).first();
-		const label = ( await toggle.innerText() ).trim();
+		const label = await labelOf( toggle );
 
 		await toggle.focus();
 
@@ -147,10 +176,10 @@ test.describe( 'Mega menu', () => {
 		const first = toggles.nth( 0 );
 		const second = toggles.nth( 1 );
 
-		await first.hover();
+		await rowOf( first ).hover();
 		await expect( first ).toHaveAttribute( 'aria-expanded', 'true' );
 
-		await second.hover();
+		await rowOf( second ).hover();
 
 		await expect(
 			first,
@@ -163,7 +192,7 @@ test.describe( 'Mega menu', () => {
 		const toggle = page.locator( MEGA_MENU_TOGGLE ).first();
 		const dropdownId = await toggle.getAttribute( 'aria-controls' );
 
-		await toggle.hover();
+		await rowOf( toggle ).hover();
 
 		const links = page.locator( `#${ dropdownId } a[href]` );
 

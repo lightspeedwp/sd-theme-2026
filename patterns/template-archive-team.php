@@ -150,11 +150,12 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 	 * photograph is decorative, so `alt=""`; and there is no `id`, because an
 	 * attachment ID cannot be right in two environments at once.
 	 *
-	 * `minHeight: 454` matches the sibling archive rather than live's measured
+	 * `minHeight: 400` matches the sibling archive rather than live's measured
 	 * 380px. Live runs 380px on *both* this page and the destinations archive,
-	 * and the theme already standardised its inner-page banners at 454 — the
-	 * style's own description records that. Keeping the two archives at one
-	 * height is the existing decision; this page is not the place to reopen it.
+	 * and the theme standardises its inner-page banners at one floor: 400px
+	 * since 2026-09-23, down from 454 (→ patterns/hero-page-banner.php, and the
+	 * style's own description). Keeping the two archives at one height is the
+	 * existing decision; this page is not the place to reopen it.
 	 *
 	 * The content group is flow layout, not constrained, so `alignwide` buys
 	 * the children the full 1520px rail instead of handing them back the
@@ -162,8 +163,8 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 	 * container.
 	 */
 	?>
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/11/header-about-us-new.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/11/header-about-us-new.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/11/header-about-us-new.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/11/header-about-us-new.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
