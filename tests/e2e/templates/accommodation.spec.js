@@ -92,7 +92,7 @@ describeHeroBanners( { test, expect }, [
 	{ name: 'single accommodation', path: ( routes ) => routes.post( 'accommodation' ) },
 	{ name: 'accommodation type archive', path: ( routes ) => routes.term( 'accommodation-type' ), strapline: true },
 	{ name: 'accommodation brand archive', path: ( routes ) => routes.term( 'accommodation-brand' ), strapline: true },
-	{ name: 'brands page', path: ( routes ) => envPath( routes, '/brands/' ), strapline: true },
+	{ name: 'brands page', path: ( routes ) => routes.pageTemplate( 'page-brands.html' ), strapline: true },
 ] );
 
 test.describe( 'Accommodation landing', () => {
@@ -164,11 +164,13 @@ test.describe( 'Accommodation list card', () => {
 		const cards = page.locator( CARD );
 		const count = await cards.count();
 		test.skip( 0 === count, `${ SPECIAL_ARCHIVE } renders no cards` );
+		let hasNoBadgeCard = false;
 
 		for ( let i = 0; i < count; i++ ) {
 			const badge = cards.nth( i ).locator( '.listing-card-list__badge--special' );
 
 			if ( ! ( await badge.count() ) ) {
+				hasNoBadgeCard = true;
 				continue;
 			}
 
@@ -178,6 +180,8 @@ test.describe( 'Accommodation list card', () => {
 				await expect( badge, 'an empty badge is showing as a bare square' ).toBeHidden();
 			}
 		}
+
+		expect( hasNoBadgeCard, 'every property in the probe archive shows a special badge' ).toBe( true );
 	} );
 } );
 
@@ -206,8 +210,11 @@ test.describe( 'Single accommodation', () => {
 
 test.describe( 'Brands', () => {
 	test( 'runs the logos three across and hides the section heading', async ( { page, visit, routes } ) => {
+		const target = routes.pageTemplate( 'page-brands.html' );
+		test.skip( ! target, 'No published page is assigned to page-brands.html' );
+
 		await page.setViewportSize( { width: 1280, height: 900 } );
-		await visit( envPath( routes, '/brands/' ) );
+		await visit( target );
 
 		await expect( page.locator( '#h-our-preferred-operators' ) ).toHaveCount( 0 );
 
@@ -238,12 +245,15 @@ test.describe( 'Filter flyout', () => {
 	 * came with it — the script marks the root only when `FWP.flyout` exists.
 	 *
 	 * @param {import('@playwright/test').Page} page Page.
-	 * @return {Promise<boolean>} Whether the flyout is available.
+	 * @return {Promise<{ available: boolean, ready: boolean }>} Flyout state.
 	 */
 	async function flyoutReady( page ) {
 		await page.waitForFunction( () => window.FWP && window.FWP.loaded, null, { timeout: 15000 } ).catch( () => {} );
 
-		return page.evaluate( () => document.documentElement.classList.contains( 'sd-has-filter-flyout' ) );
+		return page.evaluate( () => ( {
+			available: !! ( window.FWP && window.FWP.flyout ),
+			ready: document.documentElement.classList.contains( 'sd-has-filter-flyout' ),
+		} ) );
 	}
 
 	test( 'leaves the rail alone and hides the trigger on desktop @responsive', async ( { page, visit, routes } ) => {
@@ -268,7 +278,9 @@ test.describe( 'Filter flyout', () => {
 
 		await page.setViewportSize( { width: 390, height: 844 } );
 		await visit( target );
-		test.skip( ! ( await flyoutReady( page ) ), 'FacetWP Flyout is not active here' );
+		const flyout = await flyoutReady( page );
+		test.skip( ! flyout.available, 'FacetWP Flyout is not active here' );
+		expect( flyout.ready, 'The theme did not mark the FacetWP Flyout as ready' ).toBe( true );
 
 		const trigger = page.locator( '.sd-filters-toggle button' );
 		await expect( trigger ).toBeVisible();
