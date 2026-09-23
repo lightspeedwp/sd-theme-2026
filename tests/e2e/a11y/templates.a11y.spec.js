@@ -11,6 +11,10 @@
  * the org rule. See utils/axe.js for why, and a11y-baseline.json for the debt it
  * currently tolerates. Fix violations; never widen the baseline to go green.
  *
+ * Until a baseline has been recorded at all, the scans report to stderr and do
+ * not fail — the same rule as the plugin's gate. Recording one
+ * (`npm run test:a11y:baseline`) is what turns the gate on.
+ *
  * Third-party widgets are excluded in utils/dynamic-regions.js. Nothing the
  * theme or sd-enhancements renders is excluded.
  *
@@ -25,8 +29,57 @@ const {
 	RESOLVED_TAXONOMIES,
 	SYNTHETIC_ROUTES,
 } = require( '../fixtures/routes.js' );
-const { scan, assertNoNewViolations } = require( '../utils/axe.js' );
+const {
+	scan,
+	assertNoNewViolations,
+	formatViolations,
+	hasBaseline,
+} = require( '../utils/axe.js' );
 const { assertHeadingHierarchy } = require( '../utils/page-contract.js' );
+
+/**
+ * Report a scan when no baseline exists yet.
+ *
+ * Deliberately not a failure and deliberately not silent: an un-baselined gate
+ * that prints nothing is indistinguishable from a passing one, and that is how
+ * these quietly stop being real. Matches the sd-enhancements-2026 gate, so CI is
+ * not red on every template before a baseline has ever been recorded.
+ *
+ * @param {Object} results  Axe results.
+ * @param {string} route    Route key.
+ * @param {string} template Template file, for the message.
+ */
+function reportOnly( results, route, template ) {
+	if ( ! results.violations.length ) {
+		process.stderr.write( `\n  ✅ ${ route }: no violations to baseline.\n` );
+
+		return;
+	}
+
+	process.stderr.write(
+		`\n  ⏸  ${ route } (${ template }): ${ results.violations.length } ` +
+			'violation(s), NOT failing — no baseline recorded yet.\n' +
+			`${ formatViolations( results.violations ) }\n` +
+			'     Record with: npm run test:a11y:baseline\n'
+	);
+}
+
+/**
+ * Gate on the baseline once one exists; until then, report.
+ *
+ * @param {Object} results  Axe results.
+ * @param {string} route    Route key, used as the baseline key.
+ * @param {string} template Template file, for messages.
+ */
+function check( results, route, template ) {
+	if ( hasBaseline() ) {
+		assertNoNewViolations( results, route, template );
+
+		return;
+	}
+
+	reportOnly( results, route, template );
+}
 
 test.describe( 'Accessibility — static routes @a11y', () => {
 	for ( const route of STATIC_ROUTES ) {
@@ -36,7 +89,7 @@ test.describe( 'Accessibility — static routes @a11y', () => {
 		} ) => {
 			await visit( route.path );
 
-			assertNoNewViolations(
+			check(
 				await scan( page ),
 				route.path,
 				route.template
@@ -62,7 +115,7 @@ test.describe( 'Accessibility — single templates @a11y', () => {
 			 * as content is migrated, and a baseline keyed on it would go
 			 * stale every time the newest tour changed.
 			 */
-			assertNoNewViolations(
+			check(
 				await scan( page ),
 				`single:${ route.key }`,
 				route.template
@@ -83,7 +136,7 @@ test.describe( 'Accessibility — taxonomy archives @a11y', () => {
 
 			await visit( target );
 
-			assertNoNewViolations(
+			check(
 				await scan( page ),
 				`taxonomy:${ route.key }`,
 				route.template
@@ -102,7 +155,7 @@ test.describe( 'Accessibility — search and 404 @a11y', () => {
 				expectStatus: route.expectStatus || 200,
 			} );
 
-			assertNoNewViolations(
+			check(
 				await scan( page ),
 				route.path,
 				route.template

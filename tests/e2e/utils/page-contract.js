@@ -13,8 +13,13 @@ const { expect } = require( '@playwright/test' );
 
 /**
  * A rendered query-loop item.
+ *
+ * FacetWP renders its "nothing matched" message as an
+ * `<li class="facetwp-no-results">` inside the post template, so an empty
+ * search would otherwise count as one result.
  */
-const POST_ITEM = '.wp-block-post, .wp-block-post-template > li';
+const POST_ITEM =
+	'.wp-block-post, .wp-block-post-template > li:not(.facetwp-no-results)';
 
 /**
  * The main landmark.

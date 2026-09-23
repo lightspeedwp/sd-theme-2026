@@ -20,6 +20,14 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
+const { mainContent } = require( '../utils/page-contract.js' );
+
+/**
+ * What an enquiry control is called. SD's own label is "Send an Email" /
+ * "Send us an Email" — on live as well as dev — so `email` has to be in here;
+ * without it the only thing that ever matched was the header's "Contact Us".
+ */
+const ENQUIRY_LABEL = /enquir|contact|book|email/i;
 
 /**
  * Gravity Forms' own wrapper. There is no accessible handle for "the form
@@ -45,9 +53,15 @@ test.describe( 'Enquiry form', () => {
 		 * the question is whether a visitor on a tour page can start an
 		 * enquiry at all, which is the site's commercial function.
 		 */
-		const inPageForm = page.locator( GF_WRAPPER );
-		const trigger = page.getByRole( 'link', { name: /enquire|enquiry|contact/i } )
-			.or( page.getByRole( 'button', { name: /enquire|enquiry|contact/i } ) );
+		/**
+		 * Scoped to `main`. Page-wide, the header navigation's "Contact Us"
+		 * link satisfied this on every tour, so it could not fail.
+		 */
+		const main = mainContent( page );
+		const inPageForm = main.locator( GF_WRAPPER );
+		const trigger = main
+			.getByRole( 'link', { name: ENQUIRY_LABEL } )
+			.or( main.getByRole( 'button', { name: ENQUIRY_LABEL } ) );
 
 		const routesToEnquiry =
 			0 < ( await inPageForm.count() ) || 0 < ( await trigger.count() );
@@ -74,7 +88,7 @@ test.describe( 'Enquiry form', () => {
 				'a[aria-haspopup="dialog"][aria-controls]:not(.wp-block-navigation__responsive-container-open), ' +
 					'button[aria-haspopup="dialog"][aria-controls]:not(.wp-block-navigation__responsive-container-open)'
 			)
-			.filter( { hasText: /enquir|contact|book/i } )
+			.filter( { hasText: ENQUIRY_LABEL } )
 			.first();
 
 		test.skip(
@@ -140,14 +154,26 @@ test.describe( 'Enquiry form', () => {
 				'fields are not being enforced'
 		).toBe( true );
 
-		const invalidHtml5 = await form
-			.locator( 'input:invalid, textarea:invalid, select:invalid' )
-			.count();
-
-		expect(
-			0 < ( await validationMessages.count() ) || 0 < invalidHtml5,
-			'an empty submission produced no validation feedback at all'
-		).toBe( true );
+		/**
+		 * Polled, not read once. The form is `novalidate` and posts through
+		 * Gravity Forms' AJAX iframe, so the validation markup arrives some
+		 * time after the click — reading it immediately always sees none.
+		 */
+		await expect
+			.poll(
+				async () =>
+					0 < ( await validationMessages.count() ) ||
+					0 <
+						( await form
+							.locator( 'input:invalid, textarea:invalid, select:invalid' )
+							.count() ),
+				{
+					message:
+						'an empty submission produced no validation feedback at all',
+					timeout: 15 * 1000,
+				}
+			)
+			.toBe( true );
 	} );
 
 	test( 'the enquiry page leaks no integration credentials into the markup', async ( {

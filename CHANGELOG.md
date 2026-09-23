@@ -351,6 +351,36 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.github/reports/playwright-harness-2026-09-17.md` and listed in `tests/e2e/README.md`.
   No visual baselines are committed yet — generating them before those defects are fixed
   would bake in the broken state.
+- 🧪 **The Playwright harness extended to tablet, responsive, editor and parity checks.**
+  `playwright.config.js`, `package.json`, `.env.example`, `.gitignore`,
+  `tests/e2e/{auth.setup.js,editor,parity,responsive,forms,templates/page-variants.spec.js}`,
+  `tests/e2e/utils/{env.js,axe.js,parity.js}`, `.github/workflows/e2e.yml`.
+
+  The project matrix now follows the org breakpoints: `desktop` 1280, `tablet` 768×1024,
+  `mobile` at the Pixel 7 profile, 375×667, and an opt-in `wide` at 1920 (`SD_RUN_WIDE`).
+  `firefox` and `webkit` run the `@smoke` subset. `responsive` checks horizontal overflow at
+  all four widths, 44×44 header touch targets and 120%/150% text scaling. `editor` signs in
+  through a `setup` project and lists every theme template and part that a Site Editor
+  database override is shadowing — the documented trap, now measured instead of suspected.
+  `parity` (opt-in, `SD_RUN_PARITY`, one worker, read-only) checks that live's navigation
+  routes still resolve and that sampled pages keep their `h1` and substance.
+  `forms/enquiry.spec.js` stops at the submit boundary and never sends valid data, because
+  a real submission reaches Salesforce. `templates/page-variants.spec.js` covers the four
+  custom page templates and archive pagination. Credentials come from a gitignored `.env`
+  and the saved session never enters the repository.
+
+  The axe gate is now a baseline comparison, as the org rule requires, and it **reports
+  without failing until a baseline has been recorded** — the same rule as
+  `sd-enhancements-2026`. CI is `workflow_dispatch` only until the full test pass, and it
+  gains `tablet`, `responsive` and a secrets-gated `editor` job.
+
+  The 2026-09-23 shakedown against dev fixed eight test bugs before recording anything as a
+  defect. Among them: a "tour offers an enquiry route" check that passed on the header's
+  "Contact Us" link and could not fail, FacetWP's no-results `<li>` counted as a search
+  result, a Gravity Forms validation check read before the AJAX response arrived, and a
+  `serial` parity suite that hid the navigation check behind any content difference.
+  Current state on dev and the defect list, grouped by template:
+  `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
 

@@ -109,8 +109,16 @@ test.describe( 'Custom page templates', () => {
 		const title = await page.title();
 		expect( title.trim(), 'document title was suppressed too' ).not.toBe( '' );
 
+		/**
+		 * Only a title the template renders counts. Editors put a post-title
+		 * block inside the page's own content — on dev, "Why Book With Us"
+		 * carries one in its hero cover — and that is content, not the
+		 * template failing to suppress its own title.
+		 */
 		await expect(
-			mainContent( page ).locator( '.wp-block-post-title' ),
+			mainContent( page ).locator(
+				'.wp-block-post-title:not(.wp-block-post-content .wp-block-post-title)'
+			),
 			'page-no-title.html still renders a post-title block'
 		).toHaveCount( 0 );
 	} );

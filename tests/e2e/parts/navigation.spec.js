@@ -31,8 +31,8 @@ test.describe( 'Mega menu', () => {
 
 	/**
 	 * The interaction model, measured rather than assumed: the toggle opens on
-	 * hover and on focus, and Escape closes it while the toggle holds focus.
-	 * Click is deliberately not asserted — a synthetic click moves the pointer
+	 * hover and from the keyboard, and Escape closes it while the toggle holds
+	 * focus. A pointer click is deliberately not asserted — a synthetic click moves the pointer
 	 * first, so hover opens the menu and the click immediately toggles it shut.
 	 * That is Playwright's pointer behaviour, not a defect.
 	 */
@@ -84,7 +84,14 @@ test.describe( 'Mega menu', () => {
 		}
 	} );
 
-	test( 'a toggle opens on keyboard focus and closes on Escape', async ( {
+	/**
+	 * Two Ollie builds are in play. The local one opens on focus
+	 * (`data-wp-on--focus="actions.openMenuOnFocus"`), and pressing Enter
+	 * afterwards would toggle it straight back shut. Dev's has no focus handler
+	 * and opens on Enter, the WAI-ARIA disclosure pattern. So: focus, and press
+	 * Enter only if focus did not open it. Either way the keyboard must open it.
+	 */
+	test( 'a toggle opens from the keyboard and closes on Escape', async ( {
 		page,
 	} ) => {
 		const toggle = page.locator( MEGA_MENU_TOGGLE ).first();
@@ -92,9 +99,13 @@ test.describe( 'Mega menu', () => {
 
 		await toggle.focus();
 
+		if ( 'true' !== ( await toggle.getAttribute( 'aria-expanded' ) ) ) {
+			await page.keyboard.press( 'Enter' );
+		}
+
 		await expect(
 			toggle,
-			`"${ label }" did not open when it received focus`
+			`"${ label }" did not open from the keyboard (focus, then Enter)`
 		).toHaveAttribute( 'aria-expanded', 'true' );
 
 		await page.keyboard.press( 'Escape' );

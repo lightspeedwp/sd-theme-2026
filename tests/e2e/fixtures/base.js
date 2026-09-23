@@ -146,8 +146,17 @@ const test = base.test.extend( {
 				 * @param {string} file Template file, e.g. 'page-brands.html'.
 				 * @return {string|null} Path, or null when no page uses it.
 				 */
-				pageTemplate: ( file ) =>
-					( resolved.pageTemplates || {} )[ file ] || null,
+				pageTemplate: ( file ) => {
+					const map = resolved.pageTemplates || {};
+
+					/**
+					 * The REST API reports a block template by slug, with no
+					 * extension (`page-no-title`), and a legacy PHP template
+					 * by filename (`brands.php`). Accept the file name the
+					 * specs use and fall back to the bare slug.
+					 */
+					return map[ file ] || map[ file.replace( /\.html$/, '' ) ] || null;
+				},
 			} );
 		},
 		{ scope: 'worker' },

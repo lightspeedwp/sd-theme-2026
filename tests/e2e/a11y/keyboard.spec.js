@@ -95,16 +95,22 @@ test.describe( 'Keyboard', () => {
 		);
 
 		/**
-		 * Focus alone opens it — that is the `openMenuOnFocus` directive, and
-		 * it is what makes the menu usable by keyboard at all. Pressing Enter
-		 * afterwards would toggle it straight back shut.
+		 * Two Ollie builds are in play. The local one opens on focus (the
+		 * `openMenuOnFocus` directive), and pressing Enter afterwards would
+		 * toggle it straight back shut. Dev's has no focus handler and opens on
+		 * Enter, the WAI-ARIA disclosure pattern. So: focus, and press Enter
+		 * only if focus did not open it. Either way the keyboard must open it.
 		 */
 		await toggle.focus();
 		await expect( toggle ).toBeFocused();
 
+		if ( 'true' !== ( await toggle.getAttribute( 'aria-expanded' ) ) ) {
+			await page.keyboard.press( 'Enter' );
+		}
+
 		await expect(
 			toggle,
-			'the mega menu did not open when its toggle received focus'
+			'the mega menu did not open from the keyboard (focus, then Enter)'
 		).toHaveAttribute( 'aria-expanded', 'true' );
 
 		const dropdownId = await toggle.getAttribute( 'aria-controls' );

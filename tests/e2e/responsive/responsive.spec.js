@@ -36,8 +36,9 @@ const SAMPLE = [
 ];
 
 /**
- * The minimum touch target, from WCAG 2.2 AA (2.5.8 Target Size, Minimum) and
- * repeated in the org standard as 44×44.
+ * The minimum touch target: 44×44, the org standard's figure. That is WCAG
+ * 2.5.5 (Target Size, Enhanced — AAA). The AA criterion, 2.5.8 Target Size
+ * (Minimum), asks only for 24×24, so a control failing here can still pass AA.
  */
 const MIN_TOUCH_TARGET = 44;
 
@@ -134,7 +135,7 @@ test.describe( 'Touch targets', () => {
 		expect(
 			undersized,
 			`Controls below ${ MIN_TOUCH_TARGET }×${ MIN_TOUCH_TARGET }px at 375px wide ` +
-				'(WCAG 2.2 AA, 2.5.8 Target Size):\n  ' +
+				'(org standard; WCAG 2.5.5 Target Size, Enhanced):\n  ' +
 				undersized.join( '\n  ' )
 		).toEqual( [] );
 	} );

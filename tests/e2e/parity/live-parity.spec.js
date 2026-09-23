@@ -29,9 +29,11 @@ const {
 } = require( '../utils/parity.js' );
 
 /**
- * Serial: every test in here touches production.
+ * Not `serial`. Serial mode skips every test after the first failure, which hid
+ * the navigation check behind any content difference — and while the templates
+ * are unfinished there is always one. The project config (`workers: 1`,
+ * `fullyParallel: false`) already keeps production reads one at a time.
  */
-test.describe.configure( { mode: 'serial' } );
 
 test.describe( 'Live parity @parity', () => {
 	/**
@@ -39,9 +41,16 @@ test.describe( 'Live parity @parity', () => {
 	 */
 	let livePaths = [];
 
-	test( 'live is reachable and its navigation is readable', async ( {
-		browser,
-	} ) => {
+	/**
+	 * @type {number}
+	 */
+	let liveStatus = 0;
+
+	/**
+	 * Collected once per worker rather than inside the first test, so a failure
+	 * that restarts the worker does not leave the later tests with no sample.
+	 */
+	test.beforeAll( async ( { browser } ) => {
 		const context = await browser.newContext( { baseURL: LIVE_ORIGIN } );
 		const page = await context.newPage();
 
@@ -49,12 +58,20 @@ test.describe( 'Live parity @parity', () => {
 			waitUntil: 'domcontentloaded',
 		} );
 
+		liveStatus = response?.status() ?? 0;
+
+		if ( 200 === liveStatus ) {
+			livePaths = await navigationPaths( page, LIVE_ORIGIN );
+		}
+
+		await context.close();
+	} );
+
+	test( 'live is reachable and its navigation is readable', async () => {
 		expect(
-			response?.status(),
+			liveStatus,
 			`${ LIVE_ORIGIN } did not return 200 — parity cannot be measured`
 		).toBe( 200 );
-
-		livePaths = await navigationPaths( page, LIVE_ORIGIN );
 
 		expect(
 			livePaths.length,
@@ -65,8 +82,6 @@ test.describe( 'Live parity @parity', () => {
 		process.stderr.write(
 			`\n  Parity sample: ${ livePaths.length } paths from live navigation\n`
 		);
-
-		await context.close();
 	} );
 
 	test( 'every live navigation route still resolves on the rebuild', async ( {

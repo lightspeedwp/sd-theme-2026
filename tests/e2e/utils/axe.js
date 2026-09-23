@@ -126,6 +126,13 @@ function readBaseline() {
 }
 
 /**
+ * @return {boolean} True when a baseline has been recorded at all.
+ */
+function hasBaseline() {
+	return fs.existsSync( BASELINE_PATH );
+}
+
+/**
  * Collapse a scan to `{ ruleId: nodeCount }`, which is what the baseline stores.
  *
  * Node counts rather than a bare rule list, so fixing four of five contrast
@@ -251,6 +258,7 @@ module.exports = {
 	scan,
 	formatViolations,
 	assertNoNewViolations,
+	hasBaseline,
 	summarise,
 	readBaseline,
 	WCAG_TAGS,
