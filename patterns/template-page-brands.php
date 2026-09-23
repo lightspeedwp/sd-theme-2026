@@ -81,7 +81,7 @@
 	 * against `is-style-hero-banner`, why the content group is flow layout, and
 	 * why the media is addressed by its dev URL.
 	 *
-	 * 454px to match the accommodation archive, so the brands page reads as a
+	 * 400px to match the accommodation archive, so the brands page reads as a
 	 * sibling of it. The tagline is live's own — the single word "Accommodation"
 	 * above the title, which is the section this page belongs to.
 	 */

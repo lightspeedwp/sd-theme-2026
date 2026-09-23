@@ -150,11 +150,12 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 	 * photograph is decorative, so `alt=""`; and there is no `id`, because an
 	 * attachment ID cannot be right in two environments at once.
 	 *
-	 * `minHeight: 454` matches the sibling archive rather than live's measured
+	 * `minHeight: 400` matches the sibling archive rather than live's measured
 	 * 380px. Live runs 380px on *both* this page and the destinations archive,
-	 * and the theme already standardised its inner-page banners at 454 — the
-	 * style's own description records that. Keeping the two archives at one
-	 * height is the existing decision; this page is not the place to reopen it.
+	 * and the theme standardises its inner-page banners at one floor: 400px
+	 * since 2026-09-23, down from 454 (→ patterns/hero-page-banner.php, and the
+	 * style's own description). Keeping the two archives at one height is the
+	 * existing decision; this page is not the place to reopen it.
 	 *
 	 * The content group is flow layout, not constrained, so `alignwide` buys
 	 * the children the full 1520px rail instead of handing them back the

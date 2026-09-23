@@ -217,10 +217,11 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 	 * The banner. Live draws `banner-brands-1920x454.png` from the child
 	 * theme's `images/` at 380px on this page, where the accommodation archive
 	 * draws `accommodation-landing.jpg` at 454px. The archive's photograph and
-	 * height are used, so a type page reads as a child of the archive rather
-	 * than of the search engine — and it keeps the banner on a media-library
-	 * asset (attachment 51864, the `accommodation` block of `_lsx-to_settings`)
-	 * instead of a ported PNG.
+	 * the rebuild's archive height (400px since 2026-09-23 →
+	 * patterns/hero-page-banner.php) are used, so a type page reads as a child
+	 * of the archive rather than of the search engine — and it keeps the banner
+	 * on a media-library asset (attachment 51864, the `accommodation` block of
+	 * `_lsx-to_settings`) instead of a ported PNG.
 	 * → template-archive-destination.php for why `dimRatio: 100` is correct
 	 * against `is-style-hero-banner`, why the content group is flow layout, and
 	 * why the media is addressed by its dev URL.

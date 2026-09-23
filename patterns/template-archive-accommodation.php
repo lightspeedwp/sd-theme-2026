@@ -343,8 +343,10 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 	 * thirteenth featured term is a tick on a term and nothing here. There is no
 	 * term pagination block, and live pages nothing here either
 	 * (`disable_archive_pagination` is on in the `accommodation` settings).
-	 * Alphabetical by name, as the other two grids are; live's order is the
-	 * stored term order, which no block query exposes.
+	 * Alphabetical by name; live's order is the stored term order, which no
+	 * block query exposes. The tours archive's travel-style grid now orders by
+	 * term ID instead, because there live's order *is* term ID
+	 * (→ template-archive-tour.php, "Live's order: by term ID").
 	 *
 	 * ⚠️ `parents-only` and `custom-order` were tried on this query on dev and
 	 * are **inert**, so they are not carried here. Both are Tour Operator query
