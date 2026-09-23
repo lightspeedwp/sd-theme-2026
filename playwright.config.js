@@ -60,7 +60,20 @@ const runParity = 'true' === process.env.SD_RUN_PARITY;
  */
 const FUNCTIONAL = [ 'templates/**/*.spec.js', 'parts/**/*.spec.js', 'forms/**/*.spec.js' ];
 
-const chrome = devices[ 'Desktop Chrome' ];
+/**
+ * Chromium over HTTP/2, not HTTP/3.
+ *
+ * Dev sits behind Cloudflare, which advertises `h3` in `alt-svc`. Chromium
+ * takes it up, and on 2026-09-23 a desktop run logged twelve
+ * `net::ERR_QUIC_PROTOCOL_ERROR` resource failures on /contact/ — transport
+ * errors between the runner and the edge, which the console guard rightly
+ * fails on but which say nothing about the theme. A real browser falls back to
+ * HTTP/2 silently; this just makes the runner start there. Chromium-only:
+ * Firefox and WebKit do not accept the flag.
+ */
+const chromium = { launchOptions: { args: [ '--disable-quic' ] } };
+
+const chrome = { ...devices[ 'Desktop Chrome' ], ...chromium };
 
 module.exports = defineConfig( {
 	testDir: './tests/e2e',
@@ -168,7 +181,11 @@ module.exports = defineConfig( {
 			name: 'mobile',
 			testMatch: FUNCTIONAL,
 			grep: /@responsive/,
-			use: { ...devices[ 'Pixel 7' ], viewport: { width: 375, height: 667 } },
+			use: {
+				...devices[ 'Pixel 7' ],
+				...chromium,
+				viewport: { width: 375, height: 667 },
+			},
 		},
 		...( runWide
 			? [

@@ -117,6 +117,33 @@ function readResolvedRoutes() {
 
 const test = base.test.extend( {
 	/**
+	 * Read past the page cache, so the suite tests what the theme renders now.
+	 *
+	 * Dev runs Cache Enabler. On 2026-09-23 its cached copy of the homepage
+	 * still held the single-hero markup from before the phone and tablet
+	 * layouts shipped, while an uncached request returned the current three.
+	 * Four front-page specs failed against markup that no longer existed, and
+	 * their messages pointed at core-cover.css, which was correct.
+	 *
+	 * Cache Enabler bypasses any request carrying a `comment_author_*` cookie
+	 * (its default excluded-cookies rule). WordPress itself only reads
+	 * `comment_author_{COOKIEHASH}`, so this name is inert to everything else.
+	 * A cookie rather than a query string, so no URL a spec asserts on changes.
+	 *
+	 * A stale cache after a deploy is still a real problem, but it's the
+	 * deploy's to purge, not the theme suite's to report.
+	 */
+	bypassPageCache: [
+		async ( { context, baseURL }, use ) => {
+			await context.addCookies( [
+				{ name: 'comment_author_sd_e2e', value: '1', url: baseURL },
+			] );
+			await use();
+		},
+		{ auto: true },
+	],
+
+	/**
 	 * Routes resolved from the live site, plus lookup helpers.
 	 */
 	routes: [

@@ -54,3 +54,19 @@ html .is-layout-flex .wp-block-image {
 	object-fit: cover;
 	width: 100% !important;
 }
+
+/* Trustpilot links in the site header: a 44px hit area on 24px artwork.
+   At phone widths the logo and stars render 24px tall, under the 44px
+   touch-target floor the Playwright responsive suite enforces (org standard;
+   WCAG 2.5.5). 10px of block padding grows the link to 44px and the matching
+   negative margin keeps its laid-out box, so the header height doesn't move.
+   Literals, not spacing presets: `spacing|10` is fluid and is only 10px at
+   wide viewports, and the sum has to reach 44 at 375px.
+
+   Here and not in the `is-style-header` section style's `css` field because
+   the header renders two copies of the badge, one per Block Visibility
+   screen size, and only the desktop group carries that style. */
+header.wp-block-template-part .sd-trustpilot .wp-block-image a {
+	padding-block: 10px;
+	margin-block: -10px;
+}

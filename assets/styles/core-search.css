@@ -119,13 +119,17 @@
 }
 
 /* The trigger's box. Its colour, padding, border and hover/focus flip are
-   structured properties in header-search.json; this is only its shape. */
+   structured properties in header-search.json; this is only its shape.
+
+   `min-width: 44px` is the touch-target floor the Playwright responsive suite
+   enforces (org standard; WCAG 2.5.5). The 32px icon plus its padding came to
+   40px wide; the height already clears it via the nav-link band. */
 .wp-block-search.is-style-header-search .wp-block-search__button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	height: 100%;
-	min-width: 0;
+	min-width: 44px;
 	margin-inline-start: 0;
 	box-shadow: none;
 	transition: color 0.25s ease;
