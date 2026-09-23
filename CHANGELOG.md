@@ -226,6 +226,37 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 📱 **Mobile menu review: parent rows link to their pages, and the panel is
+  tidied.** LS-2014 (line 2, Header), found while on LS-2016.
+  `parts/mobile-menu.html`, `assets/styles/core-navigation.css`,
+  `assets/styles/core-columns.css`.
+
+  - **Parent rows link to their pages.** The panel's navigation goes from
+    `submenuVisibility: "click"` to `"hover"`. In click mode, core renders each
+    parent as a single `<button>`, so Destinations, Tours & Safaris,
+    Accommodation and About Us could open their lists but never reach their
+    own pages. In hover mode core renders the label as an `<a>` and a separate
+    toggle button for the chevron. The row is now a flex line: the link shrinks
+    to its label and the toggle fills the rest of the row. Tap the words to go
+    to the page; tap anywhere else on the row to open the dropdown. Core's
+    hover handlers ignore touch pointers, so a tap never opens a list by hover.
+    The pressed tint still spans the whole row.
+  - **No dividers in the closed menu.** The `is-style-separator-thin` between
+    the navigation and "Get in touch" is gone. So is the hairline under
+    Specials: it is the only top-level row that is a link rather than a
+    submenu, so it was the only row that picked up the variation's border.
+    Rows inside an open dropdown keep theirs.
+  - **Call us today.** The heading goes up two steps on the scale (font size
+    `100` → `300`). The heading and the numbers now sit in a vertical flex
+    group with a `spacing|20` gap. They were flush at 0px, because theme.json
+    gives every template part `margin-top: 0 !important`. The four numbers are
+    now `spacing|20` apart (were 0px), each label sits on its number with no
+    gap (was `spacing|5`), and the flags are 36px (were 28px). The part is
+    shared with the footer, the header dropdown and the safari-expert panel,
+    so these three are CSS scoped to `.sd-mobile-menu`, not changes to the part.
+  - **White logo.** Attachment 36261 (`2017/12/footer-logo.png`) replaces the
+    colour `footer-logo.svg` on the dark panel.
+
 - 📱 **Destination pages take the hero banner and its phone layout.** LS-2016
   (line 6, Destinations). `patterns/destination-banner.php`.
 
