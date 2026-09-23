@@ -201,6 +201,40 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 💄 **The destinations landing page: finalisation pass.** LS-2016 (line 6,
+  Destinations). `patterns/template-archive-destination.php`,
+  `patterns/trustpilot-score.php`.
+
+  **The banner is now the hero banner pattern, so it gets the phone layout.**
+  The archive banner uses `patterns/hero-page-banner.php`'s markup, with the
+  two changes that pattern allows for an archive: the landing's own photograph
+  instead of a featured image, and a typed-in `<h1>` instead of the post title.
+  Below 768px the photograph now shrinks to a strip and the title and
+  strapline sit on the warm-grey plate beneath it, as on live and on every
+  single. The page's old inline top and bottom padding is gone. The phone
+  layout could not override it, so it left a band of plate above the
+  photograph. On desktop the banner now takes the section style's padding.
+
+  **The destination tiles are 3:2 landscape, as live crops them**, not square.
+  The change applies to this page only. The shared tile,
+  `patterns/card-media-overlay.php`, also appears in the regions grid on
+  country pages and in the destinations list on team pages, and both stay
+  square. So the landing writes the tile out in full with the new crop, next
+  to a note to keep the two copies in step.
+
+  **The intro band's columns are 50/50**, not 55% and auto, so the safari
+  expert card uses its wide layout on desktop: the portrait beside the name
+  and the actions. That switch happens once the card has 576px, which a half
+  column gives it from a viewport of about 1240px up. Between 782px and about
+  1240px the card keeps its narrow layout.
+
+  **The Trustpilot badge in the expert card is easier to read.** "Excellent"
+  goes from font size 100 to 200. The TrustScore and the review count go from
+  the inherited neutral-700 to neutral-900, which matches the black badge live
+  uses in this spot. The badge only appears inside the expert card, so this
+  applies to every page that shows the card: the destination, tour and
+  accommodation singles and the tour archive, as well as this page.
+
 - 📱 **The homepage takes live's phone and tablet layouts.** LS-2030
   (line 20, responsive QA). `patterns/homepage-hero.php`,
   `patterns/homepage-main-content.php`, `patterns/homepage-dream-trip.php`,

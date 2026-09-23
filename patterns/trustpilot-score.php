@@ -2,7 +2,7 @@
 /**
  * Title: Trustpilot Score
  * Slug: sd-theme-2026/trustpilot-score
- * Description: The Trustpilot rating badge — the band word, the Trustpilot mark, the star tile and the TrustScore line. Reads the live score through the sd/trustpilot binding source; inherits its colours from whatever it is placed on.
+ * Description: The Trustpilot rating badge — the band word, the Trustpilot mark, the star tile and the TrustScore line. Reads the live score through the sd/trustpilot binding source; inherits its colours from whatever it is placed on, except the TrustScore line, which is pinned to neutral-900 for legibility.
  * Categories: sd-theme-2026/testimonial
  * Keywords: trustpilot, reviews, rating, score, stars, badge, trust
  * Viewport Width: 520
@@ -32,10 +32,21 @@
  *
  * ## One pattern, three placements, no colour variants
  *
- * The band word, the TrustScore line and the mark all take `currentColor`, and
- * nothing here sets a colour — so the badge inherits the ground it is placed on
- * and the live site's three `color=` variants collapse into one file. The only
- * asset with a fixed colour is the star tile, and that is deliberate: see below.
+ * The band word and the mark take `currentColor`, so the badge inherits the
+ * ground it is placed on and the live site's three `color=` variants collapse
+ * into one file. The star tile has a fixed colour, deliberately: see below.
+ *
+ * ⚠️ **The TrustScore and the review count are pinned to neutral-900** as of
+ * 2026-09-23, Zared's call for legibility. At font-size 100 (12px) the
+ * inherited neutral-700 read too faint on the expert panel's light grounds.
+ * The pin holds because patterns/safari-expert.php is this file's only
+ * consumer and every template it sits in puts it on a light ground. Live's
+ * expert-panel badge is its `color="black"` variant, so near-black is live's
+ * colour too. If the badge is ever placed on a dark ground, drop the two
+ * `textColor`s and set the colour at the placement instead.
+ *
+ * The band word went from font-size 100 to 200 in the same pass, so
+ * "Excellent" reads as the badge's headline rather than as small print.
  *
  * ## The star tile is Trustpilot's, and its colour is the rating
  *
@@ -77,8 +88,8 @@
 <div class="wp-block-group sd-trustpilot">
 
 	<?php /* The band word — Trustpilot's own vocabulary for the rating, so the plugin owns the bands. */ ?>
-	<!-- wp:paragraph {"metadata":{"name":"Rating word","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"wording"}}}},"className":"sd-trustpilot__wording","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"100"} -->
-	<p class="sd-trustpilot__wording has-100-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php echo esc_html_x( 'Excellent', 'Trustpilot rating band', 'sd-theme-2026' ); ?></p>
+	<!-- wp:paragraph {"metadata":{"name":"Rating word","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"wording"}}}},"className":"sd-trustpilot__wording","style":{"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}},"fontSize":"200"} -->
+	<p class="sd-trustpilot__wording has-200-font-size" style="font-weight:var(--wp--custom--font-weight--semi-bold)"><?php echo esc_html_x( 'Excellent', 'Trustpilot rating band', 'sd-theme-2026' ); ?></p>
 	<!-- /wp:paragraph -->
 
 	<?php /* The Trustpilot mark. Static — the file is a theme asset and the review URL is a constant — and the one link in the badge. */ ?>
@@ -100,12 +111,12 @@
 	 * cannot drop the one thing holding the words apart.
 	 */
 	?>
-	<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","fontSize":"100"} -->
-	<p class="sd-trustpilot__score has-100-font-size"></p>
+	<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","textColor":"neutral-900","fontSize":"100"} -->
+	<p class="sd-trustpilot__score has-neutral-900-color has-text-color has-100-font-size"></p>
 	<!-- /wp:paragraph -->
 
-	<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","fontSize":"100"} -->
-	<p class="sd-trustpilot__count has-100-font-size"></p>
+	<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","textColor":"neutral-900","fontSize":"100"} -->
+	<p class="sd-trustpilot__count has-neutral-900-color has-text-color has-100-font-size"></p>
 	<!-- /wp:paragraph -->
 
 </div>

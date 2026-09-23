@@ -2,7 +2,7 @@
 /**
  * Title: Template: Destinations Archive
  * Slug: sd-theme-2026/template-archive-destination
- * Description: The destinations landing page — the photographic banner, the warm intro band pairing the archive description with the safari expert panel, the grid of square destination tiles, and the value and contact bands that close the page.
+ * Description: The destinations landing page — the photographic banner, the warm intro band pairing the archive description with the safari expert panel, the grid of 3:2 landscape destination tiles, and the value and contact bands that close the page.
  * Categories: hidden
  * Keywords: destinations, archive, landing, tour operator, grid, banner
  * Block Types: core/query
@@ -34,8 +34,8 @@
  * the way its sibling archive does. Both are `require`d from their own patterns.
  *
  * The banner's type sits on the floor of the photograph rather than centred in
- * it, and the tiles are square rather than 3/4 portrait — both Zared's, both
- * 2026-08-28. Each is noted at the block it applies to.
+ * it (Zared's, 2026-08-28), and the tiles are 3:2 landscape, as live crops them
+ * (Zared's, 2026-09-23). Each is noted at the block it applies to.
  *
  * Live renders the archive description and the archive `<h1>` **twice** — once
  * in `.archive-header-wrapper` above `#primary` and again inside the intro
@@ -52,18 +52,19 @@
  * nothing on this page — the rotation is the homepage's, and it is PHP picking
  * one of eleven images per request rather than a JS slider. Nothing to port.
  *
- * ## Why the banner is composed here and not `hero-page-banner`
+ * ## Why the banner is inlined rather than `require`d
  *
- * They are two different devices on live, not one device used twice.
- * `patterns/hero-page-banner.php` ports the About tree's
- * `lsx-blocks/lsx-banner-box` — centred, uppercase, heading face, and driven by
- * the page's featured image. This is LSX Banners' `#lsx-banner .page-banner`,
- * which every archive gets: left-aligned, the Joe Hand script face at 60px, a
- * sentence-case strapline under it (custom.css:366-386), and an image that comes
- * from a per-archive setting rather than a post. An archive has no featured
- * image, so `useFeaturedImage` — the reason that pattern is one file rather than
- * four — has nothing to read. Keeping them separate preserves a distinction
- * live actually makes.
+ * Until 2026-09-22 `patterns/hero-page-banner.php` ported a different device —
+ * the About tree's centred `lsx-blocks/lsx-banner-box` — and this file recorded
+ * why the two were kept apart. That pattern is now live's `#lsx-banner
+ * .page-banner`, the same device this banner is, and as of 2026-09-23 this
+ * banner is its markup (see the note at the block).
+ *
+ * It is still written out here rather than `require`d, because the pattern
+ * reads the post: `useFeaturedImage` and `core/post-title`. An archive has no
+ * post of its own, so both would resolve against the first destination in the
+ * main query. The archive keeps its per-archive photograph and an authored
+ * `<h1>`, which is the one substitution the pattern's own notes allow for.
  */
 
 /*
@@ -119,10 +120,27 @@
 	 *
 	 * No `id` attribute — that is a per-install value and cannot be right in two
 	 * environments at once. → AGENTS.md, "never hardcode … an uploads URL"
+	 *
+	 * ## On patterns/hero-page-banner.php since 2026-09-23
+	 *
+	 * This is that pattern's markup, with the two substitutions it names for an
+	 * archive: the photograph is this archive's `url` rather than
+	 * `useFeaturedImage`, and the title is an authored `core/heading` rather
+	 * than `core/post-title` — outside the loop a post title would print the
+	 * first destination's name. Everything else is the pattern's, so the phone
+	 * stack in `style.css` ("Hero banner — the phone stack") applies here as it
+	 * does on every single: below 768px the photograph shrinks to a 3:1 strip
+	 * and the title and strapline drop onto a neutral-200 plate beneath it.
+	 *
+	 * **No inline padding**, which is what the adoption actually changed. The
+	 * cover used to carry spacing-40 top and bottom as a `style` attribute; the
+	 * pattern leaves padding to `is-style-hero-banner` (spacing-90) so the phone
+	 * stack's `padding: 0` can reset it. An inline value outranks that media
+	 * query and left a strip of plate above the photograph on phones.
 	 */
 	?>
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":454,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner"},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:454px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/destination-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<?php
 		/*
@@ -155,7 +173,7 @@
 			 * the post type's label. Authored, so the two cannot drift.
 			 */
 			?>
-			<!-- wp:heading {"level":1,"className":"is-style-script-accent","fontSize":"800"} -->
+			<!-- wp:heading {"level":1,"metadata":{"name":"Title"},"className":"is-style-script-accent","fontSize":"800"} -->
 			<h1 class="wp-block-heading is-style-script-accent has-800-font-size"><?php esc_html_e( 'Destinations', 'sd-theme-2026' ); ?></h1>
 			<!-- /wp:heading -->
 
@@ -173,7 +191,7 @@
 			 * it heads nothing.
 			 */
 			?>
-			<!-- wp:paragraph {"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
+			<!-- wp:paragraph {"metadata":{"name":"Strapline"},"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
 			<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--medium)"><?php esc_html_e( 'Your African adventure starts here!', 'sd-theme-2026' ); ?></p>
 			<!-- /wp:paragraph -->
 
@@ -205,13 +223,18 @@
 	 * spacing-70; close enough that adding a fourth padding scale to match it
 	 * exactly would cost more than it buys.
 	 *
-	 * The columns were live's `col-md-7` / `col-md-5` — 58.33% and 41.67%. They
-	 * are **55% and auto** as of 2026-08-28, Zared's split: only the
-	 * description is pinned, and the expert column takes what is left. The
-	 * restructured panel has a two-up action row inside it now (see
-	 * patterns/safari-expert.php) and a fixed 41.67% was cramping it; letting
-	 * the column size itself lets `flex-basis: 0%` grow into the remainder
-	 * instead.
+	 * The columns were live's `col-md-7` / `col-md-5` — 58.33% and 41.67% —
+	 * then 55% and auto on 2026-08-28. They are **50/50** as of 2026-09-23,
+	 * Zared's split, so that the expert card lays out in its wide arrangement
+	 * (portrait spanning both rows, name and actions stacked beside it) on
+	 * desktop rather than falling back to the narrow one.
+	 *
+	 * That arrangement is a container query on `.sd-expert` at 36rem (576px,
+	 * assets/styles/core-group.css), so the split is what decides it. Against
+	 * the 1340px wide rail less the spacing-50 gap, a half column is ~645px at
+	 * a 1440px viewport and ~595px at 1280px — both clear of 576px. Below
+	 * ~1240px it drops back to the narrow card, and below 782px core stacks the
+	 * columns and the card has the full width again.
 	 *
 	 * The vertical alignment is split the way live splits it: the row is
 	 * `align-items: center`, and the description overrides itself back to the
@@ -225,8 +248,8 @@
 		<!-- wp:columns {"verticalAlignment":"top","align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
 		<div class="wp-block-columns alignwide are-vertically-aligned-top">
 
-			<!-- wp:column {"verticalAlignment":"top","width":"55%"} -->
-			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:55%">
+			<!-- wp:column {"verticalAlignment":"top","width":"50%"} -->
+			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:50%">
 				<?php
 				/*
 				 * The description. `is-style-archive-intro` carries the italic
@@ -254,8 +277,8 @@
 			</div>
 			<!-- /wp:column -->
 
-			<!-- wp:column {"verticalAlignment":"center"} -->
-			<div class="wp-block-column is-vertically-aligned-center">
+			<!-- wp:column {"verticalAlignment":"center","width":"50%"} -->
+			<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:50%">
 				<?php
 				/*
 				 * The safari expert panel — portrait, name, Call Us, email
@@ -294,18 +317,27 @@
 	 * TO's, and hardcoding `orderBy` here would override it rather than
 	 * reproduce it.
 	 *
-	 * The tiles are `patterns/card-media-overlay.php`, taken unmodified. **They
-	 * are square as of 2026-08-28** — `aspectRatio: "1"` on the featured image,
-	 * Zared's change, replacing the 3/4 portrait crop the tile had carried.
+	 * The tiles are `patterns/card-media-overlay.php` written out inline, with
+	 * one difference. **They are 3:2 landscape as of 2026-09-23**:
+	 * `aspectRatio: "3/2"` on the featured image, Zared's change. That is live's
+	 * shape for this archive. Live flattens the destination tiles alone
+	 * (`min-height: 240px; max-height: 240px` at custom.css:1461, against
+	 * ~360px columns, which is 3:2), while tours and accommodation run
+	 * near-square.
 	 *
-	 * That supersedes the decision recorded here on 2026-08-26, which was to
-	 * keep one tile shape across every archive rather than reproduce live's
-	 * per-archive flattening (`min-height: 240px; max-height: 240px` at
-	 * custom.css:1461, against ~360px columns — 3:2 where tours and
-	 * accommodation run near-square). The shape is still uniform, it is simply
-	 * a different shape: the term twin `patterns/card-media-overlay-term.php`
-	 * that the tour archive uses went square in the same pass, so the two
-	 * archives still share one tile design.
+	 * History: 3/4 portrait until 2026-08-28, then square until 2026-09-23.
+	 *
+	 * Inline rather than `require`d because the card is shared, and its other
+	 * two callers stay square: the regions grid on the country single
+	 * (patterns/destination-regions.php) and the destinations on the team
+	 * single (patterns/template-single-team.php). Only the landing changed
+	 * shape, so only the landing carries the new crop.
+	 *
+	 * ⚠️ **Keep this copy in step with patterns/card-media-overlay.php.**
+	 * Everything but `aspectRatio` is identical: the section style, the
+	 * `sdLinkTo`, the scrim padding and the shadowed title. That file's notes
+	 * explain each of them. If the other callers go 3:2 too, put the ratio on
+	 * the card and go back to the `require`.
 	 *
 	 * The crop is a block attribute and not CSS, deliberately: `aspectRatio`
 	 * serialises as an inline style on the `<img>`, where a `css`-field height
@@ -319,10 +351,6 @@
 	 * paginates today, but an archive that returned zero rows would now render
 	 * an empty band rather than a message. Restoring the fallback is four lines
 	 * and no visual change at any non-empty count.
-	 *
-	 * `require`, not a nested `wp:pattern` reference — a pattern referencing
-	 * another pattern resolves under WP-CLI and is silently dropped on
-	 * front-end render. → .claude/skills/wp-pattern-runtime-pitfalls
 	 */
 	?>
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Destinations"},"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
@@ -332,7 +360,17 @@
 		<div class="wp-block-query alignwide">
 
 			<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
-				<?php require __DIR__ . '/card-media-overlay.php'; ?>
+				<!-- wp:group {"metadata":{"name":"Media Overlay Card"},"className":"is-style-media-overlay-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"},"sdLinkTo":"post"} -->
+				<div class="wp-block-group is-style-media-overlay-card">
+					<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"3/2"} /-->
+
+					<!-- wp:group {"metadata":{"name":"Scrim"},"className":"media-overlay-card__scrim","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-group media-overlay-card__scrim" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+						<!-- wp:post-title {"level":3,"isLink":true,"className":"is-style-shadow-text","style":{"typography":{"textAlign":"center"}}} /-->
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:group -->
 			<!-- /wp:post-template -->
 
 		</div>
