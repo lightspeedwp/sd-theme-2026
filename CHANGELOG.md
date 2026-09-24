@@ -12,8 +12,9 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   banner contract on the blog landing and on the category, tag and author
   archives, then checks: the landing's "Blog" `h1`, its "Tales from our trails"
   `h2` and category shelf, newest-first rows and a working page 2; each archive
-  titled with its bare name, linking back to the blog, with every row belonging
-  to what was queried; the single post with no banner and no featured image,
+  titled with its bare name, linking back to the blog in uppercase at font
+  size 200 with a leading arrow, with every row belonging to what was queried
+  and every row title at font size 400; the single post with no banner and no featured image,
   date and author above the `h1`, categories below; a related shelf of 1–15
   posts that all share a category and never include the post being read; and
   the pager. `tests/e2e/utils/hero-banner.js` now accepts an async
@@ -348,6 +349,25 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 🔙 **The category archive's "Back To Blog" link matches live.** LS-2022.
+  Re-measured on `/category/rwanda/` 2026-09-24: live's `a.back-to-blog` is
+  uppercase at 15px with FontAwesome's long left arrow in front, all from the
+  LSX parent theme, which the first port never read.
+  `styles/blocks/paragraph/back-link.json` now sets `uppercase`,
+  `assets/styles/core-paragraph.css` draws Phosphor `ArrowLeft` in place of
+  the chevron, and `patterns/template-category.php` drops the link from font
+  size 300 to 200. The colour stays brand-600: live's `#cc7f16` is about 3.2:1
+  on this ground, below AA at 15px. The pattern's breadcrumb note no longer
+  claims Yoast prints the Blog crumb; `sd-enhancements` now does. The
+  empty-state line no longer says "in this category", because the pattern
+  also serves tags and authors.
+
+- 🔠 **Blog row titles are 22px, as live's are.** LS-2022.
+  `styles/sections/cards/blog-card-wide.json` sets the title to font size 400
+  (20–24px). It was 500 (32px), which was never measured. Live draws 22px on
+  both `/blog/` and every category archive, so the landing and the archives
+  change together.
 
 - 🖼️ **The blog banners are the hero banner, phone stack included.** LS-2022.
   `patterns/template-home-blog.php` and `patterns/template-category.php` drop

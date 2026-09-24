@@ -195,8 +195,11 @@
 
 	<?php
 	/*
-	 * The breadcrumb bar, directly under the banner. Yoast prints
-	 * Home › Blog › Rwanda here, which is live's trail unchanged.
+	 * The breadcrumb bar, directly under the banner — Home, Blog, then the
+	 * term or author, as live reads. Yoast alone prints Home / Rwanda; the Blog
+	 * crumb came from the LSX parent theme on live and is now
+	 * `sd-enhancements`' `Breadcrumbs::add_blog_crumb()`, because the trail's
+	 * content is behaviour. The separator is Yoast's sitewide setting.
 	 */
 	require __DIR__ . '/breadcrumbs.php';
 	?>
@@ -206,17 +209,27 @@
 	 * Live's `.archive-category-title` — a single link back to the blog
 	 * landing, sitting above the first row with nothing else in the band.
 	 *
-	 * It is a paragraph link rather than a `core/button`: live's anchor carries
-	 * no styling of its own in either stylesheet, so it renders as body-scale
-	 * link text, and the one plain-link button variation this theme has
+	 * It is a paragraph link rather than a `core/button`: live's anchor is a bare
+	 * link, and the one plain-link button variation this theme has
 	 * (`is-style-link-plain`) paints its label `base` for use over a scrim.
-	 * brand-600 is the link colour the post byline already uses on this ground.
+	 *
+	 * Re-measured 2026-09-24 on `/category/rwanda/`: 15px, uppercase, a long
+	 * left arrow in front, `#cc7f16`. The case and the arrow come from the LSX
+	 * *parent* theme (lsx/assets/css/scss/templates/_archive.scss:54-66), which
+	 * the first port did not read — it found nothing in the child theme and
+	 * carried a sentence-case label at font size 300. Now font size 200 (14-16px)
+	 * and `is-style-back-link` carries the case and the arrow.
+	 *
+	 * The colour is brand-600, not live's brand-500, and that is deliberate:
+	 * `#cc7f16` on this light ground is ~3.2:1, under AA for text this size.
+	 * brand-600 is the link colour the post byline already uses here for the
+	 * same reason.
 	 *
 	 * `home_url( '/blog/' )` inline is the theme's idiom for a known page —
 	 * patterns/homepage-main-content.php and patterns/header.php do the same.
 	 *
-	 * `is-style-back-link` puts a left chevron in front of the label, added
-	 * 2026-09-16. It is a masked pseudo-element on the anchor rather than a
+	 * `is-style-back-link` puts the arrow in front of the label. It is a masked
+	 * pseudo-element on the anchor rather than a
 	 * character or an `<img>`: it inherits `currentColor`, so the hover state
 	 * carries it without a second rule, and its `content` is empty — the shape
 	 * is a mask — so the link's accessible name stays "Back To Blog".
@@ -235,8 +248,8 @@
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Back To Blog"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"0"}}},"layout":{"type":"constrained"}} -->
 	<section class="wp-block-group alignfull is-style-light-page-section" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:0">
 
-		<!-- wp:paragraph {"align":"wide","className":"is-style-back-link","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"300"} -->
-		<p class="alignwide is-style-back-link has-brand-600-color has-text-color has-link-color has-300-font-size"><a href="<?php echo esc_url( home_url( '/blog/' ) ); ?>"><?php esc_html_e( 'Back To Blog', 'sd-theme-2026' ); ?></a></p>
+		<!-- wp:paragraph {"align":"wide","className":"is-style-back-link","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"200"} -->
+		<p class="alignwide is-style-back-link has-brand-600-color has-text-color has-link-color has-200-font-size"><a href="<?php echo esc_url( home_url( '/blog/' ) ); ?>"><?php esc_html_e( 'Back To Blog', 'sd-theme-2026' ); ?></a></p>
 		<!-- /wp:paragraph -->
 
 	</section>
@@ -276,7 +289,7 @@
 
 			<!-- wp:query-no-results -->
 				<!-- wp:paragraph {"style":{"typography":{"textAlign":"center"}}} -->
-				<p class="has-text-align-center"><?php esc_html_e( 'No stories in this category yet, check back in regularly as we post often.', 'sd-theme-2026' ); ?></p>
+				<p class="has-text-align-center"><?php esc_html_e( 'No stories here yet, check back in regularly as we post often.', 'sd-theme-2026' ); ?></p>
 				<!-- /wp:paragraph -->
 			<!-- /wp:query-no-results -->
 

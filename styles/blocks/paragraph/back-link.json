@@ -4,8 +4,11 @@
 	"title": "Back Link",
 	"slug": "back-link",
 	"blockTypes": [ "core/paragraph" ],
-	"description": "A paragraph whose link is preceded by a left chevron — the \"Back To Blog\" link that opens the blog category archive, live's `.archive-category-title a.back-to-blog`. Live styles that anchor as plain body-scale link text and this keeps it there; the chevron is the one thing added, so the link reads as a way back rather than as another link in the page. Colour and font size stay on the block. The `css` field holds the anchor's layout, so the editor lays the chevron out too; the chevron itself is in assets/styles/core-paragraph.css, because a `css` field mangles `content: \"\"` and drops the rule containing it. It is a pseudo-element painted with `currentColor` whose `content` is empty — the shape is a mask — so it never enters the link's accessible name, and the hover colour carries it with no second rule.",
+	"description": "A paragraph whose link is an uppercase label preceded by a long left arrow — the \"Back To Blog\" link that opens the blog archives, live's `.archive-category-title a.back-to-blog`. Re-measured on live's `/category/rwanda/` 2026-09-24: the anchor computes `text-transform: uppercase` at 15px with a FontAwesome `fa-long-arrow-left` in front of it, from the LSX parent theme (lsx/assets/css/scss/templates/_archive.scss:54-66). The first port read only the child theme's stylesheet, found nothing there, and carried a sentence-case label with a chevron. The case is held here; colour and font size stay on the block. The `css` field holds the anchor's layout, so the editor lays the arrow out too; the arrow itself is in assets/styles/core-paragraph.css, because a `css` field mangles `content: \"\"` and drops the rule containing it. It is a pseudo-element painted with `currentColor` whose `content` is empty — the shape is a mask — so it never enters the link's accessible name, and the hover colour carries it with no second rule.",
 	"styles": {
+		"typography": {
+			"textTransform": "uppercase"
+		},
 		"css": "& a { display: inline-flex; align-items: center; gap: 0.4em; }"
 	}
 }
