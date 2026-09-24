@@ -33,6 +33,11 @@
  * Tour Operator archives carry; → `template-archive-destination.php` for why
  * each of those is what it is.
  *
+ * Since 2026-09-23 it carries **no padding of its own**, as the accommodation
+ * and specials banners do: `is-style-hero-banner` sets it, and an inline
+ * `style` would outrank the phone stack in `style.css` — the 3:1 strip over
+ * the neutral-200 plate with the title under it in brand-500.
+ *
  * The heading is "Search" and the standfirst is Zared's copy, 2026-09-17. The
  * searched-for phrase is deliberately *not* in the `h1`: `core/query-title`
  * with `type: search` renders "Search results for …", which reads as a system
@@ -126,8 +131,8 @@
 <!-- wp:group {"tagName":"main","metadata":{"name":"Search Results"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
 <main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-search-tc-faq-1920x454.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-search-tc-faq-1920x454.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-search-tc-faq-1920x454.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-search-tc-faq-1920x454.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
@@ -183,20 +188,6 @@
 
 				<?php
 				/*
-				 * The phone trigger for the filter flyout — the note is on
-				 * patterns/template-taxonomy-accommodation-type.php.
-				 */
-				?>
-				<!-- wp:buttons {"metadata":{"name":"Filters Trigger"},"className":"sd-filters-toggle facetwp-flyout-open","layout":{"type":"flex","justifyContent":"stretch"}} -->
-				<div class="wp-block-buttons sd-filters-toggle facetwp-flyout-open">
-					<!-- wp:button {"tagName":"button","width":100} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100"><button type="button" class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Filters', 'sd-theme-2026' ); ?></button></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
-
-				<?php
-				/*
 				 * The keyword box. `core/search`, not a FacetWP search facet — see
 				 * §3 at the head of this file for why, and why it is nonetheless
 				 * drawn as the accommodation rail's facet field.
@@ -210,9 +201,32 @@
 				 *
 				 * No heading, so the fold script leaves it alone — its section test
 				 * requires one, and this control must never be foldable away.
+				 *
+				 * ⚠️ **It stays on screen on phones, and it comes before the
+				 * trigger for that reason.** Below 782px the rail collapses to the
+				 * "Filters" button, and FacetWP Flyout carries only *facets* into its
+				 * panel — a `core/search` is not one — so without an exception the
+				 * keyword box would vanish on a phone with nowhere to reappear.
+				 * `assets/styles/facetwp-facets.css` ("Filter flyout") exempts
+				 * `.wp-block-search` from the collapse, and putting it first keeps
+				 * the phone order the desktop order: change the words, then refine.
 				 */
 				?>
 				<!-- wp:search {"label":"<?php echo esc_attr_x( 'Search', 'search form label', 'sd-theme-2026' ); ?>","showLabel":false,"placeholder":"<?php echo esc_attr_x( 'Search the site…', 'search form placeholder', 'sd-theme-2026' ); ?>","buttonText":"<?php echo esc_attr_x( 'Search', 'search form button', 'sd-theme-2026' ); ?>","buttonPosition":"button-inside","buttonUseIcon":true} /-->
+
+				<?php
+				/*
+				 * The phone trigger for the filter flyout — the note is on
+				 * patterns/template-taxonomy-accommodation-type.php.
+				 */
+				?>
+				<!-- wp:buttons {"metadata":{"name":"Filters Trigger"},"className":"sd-filters-toggle facetwp-flyout-open","layout":{"type":"flex","justifyContent":"stretch"}} -->
+				<div class="wp-block-buttons sd-filters-toggle facetwp-flyout-open">
+					<!-- wp:button {"tagName":"button","width":100} -->
+					<div class="wp-block-button has-custom-width wp-block-button__width-100"><button type="button" class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Filters', 'sd-theme-2026' ); ?></button></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
 
 				<!-- wp:heading {"level":2,"fontSize":"400","anchor":"h-refine-by"} -->
 				<h2 class="wp-block-heading has-400-font-size" id="h-refine-by"><?php esc_html_e( 'Refine by', 'sd-theme-2026' ); ?></h2>

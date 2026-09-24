@@ -166,6 +166,12 @@ const test = base.test.extend( {
 				term: ( key ) => resolved.terms[ key ] || null,
 
 				/**
+				 * @param {string} key Generic archive key.
+				 * @return {string|null} Archive path, or null when absent.
+				 */
+				archive: ( key ) => ( resolved.archives || {} )[ key ] || null,
+
+				/**
 				 * A page assigned to a custom page template, resolved at
 				 * start-up — these templates render nowhere until a page
 				 * opts into them, so there is no fixed URL.

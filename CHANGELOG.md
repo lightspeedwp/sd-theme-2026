@@ -8,6 +8,13 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✅ **`tests/e2e/templates/search-and-archive.spec.js`.** LS-2024, LS-2022.
+  Runs the shared hero banner contract (`utils/hero-banner.js`) on the search
+  results and a tag archive; checks the archive's `h1` is the unprefixed
+  archive title, that the archive carries the rail, trigger and loop but no
+  keyword box, results toolbar, count or sort; and that the search page's
+  keyword box stays on screen above the Filters button on phones while the
+  panel carries only the Content Type facet.
 - ✅ **`tests/e2e/templates/static-pages.spec.js`.** LS-2015. Runs the shared
   hero banner contract (`utils/hero-banner.js`) on About Us, its three children
   and Contact Us, and checks each page: the page title as the banner's only
@@ -347,6 +354,27 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 🔎 **Search results: the hero banner, phone stack included.** LS-2024.
+  `patterns/template-page-search.php` drops the banner's inline spacing-40
+  padding, as the accommodation and specials banners did, so
+  `is-style-hero-banner` sets it and the phone stack in `style.css` applies.
+
+- 📱 **The search page's keyword box survives the phone filter collapse.**
+  LS-2024. FacetWP Flyout moves facets into its panel and nothing else, so the
+  rail's `core/search` field vanished below 782px with nowhere to reappear.
+  `assets/styles/facetwp-facets.css` exempts `.wp-block-search` from the
+  collapse, and the pattern moves the field ahead of the Filters trigger so it
+  sits above the button on phones. Rails whose keyword box is a FacetWP search
+  facet are unchanged — the panel carries those.
+
+- 🗂️ **All archives use the search results layout.** LS-2022 (Zared's call).
+  `patterns/template-page-archive.php`, used by `archive.html` and `tag.html`,
+  is now the search page less its keyword box, result count and sort: the same
+  hero banner and strapline with `core/query-title` (no prefix) as the `h1`,
+  the breadcrumb strip, the Content Type rail with the Filters flyout trigger,
+  the `card-search-result.php` rows on an inherited FacetWP-enabled loop, and
+  the `pager_` facet. Replaces the plain heading, term description and
+  three-across blog card grid.
 - 🖼️ **The static pages take their banner from the template.** LS-2015.
   `patterns/template-page-full.php`, `patterns/hero-page-banner.php`,
   `theme.json`, `style.css`, `PATTERNS.md`.

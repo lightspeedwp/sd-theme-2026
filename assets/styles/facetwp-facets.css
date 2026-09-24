@@ -1134,7 +1134,18 @@
    (0,4,0), and the trap noted at the head of this file means a facet wrapper
    may carry its own. A hidden rail has to stay hidden whatever state the
    folds are in, so the collapse is `!important` rather than a specificity
-   race; so is the trigger's reveal, for symmetry with it. */
+   race; so is the trigger's reveal, for symmetry with it.
+
+   ## The one child the collapse spares: `core/search`
+
+   The add-on moves facets into its panel and nothing else, so anything in the
+   rail that is not a facet has nowhere to go once the rail collapses. The site
+   search results page puts a `core/search` keyword box at the head of its rail
+   (patterns/template-page-search.php, §3) — the field that carries the current
+   phrase and re-runs the search — and hiding it would leave a phone reader no
+   way to change the words short of the header. So it stays, above the button.
+   Every other rail's keyword box is a FacetWP `search` facet, which the panel
+   does carry, and those collapse as before. */
 .sd-search-filters > .sd-filters-toggle {
 	display: none !important;
 }
@@ -1144,7 +1155,7 @@
 		display: flex !important;
 	}
 
-	.sd-has-filter-flyout .wp-block-group.sd-search-filters > :not(.sd-filters-toggle) {
+	.sd-has-filter-flyout .wp-block-group.sd-search-filters > :not(.sd-filters-toggle):not(.wp-block-search) {
 		display: none !important;
 	}
 }
