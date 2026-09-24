@@ -21,16 +21,17 @@
    Gravity Forms' submits get the same step so the site's buttons read as one
    set.
 
-   ⚠️ Bold alone does not bring the submits to AA. They are 14px, set by
-   Orbital's `--gf-ctrl-btn-font-size`, which is under the large-text floor, so
-   3.17:1 still fails there. Matching the block buttons' 19px would pass, but
-   that is a size change and has not been decided.
+   ⚠️ Bold alone does not bring the submits to AA. On the site-wide
+   `buttonPrimaryBackgroundColor` of brand-500, the label stays under the
+   large-text floor, so the pairing needs a darker foreground as well.
+   `contrast` is 6.61:1 on brand-500 and still 4.65:1 on the brand-600 hover,
+   so it clears both states without resizing the control.
 
-   Orbital declares the property on `.gform-theme--api, .gform-theme--framework`
-   at (0,1,0). The two-class selector here is (0,2,0), so it wins whichever
-   sheet prints first. Measured on dev 2026-09-24: the submit's computed weight
-   moves from 500 to 700. Orbital animates `transition: all`, so a reading
-   taken immediately after load can land mid-transition. */
+   Orbital declares the button tokens on `.gform-theme--api,
+   .gform-theme--framework` at (0,1,0). The two-class selectors here are
+   (0,2,0), so they win whichever sheet prints first. */
+.gform-theme.gform-theme--api,
 .gform-theme.gform-theme--framework {
+	--gf-ctrl-btn-color-primary: var(--wp--preset--color--contrast);
 	--gf-ctrl-btn-font-weight: var(--wp--custom--font-weight--bold);
 }
