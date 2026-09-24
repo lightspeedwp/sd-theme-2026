@@ -133,6 +133,12 @@
 	 * so every render fell through to the authored copy anyway, and the other
 	 * four Tour Operator landing pages all author theirs directly. Matching
 	 * them is the point: one composition, edited in one place.
+	 *
+	 * The hero banner — `patterns/hero-page-banner.php` — authored inline, as
+	 * every archive does, because an archive has no featured image to read.
+	 * Since 2026-09-23 it carries no padding of its own: `is-style-hero-banner`
+	 * sets it, and an inline `style` would outrank the phone stack in
+	 * `style.css`. `minHeight` stays at the 360px floor with the pattern.
 	 */
 	?>
 	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/banner-specials-1920x454.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->

@@ -8,6 +8,15 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✅ **`tests/e2e/templates/specials.spec.js`.** LS-2021. Runs the shared
+  hero banner contract (`tests/e2e/utils/hero-banner.js`) on `/specials/`, and checks the
+  offer bands: at most four to a page with one `h2` each, a unique
+  `special-{slug}` anchor on every band that a `/specials/#…` link scrolls to,
+  the 540px floor with the photograph filling the band, the 460px panel
+  alternating edge, bands with no gap between them, the 90% centred panel on
+  phones, and every Book Special button opening the one `#to-modal-modal-special`
+  dialog.
+
 - 📱 **The filter rail collapses to a "Filters" button on phones.** LS-2024
   (line 14, Search and Filtering), raised during LS-2017.
   `assets/js/filter-flyout.js`, `inc/facetwp.php`,
@@ -325,6 +334,11 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 🖼️ **The Specials banner is the hero banner, phone stack included.**
+  LS-2021. `patterns/template-archive-special.php` drops its inline spacing-40
+  padding, as the accommodation banners did, so `is-style-hero-banner` sets the
+  padding and the phone stack in `style.css` applies.
 
 - 📐 **Hero banner floor 400 → 360px, everywhere.** LS-2017 (Zared's call).
   `patterns/hero-page-banner.php`, `styles/sections/hero-banner.json` and every
