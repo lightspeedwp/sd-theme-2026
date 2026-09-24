@@ -160,7 +160,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
   Header, at 1280px: exactly one band rendered, and it sticks; the logo sits
   wholly inside the band; the Call Us pop-out has a zero radius and no rule
-  between rows (skips where menu 65909 is absent, i.e. local). At 390px: exactly
+  between rows. At 390px: exactly
   one band rendered, and it scrolls away; the logo fits; the search opens under
   the bar, inside the viewport, with no horizontal scroll, takes focus, and
   returns it on Escape. In the mobile menu panel: no search field, four flags
@@ -173,9 +173,9 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   failing hover shipped. The new `contrast.js` resolves palette slugs through the
   browser, so the specs never hardcode a hex value.
 
-  Run against local, where these changes live: 23 passed, 1 skipped (the Call Us
-  check; menu 65909 does not exist locally). On dev they will fail until this
-  branch deploys and the overrides below are reset. That is expected.
+  Run against local, where these changes live: 23 passed, 1 skipped (the mobile
+  menu check; menu 65877 does not exist locally). On dev they will fail until
+  this branch deploys and the overrides below are reset. That is expected.
 
 - ✅ **`tests/e2e/templates/front-page.spec.js`.** LS-2031 (line 21, QA).
   Five checks on the homepage's per-screen-size swaps, run at phone, tablet
@@ -4364,8 +4364,8 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **The header's Call Us disclosure is an Ollie dropdown, not a `core/accordion`.** Zared's
   call, taken from ATI Holidays where the same widget is built this way: it opens on hover,
   and the pop-out is the plugin's own construction rather than an in-flow accordion panel
-  argued out of the flow with `!important`. `patterns/header.php` now carries a
-  `core/navigation` (`ref` 65909, `overlayMenu: "never"`, `ariaLabel: "Call us"`) holding one
+  argued out of the flow with `!important`. `patterns/header.php` now carries an
+  uncontrolled `core/navigation` (`overlayMenu: "never"`, `ariaLabel: "Call us"`) holding one
   `ollie/mega-menu` whose `menuSlug` is the `dropdown-call-us` template part — the same one
   file the footer and the safari expert panel read, so the four numbers still cannot drift.
 
