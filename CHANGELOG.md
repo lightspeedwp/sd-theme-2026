@@ -370,6 +370,31 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 🅱️ **Buttons are bold, so white on brand-500 passes as large text.**
+  LS-2015. `theme.json`, `styles/blocks/button/accent-cta.json`,
+  `styles/blocks/button/outline-light.json`, `inc/gravityforms.php` (new),
+  `assets/styles/gravityforms-form.css` (new), `functions.php`.
+
+  White on brand-500 is 3.17:1, and the button labels were 19px semi-bold.
+  Axe counts only 700 as bold, so it treated them as normal text needing
+  4.5:1. At bold they are large text, which needs 3:1, and they pass. The
+  brand orange is unchanged. `styles.elements.button` and the core Fill and
+  Outline variations go from `font-weight|semi-bold` to `|bold`, as do Accent
+  CTA and Outline Light. Plain Link is left alone, because it is a text link
+  with no button plate.
+
+  Gravity Forms' submits take the same step through Orbital's
+  `--gf-ctrl-btn-font-weight`, in a new module attached to `gravityforms/form`.
+  Their computed weight on dev goes from 500 to 700. ⚠️ They are 14px, under
+  the large-text floor, so they still fail contrast at 3.17:1.
+
+- ☎️ **The header's Call Us Today rests on brand-600.** LS-2015.
+  `patterns/header.php`, `assets/styles/ollie-mega-menu.css`. Brand-500 on the
+  header's ground was 2.91:1 at 19px bold, under the 3:1 that large text needs.
+  Brand-600 is 4.15:1. The phone icon beside it moves with it, because an icon
+  needs 3:1 too. The trigger's hover goes one step darker, to brand-700,
+  because hovering to brand-600 would now change nothing.
+
 - 🔎 **Search results: the hero banner, phone stack included.** LS-2024.
   `patterns/template-page-search.php` drops the banner's inline spacing-40
   padding, as the accommodation and specials banners did, so

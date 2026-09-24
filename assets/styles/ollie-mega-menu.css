@@ -364,10 +364,14 @@
 /* The trigger
    ---------------------------------------------------------------------------
    Zared asked for the treatment the enquiry button beside it uses rather than
-   core's underline: `styles.elements.button` hovers brand-500 to **brand-600**
-   over `0.25s ease-in-out`, so the trigger darkens on the same token and the
-   same curve as the button it sits next to. The transition itself is in the
+   core's underline: a one-step darken over `0.25s ease-in-out`, on the same
+   curve as the button it sits next to. The transition itself is in the
    variation JSON; only the two states need to be here.
+
+   The trigger rests on **brand-600**, not the button's brand-500 (2026-09-24):
+   brand-500 on the header's ground measured 2.91:1 at 19px bold, under the 3:1
+   that large text needs, and brand-600 is 4.15:1. So the hover is the next
+   step down, **brand-700**. Hovering to brand-600 would now change nothing.
 
    `:focus-visible` gets it too, so a keyboard user sees the same change on top
    of the focus outline.
@@ -376,7 +380,7 @@
    darkens with the label for free — as the accordion's hand-drawn caret did. */
 .is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:hover,
 .is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:focus-visible {
-	color: var(--wp--preset--color--brand-600);
+	color: var(--wp--preset--color--brand-700);
 }
 
 /* Rows

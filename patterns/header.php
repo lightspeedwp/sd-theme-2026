@@ -151,11 +151,11 @@
  */
 ?>
 <!-- wp:group {"metadata":{"name":"Call Us"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
-<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","iconColor":"brand-500","width":"24px"} -->
-<div class="wp-block-outermost-icon-block"><div class="icon-container has-brand-500-color" style="width:24px;transform:rotate(0deg) scaleX(1) scaleY(1)"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M231.88,175.08A56.26,56.26,0,0,1,176,224C96.6,224,32,159.4,32,80A56.26,56.26,0,0,1,80.92,24.12a16,16,0,0,1,16.62,9.52l21.12,47.15,0,.12A16,16,0,0,1,117.39,96c-.18.27-.37.52-.57.77L96,121.45c7.49,15.22,23.41,31,38.83,38.51l24.34-20.71a8.12,8.12,0,0,1,.75-.56,16,16,0,0,1,15.17-1.4l.13.06,47.11,21.11A16,16,0,0,1,231.88,175.08Z"></path></svg></div></div>
+<div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","iconColor":"brand-600","width":"24px"} -->
+<div class="wp-block-outermost-icon-block"><div class="icon-container has-brand-600-color" style="width:24px;transform:rotate(0deg) scaleX(1) scaleY(1)"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M231.88,175.08A56.26,56.26,0,0,1,176,224C96.6,224,32,159.4,32,80A56.26,56.26,0,0,1,80.92,24.12a16,16,0,0,1,16.62,9.52l21.12,47.15,0,.12A16,16,0,0,1,117.39,96c-.18.27-.37.52-.57.77L96,121.45c7.49,15.22,23.41,31,38.83,38.51l24.34-20.71a8.12,8.12,0,0,1,.75-.56,16,16,0,0,1,15.17-1.4l.13.06,47.11,21.11A16,16,0,0,1,231.88,175.08Z"></path></svg></div></div>
 <!-- /wp:outermost/icon-block -->
 
-<!-- wp:navigation {"ref":65909,"textColor":"brand-500","overlayMenu":"never","className":"is-style-call-us-navigation","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--bold)","fontStyle":"normal"},"spacing":{"blockGap":"0"}},"fontSize":"300","ariaLabel":"<?php esc_attr_e( 'Call us', 'sd-theme-2026' ); ?>"} /--></div>
+<!-- wp:navigation {"ref":65909,"textColor":"brand-600","overlayMenu":"never","className":"is-style-call-us-navigation","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--bold)","fontStyle":"normal"},"spacing":{"blockGap":"0"}},"fontSize":"300","ariaLabel":"<?php esc_attr_e( 'Call us', 'sd-theme-2026' ); ?>"} /--></div>
 <!-- /wp:group -->
 
 <!-- wp:buttons {"className":"sd-header__cta","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"stretch"}} -->
