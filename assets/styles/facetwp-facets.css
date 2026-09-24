@@ -1093,3 +1093,165 @@
 		transition-duration: 1ms;
 	}
 }
+
+
+/* Filter flyout — the rail as a button and an off-canvas panel on phones
+   ---------------------------------------------
+   Added 2026-09-23. Live collapses its filter rail on Bootstrap's `xs` into a
+   full-width "Filters" `.btn` (lsx-search's `.facetwp-filters-button`) that
+   slides the facets in from the left over a translucent fog, headed by a dark
+   "Close Filters ×" bar. This rebuild does the same with the FacetWP Flyout
+   add-on: assets/js/filter-flyout.js wires it, and everything visual is here.
+
+   | Element        | Live (sd-lsx-child custom.css, lsx-search.css) | Here |
+   |----------------|------------------------------------------------|------|
+   | Trigger        | `.btn.btn-block` — `#cc7f16`, hover `#bf5c17`, heading face 18px/600 uppercase, radius 0 | a `core/button` at width 100, which theme.json's button element already styles as exactly that |
+   | Panel          | `#f6f6f6`, 15px, from the left, full height    | `neutral-200`, `spacing|20`, the add-on's slide |
+   | Close bar      | `#41382e`, white, right-aligned, 20px          | `primary-600`, `base`, `spacing|30` |
+   | Fog            | `rgba(0,0,0,.2)`                               | `contrast` at 0.2 |
+
+   ## Why 781px and not a Block Visibility control
+
+   The swap has to happen exactly where core stacks `core/columns` — below
+   782px (wp-includes/blocks/columns/style.css) — because that is when the rail
+   stops being a sidebar and becomes a block of facets pushing the results off
+   the first screen. Block Visibility's screen sizes are one global setting,
+   and they differ between installs (`large` is 1200px locally, 992px on dev),
+   so neither of its breakpoints lands on 782. This is a layout coupling, not a
+   show/hide choice, which is the case the Block Visibility rule leaves to CSS.
+
+   ## Why every mobile rule waits for `.sd-has-filter-flyout`
+
+   The script sets it only once `FWP.flyout` exists. Without the add-on, or
+   without JavaScript, the rail stays as it is at every width and the trigger
+   never shows, so the filters can never end up behind a button that does
+   nothing.
+
+   ## The two `!important`s
+
+   The collapse has to beat every `display` the fold contract sets on the
+   rail's children above — `.sd-filters-collapsible .sd-facet-fold …` reaches
+   (0,4,0), and the trap noted at the head of this file means a facet wrapper
+   may carry its own. A hidden rail has to stay hidden whatever state the
+   folds are in, so the collapse is `!important` rather than a specificity
+   race; so is the trigger's reveal, for symmetry with it. */
+.sd-search-filters > .sd-filters-toggle {
+	display: none !important;
+}
+
+@media (max-width: 781px) {
+	.sd-has-filter-flyout .wp-block-group.sd-search-filters > .sd-filters-toggle {
+		display: flex !important;
+	}
+
+	.sd-has-filter-flyout .wp-block-group.sd-search-filters > :not(.sd-filters-toggle) {
+		display: none !important;
+	}
+}
+
+/* The panel. A flex column so the close bar sizes to its content and the
+   facets scroll beneath it — the add-on assumes a 40px bar and subtracts it
+   from the scroll area's height, which the taller close bar would overflow. */
+.facetwp-flyout {
+	display: flex;
+	flex-direction: column;
+	/* The add-on never sets `left`, so the fixed panel sat at its static
+	   position and any offset left a strip of it on screen while closed —
+	   caught in the harness at 390px. Logical, so RTL pins to the right. */
+	inset-inline-start: 0;
+	inline-size: min(300px, 85vw);
+	border-inline-end: 0;
+	background-color: var(--wp--preset--color--neutral-200);
+	color: var(--wp--preset--color--neutral-700);
+}
+
+.facetwp-flyout:focus {
+	outline: none;
+}
+
+.facetwp-flyout .facetwp-flyout-wrap {
+	position: static;
+	flex: 1 1 auto;
+	block-size: auto;
+	min-block-size: 0;
+	overflow-y: auto;
+}
+
+.facetwp-flyout .facetwp-flyout-content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--30);
+	padding: var(--wp--preset--spacing--20);
+}
+
+/* The facet heading — the rail's own facet heading, measured in the table at
+   the head of this file: the heading face at 400 in neutral-700, sentence
+   case. The add-on prints it as a bare `<h3>`. */
+.facetwp-flyout .flyout-row h3 {
+	margin: 0 0 var(--wp--preset--spacing--10);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--400);
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+	line-height: var(--wp--custom--line-height--heading);
+	text-transform: none;
+	color: var(--wp--preset--color--neutral-700);
+}
+
+.facetwp-flyout .flyout-row.facetwp-hidden {
+	display: none;
+}
+
+/* The close bar — live's `.ssm-close-btn`. A real button now (the script
+   replaces the add-on's `<div>x</div>`), so the UA button chrome is reset. */
+.facetwp-flyout .facetwp-flyout-close {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--wp--preset--spacing--10);
+	inline-size: 100%;
+	margin: 0;
+	padding: var(--wp--preset--spacing--30);
+	border: 0;
+	border-radius: 0;
+	background-color: var(--wp--preset--color--primary-600);
+	color: var(--wp--preset--color--base);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--300);
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+	line-height: var(--wp--custom--line-height--button);
+	letter-spacing: var(--wp--custom--letter-spacing--narrow);
+	text-align: end;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.facetwp-flyout .facetwp-flyout-close:hover {
+	background-color: var(--wp--preset--color--primary-700);
+}
+
+.facetwp-flyout .facetwp-flyout-close:focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--accent-500);
+	outline-offset: calc(var(--wp--custom--border-width--200) * -2);
+}
+
+.facetwp-flyout .facetwp-flyout-close__icon {
+	font-size: var(--wp--preset--font-size--500);
+	line-height: 1;
+}
+
+.facetwp-flyout-fog {
+	background-color: var(--wp--preset--color--contrast);
+	opacity: 0.2;
+}
+
+/* The page behind a modal panel does not scroll. */
+.sd-filter-flyout-is-open body {
+	overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.facetwp-flyout {
+		transition-duration: 1ms;
+	}
+}

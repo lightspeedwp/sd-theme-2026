@@ -67,7 +67,7 @@ async function resolvePreset( page, property, variable ) {
 test.describe( 'Destination banner', () => {
 	for ( const route of DESTINATION_ROUTES ) {
 		test.describe( route.name, () => {
-			test( 'is the hero banner: one h1, no strapline, 400px floor on desktop @responsive', async ( {
+			test( 'is the hero banner: one h1, no strapline, 360px floor on desktop @responsive', async ( {
 				page,
 				visit,
 				routes,
@@ -103,8 +103,8 @@ test.describe( 'Destination banner', () => {
 				).toHaveCount( 0 );
 
 				const height = ( await banner.boundingBox() ).height;
-				expect( height, 'the banner is below its 400px floor' ).toBeGreaterThanOrEqual( 399 );
-				expect( height, 'the banner is still on the old 454px floor' ).toBeLessThan( 453 );
+				expect( height, 'the banner is below its 360px floor' ).toBeGreaterThanOrEqual( 359 );
+				expect( height, 'the banner is still on the old 400px floor' ).toBeLessThan( 399 );
 			} );
 
 			test( 'fills the band with the photograph on desktop @responsive', async ( {

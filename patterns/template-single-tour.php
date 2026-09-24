@@ -110,7 +110,7 @@
 	 * spacing-40 padding written inline. Those four are gone, and with them the
 	 * reason the phone layout never reached this page — the inline padding
 	 * outranked the stack's reset and left a band of plate above the
-	 * photograph. It now carries the hero pattern's 400px floor, `dimRatio: 100`
+	 * photograph. It now carries the hero pattern's 360px floor, `dimRatio: 100`
 	 * against the section style's scrim, and no inline padding, so the phone
 	 * stack in `style.css` ("Hero banner — the phone stack") applies here as it
 	 * does on every destination page: below 768px the photograph shrinks to a
@@ -119,7 +119,7 @@
 	 *
 	 * The comment this replaced recorded live's `min-height: 38rem` (380px at
 	 * live's 10px root, custom.css:324) as "608px"; that was the rem read
-	 * against a 16px root. The theme-wide floor is now 400px, closer to live's
+	 * against a 16px root. The theme-wide floor is now 360px (2026-09-23), just under live's
 	 * 380 — see the note in the hero pattern.
 	 *
 	 * ## The two substitutions, the same ones the destination banner makes
@@ -142,8 +142,8 @@
 	 * other banner in the theme uses.
 	 */
 	?>
-	<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">

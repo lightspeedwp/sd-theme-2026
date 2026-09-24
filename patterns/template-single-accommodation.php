@@ -126,12 +126,24 @@
 
 	<?php
 	/*
-	 * The banner.
+	 * The banner — `patterns/hero-page-banner.php`, configured for
+	 * accommodation, block for block the single tour's banner without the
+	 * strapline.
 	 *
-	 * The same device as the other two singles, at the same 360px floor, so all
-	 * three Tour Operator singles open identically: `is-style-hero-banner` owns
-	 * the ground, the scrim and the type colours, and only the composition is
-	 * here.
+	 * ## Since 2026-09-23 this is the hero banner, phone stack included
+	 *
+	 * It was its own cover: `dimRatio: 0`, `isDark: false` and spacing-40
+	 * padding written inline. Those three are gone — the inline padding
+	 * outranked the phone stack's reset in `style.css` ("Hero banner — the
+	 * phone stack"), so below 768px the page kept a band of plate above the
+	 * photograph. It now carries `dimRatio: 100` against the section style's
+	 * scrim and no inline padding, and the stack applies here as on every
+	 * other banner: a 3:1 strip of photograph, the title on the neutral-200
+	 * plate beneath it.
+	 *
+	 * **360px is the floor for every hero banner as of 2026-09-23** (Zared's
+	 * call — this page's 360 read best, and the 400 the tours pass set came
+	 * down to meet it). → the note in the hero pattern.
 	 *
 	 * The image is the accommodation's banner image. Tour Operator's
 	 * `Bindings::render_banner_block()` (class-bindings.php:1144) swaps a
@@ -159,13 +171,13 @@
 	 * instead of being re-clamped to the content measure.
 	 */
 	?>
-	<!-- wp:cover {"useFeaturedImage":true,"dimRatio":0,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","isDark":false,"align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull is-light has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"useFeaturedImage":true,"dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","tagName":"section","metadata":{"name":"Banner","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"banner_image_id"}}}},"className":"is-style-hero-banner","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
 
-		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
+		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
 
-			<!-- wp:post-title {"level":1,"metadata":{"name":"Accommodation Title"},"className":"is-style-script-accent","fontSize":"800"} /-->
+			<!-- wp:post-title {"level":1,"metadata":{"name":"Title"},"className":"is-style-script-accent","fontSize":"800"} /-->
 
 		</div>
 		<!-- /wp:group -->
@@ -358,13 +370,24 @@
 						 * reference would not render. The heading sits inside
 						 * the wrapper because live gates it on the rating alone.
 						 *
+						 * **The stars sit under the label, aligned left** — live's
+						 * `.centered-rating` is a block `h3` over a run of stars
+						 * (custom.css:2676), so the group is a vertical flex.
+						 * Live centres the pair; this starts them at the left
+						 * edge (Zared's call, 2026-09-23). It
+						 * was a wrapping row until 2026-09-23, which put the
+						 * stars beside the label wherever the box was wide
+						 * enough. The empty `<p>` the parser leaves in front of
+						 * `.rating-stars` is hidden in core-group.css so it
+						 * does not add a second gap to the column.
+						 *
 						 * An `h2`: the banner title is the page's `h1` and the
 						 * summary band carries no heading of its own — live's
 						 * "Summary" `<h2>` is `hidden-lg` and never shown on the
 						 * desktop page this was measured from.
 						 */
 						?>
-						<!-- wp:group {"metadata":{"name":"Rating"},"className":"lsx-rating-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
+						<!-- wp:group {"metadata":{"name":"Rating"},"className":"lsx-rating-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} -->
 						<div class="wp-block-group lsx-rating-wrapper">
 
 							<!-- wp:heading {"textAlign":"center","level":2,"metadata":{"name":"Rating Label"},"style":{"typography":{"textTransform":"uppercase","letterSpacing":"var:custom|letter-spacing|heading"}},"fontSize":"300"} -->

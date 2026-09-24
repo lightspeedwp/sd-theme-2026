@@ -73,7 +73,7 @@
  * archive was the outlier at `semi-bold` until 2026-09-23.)
  *
  * **The banner is the hero banner, phone stack included, since 2026-09-23** —
- * the 400px floor and no inline padding, so `style.css` ("Hero banner — the
+ * the 360px floor and no inline padding, so `style.css` ("Hero banner — the
  * phone stack") takes over below 768px exactly as it does on the tours
  * archive: a 3:1 strip of photograph, the title and standfirst on the
  * neutral-200 plate beneath it. The spacing-40 padding the cover used to write
@@ -168,8 +168,8 @@
 <!-- wp:group {"tagName":"main","metadata":{"name":"Travel Style Results"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
 <main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/09/tour-search-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/09/tour-search-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/09/tour-search-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/09/tour-search-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
@@ -231,6 +231,20 @@
 
 			<!-- wp:group {"tagName":"aside","metadata":{"name":"Filter Rail"},"className":"sd-search-filters","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"default"}} -->
 			<aside class="wp-block-group sd-search-filters">
+
+				<?php
+				/*
+				 * The phone trigger for the filter flyout — the note is on
+				 * patterns/template-taxonomy-accommodation-type.php.
+				 */
+				?>
+				<!-- wp:buttons {"metadata":{"name":"Filters Trigger"},"className":"sd-filters-toggle facetwp-flyout-open","layout":{"type":"flex","justifyContent":"stretch"}} -->
+				<div class="wp-block-buttons sd-filters-toggle facetwp-flyout-open">
+					<!-- wp:button {"tagName":"button","width":100} -->
+					<div class="wp-block-button has-custom-width wp-block-button__width-100"><button type="button" class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Filters', 'sd-theme-2026' ); ?></button></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
 
 				<?php
 				/*

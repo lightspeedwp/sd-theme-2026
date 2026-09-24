@@ -4,7 +4,7 @@
 	"title": "Hero Banner",
 	"slug": "hero-banner",
 	"blockTypes": [ "core/cover", "core/group" ],
-	"description": "The page banner: a full-bleed image roughly 680px tall on the homepage and 400px on inner pages (454px until 2026-09-23), with the title block sitting left of centre on the content measure. The live pairing is a Joe Hand script line over an uppercase heading-face subtitle, both in base — see the Script Accent and Section Title heading styles. There is no scrim: the photograph runs at full brightness, which is what live does on every inner page (sd-lsx-child/assets/css/custom.css sets `body:not(.home) … .page-banner-image:after { background-color: transparent }`, leaving only the homepage dimmed). The scrim was neutral-900 at 45% until 2026-09-10; to bring one back, put the alpha back into the color-mix() in the css field below — it is the single source of it, which is why every banner pattern sets dimRatio 100. Positioning of the inner text block stays with the pattern; this style owns the ground, the scrim and the type colours.\n\n⚠️ This style describes the banner from 768px up only. Below 768px live unstacks it — the photograph shrinks to a strip and the title and tagline drop onto an opaque neutral-200 plate underneath it in brand-500 and neutral-700 (custom.css:324-360, measured at 390px on 2026-09-22). That second layout cannot live here: `@media` does not survive a `css` field, it compiles to a dead selector — measured on WP 7.0 and written up in styles/blocks/search/header-search.json. It is the `@media (max-width: 767px)` block in the theme's style.css, under “Hero banner — the phone stack”, and every rule there is written to outrank the `:where()` wrapper around this file.",
+	"description": "The page banner: a full-bleed image roughly 680px tall on the homepage and 360px on inner pages (454px, then briefly 400px, until 2026-09-23), with the title block sitting left of centre on the content measure. The live pairing is a Joe Hand script line over an uppercase heading-face subtitle, both in base — see the Script Accent and Section Title heading styles. There is no scrim: the photograph runs at full brightness, which is what live does on every inner page (sd-lsx-child/assets/css/custom.css sets `body:not(.home) … .page-banner-image:after { background-color: transparent }`, leaving only the homepage dimmed). The scrim was neutral-900 at 45% until 2026-09-10; to bring one back, put the alpha back into the color-mix() in the css field below — it is the single source of it, which is why every banner pattern sets dimRatio 100. Positioning of the inner text block stays with the pattern; this style owns the ground, the scrim and the type colours.\n\n⚠️ This style describes the banner from 768px up only. Below 768px live unstacks it — the photograph shrinks to a strip and the title and tagline drop onto an opaque neutral-200 plate underneath it in brand-500 and neutral-700 (custom.css:324-360, measured at 390px on 2026-09-22). That second layout cannot live here: `@media` does not survive a `css` field, it compiles to a dead selector — measured on WP 7.0 and written up in styles/blocks/search/header-search.json. It is the `@media (max-width: 767px)` block in the theme's style.css, under “Hero banner — the phone stack”, and every rule there is written to outrank the `:where()` wrapper around this file.",
 	"styles": {
 		"color": {
 			"text": "var:preset|color|base"
@@ -13,7 +13,7 @@
 			"padding": {
 				"top": "var:preset|spacing|90",
 				"right": "var:preset|spacing|20",
-				"bottom": "var:preset|spacing|90",
+				"bottom": "var:preset|spacing|50",
 				"left": "var:preset|spacing|20"
 			}
 		},
@@ -34,6 +34,6 @@
 				}
 			}
 		},
-		"css": "& { position: relative; min-height: 400px; display: flex; align-items: center; } & > .wp-block-cover__background, & > .wp-block-group__inner-container { z-index: 1; } & .wp-block-cover__background { background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 0%, transparent) !important; }"
+		"css": "& { position: relative; min-height: 360px; display: flex; align-items: center; } & > .wp-block-cover__background, & > .wp-block-group__inner-container { z-index: 1; } & .wp-block-cover__background { background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 0%, transparent) !important; }"
 	}
 }

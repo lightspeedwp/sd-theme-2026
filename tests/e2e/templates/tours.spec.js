@@ -9,7 +9,7 @@
  *   - `taxonomy-travel-style` → patterns/template-taxonomy-travel-style.php
  *
  * **The banner** on all three is the hero banner since 2026-09-23, the
- * destinations banner's device: a 400px floor (down from 454) with the
+ * destinations banner's device: a 360px floor (454, then 400, until 2026-09-23) with the
  * photograph filling it from 768px up, and below that a 3:1 strip over the
  * neutral-200 plate with the title in brand-500 (style.css, "Hero banner — the
  * phone stack"). The tour single is the one banner that keeps a strapline.
@@ -82,7 +82,7 @@ const BANNER_ROUTES = [
 test.describe( 'Tour banners', () => {
 	for ( const route of BANNER_ROUTES ) {
 		test.describe( route.name, () => {
-			test( 'is the hero banner: one h1, on the 400px floor on desktop @responsive', async ( {
+			test( 'is the hero banner: one h1, on the 360px floor on desktop @responsive', async ( {
 				page,
 				visit,
 				routes,
@@ -105,13 +105,13 @@ test.describe( 'Tour banners', () => {
 				await expect( page.locator( 'h1' ) ).toHaveCount( 1 );
 
 				/**
-				 * The floor, and the shortening: 400px since 2026-09-23. The
-				 * upper bound is what catches a banner left on the old 454 —
+				 * The floor, and the shortening: 360px since 2026-09-23. The
+				 * upper bound is what catches a banner left on the old 400 (or 454) —
 				 * the type is short enough never to push the band past it.
 				 */
 				const height = ( await banner.boundingBox() ).height;
-				expect( height, 'the banner is below its 400px floor' ).toBeGreaterThanOrEqual( 399 );
-				expect( height, 'the banner is still on the old 454px floor' ).toBeLessThan( 453 );
+				expect( height, 'the banner is below its 360px floor' ).toBeGreaterThanOrEqual( 359 );
+				expect( height, 'the banner is still on the old 400px floor' ).toBeLessThan( 399 );
 
 				/**
 				 * No inline padding on the cover: the section style owns it,

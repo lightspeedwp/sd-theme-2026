@@ -109,8 +109,8 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 	 * `dimRatio`, the decorative `alt` and the flow-layout content group.
 	 */
 	?>
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/09/accommodation-landing.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":400,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:400px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/09/accommodation-landing.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/09/accommodation-landing.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/09/accommodation-landing.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<!-- wp:group {"metadata":{"name":"Banner Content"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group alignwide">
@@ -338,15 +338,40 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 	 * All twelve featured terms have a thumbnail and all twelve are top-level.
 	 *
 	 * `perPage: 33` is a ceiling above the twenty-six terms in the taxonomy, not
-	 * a page size — the featured filter, not the page size, decides what shows,
-	 * and raising the ceiling above the *unfiltered* count means adding a
-	 * thirteenth featured term is a tick on a term and nothing here. There is no
-	 * term pagination block, and live pages nothing here either
-	 * (`disable_archive_pagination` is on in the `accommodation` settings).
-	 * Alphabetical by name; live's order is the stored term order, which no
-	 * block query exposes. The tours archive's travel-style grid now orders by
-	 * term ID instead, because there live's order *is* term ID
-	 * (→ template-archive-tour.php, "Live's order: by term ID").
+	 * a page size. There is no term pagination block, and live pages nothing
+	 * here either (`disable_archive_pagination` is on in the `accommodation`
+	 * settings).
+	 *
+	 * ## Live's order, stated as a list — since 2026-09-23
+	 *
+	 * Live's grid (measured 2026-09-23, tile headings in document order):
+	 * Safari Lodges, Luxury Tented Camps, Boutique Hotels, Guest Houses, Hotels,
+	 * Houseboats, Island Lodges, Mobile Tented Camps, Private Villas, Africa's
+	 * Finest, Beach Lodges. This file ordered by name until then, which is why
+	 * the two disagreed.
+	 *
+	 * **Why live's order is what it is: nobody chose it.**
+	 * `sd_travel_style_archive()` (sd-lsx-child/includes/template-tags.php:245)
+	 * calls `get_terms()` with `meta_key => featured` and no `orderby`, and
+	 * `get_terms()` defaults that to `none` — so there is no `ORDER BY` in the
+	 * SQL at all and MySQL returns the rows in whatever order its join over
+	 * `wp_termmeta` produces. That is not name, count, term ID or any stored
+	 * sort, and it is not recoverable from the migrated data: dev's `featured`
+	 * rows were renumbered on import (meta IDs 1105-1116 run Boutique Hotels
+	 * first), so even reproducing the join would not give live's order back.
+	 *
+	 * So it is written down: `include` holds the twelve featured term IDs in
+	 * live's order, and core's term template turns a non-empty `include` into
+	 * `orderby => include` (wp-includes/blocks/term-template.php:58-61), which
+	 * is `FIELD( t.term_id, … )`. Luxury Trains (1795) is last — live never
+	 * shows it, `hideEmpty` drops it at a count of 0, and last is where it
+	 * would land if it gained a property. The featured filter still applies on
+	 * top, so unticking a term removes its tile as before.
+	 *
+	 * ⚠️ **The trade-off: a newly featured type needs its ID added here.** The
+	 * list is now what bounds the grid as well as what orders it — ticking a
+	 * thirteenth term's `featured` box is no longer enough on its own. Term IDs
+	 * survive the dev-to-live deploy, so the IDs are safe as literals.
 	 *
 	 * ⚠️ `parents-only` and `custom-order` were tried on this query on dev and
 	 * are **inert**, so they are not carried here. Both are Tour Operator query
@@ -374,7 +399,7 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Accommodation Types"},"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
 	<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
 
-		<!-- wp:terms-query {"termQuery":{"perPage":33,"taxonomy":"accommodation-type","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"align":"wide","className":"sd-featured-terms-query","layout":{"type":"default"}} -->
+		<!-- wp:terms-query {"termQuery":{"perPage":33,"taxonomy":"accommodation-type","order":"asc","orderBy":"include","include":[1505,1644,1623,1819,1560,1816,1796,1797,1798,1799,1800,1795],"hideEmpty":true,"showNested":false,"inherit":false},"align":"wide","className":"sd-featured-terms-query","layout":{"type":"default"}} -->
 		<div class="wp-block-terms-query alignwide sd-featured-terms-query">
 
 			<!-- wp:term-template {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"grid","columnCount":2,"minimumColumnWidth":null}} -->

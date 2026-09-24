@@ -30,8 +30,10 @@
  *     stretch to the copy's height and inset itself from the card edge; a
  *     top-level column could only ever run the full height of the row,
  *     thumbnail included.
- *   - the excerpt is 45 words (live's is 26) and lives in its own group so the
- *     title/excerpt gap is set independently of the column's `blockGap`.
+ *   - the excerpt is 40 words (live's is 26; it was 45 until 2026-09-23, when
+ *     Zared took five off because it ran long beside the meta panel) and
+ *     lives in its own group so the title/excerpt gap is set independently of
+ *     the column's `blockGap`.
  *   - `core/read-more` is gone. The whole title is a link and the card carries
  *     a hover state, so a third affordance to the same URL was noise.
  *
@@ -40,16 +42,39 @@
  * that require this file. A margin here would double it.
  *
  * ⚠️ Shared with `patterns/template-taxonomy-accommodation-brand.php`. Any
- * change lands on the brand term archive too.
+ * change lands on the brand term archive too — the "On Special" badge
+ * included.
  */
 
 ?>
 <!-- wp:columns {"metadata":{"name":"Accommodation Card — List"},"className":"is-style-listing-card-list","style":{"spacing":{"blockGap":"0"}},"backgroundColor":"neutral-200"} -->
 <div class="wp-block-columns is-style-listing-card-list has-neutral-200-background-color has-background">
 
-	<!-- wp:column {"width":"30%"} -->
-	<div class="wp-block-column" style="flex-basis:30%">
+	<!-- wp:column {"width":"30%","className":"listing-card-list__media"} -->
+	<div class="wp-block-column listing-card-list__media" style="flex-basis:30%">
 		<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1"} /-->
+
+		<?php
+		/*
+		 * The "On Special" badge — live's `.special-tag`
+		 * (sd-lsx-child/includes/layout.php:83-88, custom.css:3276), added
+		 * 2026-09-23. Live prints it when the property has a connected special;
+		 * `sd/post-meta`'s `flag` format answers the same question, requiring
+		 * the special to be published as well, and returns the `label` below
+		 * or nothing. The paragraph is authored empty, so a property with no
+		 * special renders an empty `<p>` that the card style hides (`:empty`).
+		 *
+		 * Styled as live — accent-500 is live's `#e6ad10` exactly, the heading
+		 * face in capitals, an 80px square pinned to the image's top-right
+		 * corner — except that the text is `contrast` rather than live's white,
+		 * which fails AA on that yellow. The corner and the square are the
+		 * `--special` modifier in styles/sections/cards/listing-card-list.json;
+		 * the shared `__badge` class supplies the absolute positioning.
+		 */
+		?>
+		<!-- wp:paragraph {"metadata":{"name":"Badge — On Special","bindings":{"content":{"source":"sd/post-meta","args":{"key":"special_to_accommodation","format":"flag","label":"<?php echo esc_attr_x( 'On Special', 'accommodation card badge', 'sd-theme-2026' ); ?>"}}}},"className":"listing-card-list__badge listing-card-list__badge--special","backgroundColor":"accent-500","textColor":"contrast","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","right":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|10"}},"typography":{"textAlign":"center","textTransform":"uppercase","lineHeight":"var:custom|line-height|heading"}},"fontSize":"100","fontFamily":"heading"} -->
+		<p class="has-text-align-center listing-card-list__badge listing-card-list__badge--special has-contrast-color has-accent-500-background-color has-text-color has-background has-heading-font-family has-100-font-size" style="padding-top:var(--wp--preset--spacing--10);padding-right:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--10);line-height:var(--wp--custom--line-height--heading);text-transform:uppercase"></p>
+		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:column -->
 
@@ -66,7 +91,7 @@
 
 				<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
 				<div class="wp-block-group">
-					<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":45,"fontSize":"200"} /-->
+					<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":40,"fontSize":"200"} /-->
 				</div>
 				<!-- /wp:group -->
 
