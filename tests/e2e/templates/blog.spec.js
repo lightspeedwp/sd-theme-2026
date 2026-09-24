@@ -29,7 +29,7 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
-const { BANNER, describeHeroBanners } = require( '../utils/hero-banner.js' );
+const { BANNER, describeHeroBanners, resolvePreset } = require( '../utils/hero-banner.js' );
 
 /**
  * A literal path, prefixed the way this environment's permalinks need.
@@ -151,10 +151,17 @@ test.describe( 'Blog landing', () => {
 		const first = await rows.first().locator( '.wp-block-post-title a' ).getAttribute( 'href' );
 		expect( slugOf( first ), 'the first row is not the newest post' ).toBe( slugOf( newest.link ) );
 
+		/**
+		 * Live's row title is 22px; font size 400 is the nearest token. The
+		 * row style had carried 500 (32px), which was never measured.
+		 */
+		const titleSize = await resolvePreset( page, 'font-size', '--wp--preset--font-size--400' );
+
 		for ( let i = 0; i < perPage; i++ ) {
 			const row = rows.nth( i );
 			await expect( row.locator( '.wp-block-post-title a' ) ).toHaveCount( 1 );
 			await expect( row.locator( '.wp-block-post-date' ) ).toHaveCount( 1 );
+			await expect( row.locator( '.wp-block-post-title' ) ).toHaveCSS( 'font-size', titleSize );
 		}
 
 		test.skip( total <= perPage, `Only ${ total } posts — one page, nothing to paginate` );
@@ -210,6 +217,41 @@ test.describe( 'Blog archives', () => {
 			expect( await back.getAttribute( 'href' ) ).toMatch( /\/blog\/?$/ );
 		} );
 
+		test( `the ${ archive.name } archive draws the back link as live does: uppercase, 200, a leading arrow`, async ( {
+			page,
+			visit,
+			routes,
+		} ) => {
+			const target = await archive.path( routes, page.request );
+			test.skip( ! target, `No ${ archive.name } archive on ${ routes.baseURL }` );
+
+			await visit( target );
+
+			const back = page.locator( 'main .is-style-back-link a' );
+			const size = await resolvePreset( page, 'font-size', '--wp--preset--font-size--200' );
+
+			await expect( back, 'live\'s a.back-to-blog is uppercase' ).toHaveCSS( 'text-transform', 'uppercase' );
+			await expect( back ).toHaveCSS( 'font-size', size );
+
+			/**
+			 * The arrow is a masked ::before with empty content, so it must
+			 * exist, carry a mask, and stay out of the accessible name.
+			 */
+			const arrow = await back.evaluate( ( el ) => {
+				const before = getComputedStyle( el, '::before' );
+				return {
+					content: before.content,
+					mask: before.maskImage || before.webkitMaskImage,
+					width: parseFloat( before.inlineSize || before.width ),
+				};
+			} );
+
+			expect( arrow.content, 'the back link lost its arrow' ).toBe( '""' );
+			expect( arrow.mask, 'the arrow has no mask to draw' ).toMatch( /^url\(/ );
+			expect( arrow.width ).toBeGreaterThan( 0 );
+			await expect( back ).toHaveAccessibleName( /^Back To Blog$/i );
+		} );
+
 		test( `every row on the ${ archive.name } archive belongs to it`, async ( { page, visit, routes } ) => {
 			const target = await archive.path( routes, page.request );
 			test.skip( ! target, `No ${ archive.name } archive on ${ routes.baseURL }` );
@@ -221,7 +263,11 @@ test.describe( 'Blog archives', () => {
 			const count = await rows.count();
 			expect( count, `${ target } lists no posts` ).toBeGreaterThan( 0 );
 
+			const titleSize = await resolvePreset( page, 'font-size', '--wp--preset--font-size--400' );
+
 			for ( let i = 0; i < count; i++ ) {
+				await expect( rows.nth( i ).locator( '.wp-block-post-title' ) ).toHaveCSS( 'font-size', titleSize );
+
 				const field = rows.nth( i ).locator( archive.rowField );
 				await expect(
 					field,
