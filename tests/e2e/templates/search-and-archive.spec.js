@@ -4,8 +4,11 @@
  * LS-2024 (line 14, Search and Filtering — 14.4 search templates) and LS-2022
  * (line 12, Blog Templates — the archives blog content lands on). Covers:
  *
- *   - `search.html`              → patterns/template-page-search.php
- *   - `archive.html`, `tag.html` → patterns/template-page-archive.php
+ *   - `search.html`  → patterns/template-page-search.php
+ *   - `archive.html` → patterns/template-page-archive.php
+ *
+ * Tag and author archives are the blog archive, not this layout — blog.spec.js
+ * covers them.
  *
  * **The banner** on both is the hero banner, phone stack included, on the
  * 360px floor — utils/hero-banner.js carries that contract. The archive's `h1`
@@ -29,10 +32,14 @@ const { test, expect } = require( '../fixtures/base.js' );
 const { describeHeroBanners } = require( '../utils/hero-banner.js' );
 
 const SEARCH = '/?s=safari';
-const ARCHIVES = [
-	{ name: 'tag archive', path: ( routes ) => routes.term( 'post_tag' ) },
-	{ name: 'author archive', path: ( routes ) => routes.archive( 'author' ) },
-];
+
+/**
+ * Archives that render through `archive.html`: `special-type`, `post_format`
+ * and `role`. None is in REST on dev and nothing links to them, so there is no
+ * route to resolve yet and the "All archives" checks below have no target. Add
+ * an entry here once one resolves.
+ */
+const ARCHIVES = [];
 
 describeHeroBanners( { test, expect }, [
 	{ name: 'search results', path: () => SEARCH, strapline: true },

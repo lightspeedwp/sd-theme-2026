@@ -137,7 +137,7 @@ async function resolvePageTemplates( api, baseURL ) {
 }
 
 /**
- * Find one live author archive that resolves through `archive.html`.
+ * Find one live author archive, which renders through `author.html`.
  *
  * Ask the users endpoint for an author with at least one published post and use
  * the archive URL WordPress reports, so the spec stays agnostic to any custom

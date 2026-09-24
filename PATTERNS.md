@@ -259,8 +259,8 @@ recognise the name if you meet it in the Site Editor.
 | **Template: Single Team Member** | A consultant's own page |
 | **Template: Blog Landing** | The blog landing page — *Tales from our trails*, the category shelf and the list of posts. Used by both the posts index and the generic fallback template. |
 | **Template: Single Post** | A blog post's own page — the byline, the title, the post, then the tinted band carrying three **Related Posts** and the previous/next pager. |
-| **Template: Category** | Category archives |
-| **Template: Archive** | Tag, author and date archives, and any taxonomy without its own template — the search results layout with the archive name in the banner, the Content Type filter and the pager, but no search box, result count or sort. |
+| **Template: Blog Archive** | Category, tag and author archives |
+| **Template: Archive** | Any archive without its own template — the search results layout with the archive name in the banner, the Content Type filter and the pager, but no search box, result count or sort. |
 | **Template: Search Results** | The site search — the banner, a search box carrying the phrase, the Content Type filter, the result count and sort, then the results. On phones the search box stays and the filter opens from a *Filters* button. |
 | **Template: 404 Not Found** | The "page not found" page — the *404!* banner, the not-found band with a search box, the three spelling suggestions, then the enquiry band and the value panel. Shown for any address that does not resolve; it has no page of its own to edit. |
 | **Template: Page** | The standard page |

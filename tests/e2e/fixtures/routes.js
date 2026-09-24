@@ -33,7 +33,7 @@
  */
 const STATIC_ROUTES = [
 	{ name: 'front page', path: '/', template: 'front-page.html', smoke: true },
-	{ name: 'blog', path: '/blog/', template: 'index.html' },
+	{ name: 'blog', path: '/blog/', template: 'home.html' },
 	{ name: 'contact', path: '/contact/', template: 'page.html' },
 	{ name: 'tour archive', path: '/tours/', template: 'archive-tour.html', smoke: true },
 	{
@@ -214,15 +214,15 @@ const RESOLVED_TAXONOMIES = [
 /**
  * Non-taxonomy archives resolved at run time.
  *
- * `archive.html` renders author and date archives through the generic hierarchy,
- * so resolve one live author archive and run the shared archive assertions
- * against the generic template as well as the tag-specific one.
+ * Author archives render through `author.html`. Dev refuses anonymous
+ * `/wp/v2/users` lookups, so this resolves only where the users endpoint is
+ * open; blog.spec.js reads its author archive off a byline instead.
  */
 const RESOLVED_ARCHIVES = [
 	{
 		key: 'author',
 		name: 'author archive',
-		template: 'archive.html',
+		template: 'author.html',
 		optional: true,
 	},
 ];

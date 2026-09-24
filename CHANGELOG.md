@@ -8,13 +8,15 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
-- ✅ **`tests/e2e/templates/search-and-archive.spec.js`.** LS-2024, LS-2022.
+- ✅ **`tests/e2e/templates/search-and-archive.spec.js`.** LS-2024.
   Runs the shared hero banner contract (`utils/hero-banner.js`) on the search
-  results and a tag archive; checks the archive's `h1` is the unprefixed
-  archive title, that the archive carries the rail, trigger and loop but no
-  keyword box, results toolbar, count or sort; and that the search page's
-  keyword box stays on screen above the Filters button on phones while the
-  panel carries only the Content Type facet.
+  results, and checks that the search page's keyword box stays on screen above
+  the Filters button on phones while the panel carries only the Content Type
+  facet. Its generic-archive checks — the `h1` is the unprefixed archive title,
+  and the archive carries the rail, trigger and loop but no keyword box,
+  results toolbar, count or sort — have no route yet: tag and author archives
+  are the blog archive, and dev exposes no `special-type`, `post_format` or
+  `role` term to resolve.
 - ✅ **`tests/e2e/templates/static-pages.spec.js`.** LS-2015. Runs the shared
   hero banner contract (`utils/hero-banner.js`) on About Us, its three children
   and Contact Us, and checks each page: the page title as the banner's only
@@ -26,6 +28,19 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   current Trustpilot badge and Read Our Reviews link on Why Book With Us, the
   brand-logo carousel there, the current post-grid card on Connect With Us, and
   Contact's stacked badge beside the review carousel.
+- ✅ **`tests/e2e/templates/blog.spec.js`.** LS-2022. Runs the shared hero
+  banner contract on the blog landing and on the category, tag and author
+  archives, then checks: the landing's "Blog" `h1`, its "Tales from our trails"
+  `h2` and category shelf, newest-first rows and a working page 2; each archive
+  titled with its bare name, linking back to the blog, with every row belonging
+  to what was queried; the single post with no banner and no featured image,
+  date and author above the `h1`, categories below; a related shelf of 1–15
+  posts that all share a category and never include the post being read; and
+  the pager. `tests/e2e/utils/hero-banner.js` now accepts an async
+  `path( routes, request )`, because dev refuses anonymous `/wp/v2/users` and
+  `/?author=` lookups and the author archive has to be read off a byline.
+  `fixtures/routes.js` maps `/blog/` to `home.html`, which is what resolves,
+  not `index.html`.
 
 - ✅ **`tests/e2e/templates/specials.spec.js`.** LS-2021. Runs the shared
   hero banner contract (`tests/e2e/utils/hero-banner.js`) on `/specials/`, and checks the
@@ -367,9 +382,11 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   sits above the button on phones. Rails whose keyword box is a FacetWP search
   facet are unchanged — the panel carries those.
 
-- 🗂️ **All archives use the search results layout.** LS-2022 (Zared's call).
-  `patterns/template-page-archive.php`, used by `archive.html` and `tag.html`,
-  is now the search page less its keyword box, result count and sort: the same
+- 🗂️ **The generic archive uses the search results layout.** LS-2022 (Zared's
+  call). `patterns/template-page-archive.php`, used by `archive.html` — the
+  fallback for `special-type`, `post_format` and `role` now that tag and author
+  archives are the blog archive — is now the search page less its keyword box,
+  result count and sort: the same
   hero banner and strapline with `core/query-title` (no prefix) as the `h1`,
   the breadcrumb strip, the Content Type rail with the Filters flyout trigger,
   the `card-search-result.php` rows on an inherited FacetWP-enabled loop, and
@@ -409,6 +426,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `is-style-archive-intro` paragraph that directly follows another, so a
   two-paragraph standfirst (Social Responsibility's) takes the style on both
   paragraphs and gets one cap, as live does.
+
+- 🖼️ **The blog banners are the hero banner, phone stack included.** LS-2022.
+  `patterns/template-home-blog.php` and `patterns/template-category.php` drop
+  their inline spacing-40 padding, as the specials and accommodation banners
+  did, so `is-style-hero-banner` sets the padding (90 top, 50 bottom) and the
+  phone stack in `style.css` applies without fighting an inline style.
+
+- 🏷️ **Tag and author archives are the blog archive.** LS-2022.
+  `templates/tag.html` now renders `sd-theme-2026/template-category` (retitled
+  "Template: Blog Archive", slug unchanged), and a new `templates/author.html`
+  does the same: hero banner titled with the bare tag or author name, "Back To
+  Blog", the post rows, the value band. Both previously landed on
+  `template-page-archive`, the KWV base's card grid with no banner. Live's tag
+  archive is the category archive with its banner collapsed and its only `h1`
+  hidden. Author archives are indexed on dev; date archives are redirected by
+  Yoast, so there is no `date.html`. `archive.html` stays as the generic
+  fallback for `post_format`, `special-type` and `role`.
 
 - 🖼️ **The Specials banner is the hero banner, phone stack included.**
   LS-2021. `patterns/template-archive-special.php` drops its inline spacing-40

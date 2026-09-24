@@ -193,7 +193,7 @@
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Brands Grid"},"align":"full","style":{"spacing":{"blockGap":"var:preset|spacing|40","padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"},"anchor":"brands"} -->
 	<section class="wp-block-group alignfull" id="brands" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--80)">
 
-		<!-- wp:heading {"textAlign":"center","metadata":{"blockVisibility":false},"className":"is-style-section-title","anchor":"h-our-preferred-operators"} -->
+		<!-- wp:heading {"textAlign":"center","blockVisibility":false,"className":"is-style-section-title","anchor":"h-our-preferred-operators"} -->
 		<h2 class="wp-block-heading has-text-align-center is-style-section-title" id="h-our-preferred-operators"><?php esc_html_e( 'Our preferred safari lodge operators', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 
