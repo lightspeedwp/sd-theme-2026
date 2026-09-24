@@ -165,6 +165,10 @@ async function resolveAuthorArchive( api, baseURL ) {
 	return toPath( authors[ 0 ].link, baseURL );
 }
 
+const ARCHIVE_RESOLVERS = {
+	author: resolveAuthorArchive,
+};
+
 /**
  * Convert an absolute permalink to a path, so specs stay origin-agnostic and
  * `baseURL` remains the single place the environment is chosen.
@@ -256,7 +260,10 @@ module.exports = async function globalSetup( config ) {
 
 		await Promise.all(
 			RESOLVED_ARCHIVES.map( async ( route ) => {
-				resolved.archives[ route.key ] = await resolveAuthorArchive( api, baseURL );
+				const resolveArchive = ARCHIVE_RESOLVERS[ route.key ];
+				resolved.archives[ route.key ] = resolveArchive
+					? await resolveArchive( api, baseURL )
+					: null;
 
 				if ( ! resolved.archives[ route.key ] ) {
 					( route.optional ? missing : requiredMissing ).push( route.name );
