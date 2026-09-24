@@ -367,6 +367,12 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   gap. The template's label is now "Page (Full Width, Banner)". Its slug stays
   `page-no-title`, because that is the value stored on all five pages.
 
+  ⚠️ **Deploy step.** Environments that already hold the old About Us / Contact
+  page content still need those legacy in-body cover blocks removed from the
+  stored page bodies, or the template banner will render above a second banner.
+  `tests/e2e/templates/static-pages.spec.js` is the verification step for that
+  cleanup.
+
   `page-variants.spec.js` now expects the variant's one `h1` in the banner,
   not no title at all.
 

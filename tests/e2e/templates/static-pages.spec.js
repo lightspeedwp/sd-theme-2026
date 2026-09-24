@@ -10,6 +10,10 @@
  * holds no banner of its own — five hand-made copies of an older device lived
  * there until this pass.
  *
+ * Deployment still has to remove those legacy cover blocks from the stored page
+ * bodies on environments that already contain them. The banner checks below are
+ * the verification step: they stay red until the cleanup has happened.
+ *
  * Measured against live on 2026-09-23. Live's About children show "About Us"
  * over the page name; here the page name is the h1 and "About Us" is its
  * strapline, the same reading a destination single gives its parent. Contact's
