@@ -21,6 +21,7 @@ const { request } = require( '@playwright/test' );
 const {
 	RESOLVED_ROUTES,
 	RESOLVED_TAXONOMIES,
+	RESOLVED_ARCHIVES,
 } = require( './fixtures/routes.js' );
 
 const CACHE_PATH = path.join( __dirname, '.resolved-routes.json' );
@@ -136,6 +137,39 @@ async function resolvePageTemplates( api, baseURL ) {
 }
 
 /**
+ * Find one live author archive, which renders through `author.html`.
+ *
+ * Ask the users endpoint for an author with at least one published post and use
+ * the archive URL WordPress reports, so the spec stays agnostic to any custom
+ * author base.
+ *
+ * @param {import('@playwright/test').APIRequestContext} api     Request context.
+ * @param {string}                                       baseURL Site origin.
+ * @return {Promise<string|null>} Path with a leading slash, or null when absent.
+ */
+async function resolveAuthorArchive( api, baseURL ) {
+	const response = await api.get(
+		'/wp-json/wp/v2/users?per_page=1&who=authors&has_published_posts=post&_fields=link'
+	);
+
+	if ( ! response.ok() ) {
+		return null;
+	}
+
+	const authors = await response.json();
+
+	if ( ! Array.isArray( authors ) || 0 === authors.length || ! authors[ 0 ].link ) {
+		return null;
+	}
+
+	return toPath( authors[ 0 ].link, baseURL );
+}
+
+const ARCHIVE_RESOLVERS = {
+	author: resolveAuthorArchive,
+};
+
+/**
  * Convert an absolute permalink to a path, so specs stay origin-agnostic and
  * `baseURL` remains the single place the environment is chosen.
  *
@@ -188,6 +222,7 @@ module.exports = async function globalSetup( config ) {
 			baseURL,
 			posts: {},
 			terms: {},
+			archives: {},
 			pageTemplates: {},
 			resolvedAt: new Date().toISOString(),
 		};
@@ -223,6 +258,19 @@ module.exports = async function globalSetup( config ) {
 			} )
 		);
 
+		await Promise.all(
+			RESOLVED_ARCHIVES.map( async ( route ) => {
+				const resolveArchive = ARCHIVE_RESOLVERS[ route.key ];
+				resolved.archives[ route.key ] = resolveArchive
+					? await resolveArchive( api, baseURL )
+					: null;
+
+				if ( ! resolved.archives[ route.key ] ) {
+					( route.optional ? missing : requiredMissing ).push( route.name );
+				}
+			} )
+		);
+
 		if ( requiredMissing.length ) {
 			throw new Error(
 				`No content for required route(s): ${ requiredMissing.join( ', ' ) } on ${ baseURL }.`
@@ -238,8 +286,10 @@ module.exports = async function globalSetup( config ) {
 
 	const found =
 		Object.values( resolved.posts ).filter( Boolean ).length +
-		Object.values( resolved.terms ).filter( Boolean ).length;
-	const total = RESOLVED_ROUTES.length + RESOLVED_TAXONOMIES.length;
+		Object.values( resolved.terms ).filter( Boolean ).length +
+		Object.values( resolved.archives ).filter( Boolean ).length;
+	const total =
+		RESOLVED_ROUTES.length + RESOLVED_TAXONOMIES.length + RESOLVED_ARCHIVES.length;
 
 	/**
 	 * stderr, not stdout. The JSON and JUnit reporters write their payload to

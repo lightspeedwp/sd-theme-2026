@@ -212,6 +212,22 @@ const RESOLVED_TAXONOMIES = [
 ];
 
 /**
+ * Non-taxonomy archives resolved at run time.
+ *
+ * Author archives render through `author.html`. Dev refuses anonymous
+ * `/wp/v2/users` lookups, so this resolves only where the users endpoint is
+ * open; blog.spec.js reads its author archive off a byline instead.
+ */
+const RESOLVED_ARCHIVES = [
+	{
+		key: 'author',
+		name: 'author archive',
+		template: 'author.html',
+		optional: true,
+	},
+];
+
+/**
  * Routes that exercise a template without needing any content to exist.
  */
 const SYNTHETIC_ROUTES = [
@@ -237,5 +253,6 @@ module.exports = {
 	STATIC_ROUTES,
 	RESOLVED_ROUTES,
 	RESOLVED_TAXONOMIES,
+	RESOLVED_ARCHIVES,
 	SYNTHETIC_ROUTES,
 };

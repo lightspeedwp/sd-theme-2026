@@ -233,6 +233,24 @@ a.more-link {
 	}
 }
 
+/* Hero banner — the empty strapline
+   -------------------------------------------------------------------------
+   The strapline in `patterns/hero-page-banner.php` is bound to `sd/banner`'s
+   `subtitle` and authored empty, so a post with no `banner_subtitle` renders
+   `<p class="is-style-subheading-large …"></p>`. Left in the flow, that empty
+   paragraph still takes the banner group's block gap and pushes the title up
+   by it. Hiding it gives the page the title alone, which is what live shows
+   on About Us.
+
+   Here rather than in `styles/sections/hero-banner.json`'s `css` field only
+   because `:empty` is not a pseudo-class that field's sanitiser is known to
+   keep, and a silently dropped rule would bring the gap back unnoticed.
+--------------------------------------------- */
+
+.wp-block-cover.is-style-hero-banner p:empty {
+	display: none;
+}
+
 /* Hero banner — the phone stack
    -------------------------------------------------------------------------
    Live's inner-page banner is two layouts, not one, and the switch is at

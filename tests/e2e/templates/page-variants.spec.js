@@ -37,8 +37,8 @@ const PAGE_VARIANTS = [
 	},
 	{
 		file: 'page-no-title.html',
-		name: 'page without a title',
-		expectH1: false,
+		name: 'full-width page with the banner',
+		expectH1: true,
 	},
 	{
 		file: 'page-with-sidebar.html',
@@ -92,7 +92,15 @@ test.describe( 'Custom page templates', () => {
 		).toBeAttached();
 	} );
 
-	test( 'the no-title variant suppresses the page title', async ( {
+	/**
+	 * `page-no-title` kept its slug — five pages store it — but since
+	 * 2026-09-23 it is the full-width page *with* the hero banner, and the page
+	 * title is the banner's `<h1>`. What the variant still has to prove is
+	 * that it differs from page.html in the way its slug once promised: no
+	 * title of its own in the content column. The one title it renders is the
+	 * banner's.
+	 */
+	test( 'the full-width banner variant titles the page in its banner only', async ( {
 		page,
 		visit,
 		routes,
@@ -102,24 +110,17 @@ test.describe( 'Custom page templates', () => {
 
 		await visit( target );
 
-		/**
-		 * Suppressing the visible title is the entire point of the variant.
-		 * The document `<title>` must survive — that is SEO, not layout.
-		 */
 		const title = await page.title();
-		expect( title.trim(), 'document title was suppressed too' ).not.toBe( '' );
+		expect( title.trim(), 'document title is empty' ).not.toBe( '' );
 
-		/**
-		 * Only a title the template renders counts. Editors put a post-title
-		 * block inside the page's own content — on dev, "Why Book With Us"
-		 * carries one in its hero cover — and that is content, not the
-		 * template failing to suppress its own title.
-		 */
+		await expect( page.locator( 'h1' ) ).toHaveCount( 1 );
 		await expect(
-			mainContent( page ).locator(
-				'.wp-block-post-title:not(.wp-block-post-content .wp-block-post-title)'
-			),
-			'page-no-title.html still renders a post-title block'
+			mainContent( page ).locator( ':scope > .wp-block-cover.is-style-hero-banner h1.wp-block-post-title' ),
+			'the page title is not the banner\'s h1'
+		).toHaveCount( 1 );
+		await expect(
+			mainContent( page ).locator( '.wp-block-post-content .wp-block-post-title' ),
+			'the page content still carries its own post-title block'
 		).toHaveCount( 0 );
 	} );
 } );

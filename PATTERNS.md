@@ -160,7 +160,7 @@ Drop these into any page body.
 
 | Pattern | What it is | Live data |
 |---|---|---|
-| **Page Hero Banner** | The standard page banner — a full-width photograph carrying the page title. | — |
+| **Page Hero Banner** | The standard page banner — a full-width photograph carrying the page title, with the post's `banner_subtitle` under it when it has one. | — |
 | **Safari Expert Panel** | "Chat to your Safari Expert" — a brand-coloured card holding the consultant's portrait and name, a Call Us dropdown carrying the four office numbers, and an email action, with the Trustpilot badge beneath the card. Picks the right consultant for the page it is on. | Team · Trustpilot |
 | **CTA — Not Sure Where To Go** | The enquiry band: a script heading over the two office numbers, with "Send us an Email" beneath. | — |
 | **CTA — Tell Us Your Trip Ideas** | The same enquiry band with the heading every tour, lodge and destination page uses. Placed by the tour template; place it by hand only on a page that needs it. | — |
@@ -260,11 +260,11 @@ recognise the name if you meet it in the Site Editor.
 | **Template: Blog Landing** | The blog landing page — *Tales from our trails*, the category shelf and the list of posts. Used by both the posts index and the generic fallback template. |
 | **Template: Single Post** | A blog post's own page — the byline, the title, the post, then the tinted band carrying three **Related Posts** and the previous/next pager. |
 | **Template: Blog Archive** | Category, tag and author archives |
-| **Template: Archive** | Generic archives |
-| **Template: Search Results** | Search |
+| **Template: Archive** | Any archive without its own template — the search results layout with the archive name in the banner, the Content Type filter and the pager, but no search box, result count or sort. |
+| **Template: Search Results** | The site search — the banner, a search box carrying the phrase, the Content Type filter, the result count and sort, then the results. On phones the search box stays and the filter opens from a *Filters* button. |
 | **Template: 404 Not Found** | The "page not found" page — the *404!* banner, the not-found band with a search box, the three spelling suggestions, then the enquiry band and the value panel. Shown for any address that does not resolve; it has no page of its own to edit. |
 | **Template: Page** | The standard page |
-| **Template: Page (Full Width, No Title)** | Full-bleed pages |
+| **Template: Page (Full Width, Banner)** | About Us, its three pages and Contact Us — the photographic banner, the breadcrumb strip, the page itself, then the *Why choose Southern Destinations* band. The banner photograph is the page's **featured image**. The line under the title is the page's `banner_subtitle` custom field — turn on *Preferences → General → Custom fields*, then add or edit it in the panel under the editor. Leave it unset for no line. Neither belongs in the page content. |
 | **Template: Page (With Sidebar)** | Pages with the sidebar |
 | **Template: Single Tour** | The tour page |
 | **Itinerary Stay** | One row of the tour page's itinerary list. Repeated once per stay by the Tour Operator plugin — you never place it. |
