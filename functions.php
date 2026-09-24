@@ -307,3 +307,9 @@ require_once get_theme_file_path( 'inc/trustpilot.php' );
 // lazy contract as intro-collapse above: the slide styling rides the core-* scan
 // on assets/styles/core-group.css, so only the script needs a module.
 require_once get_theme_file_path( 'inc/review-slider.php' );
+
+// Styles gravityforms/form's submit button. Its controls are Gravity Forms' own
+// markup, styled through Orbital's `--gf-*` custom properties, which theme.json
+// cannot set, and a non-core block is outside enqueue_custom_block_styles()'
+// core-* scan.
+require_once get_theme_file_path( 'inc/gravityforms.php' );

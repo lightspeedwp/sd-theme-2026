@@ -628,7 +628,7 @@
 				"variations": {
 					"fill": {
 						"color": {
-							"background": "var:preset|color|brand-500",
+							"background": "var:preset|color|brand-600",
 							"text": "var:preset|color|base"
 						},
 						"border": {
@@ -648,14 +648,14 @@
 						"typography": {
 							"fontFamily": "var:preset|font-family|heading",
 							"fontSize": "var:preset|font-size|300",
-							"fontWeight": "var:custom|font-weight|semi-bold",
+							"fontWeight": "var:custom|font-weight|bold",
 							"lineHeight": "var:custom|line-height|button",
 							"textTransform": "uppercase",
 							"letterSpacing": "var:custom|letter-spacing|narrow"
 						},
 						":hover": {
 							"color": {
-								"background": "var:preset|color|brand-600",
+								"background": "var:preset|color|brand-700",
 								"text": "var:preset|color|base"
 							},
 							"border": {
@@ -664,7 +664,7 @@
 						},
 						":focus": {
 							"color": {
-								"background": "var:preset|color|brand-600",
+								"background": "var:preset|color|brand-700",
 								"text": "var:preset|color|base"
 							}
 						}
@@ -672,7 +672,7 @@
 					"outline": {
 						"color": {
 							"background": "transparent",
-							"text": "var:preset|color|brand-600"
+							"text": "var:preset|color|brand-700"
 						},
 						"border": {
 							"radius": "var:preset|border-radius|0",
@@ -691,7 +691,7 @@
 						"typography": {
 							"fontFamily": "var:preset|font-family|heading",
 							"fontSize": "var:preset|font-size|300",
-							"fontWeight": "var:custom|font-weight|semi-bold",
+							"fontWeight": "var:custom|font-weight|bold",
 							"lineHeight": "var:custom|line-height|button",
 							"textTransform": "uppercase",
 							"letterSpacing": "var:custom|letter-spacing|narrow"
@@ -1080,7 +1080,7 @@
 				"typography": {
 					"fontFamily": "var:preset|font-family|heading",
 					"fontSize": "var:preset|font-size|300",
-					"fontWeight": "var:custom|font-weight|semi-bold",
+					"fontWeight": "var:custom|font-weight|bold",
 					"lineHeight": "var:custom|line-height|button",
 					"textTransform": "uppercase",
 					"letterSpacing": "var:custom|letter-spacing|narrow"

@@ -364,19 +364,28 @@
 /* The trigger
    ---------------------------------------------------------------------------
    Zared asked for the treatment the enquiry button beside it uses rather than
-   core's underline: `styles.elements.button` hovers brand-500 to **brand-600**
-   over `0.25s ease-in-out`, so the trigger darkens on the same token and the
-   same curve as the button it sits next to. The transition itself is in the
+   core's underline: a one-step darken over `0.25s ease-in-out`, on the same
+   curve as the button it sits next to. The transition itself is in the
    variation JSON; only the two states need to be here.
+
+   The trigger rests on **brand-700**, not the button's brand-500 (2026-09-24):
+   at preset `font-size|300` the narrow-viewport minimum is 16px, so this label
+   is normal text there and needs 4.5:1. brand-600 only reaches 4.15:1 on the
+   header's `neutral-200` ground; brand-700 is 5.81:1, so the resting state now
+   clears AA at every viewport. Hover is the next step down, **brand-800**.
 
    `:focus-visible` gets it too, so a keyboard user sees the same change on top
    of the focus outline.
 
    The chevron is Ollie's own and is drawn with `stroke: currentColor`, so it
    darkens with the label for free — as the accordion's hand-drawn caret did. */
+.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle {
+	color: var(--wp--preset--color--brand-700);
+}
+
 .is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:hover,
 .is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:focus-visible {
-	color: var(--wp--preset--color--brand-600);
+	color: var(--wp--preset--color--brand-800);
 }
 
 /* Rows
