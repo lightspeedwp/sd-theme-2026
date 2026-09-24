@@ -212,6 +212,22 @@ const RESOLVED_TAXONOMIES = [
 ];
 
 /**
+ * Non-taxonomy archives resolved at run time.
+ *
+ * `archive.html` renders author and date archives through the generic hierarchy,
+ * so resolve one live author archive and run the shared archive assertions
+ * against the generic template as well as the tag-specific one.
+ */
+const RESOLVED_ARCHIVES = [
+	{
+		key: 'author',
+		name: 'author archive',
+		template: 'archive.html',
+		optional: true,
+	},
+];
+
+/**
  * Routes that exercise a template without needing any content to exist.
  */
 const SYNTHETIC_ROUTES = [
@@ -237,5 +253,6 @@ module.exports = {
 	STATIC_ROUTES,
 	RESOLVED_ROUTES,
 	RESOLVED_TAXONOMIES,
+	RESOLVED_ARCHIVES,
 	SYNTHETIC_ROUTES,
 };

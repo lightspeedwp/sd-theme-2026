@@ -4,7 +4,7 @@
  * LS-2024 (line 14, Search and Filtering — 14.4 search templates) and LS-2022
  * (line 12, Blog Templates — the archives blog content lands on). Covers:
  *
- *   - `search.html`             → patterns/template-page-search.php
+ *   - `search.html`              → patterns/template-page-search.php
  *   - `archive.html`, `tag.html` → patterns/template-page-archive.php
  *
  * **The banner** on both is the hero banner, phone stack included, on the
@@ -29,10 +29,14 @@ const { test, expect } = require( '../fixtures/base.js' );
 const { describeHeroBanners } = require( '../utils/hero-banner.js' );
 
 const SEARCH = '/?s=safari';
+const ARCHIVES = [
+	{ name: 'tag archive', path: ( routes ) => routes.term( 'post_tag' ) },
+	{ name: 'author archive', path: ( routes ) => routes.archive( 'author' ) },
+];
 
 describeHeroBanners( { test, expect }, [
 	{ name: 'search results', path: () => SEARCH, strapline: true },
-	{ name: 'tag archive', path: ( routes ) => routes.term( 'post_tag' ), strapline: true },
+	...ARCHIVES.map( ( route ) => ( { ...route, strapline: true } ) ),
 ] );
 
 /**
@@ -49,34 +53,50 @@ async function flyoutReady( page ) {
 }
 
 test.describe( 'All archives', () => {
-	test( 'titles the banner with the archive name, unprefixed', async ( { page, visit, routes } ) => {
-		const target = routes.term( 'post_tag' );
-		test.skip( ! target, 'No tag archive' );
+	for ( const archive of ARCHIVES ) {
+		test( `${ archive.name } titles the banner with the archive name, unprefixed`, async ( {
+			page,
+			visit,
+			routes,
+		} ) => {
+			const target = archive.path( routes );
+			test.skip( ! target, `No ${ archive.name }` );
 
-		await visit( target );
+			await visit( target );
 
-		const title = page.locator( 'main > .wp-block-cover h1.wp-block-query-title' );
-		await expect( title ).toHaveCount( 1 );
-		await expect( title ).not.toHaveText( /^\s*$/ );
-		await expect( title ).not.toHaveText( /^\s*(tag|category|author|archives?)\s*:/i );
-	} );
+			const title = page.locator( 'main > .wp-block-cover h1.wp-block-query-title' );
+			await expect( title ).toHaveCount( 1 );
+			await expect( title ).not.toHaveText( /^\s*$/ );
+			await expect( title ).not.toHaveText( /^\s*(tag|category|author|archives?)\s*:/i );
+		} );
 
-	test( 'is the search layout without the keyword box, count or sort', async ( { page, visit, routes } ) => {
-		const target = routes.term( 'post_tag' );
-		test.skip( ! target, 'No tag archive' );
+		test( `${ archive.name } is the search layout without the keyword box, count or sort`, async ( {
+			page,
+			visit,
+			routes,
+		} ) => {
+			const target = archive.path( routes );
+			test.skip( ! target, `No ${ archive.name }` );
 
-		await page.setViewportSize( { width: 1280, height: 900 } );
-		await visit( target );
+			await page.setViewportSize( { width: 1280, height: 900 } );
+			await visit( target );
 
-		const main = page.locator( 'main' );
-		await expect( main.locator( 'aside.sd-search-filters' ) ).toHaveCount( 1 );
-		await expect( main.locator( 'aside.sd-search-filters .sd-filters-toggle' ) ).toHaveCount( 1 );
-		await expect( main.locator( '.wp-block-query' ) ).toHaveCount( 1 );
+			const main = page.locator( 'main' );
+			await expect( main.locator( 'aside.sd-search-filters' ) ).toHaveCount( 1 );
+			await expect( main.locator( 'aside.sd-search-filters .sd-filters-toggle' ) ).toHaveCount( 1 );
+			await expect( main.locator( '.wp-block-query' ) ).toHaveCount( 1 );
 
-		await expect( main.locator( '.wp-block-search' ), 'the archive still carries the keyword box' ).toHaveCount( 0 );
-		await expect( main.locator( '.sd-search-toolbar' ), 'the archive still carries the results toolbar' ).toHaveCount( 0 );
-		await expect( main.locator( '.sd-search-sort, .sd-search-counts' ) ).toHaveCount( 0 );
-	} );
+			await expect(
+				main.locator( '.wp-block-search' ),
+				'the archive still carries the keyword box'
+			).toHaveCount( 0 );
+			await expect(
+				main.locator( '.sd-search-toolbar' ),
+				'the archive still carries the results toolbar'
+			).toHaveCount( 0 );
+			await expect( main.locator( '.sd-search-sort, .sd-search-counts' ) ).toHaveCount( 0 );
+		} );
+	}
 } );
 
 test.describe( 'Search results filter rail', () => {
