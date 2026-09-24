@@ -385,15 +385,16 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
   Gravity Forms' submits take the same step through Orbital's
   `--gf-ctrl-btn-font-weight`, in a new module attached to `gravityforms/form`.
-  Their computed weight on dev goes from 500 to 700. ⚠️ They are 14px, under
-  the large-text floor, so they still fail contrast at 3.17:1.
+  Their computed weight on dev goes from 500 to 700, and that module also sets
+  `--gf-ctrl-btn-color-primary` to `contrast`, which yields 6.61:1 on the
+  site-wide brand-500 fill and 4.65:1 on the brand-600 hover.
 
-- ☎️ **The header's Call Us Today rests on brand-600.** LS-2015.
+- ☎️ **The header's Call Us Today rests on brand-700.** LS-2015.
   `patterns/header.php`, `assets/styles/ollie-mega-menu.css`. Brand-500 on the
-  header's ground was 2.91:1 at 19px bold, under the 3:1 that large text needs.
-  Brand-600 is 4.15:1. The phone icon beside it moves with it, because an icon
-  needs 3:1 too. The trigger's hover goes one step darker, to brand-700,
-  because hovering to brand-600 would now change nothing.
+  header's ground was 2.91:1, and brand-600 only reaches 4.15:1 at the 16px
+  minimum of `font-size|300`, so the trigger now rests on brand-700 at 5.81:1.
+  The phone icon beside it moves with it, because an icon needs 3:1 too. The
+  trigger's hover goes one step darker again, to brand-800.
 
 - 🔎 **Search results: the hero banner, phone stack included.** LS-2024.
   `patterns/template-page-search.php` drops the banner's inline spacing-40
