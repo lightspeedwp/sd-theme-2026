@@ -33,7 +33,7 @@
  */
 const STATIC_ROUTES = [
 	{ name: 'front page', path: '/', template: 'front-page.html', smoke: true },
-	{ name: 'blog', path: '/blog/', template: 'index.html' },
+	{ name: 'blog', path: '/blog/', template: 'home.html' },
 	{ name: 'contact', path: '/contact/', template: 'page.html' },
 	{ name: 'tour archive', path: '/tours/', template: 'archive-tour.html', smoke: true },
 	{

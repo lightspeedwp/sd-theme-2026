@@ -46,7 +46,11 @@ async function resolvePreset( page, property, variable ) {
  * Declare the hero banner tests for a set of routes.
  *
  * @param {Object}   deps        `{ test, expect }` from fixtures/base.js.
- * @param {Object[]} routeConfig `{ name, path( routes ), strapline }` entries.
+ * `path` may be async and receives the page's request context as a second
+ * argument, for a route that has to be looked up in the REST API first (an
+ * author archive has no entry in the resolved routes). Return null to skip.
+ *
+ * @param {Object[]} routeConfig `{ name, path( routes, request ), strapline }` entries.
  */
 function describeHeroBanners( { test, expect }, routeConfig ) {
 	for ( const route of routeConfig ) {
@@ -56,7 +60,7 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				visit,
 				routes,
 			} ) => {
-				const target = route.path( routes );
+				const target = await route.path( routes, page.request );
 				test.skip( ! target, `No ${ route.name } on ${ routes.baseURL }` );
 
 				await page.setViewportSize( { width: 1280, height: 800 } );
@@ -91,7 +95,7 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				visit,
 				routes,
 			} ) => {
-				const target = route.path( routes );
+				const target = await route.path( routes, page.request );
 				test.skip( ! target, `No ${ route.name } on ${ routes.baseURL }` );
 
 				await page.setViewportSize( { width: 1280, height: 800 } );
@@ -115,7 +119,7 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				visit,
 				routes,
 			} ) => {
-				const target = route.path( routes );
+				const target = await route.path( routes, page.request );
 				test.skip( ! target, `No ${ route.name } on ${ routes.baseURL }` );
 
 				await page.setViewportSize( { width: 375, height: 667 } );

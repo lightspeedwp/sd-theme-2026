@@ -1,12 +1,12 @@
 <?php
 /**
- * Title: Template: Category
+ * Title: Template: Blog Archive
  * Slug: sd-theme-2026/template-category
- * Description: Blog category archive body — the photographic banner titled with the queried category, the breadcrumb strip, a "Back To Blog" link, the paginated list of post rows, and the value band that closes the page.
+ * Description: Blog archive body for a category, a tag or an author — the photographic banner titled with the queried term or author, the breadcrumb strip, a "Back To Blog" link, the paginated list of post rows, and the value band that closes the page.
  * Categories: hidden
- * Keywords: template, category, archive, blog, news, query, tales
+ * Keywords: template, category, tag, author, archive, blog, news, query, tales
  * Block Types: core/query
- * Template Types: category
+ * Template Types: category, tag, author
  * Post Types: wp_template
  * Inserter: false
  * Viewport Width: 1500
@@ -30,6 +30,31 @@
  *
  * It is the blog landing with the intro band taken out and a back-link put in.
  * → patterns/template-home-blog.php
+ *
+ * ## One blog archive — category, tag and author
+ *
+ * Since 2026-09-24 `templates/tag.html` and `templates/author.html` render this
+ * pattern too. Until then the tag template pointed at, and author archives
+ * fell through (via `archive.html`) to, `template-page-archive` — the
+ * KWV base's three-up card grid under a plain uppercase heading, which was
+ * never measured against this site and was the one post archive with no hero
+ * banner.
+ *
+ * Live's tag archive (`/tag/fam-trip/`, measured 2026-09-24) is this page with
+ * the banner collapsed: the same `a.back-to-blog`, the same `.post-wrapper`
+ * rows, the same `#footer-choose-cta`, and its only `h1` is the
+ * `display: none` `archive-title`. So a tag reads as a category here, banner
+ * and visible `h1` included. The banner is the blog's own, not a new element,
+ * and giving the page a heading a sighted reader can see is the project's
+ * accessibility floor, not a redesign. Author archives are indexed on dev (Yoast
+ * `disable-author` is off) and list the same post rows; date archives are
+ * redirected away by Yoast (`disable-date` on), so there is no `date.html`.
+ *
+ * Nothing below is category-specific. `core/query-title` with `showPrefix`
+ * off prints the bare tag name or author display name, and the query inherits.
+ * The `sd/term-meta` binding and `sd-enhancements`' TermBanner swap both
+ * return early unless the queried object is a `WP_Term` carrying `banner`
+ * meta, so a tag, or an author, wears the fallback photograph below.
  *
  * ## What this file replaces
  *
@@ -139,8 +164,16 @@
 <!-- wp:group {"tagName":"main","metadata":{"name":"Category Archive"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
 <main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
 
-	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner","bindings":{"url":{"source":"sd/term-meta","args":{"key":"banner","format":"attachment-url"}}}},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+	<?php
+	/*
+	 * The hero banner — `patterns/hero-page-banner.php` with `core/query-title`
+	 * in place of the post title. No padding of its own since 2026-09-24:
+	 * `is-style-hero-banner` sets it, and an inline `style` would outrank both
+	 * that and the phone stack in `style.css`.
+	 */
+	?>
+	<!-- wp:cover {"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg","alt":"","dimRatio":100,"overlayColor":"neutral-900","isUserOverlayColor":true,"minHeight":360,"minHeightUnit":"px","contentPosition":"bottom center","align":"full","className":"is-style-hero-banner","tagName":"section","metadata":{"name":"Banner","bindings":{"url":{"source":"sd/term-meta","args":{"key":"banner","format":"attachment-url"}}}},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-cover alignfull has-custom-content-position is-position-bottom-center is-style-hero-banner" style="min-height:360px"><span aria-hidden="true" class="wp-block-cover__background has-neutral-900-background-color has-background-dim-100 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/about-us-banner.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
 
 		<?php
 		/*

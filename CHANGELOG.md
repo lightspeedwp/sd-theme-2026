@@ -8,6 +8,20 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✅ **`tests/e2e/templates/blog.spec.js`.** LS-2022. Runs the shared hero
+  banner contract on the blog landing and on the category, tag and author
+  archives, then checks: the landing's "Blog" `h1`, its "Tales from our trails"
+  `h2` and category shelf, newest-first rows and a working page 2; each archive
+  titled with its bare name, linking back to the blog, with every row belonging
+  to what was queried; the single post with no banner and no featured image,
+  date and author above the `h1`, categories below; a related shelf of 1–15
+  posts that all share a category and never include the post being read; and
+  the pager. `tests/e2e/utils/hero-banner.js` now accepts an async
+  `path( routes, request )`, because dev refuses anonymous `/wp/v2/users` and
+  `/?author=` lookups and the author archive has to be read off a byline.
+  `fixtures/routes.js` maps `/blog/` to `home.html`, which is what resolves,
+  not `index.html`.
+
 - ✅ **`tests/e2e/templates/specials.spec.js`.** LS-2021. Runs the shared
   hero banner contract (`tests/e2e/utils/hero-banner.js`) on `/specials/`, and checks the
   offer bands: at most four to a page with one `h2` each, a unique
@@ -334,6 +348,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 🖼️ **The blog banners are the hero banner, phone stack included.** LS-2022.
+  `patterns/template-home-blog.php` and `patterns/template-category.php` drop
+  their inline spacing-40 padding, as the specials and accommodation banners
+  did, so `is-style-hero-banner` sets the padding (90 top, 50 bottom) and the
+  phone stack in `style.css` applies without fighting an inline style.
+
+- 🏷️ **Tag and author archives are the blog archive.** LS-2022.
+  `templates/tag.html` now renders `sd-theme-2026/template-category` (retitled
+  "Template: Blog Archive", slug unchanged), and a new `templates/author.html`
+  does the same: hero banner titled with the bare tag or author name, "Back To
+  Blog", the post rows, the value band. Both previously landed on
+  `template-page-archive`, the KWV base's card grid with no banner. Live's tag
+  archive is the category archive with its banner collapsed and its only `h1`
+  hidden. Author archives are indexed on dev; date archives are redirected by
+  Yoast, so there is no `date.html`. `archive.html` stays as the generic
+  fallback for `post_format`, `special-type` and `role`.
 
 - 🖼️ **The Specials banner is the hero banner, phone stack included.**
   LS-2021. `patterns/template-archive-special.php` drops its inline spacing-40
