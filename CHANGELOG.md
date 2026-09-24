@@ -9,7 +9,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 
 - ✅ **`tests/e2e/templates/specials.spec.js`.** LS-2021. Runs the shared
-  hero banner contract (`utils/hero-banner.js`) on `/specials/`, and checks the
+  hero banner contract (`tests/e2e/utils/hero-banner.js`) on `/specials/`, and checks the
   offer bands: at most four to a page with one `h2` each, a unique
   `special-{slug}` anchor on every band that a `/specials/#…` link scrolls to,
   the 540px floor with the photograph filling the band, the 460px panel
