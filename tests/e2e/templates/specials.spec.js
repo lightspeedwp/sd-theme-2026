@@ -56,8 +56,14 @@ const MODAL = '#to-modal-modal-special';
 async function visitSpecials( { page, visit, routes } ) {
 	await visit( envPath( routes, '/specials/' ) );
 
+	const response = await page.request.get( '/wp-json/wp/v2/special?per_page=1&status=publish&_fields=id' );
+	expect( response.ok(), 'Could not check whether specials are published' ).toBe( true );
+	const published = await response.json();
+	expect( Array.isArray( published ), 'Specials API did not return a list' ).toBe( true );
+	test.skip( 0 === published.length, 'No published specials in this environment' );
+
 	const bands = page.locator( BAND );
-	test.skip( 0 === ( await bands.count() ), 'No published specials in this environment' );
+	await expect( bands, 'Published specials have no matching offer bands' ).not.toHaveCount( 0 );
 
 	return bands;
 }
@@ -124,11 +130,15 @@ test.describe( 'Specials offer bands', () => {
 
 			if ( await image.count() ) {
 				await expect( image ).toHaveCSS( 'position', 'absolute' );
-				const imageBox = await image.boundingBox();
+				const photograph = image.locator( 'img' );
+				await expect( photograph ).toHaveCount( 1 );
+				const imageBox = await photograph.boundingBox();
+				expect( Math.abs( imageBox.width - box.width ), `band ${ i + 1 }'s photograph does not fill its width` ).toBeLessThanOrEqual( 1 );
 				expect( Math.abs( imageBox.height - box.height ), `band ${ i + 1 }'s photograph does not fill it` ).toBeLessThanOrEqual( 1 );
 			}
 
 			const panel = await band.locator( ':scope > .wp-block-group' ).boundingBox();
+			expect( panel.width, `band ${ i + 1 }'s panel is narrower than 460px` ).toBeGreaterThanOrEqual( 459 );
 			expect( panel.width, `band ${ i + 1 }'s panel is wider than 460px` ).toBeLessThanOrEqual( 461 );
 
 			// Odd bands (1st, 3rd) hold the panel on the leading edge, even on the trailing.
@@ -162,7 +172,7 @@ test.describe( 'Specials offer bands', () => {
 		const bands = await visitSpecials( { page, visit, routes } );
 		const count = await bands.count();
 
-		for ( let i = 0; i < Math.min( count, 2 ); i++ ) {
+		for ( let i = 0; i < count; i++ ) {
 			const box = await bands.nth( i ).boundingBox();
 			const panel = await page.locator( PANEL ).nth( i ).boundingBox();
 

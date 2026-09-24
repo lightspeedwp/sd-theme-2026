@@ -43,9 +43,17 @@
  * `initial-letter` would express the whole of this in two values and is
  * unusable here: Firefox has never shipped it, so it would silently fall back
  * to no cap at all in a browser that renders every other part of the page.
+ *
+ * **One cap per standfirst, not one per paragraph.** A standfirst can run to
+ * more than one paragraph — Social Responsibility's does, and live sets both
+ * in the intro's italic at 18px while capping only the first. So the rule
+ * skips an intro paragraph that directly follows another, and an editor gives
+ * every paragraph of the standfirst the same style without a second cap
+ * appearing. The complex selector inside `:not()` is Selectors 4 and ships in
+ * every engine this site supports.
  */
 @media (min-width: 900px) {
-	.is-style-archive-intro::first-letter {
+	.is-style-archive-intro:not(.is-style-archive-intro + .is-style-archive-intro)::first-letter {
 		float: left;
 		margin-block-start: 0.09em;
 		margin-block-end: -0.2em;

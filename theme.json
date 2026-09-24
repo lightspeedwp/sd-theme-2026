@@ -1193,7 +1193,7 @@
 		},
 		{
 			"name": "page-no-title",
-			"title": "Page (Full Width, No Title)",
+			"title": "Page (Full Width, Banner)",
 			"postTypes": [
 				"page",
 				"post"

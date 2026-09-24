@@ -15,9 +15,20 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   keyword box, results toolbar, count or sort; and that the search page's
   keyword box stays on screen above the Filters button on phones while the
   panel carries only the Content Type facet.
+- ✅ **`tests/e2e/templates/static-pages.spec.js`.** LS-2015. Runs the shared
+  hero banner contract (`utils/hero-banner.js`) on About Us, its three children
+  and Contact Us, and checks each page: the page title as the banner's only
+  `h1`, the strapline ("About Us", "Get in Touch", none on About Us), no banner
+  left in the page content, the breadcrumb strip directly under the banner, and
+  the one "Why choose" band. For the standfirsts it checks
+  `is-style-archive-intro` with no core `.has-drop-cap`, a 3.2em brand-500 cap
+  from 900px up and none below, and one cap per standfirst. It also checks the
+  current Trustpilot badge and Read Our Reviews link on Why Book With Us, the
+  brand-logo carousel there, the current post-grid card on Connect With Us, and
+  Contact's stacked badge beside the review carousel.
 
 - ✅ **`tests/e2e/templates/specials.spec.js`.** LS-2021. Runs the shared
-  hero banner contract (`utils/hero-banner.js`) on `/specials/`, and checks the
+  hero banner contract (`tests/e2e/utils/hero-banner.js`) on `/specials/`, and checks the
   offer bands: at most four to a page with one `h2` each, a unique
   `special-{slug}` anchor on every band that a `/specials/#…` link scrolls to,
   the 540px floor with the photograph filling the band, the 460px panel
@@ -364,6 +375,40 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   the `card-search-result.php` rows on an inherited FacetWP-enabled loop, and
   the `pager_` facet. Replaces the plain heading, term description and
   three-across blog card grid.
+- 🖼️ **The static pages take their banner from the template.** LS-2015.
+  `patterns/template-page-full.php`, `patterns/hero-page-banner.php`,
+  `theme.json`, `style.css`, `PATTERNS.md`.
+
+  About Us, Why Book With Us, Social Responsibility, Connect With Us and Contact
+  Us all sit on `page-no-title`. Each carried its own banner in its content: a
+  454px cover with inline padding, a raw `#636c75` overlay and an `h2` eyebrow
+  above the title. The template now composes `hero-page-banner.php` and
+  `breadcrumbs.php` above the content, the same way every Tour Operator
+  template does, and `<main>` takes their `blockGap: 0`. The page's featured
+  image is the photograph. Its `banner_subtitle` meta is the strapline, now
+  bound to `sd-enhancements`' `sd/banner` source, which the pattern's docblock
+  had been waiting for.
+
+  The strapline's authored fallback is now empty. It was "Your African
+  adventure starts here!", which would have printed on About Us, where live
+  shows no tagline. `p:empty` hides an empty strapline so it doesn't hold the
+  gap. The template's label is now "Page (Full Width, Banner)". Its slug stays
+  `page-no-title`, because that is the value stored on all five pages.
+
+  ⚠️ **Deploy step.** Environments that already hold the old About Us / Contact
+  page content still need those legacy in-body cover blocks removed from the
+  stored page bodies, or the template banner will render above a second banner.
+  `tests/e2e/templates/static-pages.spec.js` is the verification step for that
+  cleanup.
+
+  `page-variants.spec.js` now expects the variant's one `h1` in the banner,
+  not no title at all.
+
+- 🔠 **The archive intro caps a standfirst once, not once per paragraph.**
+  LS-2015. `assets/styles/core-paragraph.css`. The drop-cap rule skips an
+  `is-style-archive-intro` paragraph that directly follows another, so a
+  two-paragraph standfirst (Social Responsibility's) takes the style on both
+  paragraphs and gets one cap, as live does.
 
 - 🖼️ **The Specials banner is the hero banner, phone stack included.**
   LS-2021. `patterns/template-archive-special.php` drops its inline spacing-40
