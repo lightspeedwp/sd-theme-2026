@@ -90,8 +90,9 @@ test.describe( 'Accessibility — static routes @a11y', () => {
 		} ) => {
 			await visit( route.path );
 
+			// `axeDisable` is a per-route decision, documented in routes.js.
 			check(
-				await scan( page ),
+				await scan( page, { disableRules: route.axeDisable || [] } ),
 				route.path,
 				route.template
 			);
