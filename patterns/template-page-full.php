@@ -1,10 +1,10 @@
 <?php
 /**
- * Title: Template: Page (Full Width, No Title)
+ * Title: Template: Page (Full Width, Banner)
  * Slug: sd-theme-2026/template-page-full
- * Description: Page template body — light header, full-width post content with no page title, then the "Why choose Southern Destinations" closing band, dark footer. Used by the "Page (Full Width, No Title)" template.
+ * Description: Page template body — the hero banner (featured image, title, banner_subtitle strapline) and the breadcrumb trail, full-width post content, then the "Why choose Southern Destinations" closing band. Used by the "Page (Full Width, Banner)" template — About Us, its three children and Contact Us.
  * Categories: hidden
- * Keywords: template, page, full width, no title
+ * Keywords: template, page, full width, banner, hero
  * Block Types: core/post-content
  * Template Types: page
  * Post Types: wp_template
@@ -16,8 +16,38 @@
 
 ?>
 
-<!-- wp:group {"tagName":"main","align":"full","style":{"spacing":{"margin":{"top":"0"}}},"layout":{"type":"constrained"}} -->
-<main class="wp-block-group alignfull" style="margin-top:0">
+<!-- wp:group {"tagName":"main","metadata":{"name":"Page"},"align":"full","style":{"spacing":{"blockGap":"0","margin":{"top":"0","bottom":"0"},"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"},"anchor":"content"} -->
+<main class="wp-block-group alignfull" id="content" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
+
+	<?php
+	/*
+	 * The banner and the trail, as every Tour Operator template composes them.
+	 *
+	 * Until 2026-09-23 each of this template's five pages carried its own
+	 * banner inside its content: a 454px cover with inline padding, a raw
+	 * `#636c75` overlay and an "About Us" `<h2>` eyebrow above the real title —
+	 * five copies of a device the theme had already replaced, which is why they
+	 * drifted from `patterns/hero-page-banner.php` the moment it changed. The
+	 * banner is a template concern for the same reason the closing band below
+	 * is: it belongs to every page this template serves, and declaring it once
+	 * is what keeps it the one banner.
+	 *
+	 * The page's featured image is the photograph (`useFeaturedImage`) and its
+	 * `banner_subtitle` meta is the strapline, through `sd/banner`. Nothing per
+	 * page is left in the markup, so an editor sets both in the page sidebar
+	 * and never touches the banner itself.
+	 *
+	 * The title is now visible, so this is no longer a "no title" template in
+	 * anything but its slug. The slug stays `page-no-title`: it is the value
+	 * stored in each page's `_wp_page_template`, and renaming it would orphan
+	 * all five. Only the label in theme.json changed.
+	 *
+	 * `require`, for the reason given at the closing band below.
+	 */
+	require __DIR__ . '/hero-page-banner.php';
+	require __DIR__ . '/breadcrumbs.php';
+	?>
+
 	<!-- wp:post-content {"align":"full","layout":{"type":"constrained"}} /-->
 
 	<?php

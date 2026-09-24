@@ -53,19 +53,24 @@
  * hidden. Here the page title is the h1 (`core/post-title`, so it stays
  * dynamic) and the strapline is a plain paragraph, because it heads nothing.
  *
- * ## The strapline is a placeholder, on purpose
+ * ## The strapline is bound; the authored copy is only its fallback
  *
  * Live's subtitle is dynamic: `sd-lsx-child/classes/class-sd-banner-integration.php`
  * (line 52-71) reads the `banner_subtitle` post meta, falling back to the parent
  * destination's title on `destination` singles and to `reviewer_name` on
- * `review` singles. That filter is registered against `lsx_banner_title` and is
- * **not firing on live today** — every page measured renders the post title
- * straight into the `<h1>` with no `.sd-taglines` at all.
+ * `review` singles.
  *
- * Reproducing the fallback chain needs a binding source in `sd-enhancements`,
- * not markup here, so the paragraph below is authored and editable for now. When
- * that source lands, this paragraph gains a `bindings` entry and nothing else
- * about the pattern changes. → AGENTS.md, "theme = design, plugin = behaviour"
+ * That chain is `sd-enhancements`' `sd/banner` source, key `subtitle`
+ * (modules/bindings.php), and the paragraph below is bound to it as of
+ * 2026-09-23 — the step this note used to promise. Set a page's strapline as
+ * its `banner_subtitle` meta. When the source returns null (no meta, or
+ * `sd-enhancements` inactive) core keeps the authored copy — and the authored
+ * copy is empty, deliberately. It was "Your African adventure starts here!"
+ * until 2026-09-23, which then printed on every page with no subtitle of its
+ * own: live's About Us has none, and would have gained a line live never
+ * shows. An empty strapline is hidden by `p:empty` in style.css ("Hero banner
+ * — the empty strapline"), so a page with no subtitle gets the title alone.
+ * → AGENTS.md, "theme = design, plugin = behaviour"
  *
  * ## Why a fixed floor and not an aspect ratio
  *
@@ -144,12 +149,12 @@
 		 * treatment and is uppercase by definition.
 		 *
 		 * A paragraph, not a heading — it is a strapline under the h1, and it
-		 * heads nothing. Delete it on a post type that has no subtitle; the
-		 * banner is composed to read correctly without it.
+		 * heads nothing. It hides itself when empty, so there is no need to
+		 * delete it on a post that has no subtitle.
 		 */
 		?>
-		<!-- wp:paragraph {"metadata":{"name":"Strapline"},"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
-		<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--medium)"><?php esc_html_e( 'Your African adventure starts here!', 'sd-theme-2026' ); ?></p>
+		<!-- wp:paragraph {"metadata":{"name":"Strapline","bindings":{"content":{"source":"sd/banner","args":{"key":"subtitle"}}}},"className":"is-style-subheading-large","style":{"typography":{"fontWeight":"var:custom|font-weight|medium"}},"fontFamily":"heading"} -->
+		<p class="is-style-subheading-large has-heading-font-family" style="font-weight:var(--wp--custom--font-weight--medium)"></p>
 		<!-- /wp:paragraph -->
 
 	</div>
