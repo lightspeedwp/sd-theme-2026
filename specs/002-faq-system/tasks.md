@@ -98,6 +98,11 @@ empty — on every one of the nine approved placements.
 **Independent Test**: quickstart.md steps 1 and 7 — load each placement as a visitor,
 confirm collapsed-by-default questions, confirm empty pages show no FAQ section at all.
 
+**Decision 2026-09-21**: T008–T015 (the actual placement insertions) will be done manually
+by the user, not by an agent — each needs a live-site position check the user prefers to
+make directly. Left unchecked below as a record of what's still needed; T016 (coverage
+check) still applies once they're done, from either side.
+
 - [x] T006 [US1] **Done 2026-09-21.** Measured via `do_blocks()`: an emptied accordion
       (item removed, pattern instance left in place) does **not** render nothing — the
       heading and an empty accordion `<div>` both still render. Full detail and exact
@@ -259,10 +264,11 @@ markup for FAQ content.
       built in Phase 2) against `contracts/faq-markup-contract.md`'s documented shape;
       correct the contract file if core's real output differs from what was drafted during
       planning (class names, nesting, `hidden` attribute value).
-- [ ] T029 [US5] Grep `patterns/faq-section.php` and `parts/faq-section.html` to confirm
+- [x] T029 [US5] Grep `patterns/faq-section.php` and `parts/faq-section.html` to confirm
       neither echoes JSON-LD, a `<script type="application/ld+json">` block, or any other
       structured-data markup — this theme must not introduce a second FAQ schema source
-      alongside whatever `ls-plugin` builds (FR-015).
+      alongside whatever `ls-plugin` builds (FR-015). **Done 2026-09-21** — grepped for
+      `ld+json`/`application/ld`/`schema.org`; no matches in either file.
 - [ ] T030 [US5] Hand off `contracts/faq-markup-contract.md` (as corrected in T028) to
       whoever plans the `ls-plugin` side of LS-4215 — no further action in this repository.
 
