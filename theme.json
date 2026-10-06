@@ -1297,6 +1297,21 @@
 			"name": "modal-special",
 			"title": "Modal — Special",
 			"area": "modals"
+		},
+		{
+			"name": "faq-countries",
+			"title": "FAQ — Countries",
+			"area": "faq"
+		},
+		{
+			"name": "pages",
+			"title": "FAQ — Pages",
+			"area": "faq"
+		},
+		{
+			"name": "destinations",
+			"title": "FAQ — Destinations",
+			"area": "faq"
 		}
 	]
 }

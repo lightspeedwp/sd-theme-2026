@@ -8,6 +8,22 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **FAQ template parts captured from the dev Site Editor.** ASD-36.
+  `parts/faq-countries.html`, `parts/pages.html` and
+  `parts/destinations.html` existed only as database parts on dev. They are
+  now theme files, registered in `theme.json` under a new `faq` part area,
+  which `functions.php` adds beside `sidebar`. Each part closes its template:
+  `template-single-country`, `template-page-full` (Page, Full Width, Banner)
+  and `template-archive-destination` now end their `<main>` with the matching
+  part. Only that addition was taken from the dev overrides. The rest of each
+  override was editor re-serialisation, or a copy older than the theme. The
+  `page-no-title` override still carried the pattern from before 2026-09-24,
+  with no banner, no breadcrumbs and no `#content` skip-link target, so those
+  stay as the theme has them. The `404`, `front-page` and `single-destination`
+  overrides and the `modal-enquiry` and `modal-accommodation` overrides held
+  no intended change and were not captured. Every override on dev is reset
+  once this deploys.
+
 - ✅ **`tests/e2e/templates/search-and-archive.spec.js`.** LS-2024.
   Runs the shared hero banner contract (`utils/hero-banner.js`) on the search
   results, and checks that the search page's keyword box stays on screen above
