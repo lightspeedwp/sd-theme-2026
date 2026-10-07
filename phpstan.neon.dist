@@ -1,0 +1,22 @@
+# PHPStan — `composer run phpstan` / `npm run lint:phpstan`.
+#
+# Level 5 against the WordPress stubs (szepeviktor/phpstan-wordpress), over the
+# theme's shipped PHP: functions.php and inc/. tests/bin is tooling that runs
+# inside WP-CLI against Theme Check, neither of which has stubs here.
+# Patterns are left out deliberately — they are block markup in a .php file,
+# written to core's form (AGENTS.md), and phpcs already holds them to it.
+#
+# If a run ever reports findings, record them in phpstan-baseline.neon with
+# `vendor/bin/phpstan --generate-baseline` and include it here; shrink it,
+# never grow it. The first run, 2026-10-07, found none.
+
+includes:
+	- vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+	level: 5
+	phpVersion: 70400
+	paths:
+		- functions.php
+		- inc
+	treatPhpDocTypesAsCertain: false

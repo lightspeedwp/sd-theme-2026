@@ -85,6 +85,46 @@ is Chromium unless it says otherwise.
 `firefox` and `webkit` run `@smoke` rather than everything: a full pass per
 engine triples the load on a shared dev host for very little signal.
 
+## The block editor — `@wordpress/e2e-test-utils-playwright`
+
+`editor` specs can import `test` and `expect` from
+[`@wordpress/e2e-test-utils-playwright`](https://www.npmjs.com/package/@wordpress/e2e-test-utils-playwright)
+to get Gutenberg's own fixtures: `admin`, `editor`, `pageUtils` and
+`requestUtils`.
+
+- **`editor/block-validation.spec.js`** parses every template and part (from
+  this working copy) and every registered `sd-theme-2026/*` pattern (from the
+  site) with the editor's own `wp.blocks.parse()`, and fails on any block the
+  editor would open as "unexpected or invalid content", or any block type the
+  site has not registered. A control test proves the checker can fail.
+- **One sign-in.** `auth.setup.js` signs in with the package's
+  `RequestUtils.setupRest()`, which writes cookies *and* a REST nonce to
+  `tests/e2e/.auth/admin.json`. Specs on the package's `test` call
+  `requestUtils.rest( { path } )` without minting a nonce.
+  `editor/template-overrides.spec.js` still mints its own and is unchanged.
+- **The package reads its own variable names** (`WP_BASE_URL`, `WP_USERNAME`,
+  `WP_PASSWORD`, `STORAGE_STATE_PATH`) and defaults to wp-env's. Mapped across
+  by `bridgeToWordPressTestUtils()` in `utils/env.js`, *after* the host
+  allowlist — set `WP_ADMIN_USER` / `WP_ADMIN_PASS` as before.
+
+## Announcements — `@wordpress/a11y`
+
+`utils/live-regions.js` reads the two live regions `@wordpress/a11y`'s
+`speak()` writes into (`#a11y-speak-polite`, `#a11y-speak-assertive`):
+`expectAnnounced( page, /results found/i )`. Its Vitest twin,
+`tests/unit/helpers/live-regions.js`, runs the real package in jsdom.
+
+## Theme contract tests (Vitest)
+
+`npm run test:unit` also runs `tests/unit/theme/` — static checks over the
+authored files, no WordPress and no browser:
+
+| Spec | Checks |
+| --- | --- |
+| `theme-json.test.js` | theme.json is version 3 with no core default presets; every style variation is valid JSON with a unique basename |
+| `preset-references.test.js` | every `var:preset\|…`, `--wp--preset--…`, `var:custom\|…` and `--wp--custom--…` reference outside comments is defined |
+| `templates.test.js` | exactly one `<main>` per template, through its parts and patterns; part and pattern references resolve; no `wp:navigation` or `wp:block` `ref`; every pattern has a Title and a namespaced Slug |
+
 ## How it is put together
 
 | Path | What it does |

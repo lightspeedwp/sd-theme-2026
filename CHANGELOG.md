@@ -8,6 +8,53 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🧪 **A lint ratchet and a known-violations list, so CI gates on new
+  findings only.** ASD-36. `tests/bin/lint-baseline.js` records ESLint,
+  Stylelint and markdownlint errors per file and rule in `tests/baselines/`
+  (7, 430 and 48 on 2026-10-07, all in shipped code, not the harness — ESLint's
+  38 fell to 7 once the shipped scripts were Prettier-formatted) and
+  fails on any increase, or on a decrease the baseline doesn't record yet.
+  The nine contract-test findings (six hard-coded `wp:navigation` refs, three
+  undefined `spacing|0` presets) are in `tests/baselines/known-violations.json`,
+  which the tests match exactly. `npm run lint:baseline`,
+  `npm run lint:baseline:update`; `tests/baselines/README.md`.
+
+- ✅ **A full QA harness: Vitest contract tests, PHPUnit, PHPStan, Theme Check
+  and the WordPress linters.** ASD-36. `npm run lint` and `npm run test` run
+  everything that needs no browser; `tests/php/README.md` and
+  `tests/e2e/README.md` explain each layer.
+  - **Theme contract tests (Vitest).** `tests/unit/theme/` runs in jsdom through
+    `wp-scripts test-unit-js` and checks the authored files against AGENTS.md: theme.json and style variations, every token
+    reference defined, exactly one `<main>` per template, part and pattern
+    references resolve, no per-install `ref` ids, pattern headers.
+  - **`@wordpress/a11y` in both suites.** Vitest and Playwright helpers that read
+    back what core's `speak()` announced.
+  - **`@wordpress/e2e-test-utils-playwright`.** New
+    `editor/block-validation.spec.js` parses every template, part and theme
+    pattern with the editor's own parser and fails on invalid or unregistered
+    blocks. `auth.setup.js` now signs in through the package's `RequestUtils`.
+  - **PHPUnit integration suite** (`composer run test`): theme setup, block
+    styles, pattern categories, every pattern registered and rendering without
+    a PHP error, every template and part resolving from its file. 194 tests.
+  - **PHPStan** level 5 over `functions.php` and `inc/` — clean.
+  - **Composer-managed phpcs** with PHPCompatibilityWP (PHP 7.4+), replacing
+    the global install; `.phpcs.xml.dist` is otherwise unchanged and clean.
+  - **ESLint, Stylelint, markdownlint, npm-package-json-lint**, `check:engines`
+    and `check:licenses` through `@wordpress/scripts`. `eslint.config.cjs` (flat
+    config, ESLint 10) keeps the shipped scripts' ES5 house style and the
+    `@package` header convention.
+  - **Current toolchain.** Node 24 LTS (`.nvmrc`, read by every workflow;
+    `engines` ≥ 24.15 / npm ≥ 11), `@wordpress/scripts` 36, and every action
+    pinned by SHA to its latest release (checkout v7.0.1, setup-node v7.0.0,
+    upload-artifact v7.0.2, setup-php 2.37.2). Composer dev constraints raised
+    to the installed versions.
+  - **Theme Check.** `npm run check:theme` runs the wordpress.org Theme Check
+    through WP-CLI (`tests/bin/theme-check.php`). No REQUIRED findings.
+  - **CI.** New `lint.yml` (PHP syntax on 7.4 and 8.3, phpcs, PHPStan, JS) and
+    `php-tests.yml` (WordPress 7.1, Tour Operator 2.2.0, Ollie Menu Designer).
+    Vitest, ESLint, Stylelint and markdownlint report without gating until the
+    findings below are resolved.
+
 - **`patterns/card-mega-menu.php` — the mega menus' featured card, as a theme
   pattern.** ASD-36. Replicated unchanged from the synced pattern "Card - Mega
   Menu" (`wp_block` 65890). See Changed for the four parts that now use it.
@@ -390,6 +437,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- 🚦 **The JS lint job gates again.** ASD-36. ESLint, Stylelint and
+  markdownlint and the Jest contract tests lost `continue-on-error`; the lint steps now run the
+  ratchet instead of the raw linter.
+
 - ✅ **The static page tests follow the 2026-09-24 page decisions.** LS-2015.
   `tests/e2e/templates/static-pages.spec.js`, `tests/e2e/fixtures/routes.js`,
   `tests/e2e/a11y/templates.a11y.spec.js`.
@@ -768,7 +819,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   are two:
 
   | Ground | Hover | Ratio | `brand-500` there |
-  |---|---|---|---|
+  | --- | --- | --- | --- |
   | Widget band (≈ `neutral-200`) | `brand-700` | 5.81:1 | 2.92:1 ✗ |
   | Colophon (`primary-600`) | `brand-400` | 5.75:1 | 3.96:1 ✗ |
 
@@ -1013,6 +1064,15 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
+
+- 🐛 **The harness's own JS linted dirty.** ASD-36. Prettier and JSDoc
+  across `tests/e2e/`, a shadowed `expect`, a literal no-break space in a
+  regex. `getComputedStyle` and `document.activeElement` are allowed in
+  `tests/e2e` because they run inside `page.evaluate()`.
+
+- 🐛 **`wp-scripts lint-js` crashed before linting anything.** ASD-36. npm
+  resolved TypeScript 7 as `@wordpress/eslint-plugin`'s peer, which the
+  bundled typescript-eslint 6 cannot load. `overrides` pins TypeScript ^5.9.
 
 - 🐛 **The itinerary no longer prints "Card Link" for a missing destination.**
   LS-2019 (line 9, Tour). `patterns/itinerary-stay.php`,
@@ -2294,7 +2354,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   now 600:
 
   | File | Was |
-  |---|---|
+  | --- | --- |
   | `styles/blocks/heading/section-title.json` | `bold` — the live `.lsx-title`, the most repeated device in the design |
   | `styles/blocks/heading/section-title-left.json` | `bold` |
   | `styles/sections/cards/team-archive-card.json` → `elements/heading` | `bold` |
@@ -3596,7 +3656,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   instance. The pagination link keeps `medium` and renders a true 500.
 
   | | Before (7 statics, v1.10) | After (2 variable, v3.003) |
-  |---|---|---|
+  | --- | --- | --- |
   | Weights available | 300, 400, 600 + italics; 700 normal | **any 300–700**, normal + italic |
   | Typical page (400 + 600 normal) | 89 KB | **61 KB** |
   | With italics (300/400/600 + 400i) | 145 KB | **125 KB** |
@@ -4392,7 +4452,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `li > a.wp-block-navigation-item__content` and picks up the variation:
 
   | | Navigation row | Query row, before |
-  |---|---|---|
+  | --- | --- | --- |
   | font-family | `body` | `heading` |
   | font-weight | `regular` | `semi-bold` |
   | letter-spacing | `0` | `heading` |
@@ -4422,7 +4482,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   against live on 2026-08-27, they do not:
 
   | Shared badge (`trustpilot-score.php`) | This band, on live |
-  |---|---|
+  | --- | --- |
   | `trustpilot-logo.svg`, `#191919` | `tp-logo-white-green.svg` — a **different file**: white wordmark, green star |
   | One row: word, mark, stars, score | Mark over stars over the score line |
   | Rating word rendered | `.tp-wording` is `display:none` sitewide (`sd-lsx-child/assets/css/partials/_cta.scss:731`) |
@@ -4453,7 +4513,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `styles/blocks/navigation/call-us-navigation.json`:
 
   | Was | Why it happened | Now |
-  |---|---|---|
+  | --- | --- | --- |
   | Panel hung ~50px low | theme.json's global block gap reached the panel as `:root :where(.is-layout-flow) > *{margin-block-start:…}`, and a margin on an absolutely positioned box is added to its inset | The panel is the plugin's container, not a flow child |
   | White bar under the closed trigger | Core closes with `hidden="until-found"`, which is `content-visibility`, not `display` | Ollie closes with `opacity`/`visibility` in its own stylesheet |
   | Dropdown opened by itself on hard refresh | `accordion-item.php` registers only `isOpen`; `isHidden` is derived in JS, so the server leaves the attribute off and the panel ships **open** until hydration (~1s on dev) | The resting state is CSS — shut on first paint, no JavaScript involved |
@@ -4643,7 +4703,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `(0,4,1)`:
 
   | Selector | Specificity | What it took |
-  |---|---|---|
+  | --- | --- | --- |
   | `.lsx-to-slider .slick-arrow` | `(0,2,0)` | `color:#fff`, `height:4rem`, `position`, `margin-top` |
   | `.wp-block-query.lsx-to-slider .slick-arrow` (and `::before`) | `(0,3,0)` / `(0,3,1)` | `width`/`height:30px` |
   | `.lsx-to-slider .slick-arrow:before` | `(0,2,1)` | `color:#fff`, `position:absolute`, `top:47%`, `transform` |
@@ -4889,7 +4949,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   alone picks the winner, and WordPress reverses it:
 
   | | Container rule | Variation rule | Winner | Child `margin-bottom` |
-  |---|---|---|---|---|
+  | --- | --- | --- | --- | --- |
   | Front end | **55** | 50 | container | `0px` |
   | Editor | 125 | **142** | variation | `16.814px` |
 
@@ -4913,7 +4973,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   Verified across eight parent shapes, front end and editor, before and after:
 
   | Shape | FE before | FE after | Editor before | Editor after |
-  |---|---|---|---|---|
+  | --- | --- | --- | --- | --- |
   | `section-title`, gap `spacing\|10` | 61.25 | **9.37** | 55.13 | **8.93** |
   | `section-title`, gap `spacing\|40` | 61.25 | **35.63** | 55.13 | **32.56** |
   | `section-title`, no parent gap | 61.25 | **52.81** | 55.13 | **47.78** |
@@ -4959,7 +5019,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   it. Measured on dev at 1440×900, 2026-08-27:
 
   | | |
-  |---|---|
+  | --- | --- |
   | `window.load` fired at | 7 802 ms (18 441 ms on a second run) |
   | panel first got its inline `top` | 7 870 ms — **+68 ms, every run** |
 
@@ -5301,7 +5361,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   carry one. The intended values are preserved on the markup:
 
   | Variation | blockGap | Now set on |
-  |---|---|---|
+  | --- | --- | --- |
   | `dark-page-section` | `spacing\|40` | `template-index-news.php`, `template-category.php` |
   | `light-page-section` | `spacing\|40` | `template-index-news.php`, `template-category.php`, `homepage-dream-trip.php`, `homepage-safari-gurus.php` |
   | `tinted-page-section` | `spacing\|40` | `template-archive-destination.php` |
@@ -5691,7 +5751,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   2026-08-21 — computed styles, not source — the header badge renders **two of its four children**:
 
   | Child | Live header |
-  |---|---|
+  | --- | --- |
   | `h3.tp-wording` "Excellent" | `display:none` |
   | `a.tp-review-logo` → `tp-logo.svg` | visible, 100×24 |
   | `a.tp-review-stars` → `5star.svg` | visible, 143×25 |
@@ -6123,7 +6183,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   Destinations owns:
 
   | File | Real identity | Embedding bits |
-  |---|---|---|
+  | --- | --- | --- |
   | `optima-400-normal.woff2` | `Optima` — **©1991 AG Baltia**, a 1993 clone | `fsType 1` — **embedding forbidden outright** |
   | `optima-500-normal.woff2` | `Optima Medium` — Adobe Systems 1995 | `fsType 260` — preview/print, **no subsetting** |
   | `optima-700-normal.woff2` | `Optima Demi Bold` — Adobe Systems 1995 | `fsType 4` — preview/print only |

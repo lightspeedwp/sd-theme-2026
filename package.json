@@ -1,14 +1,64 @@
 {
 	"name": "sd-theme-2026",
 	"version": "0.1.0",
-	"description": "Southern Destinations 2026 block theme — end-to-end test harness.",
+	"description": "Southern Destinations 2026 block theme — lint and test harness.",
+	"author": "LightSpeed",
 	"license": "GPL-2.0-or-later",
-	"private": true,
+	"keywords": [
+		"wordpress",
+		"wordpress-theme",
+		"block-theme",
+		"full-site-editing"
+	],
+	"homepage": "https://github.com/lightspeedwp/sd-theme-2026#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/lightspeedwp/sd-theme-2026.git"
+	},
+	"bugs": {
+		"url": "https://github.com/lightspeedwp/sd-theme-2026/issues"
+	},
 	"engines": {
-		"node": ">=20.0.0",
-		"npm": ">=10.0.0"
+		"node": ">=24.15.0",
+		"npm": ">=11.0.0"
+	},
+	"private": true,
+	"devDependencies": {
+		"@axe-core/playwright": "^4.13.0",
+		"@playwright/test": "^1.63.0",
+		"@vitest/coverage-v8": "^5.0.3",
+		"@wordpress/a11y": "^4.56.0",
+		"@wordpress/e2e-test-utils-playwright": "^2.1.0",
+		"@wordpress/eslint-plugin": "^27.0.0",
+		"@wordpress/scripts": "^36.0.0",
+		"axe-core": "^4.14.0",
+		"globals": "^17.13.0",
+		"jsdom": "^30.1.2",
+		"vite": "^8.3.3",
+		"vitest": "^5.0.3"
+	},
+	"overrides": {
+		"typescript": "^6.0.3"
 	},
 	"scripts": {
+		"lint": "npm run lint:js && npm run lint:css && npm run lint:md && npm run lint:pkg-json && npm run lint:php && npm run lint:phpstan",
+		"lint:js": "wp-scripts lint-js",
+		"lint:js:fix": "wp-scripts lint-js --fix",
+		"lint:css": "wp-scripts lint-style \"**/*.css\"",
+		"lint:css:fix": "wp-scripts lint-style \"**/*.css\" --fix",
+		"lint:md": "wp-scripts lint-md-docs",
+		"lint:baseline": "node tests/bin/lint-baseline.js",
+		"lint:baseline:update": "node tests/bin/lint-baseline.js --update",
+		"lint:pkg-json": "wp-scripts lint-pkg-json .",
+		"lint:php": "composer run lint",
+		"lint:php:fix": "composer run lint:fix",
+		"lint:phpstan": "composer run phpstan",
+		"format": "wp-scripts format",
+		"check:engines": "wp-scripts check-engines",
+		"check:licenses": "wp-scripts check-licenses --prod --gpl2",
+		"check:theme": "php -d memory_limit=1024M $(which wp) eval-file tests/bin/theme-check.php",
+		"test": "npm run test:unit && npm run test:php",
+		"test:php": "composer run test",
 		"test:e2e": "playwright test",
 		"test:e2e:ui": "playwright test --ui",
 		"test:e2e:debug": "playwright test --debug",
@@ -17,6 +67,9 @@
 		"test:e2e:firefox": "playwright test --project=firefox",
 		"test:e2e:webkit": "playwright test --project=webkit",
 		"test:e2e:ci": "playwright test --reporter=dot",
+		"test:unit": "wp-scripts test-unit-js",
+		"test:unit:watch": "wp-scripts test-unit-js --watch",
+		"test:unit:coverage": "wp-scripts test-unit-js --coverage",
 		"test:smoke": "playwright test --project=desktop --grep @smoke",
 		"test:templates": "playwright test --project=desktop tests/e2e/templates",
 		"test:parts": "playwright test --project=desktop tests/e2e/parts",
@@ -30,10 +83,5 @@
 		"test:visual:update": "SD_RUN_VISUAL=true playwright test --project=visual --update-snapshots",
 		"test:report": "playwright show-report tests/e2e/playwright-report",
 		"test:install": "playwright install --with-deps chromium firefox webkit"
-	},
-	"devDependencies": {
-		"@axe-core/playwright": "^4.13.0",
-		"@playwright/test": "^1.63.0",
-		"axe-core": "^4.13.0"
 	}
 }

@@ -131,7 +131,9 @@ test.describe( 'Live parity @parity', () => {
 		 */
 		const sample = livePaths.slice( 0, 8 );
 
-		const liveContext = await browser.newContext( { baseURL: LIVE_ORIGIN } );
+		const liveContext = await browser.newContext( {
+			baseURL: LIVE_ORIGIN,
+		} );
 		const livePage = await liveContext.newPage();
 
 		const differences = [];
@@ -148,10 +150,7 @@ test.describe( 'Live parity @parity', () => {
 			 * heading should survive. Compared normalised — curly quotes and
 			 * dashes legitimately change in migration.
 			 */
-			if (
-				live.h1 &&
-				normalise( live.h1 ) !== normalise( rebuilt.h1 )
-			) {
+			if ( live.h1 && normalise( live.h1 ) !== normalise( rebuilt.h1 ) ) {
 				differences.push(
 					`${ pathname }\n      live h1: "${ live.h1 }"\n      rebuilt: "${ rebuilt.h1 }"`
 				);
@@ -190,7 +189,9 @@ test.describe( 'Live parity @parity', () => {
 		browser,
 		page,
 	} ) => {
-		const liveContext = await browser.newContext( { baseURL: LIVE_ORIGIN } );
+		const liveContext = await browser.newContext( {
+			baseURL: LIVE_ORIGIN,
+		} );
 		const livePage = await liveContext.newPage();
 
 		await livePage.goto( LIVE_ORIGIN, { waitUntil: 'domcontentloaded' } );
@@ -241,7 +242,9 @@ test.describe( 'Live parity @parity', () => {
 				`\n  ⚠️ ${ missing.length } live navigation label(s) not found on the rebuild:\n` +
 					`     ${ missing.slice( 0, 40 ).join( ', ' ) }` +
 					( 40 < missing.length
-						? ` … and ${ missing.length - 40 } more (see the annotation)`
+						? ` … and ${
+								missing.length - 40
+							} more (see the annotation)`
 						: '' ) +
 					'\n' +
 					'     Review these — some are deliberate (WooCommerce, campaigns), some are not.\n'

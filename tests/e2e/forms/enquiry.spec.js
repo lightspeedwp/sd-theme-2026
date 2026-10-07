@@ -123,7 +123,9 @@ test.describe( 'Enquiry form', () => {
 			'No Gravity Form on /contact/'
 		);
 
-		const submit = form.locator( 'input[type="submit"], button[type="submit"]' ).first();
+		const submit = form
+			.locator( 'input[type="submit"], button[type="submit"]' )
+			.first();
 
 		test.skip(
 			0 === ( await submit.count() ),
@@ -179,7 +181,9 @@ test.describe( 'Enquiry form', () => {
 					0 < ( await validationMessages.count() ) ||
 					0 <
 						( await form
-							.locator( 'input:invalid, textarea:invalid, select:invalid' )
+							.locator(
+								'input:invalid, textarea:invalid, select:invalid'
+							)
 							.count() ),
 				{
 					message:
@@ -209,11 +213,20 @@ test.describe( 'Enquiry form', () => {
 		 * place one ends up pasted from.
 		 */
 		const markers = [
-			{ name: 'Salesforce settings blob', pattern: /gf_salesforce_settings/i },
+			{
+				name: 'Salesforce settings blob',
+				pattern: /gf_salesforce_settings/i,
+			},
 			{ name: 'Salesforce client secret', pattern: /client[_-]?secret/i },
 			{ name: 'Salesforce refresh token', pattern: /refresh[_-]?token/i },
-			{ name: 'Salesforce security token', pattern: /security[_-]?token/i },
-			{ name: 'generic API key assignment', pattern: /api[_-]?key["']?\s*[:=]\s*["'][A-Za-z0-9_\-]{16,}/i },
+			{
+				name: 'Salesforce security token',
+				pattern: /security[_-]?token/i,
+			},
+			{
+				name: 'generic API key assignment',
+				pattern: /api[_-]?key["']?\s*[:=]\s*["'][A-Za-z0-9_\-]{16,}/i,
+			},
 		];
 
 		const found = markers

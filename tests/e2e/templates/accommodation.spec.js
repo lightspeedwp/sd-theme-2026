@@ -36,7 +36,10 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
-const { describeHeroBanners, resolvePreset } = require( '../utils/hero-banner.js' );
+const {
+	describeHeroBanners,
+	resolvePreset,
+} = require( '../utils/hero-banner.js' );
 
 /**
  * A literal path, prefixed the way this environment's permalinks need.
@@ -49,8 +52,11 @@ const { describeHeroBanners, resolvePreset } = require( '../utils/hero-banner.js
  * @return {string} Path for this environment.
  */
 function envPath( routes, path ) {
-	const sample = routes.post( 'accommodation' ) || routes.post( 'tour' ) || '';
-	return `${ sample.startsWith( '/index.php/' ) ? '/index.php' : '' }${ path }`;
+	const sample =
+		routes.post( 'accommodation' ) || routes.post( 'tour' ) || '';
+	return `${
+		sample.startsWith( '/index.php/' ) ? '/index.php' : ''
+	}${ path }`;
 }
 
 /**
@@ -88,61 +94,127 @@ const ONE_REGION_BRAND = '/brand/time-tide/';
 const CARD = '.wp-block-columns[class*="is-style-listing-card-list"]';
 
 describeHeroBanners( { test, expect }, [
-	{ name: 'accommodation archive', path: ( routes ) => envPath( routes, '/accommodation/' ) },
-	{ name: 'single accommodation', path: ( routes ) => routes.post( 'accommodation' ) },
-	{ name: 'accommodation type archive', path: ( routes ) => routes.term( 'accommodation-type' ), strapline: true },
-	{ name: 'accommodation brand archive', path: ( routes ) => routes.term( 'accommodation-brand' ), strapline: true },
-	{ name: 'brands page', path: ( routes ) => routes.pageTemplate( 'page-brands.html' ), strapline: true },
+	{
+		name: 'accommodation archive',
+		path: ( routes ) => envPath( routes, '/accommodation/' ),
+	},
+	{
+		name: 'single accommodation',
+		path: ( routes ) => routes.post( 'accommodation' ),
+	},
+	{
+		name: 'accommodation type archive',
+		path: ( routes ) => routes.term( 'accommodation-type' ),
+		strapline: true,
+	},
+	{
+		name: 'accommodation brand archive',
+		path: ( routes ) => routes.term( 'accommodation-brand' ),
+		strapline: true,
+	},
+	{
+		name: 'brands page',
+		path: ( routes ) => routes.pageTemplate( 'page-brands.html' ),
+		strapline: true,
+	},
 ] );
 
 test.describe( 'Accommodation landing', () => {
-	test( 'lists the featured types in live\'s order', async ( { page, visit, routes } ) => {
+	test( "lists the featured types in live's order", async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, '/accommodation/' ) );
 
 		const slugs = await page
 			.locator( '.sd-featured-terms-query .wp-block-term-name a' )
 			.evaluateAll( ( links ) =>
-				links.map( ( a ) => new URL( a.href ).pathname.split( '/' ).filter( Boolean ).pop() )
+				links.map( ( a ) =>
+					new URL( a.href ).pathname
+						.split( '/' )
+						.filter( Boolean )
+						.pop()
+				)
 			);
 
-		test.skip( 0 === slugs.length, 'No featured accommodation types in this environment' );
+		test.skip(
+			0 === slugs.length,
+			'No featured accommodation types in this environment'
+		);
 
-		expect( slugs ).toEqual( LIVE_TYPE_ORDER.filter( ( slug ) => slugs.includes( slug ) ) );
-		expect( slugs.length, 'a featured type is missing from the grid' ).toBe( LIVE_TYPE_ORDER.length );
+		expect( slugs ).toEqual(
+			LIVE_TYPE_ORDER.filter( ( slug ) => slugs.includes( slug ) )
+		);
+		expect(
+			slugs,
+			'a featured type is missing from the grid'
+		).toHaveLength( LIVE_TYPE_ORDER.length );
 	} );
 } );
 
 test.describe( 'Accommodation list card', () => {
-	test( 'runs an excerpt of at most 40 words', async ( { page, visit, routes } ) => {
+	test( 'runs an excerpt of at most 40 words', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		const target = routes.term( 'accommodation-type' );
 		test.skip( ! target, 'No accommodation type archive' );
 
 		await visit( target );
 
-		const excerpts = await page.locator( `${ CARD } .wp-block-post-excerpt__excerpt` ).allTextContents();
+		const excerpts = await page
+			.locator( `${ CARD } .wp-block-post-excerpt__excerpt` )
+			.allTextContents();
 		test.skip( 0 === excerpts.length, `${ target } renders no cards` );
 
 		for ( const text of excerpts ) {
 			// Split the way wp_trim_words() counts (wp-includes/formatting.php): on
 			// ASCII whitespace only. `\s` would also split a non-breaking space.
-			const words = text.replace( /…|&hellip;/g, ' ' ).trim().split( /[\n\r\t ]+/ ).filter( Boolean );
-			expect( words.length, `excerpt runs ${ words.length } words: "${ text.trim() }"` ).toBeLessThanOrEqual( 40 );
+			const words = text
+				.replace( /…|&hellip;/g, ' ' )
+				.trim()
+				.split( /[\n\r\t ]+/ )
+				.filter( Boolean );
+			expect(
+				words.length,
+				`excerpt runs ${ words.length } words: "${ text.trim() }"`
+			).toBeLessThanOrEqual( 40 );
 		}
 	} );
 
-	test( 'badges a property on special like live, with contrast text', async ( { page, visit, routes } ) => {
+	test( 'badges a property on special like live, with contrast text', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await page.setViewportSize( { width: 1280, height: 900 } );
 		await visit( envPath( routes, SPECIAL_ARCHIVE ) );
 
-		const card = page.locator( CARD ).filter( { has: page.locator( '.wp-block-post-title', { hasText: SPECIAL_PROPERTY } ) } ).first();
-		test.skip( 0 === ( await card.count() ), `${ SPECIAL_ARCHIVE } does not list the probe property` );
+		const card = page
+			.locator( CARD )
+			.filter( {
+				has: page.locator( '.wp-block-post-title', {
+					hasText: SPECIAL_PROPERTY,
+				} ),
+			} )
+			.first();
+		test.skip(
+			0 === ( await card.count() ),
+			`${ SPECIAL_ARCHIVE } does not list the probe property`
+		);
 
 		const badge = card.locator( '.listing-card-list__badge--special' );
 		await expect( badge ).toBeVisible();
 		await expect( badge ).toHaveText( /on special/i );
 
 		const [ ground, ink ] = await Promise.all( [
-			resolvePreset( page, 'background-color', '--wp--preset--color--accent-500' ),
+			resolvePreset(
+				page,
+				'background-color',
+				'--wp--preset--color--accent-500'
+			),
 			resolvePreset( page, 'color', '--wp--preset--color--contrast' ),
 		] );
 
@@ -151,14 +223,26 @@ test.describe( 'Accommodation list card', () => {
 		await expect( badge ).toHaveCSS( 'text-transform', 'uppercase' );
 
 		// Pinned to the image's top-right corner, as live's `.special-tag`.
-		const media = await card.locator( '.listing-card-list__media' ).boundingBox();
+		const media = await card
+			.locator( '.listing-card-list__media' )
+			.boundingBox();
 		const box = await badge.boundingBox();
 
-		expect( Math.abs( box.y - media.y ), 'the badge is not on the top edge' ).toBeLessThanOrEqual( 1 );
-		expect( Math.abs( box.x + box.width - ( media.x + media.width ) ), 'the badge is not on the trailing edge' ).toBeLessThanOrEqual( 1 );
+		expect(
+			Math.abs( box.y - media.y ),
+			'the badge is not on the top edge'
+		).toBeLessThanOrEqual( 1 );
+		expect(
+			Math.abs( box.x + box.width - ( media.x + media.width ) ),
+			'the badge is not on the trailing edge'
+		).toBeLessThanOrEqual( 1 );
 	} );
 
-	test( 'shows no badge on a property with no special', async ( { page, visit, routes } ) => {
+	test( 'shows no badge on a property with no special', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, SPECIAL_ARCHIVE ) );
 
 		const cards = page.locator( CARD );
@@ -167,7 +251,9 @@ test.describe( 'Accommodation list card', () => {
 		let hasNoBadgeCard = false;
 
 		for ( let i = 0; i < count; i++ ) {
-			const badge = cards.nth( i ).locator( '.listing-card-list__badge--special' );
+			const badge = cards
+				.nth( i )
+				.locator( '.listing-card-list__badge--special' );
 
 			if ( ! ( await badge.count() ) ) {
 				hasNoBadgeCard = true;
@@ -177,16 +263,26 @@ test.describe( 'Accommodation list card', () => {
 			const text = ( await badge.textContent() ).trim();
 
 			if ( '' === text ) {
-				await expect( badge, 'an empty badge is showing as a bare square' ).toBeHidden();
+				await expect(
+					badge,
+					'an empty badge is showing as a bare square'
+				).toBeHidden();
 			}
 		}
 
-		expect( hasNoBadgeCard, 'every property in the probe archive shows a special badge' ).toBe( true );
+		expect(
+			hasNoBadgeCard,
+			'every property in the probe archive shows a special badge'
+		).toBe( true );
 	} );
 } );
 
 test.describe( 'Single accommodation', () => {
-	test( 'stacks the rating stars under the label', async ( { page, visit, routes } ) => {
+	test( 'stacks the rating stars under the label', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		// Chitwa Chitwa carries a four-star rating on dev; the newest property
 		// global setup resolves may have none.
 		const target = envPath( routes, RATED_PROPERTY );
@@ -201,41 +297,71 @@ test.describe( 'Single accommodation', () => {
 		const label = await wrapper.locator( 'h2' ).boundingBox();
 		const row = await stars.boundingBox();
 
-		expect( row.y, 'the stars sit beside the label, not under it' ).toBeGreaterThanOrEqual( label.y + label.height - 1 );
+		expect(
+			row.y,
+			'the stars sit beside the label, not under it'
+		).toBeGreaterThanOrEqual( label.y + label.height - 1 );
 
 		const box = await wrapper.boundingBox();
-		expect( Math.abs( row.x - box.x ), 'the stars are not aligned to the left edge' ).toBeLessThanOrEqual( 2 );
+		expect(
+			Math.abs( row.x - box.x ),
+			'the stars are not aligned to the left edge'
+		).toBeLessThanOrEqual( 2 );
 	} );
 } );
 
 test.describe( 'Brands', () => {
-	test( 'runs the logos three across and hides the section heading', async ( { page, visit, routes } ) => {
+	test( 'runs the logos three across and hides the section heading', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		const target = routes.pageTemplate( 'page-brands.html' );
-		test.skip( ! target, 'No published page is assigned to page-brands.html' );
+		test.skip(
+			! target,
+			'No published page is assigned to page-brands.html'
+		);
 
 		await page.setViewportSize( { width: 1280, height: 900 } );
 		await visit( target );
 
-		await expect( page.locator( '#h-our-preferred-operators' ) ).toHaveCount( 0 );
+		await expect(
+			page.locator( '#h-our-preferred-operators' )
+		).toHaveCount( 0 );
 
 		const grid = page.locator( '#brands .wp-block-term-template' ).first();
-		test.skip( 0 === ( await grid.count() ), 'No brands grid in this environment' );
+		test.skip(
+			0 === ( await grid.count() ),
+			'No brands grid in this environment'
+		);
 
-		const columns = await grid.evaluate( ( el ) =>
-			getComputedStyle( el ).gridTemplateColumns.split( ' ' ).filter( Boolean ).length
+		const columns = await grid.evaluate(
+			( el ) =>
+				getComputedStyle( el )
+					.gridTemplateColumns.split( ' ' )
+					.filter( Boolean ).length
 		);
 		expect( columns ).toBe( 3 );
 	} );
 
-	test( 'keeps the region strip on a one-region brand', async ( { page, visit, routes } ) => {
+	test( 'keeps the region strip on a one-region brand', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, ONE_REGION_BRAND ) );
 
 		const nav = page.locator( 'nav.sd-brand-regions' );
-		await expect( nav, 'a one-region brand renders no region strip' ).toBeVisible();
+		await expect(
+			nav,
+			'a one-region brand renders no region strip'
+		).toBeVisible();
 
 		const tabs = nav.locator( 'a' );
 		expect( await tabs.count() ).toBeGreaterThanOrEqual( 1 );
-		await expect( nav.locator( 'a[aria-current="page"]' ) ).toHaveCount( 1 );
+		await expect( nav.locator( 'a[aria-current="page"]' ) ).toHaveCount(
+			1
+		);
 	} );
 } );
 
@@ -248,15 +374,25 @@ test.describe( 'Filter flyout', () => {
 	 * @return {Promise<{ available: boolean, ready: boolean }>} Flyout state.
 	 */
 	async function flyoutReady( page ) {
-		await page.waitForFunction( () => window.FWP && window.FWP.loaded, null, { timeout: 15000 } ).catch( () => {} );
+		await page
+			.waitForFunction( () => window.FWP && window.FWP.loaded, null, {
+				timeout: 15000,
+			} )
+			.catch( () => {} );
 
 		return page.evaluate( () => ( {
 			available: !! ( window.FWP && window.FWP.flyout ),
-			ready: document.documentElement.classList.contains( 'sd-has-filter-flyout' ),
+			ready: document.documentElement.classList.contains(
+				'sd-has-filter-flyout'
+			),
 		} ) );
 	}
 
-	test( 'leaves the rail alone and hides the trigger on desktop @responsive', async ( { page, visit, routes } ) => {
+	test( 'leaves the rail alone and hides the trigger on desktop @responsive', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		const target = routes.term( 'accommodation-type' );
 		test.skip( ! target, 'No accommodation type archive' );
 
@@ -265,7 +401,9 @@ test.describe( 'Filter flyout', () => {
 		await flyoutReady( page );
 
 		await expect( page.locator( '.sd-filters-toggle' ) ).toBeHidden();
-		await expect( page.locator( 'aside.sd-search-filters .facetwp-facet' ).first() ).toBeVisible();
+		await expect(
+			page.locator( 'aside.sd-search-filters .facetwp-facet' ).first()
+		).toBeVisible();
 	} );
 
 	test( 'collapses the rail to a Filters button that opens an accessible dialog on phones @responsive', async ( {
@@ -280,12 +418,17 @@ test.describe( 'Filter flyout', () => {
 		await visit( target );
 		const flyout = await flyoutReady( page );
 		test.skip( ! flyout.available, 'FacetWP Flyout is not active here' );
-		expect( flyout.ready, 'The theme did not mark the FacetWP Flyout as ready' ).toBe( true );
+		expect(
+			flyout.ready,
+			'The theme did not mark the FacetWP Flyout as ready'
+		).toBe( true );
 
 		const trigger = page.locator( '.sd-filters-toggle button' );
 		await expect( trigger ).toBeVisible();
 		await expect( trigger ).toHaveAttribute( 'aria-expanded', 'false' );
-		await expect( page.locator( 'aside.sd-search-filters > .wp-block-heading' ) ).toBeHidden();
+		await expect(
+			page.locator( 'aside.sd-search-filters > .wp-block-heading' )
+		).toBeHidden();
 
 		await trigger.click();
 
@@ -306,7 +449,9 @@ test.describe( 'Filter flyout', () => {
 		// Focus stays inside the panel.
 		for ( let i = 0; i < 6; i++ ) {
 			await page.keyboard.press( 'Tab' );
-			const inside = await page.evaluate( () => !! document.activeElement.closest( '.facetwp-flyout' ) );
+			const inside = await page.evaluate(
+				() => !! document.activeElement.closest( '.facetwp-flyout' )
+			);
 			expect( inside, 'Tab left the open filter panel' ).toBe( true );
 		}
 
@@ -314,6 +459,8 @@ test.describe( 'Filter flyout', () => {
 		await expect( panel ).not.toHaveClass( /\bactive\b/ );
 		await expect( trigger ).toBeFocused();
 		await expect( trigger ).toHaveAttribute( 'aria-expanded', 'false' );
-		await expect( page.locator( 'aside.sd-search-filters .facetwp-facet' ).first() ).toBeAttached();
+		await expect(
+			page.locator( 'aside.sd-search-filters .facetwp-facet' ).first()
+		).toBeAttached();
 	} );
 } );

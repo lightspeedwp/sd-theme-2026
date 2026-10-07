@@ -64,6 +64,7 @@ async function settle( page ) {
 		} );
 	} );
 
+	// eslint-disable-next-line playwright/no-networkidle -- a snapshot needs lazy media settled; the catch below handles polling widgets.
 	await page.waitForLoadState( 'networkidle' ).catch( () => {
 		/**
 		 * Third-party widgets poll, so networkidle can legitimately never
@@ -117,7 +118,11 @@ for ( const viewport of VIEWPORTS ) {
 				await test
 					.expect( page )
 					.toHaveScreenshot(
-						`${ route.name.toLowerCase().replace( /[^a-z0-9]+/g, '-' ) }-${ viewport.name }.png`,
+						`${ route.name
+							.toLowerCase()
+							.replace( /[^a-z0-9]+/g, '-' ) }-${
+							viewport.name
+						}.png`,
 						{
 							fullPage: true,
 							mask: masksFor( page ),

@@ -34,15 +34,14 @@ const { A11Y_EXCLUDES } = require( './dynamic-regions.js' );
  * taking the newer one cannot lose coverage. Recorded rather than hidden: if
  * the org settles on 2.1, drop the `wcag22aa` tag and regenerate the baseline.
  */
-const WCAG_TAGS = [
-	'wcag2a',
-	'wcag2aa',
-	'wcag21a',
-	'wcag21aa',
-	'wcag22aa',
-];
+const WCAG_TAGS = [ 'wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa' ];
 
-const BASELINE_PATH = path.join( __dirname, '..', 'a11y', 'a11y-baseline.json' );
+const BASELINE_PATH = path.join(
+	__dirname,
+	'..',
+	'a11y',
+	'a11y-baseline.json'
+);
 
 /**
  * Set SD_UPDATE_A11Y_BASELINE=true to rewrite the baseline from this run.
@@ -55,9 +54,9 @@ const UPDATE_BASELINE = 'true' === process.env.SD_UPDATE_A11Y_BASELINE;
 /**
  * Run an axe scan against the current page.
  *
- * @param {import('@playwright/test').Page} page      Page under test.
- * @param {Object}                          [options] Options.
- * @param {string}                          [options.include] Restrict the scan to a selector.
+ * @param {import('@playwright/test').Page} page                   Page under test.
+ * @param {Object}                          [options]              Options.
+ * @param {string}                          [options.include]      Restrict the scan to a selector.
  * @param {string[]}                        [options.disableRules] Rules to skip, with a reason in the spec.
  * @return {Promise<Object>} The axe results object.
  */
@@ -212,9 +211,7 @@ function assertNoNewViolations( results, route, template ) {
 		if ( ! recorded ) {
 			regressions.push( `${ rule }: new (${ count } node(s))` );
 		} else if ( count > recorded ) {
-			regressions.push(
-				`${ rule }: ${ recorded } → ${ count } node(s)`
-			);
+			regressions.push( `${ rule }: ${ recorded } → ${ count } node(s)` );
 		}
 	}
 

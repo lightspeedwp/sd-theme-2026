@@ -1,0 +1,120 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php-syntax:
+    name: PHP syntax
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The floor style.css declares, and what dev runs.
+        php: [ '7.4', '8.3' ]
+    steps:
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      # shivammathur/setup-php@2.37.2
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Lint every PHP file
+        run: find . -path ./vendor -prune -o -path ./node_modules -prune -o -path ./.claude -prune -o -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+  phpcs:
+    name: WordPress coding standards
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      # shivammathur/setup-php@2.37.2
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: '7.4'
+          coverage: none
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      # The full WordPress standard plus PHPCompatibilityWP (PHP 7.4+). AGENTS.md
+      # requires patterns/ to be silent under it.
+      - name: Run phpcs
+        run: vendor/bin/phpcs --report=full
+
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      # shivammathur/setup-php@2.37.2
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run PHPStan
+        run: composer run phpstan -- --no-progress --error-format=github
+
+  js:
+    name: Theme contract, JS, CSS, Markdown and package.json
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      # actions/setup-node@v7.0.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: package.json
+        run: npm run lint:pkg-json
+
+      - name: Engines and licences
+        run: npm run check:engines && npm run check:licenses
+
+      # Vitest runs the theme contract tests (tests/unit/theme): theme.json and
+      # style variations, token references, one <main> per template, part and
+      # pattern references, no per-install ids. Findings that predate the
+      # harness are listed in tests/baselines/known-violations.json; a new one
+      # fails, and so does a fixed one that is still listed.
+      - name: Vitest
+        run: npm run test:unit
+
+      # The ratchet (tests/bin/lint-baseline.js): fails on any lint error not
+      # recorded in tests/baselines/, and on a fix that leaves the baseline
+      # unshrunk. The recorded debt is cleared slice by slice, never regrown.
+      - name: ESLint
+        run: npm run lint:baseline -- eslint
+
+      - name: Stylelint
+        run: npm run lint:baseline -- stylelint
+
+      - name: Markdown
+        run: npm run lint:baseline -- markdownlint

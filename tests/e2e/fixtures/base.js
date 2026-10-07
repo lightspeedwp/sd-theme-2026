@@ -132,6 +132,10 @@ const test = base.test.extend( {
 	 *
 	 * A stale cache after a deploy is still a real problem, but it's the
 	 * deploy's to purge, not the theme suite's to report.
+	 * @param {Object}                                    root0         Fixtures this one depends on.
+	 * @param {import('@playwright/test').BrowserContext} root0.context Browser context.
+	 * @param {string}                                    root0.baseURL Site under test.
+	 * @param {Function}                                  use           Hands the fixture value to the test.
 	 */
 	bypassPageCache: [
 		async ( { context, baseURL }, use ) => {
@@ -145,6 +149,7 @@ const test = base.test.extend( {
 
 	/**
 	 * Routes resolved from the live site, plus lookup helpers.
+	 * @param {Function} use Hands the fixture value to the test.
 	 */
 	routes: [
 		async ( {}, use ) => {
@@ -188,7 +193,11 @@ const test = base.test.extend( {
 					 * by filename (`brands.php`). Accept the file name the
 					 * specs use and fall back to the bare slug.
 					 */
-					return map[ file ] || map[ file.replace( /\.html$/, '' ) ] || null;
+					return (
+						map[ file ] ||
+						map[ file.replace( /\.html$/, '' ) ] ||
+						null
+					);
 				},
 			} );
 		},
@@ -199,6 +208,10 @@ const test = base.test.extend( {
 	 * Console and page errors collected during the test, asserted empty on
 	 * teardown. Set `test.info().annotations` with type `allow-console` to opt a
 	 * single spec out.
+	 * @param {Object}                              root0      Fixtures this one depends on.
+	 * @param {import('@playwright/test').Page}     root0.page Page under test.
+	 * @param {Function}                            use        Hands the fixture value to the test.
+	 * @param {import('@playwright/test').TestInfo} testInfo   Current test.
 	 */
 	consoleGuard: [
 		async ( { page }, use, testInfo ) => {
@@ -277,11 +290,15 @@ const test = base.test.extend( {
 	 * Returns the response so a spec can assert on status or headers. Every
 	 * navigation in the suite should go through this rather than `page.goto`,
 	 * so the PHP-error guard is never accidentally skipped.
+	 * @param {Object}                          root0              Fixtures this one depends on.
+	 * @param {import('@playwright/test').Page} root0.page         Page under test.
+	 * @param {Array}                           root0.consoleGuard Errors collected by consoleGuard.
+	 * @param {Function}                        use                Hands the fixture value to the test.
 	 */
 	visit: async ( { page, consoleGuard }, use ) => {
 		/**
-		 * @param {string} url            Path to visit.
-		 * @param {Object} [options]      Options.
+		 * @param {string} url                    Path to visit.
+		 * @param {Object} [options]              Options.
 		 * @param {number} [options.expectStatus] Expected HTTP status.
 		 * @return {Promise<import('@playwright/test').Response>} The response.
 		 */
@@ -300,16 +317,12 @@ const test = base.test.extend( {
 				waitUntil: 'domcontentloaded',
 			} );
 
-			base
-				.expect( response, `no response for ${ url }` )
-				.not.toBeNull();
+			base.expect( response, `no response for ${ url }` ).not.toBeNull();
 
-			base
-				.expect(
-					response.status(),
-					`unexpected status for ${ url }`
-				)
-				.toBe( expectStatus );
+			base.expect(
+				response.status(),
+				`unexpected status for ${ url }`
+			).toBe( expectStatus );
 
 			const html = await page.content();
 

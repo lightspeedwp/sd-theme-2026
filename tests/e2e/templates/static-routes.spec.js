@@ -20,10 +20,7 @@ test.describe( 'Static routes', () => {
 	for ( const route of STATIC_ROUTES ) {
 		test( `${ route.name } (${ route.template }) renders @responsive${
 			route.smoke ? ' @smoke' : ''
-		}`, async ( {
-			page,
-			visit,
-		} ) => {
+		}`, async ( { page, visit } ) => {
 			await visit( route.path );
 			await assertPageContract( page );
 		} );
@@ -44,10 +41,7 @@ test.describe( 'Static routes', () => {
 	);
 
 	for ( const archive of archives ) {
-		test( `${ archive.name } lists results`, async ( {
-			page,
-			visit,
-		} ) => {
+		test( `${ archive.name } lists results`, async ( { page, visit } ) => {
 			await visit( archive.path );
 
 			await expect(

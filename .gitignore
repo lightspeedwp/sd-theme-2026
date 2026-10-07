@@ -67,3 +67,15 @@ tests/e2e/.resolved-routes.json
 # Saved admin session for the `editor` project. An auth-state file is a
 # credential — the org standard forbids committing one.
 tests/e2e/.auth/
+
+# Jest coverage output
+tests/unit/coverage/
+
+# PHPUnit cache
+.phpunit.result.cache
+.phpunit.cache/
+
+# @wordpress/e2e-test-utils-playwright's default output directory (storage
+# state, Lighthouse reports). The suite points STORAGE_STATE_PATH at
+# tests/e2e/.auth/ instead, but a run outside the config would land here.
+artifacts/

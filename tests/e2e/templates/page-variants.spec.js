@@ -115,11 +115,15 @@ test.describe( 'Custom page templates', () => {
 
 		await expect( page.locator( 'h1' ) ).toHaveCount( 1 );
 		await expect(
-			mainContent( page ).locator( ':scope > .wp-block-cover.is-style-hero-banner h1.wp-block-post-title' ),
-			'the page title is not the banner\'s h1'
+			mainContent( page ).locator(
+				':scope > .wp-block-cover.is-style-hero-banner h1.wp-block-post-title'
+			),
+			"the page title is not the banner's h1"
 		).toHaveCount( 1 );
 		await expect(
-			mainContent( page ).locator( '.wp-block-post-content .wp-block-post-title' ),
+			mainContent( page ).locator(
+				'.wp-block-post-content .wp-block-post-title'
+			),
 			'the page content still carries its own post-title block'
 		).toHaveCount( 0 );
 	} );

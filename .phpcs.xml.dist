@@ -10,6 +10,8 @@
 	<exclude-pattern>*/dist/*</exclude-pattern>
 	<exclude-pattern>*/tests/*/test-results/*</exclude-pattern>
 	<exclude-pattern>*/tests/*/playwright-report/*</exclude-pattern>
+	<exclude-pattern>*/.claude/*</exclude-pattern>
+	<exclude-pattern>*/.specify/*</exclude-pattern>
 
 	<arg name="extensions" value="php"/>
 	<arg name="colors"/>
@@ -21,6 +23,19 @@
 	<rule ref="WordPress"/>
 
 	<config name="minimum_wp_version" value="6.9"/>
+
+	<!-- PHP 7.4 is the floor style.css declares ("Requires PHP"). -->
+	<config name="testVersion" value="7.4-"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- PHPUnit drives test classes, not WordPress: test-*.php / Test_* is the
+	     WordPress core test-suite convention. Narrow exclusions, tests only. -->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>*/tests/php/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.GlobalVariablesOverride.Prohibited">
+		<exclude-pattern>*/tests/php/*</exclude-pattern>
+	</rule>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>

@@ -59,7 +59,9 @@ test.describe( 'Search and 404', () => {
 	} );
 
 	test( '404 offers a way back', async ( { page, visit } ) => {
-		await visit( '/this-page-does-not-exist-sd-e2e/', { expectStatus: 404 } );
+		await visit( '/this-page-does-not-exist-sd-e2e/', {
+			expectStatus: 404,
+		} );
 
 		/**
 		 * A 404 that is only a headline is a dead end. Search or a link out
@@ -76,16 +78,23 @@ test.describe( 'Search and 404', () => {
 		);
 	} );
 
-	test( 'the search form submits from the header', async ( { page, visit } ) => {
+	test( 'the search form submits from the header', async ( {
+		page,
+		visit,
+	} ) => {
 		await visit( '/' );
 
-		const form = page.locator( 'header.wp-block-template-part form' ).first();
+		const form = page
+			.locator( 'header.wp-block-template-part form' )
+			.first();
 		test.skip(
 			0 === ( await form.count() ),
 			'No search form in the header'
 		);
 
-		const input = form.locator( 'input[type="search"], input[name="s"]' ).first();
+		const input = form
+			.locator( 'input[type="search"], input[name="s"]' )
+			.first();
 
 		/**
 		 * The header search is a collapsed, expand-on-click control: until the

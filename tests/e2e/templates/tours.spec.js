@@ -74,9 +74,21 @@ function tourArchivePath( routes ) {
 }
 
 const BANNER_ROUTES = [
-	{ name: 'tour archive', path: ( routes ) => tourArchivePath( routes ), strapline: true },
-	{ name: 'single tour', path: ( routes ) => routes.post( 'tour' ), strapline: true },
-	{ name: 'travel style archive', path: ( routes ) => routes.term( 'travel-style' ), strapline: true },
+	{
+		name: 'tour archive',
+		path: ( routes ) => tourArchivePath( routes ),
+		strapline: true,
+	},
+	{
+		name: 'single tour',
+		path: ( routes ) => routes.post( 'tour' ),
+		strapline: true,
+	},
+	{
+		name: 'travel style archive',
+		path: ( routes ) => routes.term( 'travel-style' ),
+		strapline: true,
+	},
 ];
 
 test.describe( 'Tour banners', () => {
@@ -88,18 +100,27 @@ test.describe( 'Tour banners', () => {
 				routes,
 			} ) => {
 				const target = route.path( routes );
-				test.skip( ! target, `No ${ route.name } on ${ routes.baseURL }` );
+				test.skip(
+					! target,
+					`No ${ route.name } on ${ routes.baseURL }`
+				);
 
 				await page.setViewportSize( { width: 1280, height: 800 } );
 				await visit( target );
 
 				const banner = page.locator( BANNER ).first();
-				await expect( banner, 'no hero banner at the top of <main>' ).toBeVisible();
+				await expect(
+					banner,
+					'no hero banner at the top of <main>'
+				).toBeVisible();
 
 				const isFirst = await banner.evaluate(
 					( el ) => el === el.parentElement.firstElementChild
 				);
-				expect( isFirst, 'the banner is not the first child of <main>' ).toBe( true );
+				expect(
+					isFirst,
+					'the banner is not the first child of <main>'
+				).toBe( true );
 
 				await expect( banner.locator( 'h1' ) ).toHaveCount( 1 );
 				await expect( page.locator( 'h1' ) ).toHaveCount( 1 );
@@ -110,16 +131,27 @@ test.describe( 'Tour banners', () => {
 				 * the type is short enough never to push the band past it.
 				 */
 				const height = ( await banner.boundingBox() ).height;
-				expect( height, 'the banner is below its 360px floor' ).toBeGreaterThanOrEqual( 359 );
-				expect( height, 'the banner is still on the old 400px floor' ).toBeLessThan( 399 );
+				expect(
+					height,
+					'the banner is below its 360px floor'
+				).toBeGreaterThanOrEqual( 359 );
+				expect(
+					height,
+					'the banner is still on the old 400px floor'
+				).toBeLessThan( 399 );
 
 				/**
 				 * No inline padding on the cover: the section style owns it,
 				 * and an inline value is what kept the phone stack off these
 				 * templates.
 				 */
-				const inlinePadding = await banner.evaluate( ( el ) => el.style.paddingTop );
-				expect( inlinePadding, 'the cover still writes its own padding inline' ).toBe( '' );
+				const inlinePadding = await banner.evaluate(
+					( el ) => el.style.paddingTop
+				);
+				expect(
+					inlinePadding,
+					'the cover still writes its own padding inline'
+				).toBe( '' );
 			} );
 
 			test( 'fills the band with the photograph on desktop @responsive', async ( {
@@ -128,13 +160,19 @@ test.describe( 'Tour banners', () => {
 				routes,
 			} ) => {
 				const target = route.path( routes );
-				test.skip( ! target, `No ${ route.name } on ${ routes.baseURL }` );
+				test.skip(
+					! target,
+					`No ${ route.name } on ${ routes.baseURL }`
+				);
 
 				await page.setViewportSize( { width: 1280, height: 800 } );
 				await visit( target );
 
 				const image = page.locator( BANNER_IMAGE ).first();
-				test.skip( 0 === ( await image.count() ), `${ target } has no banner photograph` );
+				test.skip(
+					0 === ( await image.count() ),
+					`${ target } has no banner photograph`
+				);
 
 				await expect( image ).toHaveCSS( 'position', 'absolute' );
 
@@ -143,7 +181,9 @@ test.describe( 'Tour banners', () => {
 					image.boundingBox(),
 				] );
 
-				expect( Math.abs( imageBox.height - bannerBox.height ) ).toBeLessThanOrEqual( 1 );
+				expect(
+					Math.abs( imageBox.height - bannerBox.height )
+				).toBeLessThanOrEqual( 1 );
 			} );
 
 			test( 'stacks the title on the plate under a 3:1 strip on phones @responsive', async ( {
@@ -152,7 +192,10 @@ test.describe( 'Tour banners', () => {
 				routes,
 			} ) => {
 				const target = route.path( routes );
-				test.skip( ! target, `No ${ route.name } on ${ routes.baseURL }` );
+				test.skip(
+					! target,
+					`No ${ route.name } on ${ routes.baseURL }`
+				);
 
 				await page.setViewportSize( { width: 375, height: 667 } );
 				await visit( target );
@@ -161,24 +204,46 @@ test.describe( 'Tour banners', () => {
 				await expect( banner ).toBeVisible();
 
 				const [ plate, brand500, neutral700 ] = await Promise.all( [
-					resolvePreset( page, 'background-color', '--wp--preset--color--neutral-200' ),
-					resolvePreset( page, 'color', '--wp--preset--color--brand-500' ),
-					resolvePreset( page, 'color', '--wp--preset--color--neutral-700' ),
+					resolvePreset(
+						page,
+						'background-color',
+						'--wp--preset--color--neutral-200'
+					),
+					resolvePreset(
+						page,
+						'color',
+						'--wp--preset--color--brand-500'
+					),
+					resolvePreset(
+						page,
+						'color',
+						'--wp--preset--color--neutral-700'
+					),
 				] );
 
 				await expect( banner ).toHaveCSS( 'background-color', plate );
 				await expect( banner ).toHaveCSS( 'padding-top', '0px' );
-				await expect( banner.locator( 'h1' ) ).toHaveCSS( 'color', brand500 );
+				await expect( banner.locator( 'h1' ) ).toHaveCSS(
+					'color',
+					brand500
+				);
 
 				if ( route.strapline ) {
-					const strapline = banner.locator( '.wp-block-cover__inner-container p' ).first();
+					const strapline = banner
+						.locator( '.wp-block-cover__inner-container p' )
+						.first();
 
 					if ( await strapline.count() ) {
-						await expect( strapline ).toHaveCSS( 'color', neutral700 );
+						await expect( strapline ).toHaveCSS(
+							'color',
+							neutral700
+						);
 					}
 				}
 
-				const image = banner.locator( ':scope > img.wp-block-cover__image-background' );
+				const image = banner.locator(
+					':scope > img.wp-block-cover__image-background'
+				);
 
 				if ( await image.count() ) {
 					await expect( image ).toHaveCSS( 'position', 'relative' );
@@ -204,30 +269,50 @@ test.describe( 'Tours landing — the travel styles grid', () => {
 	const GRID = 'main .sd-featured-terms-query .wp-block-term-template';
 	const TILE = `${ GRID } > li`;
 
-	test( 'runs two columns of 3:2 tiles on desktop', async ( { page, visit, routes } ) => {
+	test( 'runs two columns of 3:2 tiles on desktop', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await page.setViewportSize( { width: 1280, height: 800 } );
 		await visit( tourArchivePath( routes ) );
 
 		const tiles = page.locator( TILE );
-		test.skip( 0 === ( await tiles.count() ), 'No travel-style tiles rendered' );
+		test.skip(
+			0 === ( await tiles.count() ),
+			'No travel-style tiles rendered'
+		);
 
 		const columns = await page
 			.locator( GRID )
 			.first()
-			.evaluate( ( el ) => getComputedStyle( el ).gridTemplateColumns.split( ' ' ).length );
+			.evaluate(
+				( el ) =>
+					getComputedStyle( el ).gridTemplateColumns.split( ' ' )
+						.length
+			);
 		expect( columns, 'the grid is not two columns' ).toBe( 2 );
 
-		const ratios = await page.locator( `${ TILE } img` ).evaluateAll( ( imgs ) =>
-			imgs.map( ( img ) => {
-				const box = img.getBoundingClientRect();
-				return [ img.alt || img.src.split( '/' ).pop(), box.width / box.height ];
-			} )
-		);
+		const ratios = await page
+			.locator( `${ TILE } img` )
+			.evaluateAll( ( imgs ) =>
+				imgs.map( ( img ) => {
+					const box = img.getBoundingClientRect();
+					return [
+						img.alt || img.src.split( '/' ).pop(),
+						box.width / box.height,
+					];
+				} )
+			);
 
-		const off = ratios.filter( ( [ , ratio ] ) => Math.abs( ratio - 1.5 ) > 0.03 );
+		const off = ratios.filter(
+			( [ , ratio ] ) => Math.abs( ratio - 1.5 ) > 0.03
+		);
 		expect(
 			off,
-			`tiles not cropped 3:2:\n  ${ off.map( ( [ n, r ] ) => `${ n } → ${ r.toFixed( 3 ) }` ).join( '\n  ' ) }`
+			`tiles not cropped 3:2:\n  ${ off
+				.map( ( [ n, r ] ) => `${ n } → ${ r.toFixed( 3 ) }` )
+				.join( '\n  ' ) }`
 		).toEqual( [] );
 	} );
 
@@ -242,7 +327,9 @@ test.describe( 'Tours landing — the travel styles grid', () => {
 
 		const names = await page
 			.locator( `${ TILE } .wp-block-term-name` )
-			.evaluateAll( ( els ) => els.map( ( el ) => el.textContent.trim() ) );
+			.evaluateAll( ( els ) =>
+				els.map( ( el ) => el.textContent.trim() )
+			);
 		test.skip( 0 === names.length, 'No travel-style tiles rendered' );
 
 		const response = await request.get(
@@ -255,19 +342,28 @@ test.describe( 'Tours landing — the travel styles grid', () => {
 		 * Decode in the page so the comparison is against the same text the
 		 * tiles show.
 		 */
-		const terms = await page.evaluate( ( rows ) => {
-			const decode = ( html ) => {
-				const el = document.createElement( 'textarea' );
-				el.innerHTML = html;
-				return el.value;
-			};
-			return rows.map( ( row ) => ( { ...row, name: decode( row.name ) } ) );
-		}, await response.json() );
+		const terms = await page.evaluate(
+			( rows ) => {
+				const decode = ( html ) => {
+					const el = document.createElement( 'textarea' );
+					el.innerHTML = html;
+					return el.value;
+				};
+				return rows.map( ( row ) => ( {
+					...row,
+					name: decode( row.name ),
+				} ) );
+			},
+			await response.json()
+		);
 
 		const order = terms.map( ( term ) => term.name );
 		const positions = names.map( ( name ) => order.indexOf( name ) );
 
-		expect( positions, `tiles not found among the terms: ${ names.join( ', ' ) }` ).not.toContain( -1 );
+		expect(
+			positions,
+			`tiles not found among the terms: ${ names.join( ', ' ) }`
+		).not.toContain( -1 );
 		expect(
 			positions,
 			`tiles are not in term-ID order: ${ names.join( ', ' ) }`
@@ -280,7 +376,10 @@ test.describe( 'Tours landing — the travel styles grid', () => {
 		 */
 		if ( terms.some( ( term ) => term.meta && 'featured' in term.meta ) ) {
 			const featured = terms
-				.filter( ( term ) => '1' === String( term.meta?.featured ) && 0 < term.count )
+				.filter(
+					( term ) =>
+						'1' === String( term.meta?.featured ) && 0 < term.count
+				)
 				.map( ( term ) => term.name );
 
 			expect( names ).toEqual( featured );
@@ -301,11 +400,17 @@ test.describe( 'Single tour — itinerary', () => {
 		await visit( target );
 
 		const itinerary = page.locator( '.sd-itinerary' ).first();
-		test.skip( 0 === ( await itinerary.count() ), `${ target } has no itinerary` );
+		test.skip(
+			0 === ( await itinerary.count() ),
+			`${ target } has no itinerary`
+		);
 
 		/** `innerText` leaves out anything `display: none`, i.e. hidden fields. */
 		const text = await itinerary.evaluate( ( el ) => el.innerText );
-		expect( text, 'a missing itinerary field printed its placeholder' ).not.toContain( 'Card Link' );
+		expect(
+			text,
+			'a missing itinerary field printed its placeholder'
+		).not.toContain( 'Card Link' );
 	} );
 
 	test( 'a lodge with no destination after it has no trailing comma', async ( {
@@ -319,22 +424,35 @@ test.describe( 'Single tour — itinerary', () => {
 		await page.setViewportSize( { width: 1280, height: 800 } );
 		await visit( target );
 
-		const rows = await page.locator( '.sd-itinerary__stay' ).evaluateAll( ( stays ) =>
-			stays.map( ( stay ) => {
-				const lodge = stay.querySelector( '.itinerary-accommodation' );
-				const location = stay.querySelector( '.itin-location-wrapper' );
-				return {
-					lodge: lodge?.textContent.trim(),
-					hasLocation: !! location && 'none' !== getComputedStyle( location ).display,
-					comma: lodge ? getComputedStyle( lodge, '::after' ).content : 'none',
-				};
-			} )
-		);
+		const rows = await page
+			.locator( '.sd-itinerary__stay' )
+			.evaluateAll( ( stays ) =>
+				stays.map( ( stay ) => {
+					const lodge = stay.querySelector(
+						'.itinerary-accommodation'
+					);
+					const location = stay.querySelector(
+						'.itin-location-wrapper'
+					);
+					return {
+						lodge: lodge?.textContent.trim(),
+						hasLocation:
+							!! location &&
+							'none' !== getComputedStyle( location ).display,
+						comma: lodge
+							? getComputedStyle( lodge, '::after' ).content
+							: 'none',
+					};
+				} )
+			);
 		test.skip( 0 === rows.length, `${ target } has no itinerary` );
 
 		for ( const row of rows ) {
 			const expected = row.hasLocation ? '","' : 'none';
-			expect( row.comma, `"${ row.lodge }": comma should be ${ expected }` ).toBe( expected );
+			expect(
+				row.comma,
+				`"${ row.lodge }": comma should be ${ expected }`
+			).toBe( expected );
 		}
 	} );
 
@@ -354,8 +472,14 @@ test.describe( 'Single tour — itinerary', () => {
 			.locator( '.sd-itinerary__stay .itin-country-wrapper' )
 			.evaluateAll( ( wrappers ) =>
 				wrappers
-					.filter( ( el ) => 'none' !== getComputedStyle( el ).display )
-					.flatMap( ( el ) => [ ...el.querySelectorAll( 'a' ) ].map( ( a ) => a.textContent.trim() ) )
+					.filter(
+						( el ) => 'none' !== getComputedStyle( el ).display
+					)
+					.flatMap( ( el ) =>
+						[ ...el.querySelectorAll( 'a' ) ].map( ( a ) =>
+							a.textContent.trim()
+						)
+					)
 			);
 		test.skip( 0 === shown.length, `${ target } shows no country lines` );
 
@@ -374,8 +498,15 @@ test.describe( 'Single tour — itinerary', () => {
 			await response.json()
 		);
 
-		const notCountries = shown.filter( ( name ) => ! countries.includes( name ) );
-		expect( notCountries, `non-country destinations on the country line: ${ notCountries.join( ', ' ) }` ).toEqual( [] );
+		const notCountries = shown.filter(
+			( name ) => ! countries.includes( name )
+		);
+		expect(
+			notCountries,
+			`non-country destinations on the country line: ${ notCountries.join(
+				', '
+			) }`
+		).toEqual( [] );
 	} );
 } );
 
@@ -392,7 +523,10 @@ test.describe( 'Single tour — highlights', () => {
 		await visit( target );
 
 		const list = page.locator( '.is-style-highlights-list ul' ).first();
-		test.skip( 0 === ( await list.count() ), `${ target } has no highlights` );
+		test.skip(
+			0 === ( await list.count() ),
+			`${ target } has no highlights`
+		);
 
 		const [ group, ul ] = await Promise.all( [
 			page.locator( '.is-style-highlights-list' ).first().boundingBox(),
@@ -404,15 +538,22 @@ test.describe( 'Single tour — highlights', () => {
 		 * content measure inside it. It now fills the group, less its own
 		 * left padding.
 		 */
-		expect( ul.width, `the list is ${ ul.width }px inside a ${ group.width }px wide band` ).toBeGreaterThan(
-			group.width * 0.9
-		);
+		expect(
+			ul.width,
+			`the list is ${ ul.width }px inside a ${ group.width }px wide band`
+		).toBeGreaterThan( group.width * 0.9 );
 
-		const brand500 = await resolvePreset( page, 'background-color', '--wp--preset--color--brand-500' );
+		const brand500 = await resolvePreset(
+			page,
+			'background-color',
+			'--wp--preset--color--brand-500'
+		);
 		const tick = await list
 			.locator( 'li' )
 			.first()
-			.evaluate( ( li ) => getComputedStyle( li, '::before' ).backgroundColor );
+			.evaluate(
+				( li ) => getComputedStyle( li, '::before' ).backgroundColor
+			);
 
 		expect( tick ).toBe( brand500 );
 	} );

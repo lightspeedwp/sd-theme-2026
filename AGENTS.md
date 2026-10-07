@@ -21,7 +21,7 @@ tour operator. This directory is its own git repository
 work here, not in the workspace root.
 
 | | |
-|---|---|
+| --- | --- |
 | **Live site** | https://www.southerndestinations.com/ — **the design source of truth** |
 | **Dev site** | https://southerndestinations.lightspeedwp.dev/ |
 | **Local site** | http://localhost:8903 (WordPress Studio, WP 7.0.x, PHP 8.3, SQLite) |
@@ -241,7 +241,7 @@ link back to this rule. The `wp-blockstyle-css-field` skill has the full matrix.
 >   the winner, and WordPress inverts it between the two environments**:
 >
 >   | | Container rule | Variation rule | Winner | Child `margin-bottom` |
->   |---|---|---|---|---|
+>   | --- | --- | --- | --- | --- |
 >   | Front end | **55** | 50 | container | `0px` |
 >   | Editor | 125 | **142** | variation | `16.814px` |
 >
@@ -342,7 +342,7 @@ Ported into `.claude/` so this repo works standalone. In the full workspace thes
 **Skills** (`.claude/skills/`):
 
 | Skill | Use it for |
-|---|---|
+| --- | --- |
 | `themejson-extractor-orchestrator` | Sequences the whole token extraction, in dependency order |
 | `figma-themejson-{palette,spacing,typography,radius,shadow,style-variations}` | Individual token extractors |
 | `theme-orphaned-refs` | After **any** token change → target 0 orphans |

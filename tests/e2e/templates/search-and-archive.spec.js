@@ -54,9 +54,15 @@ describeHeroBanners( { test, expect }, [
  * @return {Promise<boolean>} Whether the flyout is available.
  */
 async function flyoutReady( page ) {
-	await page.waitForFunction( () => window.FWP && window.FWP.loaded, null, { timeout: 15000 } ).catch( () => {} );
+	await page
+		.waitForFunction( () => window.FWP && window.FWP.loaded, null, {
+			timeout: 15000,
+		} )
+		.catch( () => {} );
 
-	return page.evaluate( () => document.documentElement.classList.contains( 'sd-has-filter-flyout' ) );
+	return page.evaluate( () =>
+		document.documentElement.classList.contains( 'sd-has-filter-flyout' )
+	);
 }
 
 test.describe( 'All archives', () => {
@@ -71,10 +77,14 @@ test.describe( 'All archives', () => {
 
 			await visit( target );
 
-			const title = page.locator( 'main > .wp-block-cover h1.wp-block-query-title' );
+			const title = page.locator(
+				'main > .wp-block-cover h1.wp-block-query-title'
+			);
 			await expect( title ).toHaveCount( 1 );
 			await expect( title ).not.toHaveText( /^\s*$/ );
-			await expect( title ).not.toHaveText( /^\s*(tag|category|author|archives?)\s*:/i );
+			await expect( title ).not.toHaveText(
+				/^\s*(tag|category|author|archives?)\s*:/i
+			);
 		} );
 
 		test( `${ archive.name } is the search layout without the keyword box, count or sort`, async ( {
@@ -89,8 +99,12 @@ test.describe( 'All archives', () => {
 			await visit( target );
 
 			const main = page.locator( 'main' );
-			await expect( main.locator( 'aside.sd-search-filters' ) ).toHaveCount( 1 );
-			await expect( main.locator( 'aside.sd-search-filters .sd-filters-toggle' ) ).toHaveCount( 1 );
+			await expect(
+				main.locator( 'aside.sd-search-filters' )
+			).toHaveCount( 1 );
+			await expect(
+				main.locator( 'aside.sd-search-filters .sd-filters-toggle' )
+			).toHaveCount( 1 );
 			await expect( main.locator( '.wp-block-query' ) ).toHaveCount( 1 );
 
 			await expect(
@@ -101,43 +115,75 @@ test.describe( 'All archives', () => {
 				main.locator( '.sd-search-toolbar' ),
 				'the archive still carries the results toolbar'
 			).toHaveCount( 0 );
-			await expect( main.locator( '.sd-search-sort, .sd-search-counts' ) ).toHaveCount( 0 );
+			await expect(
+				main.locator( '.sd-search-sort, .sd-search-counts' )
+			).toHaveCount( 0 );
 		} );
 	}
 } );
 
 test.describe( 'Search results filter rail', () => {
-	test( 'opens with the keyword box, above the rail on desktop @responsive', async ( { page, visit } ) => {
+	test( 'opens with the keyword box, above the rail on desktop @responsive', async ( {
+		page,
+		visit,
+	} ) => {
 		await page.setViewportSize( { width: 1280, height: 900 } );
 		await visit( SEARCH );
 		await flyoutReady( page );
 
-		const field = page.locator( 'aside.sd-search-filters > .wp-block-search' );
+		const field = page.locator(
+			'aside.sd-search-filters > .wp-block-search'
+		);
 		await expect( field ).toBeVisible();
-		await expect( field.locator( 'input[type="search"]' ) ).toHaveValue( 'safari' );
+		await expect( field.locator( 'input[type="search"]' ) ).toHaveValue(
+			'safari'
+		);
 		await expect( page.locator( '.sd-filters-toggle' ) ).toBeHidden();
 	} );
 
-	test( 'keeps the keyword box on phones, above the Filters button @responsive', async ( { page, visit } ) => {
+	test( 'keeps the keyword box on phones, above the Filters button @responsive', async ( {
+		page,
+		visit,
+	} ) => {
 		await page.setViewportSize( { width: 390, height: 844 } );
 		await visit( SEARCH );
-		test.skip( ! ( await flyoutReady( page ) ), 'FacetWP Flyout is not active here' );
+		test.skip(
+			! ( await flyoutReady( page ) ),
+			'FacetWP Flyout is not active here'
+		);
 
-		const field = page.locator( 'aside.sd-search-filters > .wp-block-search' );
-		const trigger = page.locator( 'aside.sd-search-filters > .sd-filters-toggle button' );
+		const field = page.locator(
+			'aside.sd-search-filters > .wp-block-search'
+		);
+		const trigger = page.locator(
+			'aside.sd-search-filters > .sd-filters-toggle button'
+		);
 
-		await expect( field, 'the phone collapse hid the keyword box' ).toBeVisible();
+		await expect(
+			field,
+			'the phone collapse hid the keyword box'
+		).toBeVisible();
 		await expect( trigger ).toBeVisible();
-		await expect( page.locator( 'aside.sd-search-filters > .wp-block-heading' ) ).toBeHidden();
+		await expect(
+			page.locator( 'aside.sd-search-filters > .wp-block-heading' )
+		).toBeHidden();
 
-		const [ fieldBox, triggerBox ] = await Promise.all( [ field.boundingBox(), trigger.boundingBox() ] );
-		expect( fieldBox.y, 'the keyword box is not above the Filters button' ).toBeLessThan( triggerBox.y );
+		const [ fieldBox, triggerBox ] = await Promise.all( [
+			field.boundingBox(),
+			trigger.boundingBox(),
+		] );
+		expect(
+			fieldBox.y,
+			'the keyword box is not above the Filters button'
+		).toBeLessThan( triggerBox.y );
 
 		await trigger.click();
 
 		const panel = page.locator( '.facetwp-flyout' );
 		await expect( panel ).toHaveClass( /\bactive\b/ );
-		await expect( panel.locator( '.facetwp-facet-post_type' ) ).toHaveCount( 1 );
+		await expect( panel.locator( '.facetwp-facet-post_type' ) ).toHaveCount(
+			1
+		);
 		await expect( panel.locator( '.facetwp-type-sort' ) ).toHaveCount( 0 );
 	} );
 } );

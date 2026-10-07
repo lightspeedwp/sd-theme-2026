@@ -57,7 +57,10 @@ test.describe( 'Responsive layout', () => {
 	for ( const breakpoint of BREAKPOINTS ) {
 		test.describe( `${ breakpoint.name } (${ breakpoint.width }px)`, () => {
 			test.use( {
-				viewport: { width: breakpoint.width, height: breakpoint.height },
+				viewport: {
+					width: breakpoint.width,
+					height: breakpoint.height,
+				},
 			} );
 
 			for ( const route of SAMPLE ) {
@@ -67,9 +70,8 @@ test.describe( 'Responsive layout', () => {
 				} ) => {
 					await visit( route.path );
 
-					const { scrollWidth, clientWidth } = await documentWidths(
-						page
-					);
+					const { scrollWidth, clientWidth } =
+						await documentWidths( page );
 
 					/**
 					 * One pixel of slack. Sub-pixel layout rounding produces a
@@ -115,9 +117,7 @@ test.describe( 'Touch targets', () => {
 							return false;
 						}
 
-						return (
-							rect.width < minimum || rect.height < minimum
-						);
+						return rect.width < minimum || rect.height < minimum;
 					} )
 					.map( ( node ) => {
 						const rect = node.getBoundingClientRect();
@@ -172,11 +172,14 @@ test.describe( 'Browser font scaling', () => {
 			await expect
 				.poll(
 					async () => {
-						const { scrollWidth, clientWidth } = await documentWidths( page );
+						const { scrollWidth, clientWidth } =
+							await documentWidths( page );
 
 						return scrollWidth - clientWidth;
 					},
-					{ message: `the front page overflows at ${ scale }% text size` }
+					{
+						message: `the front page overflows at ${ scale }% text size`,
+					}
 				)
 				.toBeLessThanOrEqual( 1 );
 		} );

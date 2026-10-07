@@ -32,7 +32,9 @@ const MEGA_MENU_TOGGLE = '.wp-block-ollie-mega-menu__toggle';
  * @return {import('@playwright/test').Locator} Its `li.wp-block-ollie-mega-menu`.
  */
 function rowOf( toggle ) {
-	return toggle.locator( 'xpath=ancestor::li[contains(concat(" ", @class, " "), " wp-block-ollie-mega-menu ")][1]' );
+	return toggle.locator(
+		'xpath=ancestor::li[contains(concat(" ", @class, " "), " wp-block-ollie-mega-menu ")][1]'
+	);
 }
 
 /**
@@ -43,7 +45,12 @@ function rowOf( toggle ) {
  * @return {Promise<string>} Label text.
  */
 async function labelOf( toggle ) {
-	return ( await rowOf( toggle ).locator( '.wp-block-navigation-item__label' ).first().innerText() ).trim();
+	return (
+		await rowOf( toggle )
+			.locator( '.wp-block-navigation-item__label' )
+			.first()
+			.innerText()
+	).trim();
 }
 
 /**
@@ -77,7 +84,9 @@ test.describe( 'Mega menu', () => {
 	 * first, so hover opens the menu and the click immediately toggles it shut.
 	 * That is Playwright's pointer behaviour, not a defect.
 	 */
-	test( 'every toggle opens its own dropdown on hover', async ( { page } ) => {
+	test( 'every toggle opens its own dropdown on hover', async ( {
+		page,
+	} ) => {
 		const toggles = page.locator( MEGA_MENU_TOGGLE );
 		const count = await toggles.count();
 
@@ -89,12 +98,13 @@ test.describe( 'Mega menu', () => {
 		for ( let index = 0; index < count; index++ ) {
 			const toggle = toggles.nth( index );
 			const label = await labelOf( toggle );
-			const dropdownId = await toggle.getAttribute( 'aria-controls' );
 
-			expect(
-				dropdownId,
+			await expect(
+				toggle,
 				`mega menu toggle "${ label }" has no aria-controls`
-			).toBeTruthy();
+			).toHaveAttribute( 'aria-controls', /\S/ );
+
+			const dropdownId = await toggle.getAttribute( 'aria-controls' );
 
 			const dropdown = page.locator( `#${ dropdownId }` );
 
@@ -146,7 +156,10 @@ test.describe( 'Mega menu', () => {
 		 */
 		const openedOnFocus = await expect( toggle )
 			.toHaveAttribute( 'aria-expanded', 'true', { timeout: 750 } )
-			.then( () => true, () => false );
+			.then(
+				() => true,
+				() => false
+			);
 
 		if ( ! openedOnFocus ) {
 			await page.keyboard.press( 'Enter' );
@@ -212,7 +225,9 @@ test.describe( 'Mega menu', () => {
 
 		expect(
 			placeholders,
-			`mega menu links with no destination: ${ placeholders.join( '; ' ) }`
+			`mega menu links with no destination: ${ placeholders.join(
+				'; '
+			) }`
 		).toEqual( [] );
 	} );
 } );
@@ -233,7 +248,9 @@ test.describe( 'Mobile menu', () => {
 		await opener.click();
 
 		const dialog = page
-			.locator( '.wp-block-navigation__responsive-container.is-menu-open' )
+			.locator(
+				'.wp-block-navigation__responsive-container.is-menu-open'
+			)
 			.first();
 
 		await expect( dialog, 'mobile menu did not open' ).toBeVisible();
@@ -245,7 +262,10 @@ test.describe( 'Mobile menu', () => {
 		 */
 		await expect
 			.poll(
-				() => dialog.evaluate( ( node ) => node.contains( document.activeElement ) ),
+				() =>
+					dialog.evaluate( ( node ) =>
+						node.contains( document.activeElement )
+					),
 				{ message: 'focus stayed outside the open mobile menu' }
 			)
 			.toBe( true );
@@ -255,7 +275,7 @@ test.describe( 'Mobile menu', () => {
 		await expect(
 			dialog,
 			'mobile menu stayed open after Escape'
-		).not.toBeVisible();
+		).toBeHidden();
 	} );
 
 	test( 'close button dismisses the menu', async ( { page } ) => {
@@ -265,13 +285,18 @@ test.describe( 'Mobile menu', () => {
 			.click();
 
 		const dialog = page
-			.locator( '.wp-block-navigation__responsive-container.is-menu-open' )
+			.locator(
+				'.wp-block-navigation__responsive-container.is-menu-open'
+			)
 			.first();
 
 		await expect( dialog ).toBeVisible();
 
-		await dialog.getByRole( 'button', { name: 'Close menu' } ).first().click();
+		await dialog
+			.getByRole( 'button', { name: 'Close menu' } )
+			.first()
+			.click();
 
-		await expect( dialog ).not.toBeVisible();
+		await expect( dialog ).toBeHidden();
 	} );
 } );

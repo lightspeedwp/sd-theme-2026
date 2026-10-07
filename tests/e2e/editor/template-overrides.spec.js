@@ -101,7 +101,9 @@ async function fetchAll( request, route ) {
 }
 
 test.describe( 'Site Editor overrides @auth', () => {
-	test( 'no template is overridden in the database', async ( { request } ) => {
+	test( 'no template is overridden in the database', async ( {
+		request,
+	} ) => {
 		const templates = await fetchAll( request, 'templates' );
 
 		/**
@@ -136,7 +138,9 @@ test.describe( 'Site Editor overrides @auth', () => {
 		const parts = await fetchAll( request, 'template-parts' );
 
 		const shadowed = parts
-			.filter( ( part ) => 'custom' === part.source && part.has_theme_file )
+			.filter(
+				( part ) => 'custom' === part.source && part.has_theme_file
+			)
 			.map( ( part ) => part.slug )
 			.sort();
 

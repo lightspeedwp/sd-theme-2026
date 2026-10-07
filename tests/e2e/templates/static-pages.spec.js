@@ -45,7 +45,10 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
-const { describeHeroBanners, resolvePreset } = require( '../utils/hero-banner.js' );
+const {
+	describeHeroBanners,
+	resolvePreset,
+} = require( '../utils/hero-banner.js' );
 
 /**
  * A literal path, prefixed the way this environment's permalinks need.
@@ -58,35 +61,78 @@ const { describeHeroBanners, resolvePreset } = require( '../utils/hero-banner.js
  * @return {string} Path for this environment.
  */
 function envPath( routes, path ) {
-	const sample = routes.post( 'tour' ) || routes.post( 'accommodation' ) || '';
-	return `${ sample.startsWith( '/index.php/' ) ? '/index.php' : '' }${ path }`;
+	const sample =
+		routes.post( 'tour' ) || routes.post( 'accommodation' ) || '';
+	return `${
+		sample.startsWith( '/index.php/' ) ? '/index.php' : ''
+	}${ path }`;
 }
 
 const PAGES = [
-	{ name: 'About Us', path: '/about-us/', title: 'About Us', strapline: null, intro: 0 },
-	{ name: 'Why Book With Us', path: '/about-us/why-book-with-us/', title: 'Why Book With Us', strapline: 'About Us', intro: 1 },
-	{ name: 'Social Responsibility', path: '/about-us/social-responsibility/', title: 'Social Responsibility', strapline: 'About Us', intro: 2 },
-	{ name: 'Connect With Us', path: '/about-us/connect-with-us/', title: 'Connect With Us', strapline: 'About Us', intro: 1 },
-	{ name: 'Contact Us', path: '/contact/', title: 'Contact Us', strapline: 'Get in Touch', intro: 1 },
-	{ name: 'Thank You', path: '/thank-you/', title: 'Thank You', strapline: 'Send Us an Email', intro: 0 },
+	{
+		name: 'About Us',
+		path: '/about-us/',
+		title: 'About Us',
+		strapline: null,
+		intro: 0,
+	},
+	{
+		name: 'Why Book With Us',
+		path: '/about-us/why-book-with-us/',
+		title: 'Why Book With Us',
+		strapline: 'About Us',
+		intro: 1,
+	},
+	{
+		name: 'Social Responsibility',
+		path: '/about-us/social-responsibility/',
+		title: 'Social Responsibility',
+		strapline: 'About Us',
+		intro: 2,
+	},
+	{
+		name: 'Connect With Us',
+		path: '/about-us/connect-with-us/',
+		title: 'Connect With Us',
+		strapline: 'About Us',
+		intro: 1,
+	},
+	{
+		name: 'Contact Us',
+		path: '/contact/',
+		title: 'Contact Us',
+		strapline: 'Get in Touch',
+		intro: 1,
+	},
+	{
+		name: 'Thank You',
+		path: '/thank-you/',
+		title: 'Thank You',
+		strapline: 'Send Us an Email',
+		intro: 0,
+	},
 ];
 
 /**
  * Assert a row of phone numbers, each a `tel:` link with the phone icon
  * beside it — the office markup of patterns/cta-tell-us-your-trip-ideas.php.
  *
- * @param {import('@playwright/test').Locator} scope  Section holding the numbers.
- * @param {number}                             count  Numbers expected.
- * @param {Function}                           expect Playwright `expect`.
+ * @param {import('@playwright/test').Locator} scope Section holding the numbers.
+ * @param {number}                             count Numbers expected.
  */
-async function expectPhoneRow( scope, count, expect ) {
+async function expectPhoneRow( scope, count ) {
 	const links = scope.locator( 'a[href^="tel:"]' );
 	await expect( links ).toHaveCount( count );
 
 	for ( const link of await links.all() ) {
 		// The icon is the number's sibling inside the office's nowrap row.
-		const row = link.locator( 'xpath=ancestor::div[contains(@class,"wp-block-group")][1]' );
-		await expect( row.locator( '.wp-block-outermost-icon-block svg' ), 'a number has lost its phone icon' ).toHaveCount( 1 );
+		const row = link.locator(
+			'xpath=ancestor::div[contains(@class,"wp-block-group")][1]'
+		);
+		await expect(
+			row.locator( '.wp-block-outermost-icon-block svg' ),
+			'a number has lost its phone icon'
+		).toHaveCount( 1 );
 	}
 }
 
@@ -97,10 +143,13 @@ async function expectPhoneRow( scope, count, expect ) {
  * @return {number} Relative luminance.
  */
 function luminance( rgb ) {
-	const [ r, g, b ] = rgb.match( /\d+(\.\d+)?/g ).slice( 0, 3 ).map( ( v ) => {
-		const c = Number( v ) / 255;
-		return c <= 0.03928 ? c / 12.92 : ( ( c + 0.055 ) / 1.055 ) ** 2.4;
-	} );
+	const [ r, g, b ] = rgb
+		.match( /\d+(\.\d+)?/g )
+		.slice( 0, 3 )
+		.map( ( v ) => {
+			const c = Number( v ) / 255;
+			return c <= 0.03928 ? c / 12.92 : ( ( c + 0.055 ) / 1.055 ) ** 2.4;
+		} );
 	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
@@ -137,11 +186,9 @@ describeHeroBanners(
 
 test.describe( 'Static page banners', () => {
 	for ( const p of PAGES ) {
-		test( `${ p.name } is titled in the banner, with ${ p.strapline ? `"${ p.strapline }" under it` : 'no strapline' }`, async ( {
-			page,
-			visit,
-			routes,
-		} ) => {
+		test( `${ p.name } is titled in the banner, with ${
+			p.strapline ? `"${ p.strapline }" under it` : 'no strapline'
+		}`, async ( { page, visit, routes } ) => {
 			await page.setViewportSize( { width: 1280, height: 800 } );
 			await visit( envPath( routes, p.path ) );
 
@@ -170,24 +217,35 @@ test.describe( 'Static page banners', () => {
 			await visit( envPath( routes, p.path ) );
 
 			await expect(
-				page.locator( `${ CONTENT } .wp-block-cover.is-style-hero-banner` ),
+				page.locator(
+					`${ CONTENT } .wp-block-cover.is-style-hero-banner`
+				),
 				'the page content still carries its own banner'
 			).toHaveCount( 0 );
 
 			// The old content banners painted a literal #636c75 overlay.
-			await expect( page.locator( `${ CONTENT } [style*="636c75" i]` ) ).toHaveCount( 0 );
+			await expect(
+				page.locator( `${ CONTENT } [style*="636c75" i]` )
+			).toHaveCount( 0 );
 
 			const next = page.locator( `${ BANNER } + *` );
-			await expect( next, 'the breadcrumb strip is not directly under the banner' ).toHaveClass(
-				/has-primary-100-background-color/
-			);
+			await expect(
+				next,
+				'the breadcrumb strip is not directly under the banner'
+			).toHaveClass( /has-primary-100-background-color/ );
 		} );
 
-		test( `${ p.name } closes on the one "Why choose" band`, async ( { page, visit, routes } ) => {
+		test( `${ p.name } closes on the one "Why choose" band`, async ( {
+			page,
+			visit,
+			routes,
+		} ) => {
 			await visit( envPath( routes, p.path ) );
 
 			await expect(
-				page.locator( 'main h2', { hasText: /^Why choose Southern Destinations$/i } )
+				page.locator( 'main h2', {
+					hasText: /^Why choose Southern Destinations$/i,
+				} )
 			).toHaveCount( 1 );
 		} );
 	}
@@ -203,8 +261,14 @@ test.describe( 'Static page standfirsts', () => {
 			await visit( envPath( routes, p.path ) );
 
 			await expect( page.locator( INTRO ) ).toHaveCount( p.intro );
-			await expect( page.locator( `${ CONTENT } .has-drop-cap` ), 'core\'s drop cap is still set' ).toHaveCount( 0 );
-			await expect( page.locator( INTRO ).first() ).toHaveCSS( 'font-style', 'italic' );
+			await expect(
+				page.locator( `${ CONTENT } .has-drop-cap` ),
+				"core's drop cap is still set"
+			).toHaveCount( 0 );
+			await expect( page.locator( INTRO ).first() ).toHaveCSS(
+				'font-style',
+				'italic'
+			);
 		} );
 
 		test( `${ p.name } caps its standfirst once, from 900px up @responsive`, async ( {
@@ -217,19 +281,34 @@ test.describe( 'Static page standfirsts', () => {
 
 			const intros = page.locator( INTRO );
 			const cap = await firstLetter( intros.first() );
-			const brand500 = await resolvePreset( page, 'color', '--wp--preset--color--brand-500' );
+			const brand500 = await resolvePreset(
+				page,
+				'color',
+				'--wp--preset--color--brand-500'
+			);
 
-			expect( cap.float, 'the standfirst has no drop cap on desktop' ).toBe( 'left' );
-			expect( cap.fontSize / cap.parentFontSize, 'the cap is not 3.2em' ).toBeCloseTo( 3.2, 1 );
+			expect(
+				cap.float,
+				'the standfirst has no drop cap on desktop'
+			).toBe( 'left' );
+			expect(
+				cap.fontSize / cap.parentFontSize,
+				'the cap is not 3.2em'
+			).toBeCloseTo( 3.2, 1 );
 			expect( cap.color ).toBe( brand500 );
 
 			// A second paragraph of the same standfirst carries no cap of its own.
 			if ( 1 < p.intro ) {
-				expect( ( await firstLetter( intros.nth( 1 ) ) ).float ).toBe( 'none' );
+				expect( ( await firstLetter( intros.nth( 1 ) ) ).float ).toBe(
+					'none'
+				);
 			}
 
 			await page.setViewportSize( { width: 375, height: 667 } );
-			expect( ( await firstLetter( intros.first() ) ).float, 'the cap shows below 900px' ).toBe( 'none' );
+			expect(
+				( await firstLetter( intros.first() ) ).float,
+				'the cap shows below 900px'
+			).toBe( 'none' );
 		} );
 	}
 } );
@@ -249,17 +328,32 @@ test.describe( 'Why Book With Us', () => {
 
 		// patterns/why-choose-sd.php's stack: logo, stars, then the TrustScore line.
 		await expect( badge ).not.toHaveClass( /sd-trustpilot--stacked/ );
-		await expect( badge.locator( '.sd-trustpilot__wording' ), 'the stale copy led with the rating word' ).toHaveCount( 0 );
-		await expect( badge.locator( '.sd-trustpilot__line .sd-trustpilot__score' ) ).toHaveText( /^TrustScore / );
-		await expect( badge.locator( '.sd-trustpilot__line .sd-trustpilot__count' ) ).toHaveText( / reviews$/ );
+		await expect(
+			badge.locator( '.sd-trustpilot__wording' ),
+			'the stale copy led with the rating word'
+		).toHaveCount( 0 );
+		await expect(
+			badge.locator( '.sd-trustpilot__line .sd-trustpilot__score' )
+		).toHaveText( /^TrustScore / );
+		await expect(
+			badge.locator( '.sd-trustpilot__line .sd-trustpilot__count' )
+		).toHaveText( / reviews$/ );
 
 		// Dark on a light card: the dark logo, not the band's white-green one.
 		const logo = badge.locator( '.sd-trustpilot__logo img' );
 		await expect( logo ).toHaveAttribute( 'src', /trustpilot-logo\.svg$/ );
 
-		for ( const figure of [ '.sd-trustpilot__score', '.sd-trustpilot__count' ] ) {
-			const color = await badge.locator( figure ).evaluate( ( el ) => getComputedStyle( el ).color );
-			expect( luminance( color ), `${ figure } is set light, as on the dark band` ).toBeLessThan( 0.2 );
+		for ( const figure of [
+			'.sd-trustpilot__score',
+			'.sd-trustpilot__count',
+		] ) {
+			const color = await badge
+				.locator( figure )
+				.evaluate( ( el ) => getComputedStyle( el ).color );
+			expect(
+				luminance( color ),
+				`${ figure } is set light, as on the dark band`
+			).toBeLessThan( 0.2 );
 		}
 	} );
 
@@ -270,79 +364,143 @@ test.describe( 'Why Book With Us', () => {
 	} ) => {
 		await visit( envPath( routes, path ) );
 
-		const offices = page.locator( `${ CONTENT } .wp-block-group`, {
-			has: page.locator( 'a[href="mailto:info@southerndestinations.com"]' ),
-		} ).last();
+		const offices = page
+			.locator( `${ CONTENT } .wp-block-group`, {
+				has: page.locator(
+					'a[href="mailto:info@southerndestinations.com"]'
+				),
+			} )
+			.last();
 
-		await expectPhoneRow( offices, 4, expect );
+		await expectPhoneRow( offices, 4 );
 	} );
 
-	test( 'carries the Read Our Reviews link', async ( { page, visit, routes } ) => {
+	test( 'carries the Read Our Reviews link', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, path ) );
 
-		const link = page.locator( `${ CONTENT } a`, { hasText: /^Read Our Reviews$/ } );
-		await expect( link ).toHaveAttribute( 'href', /trustpilot\.com\/review\/southerndestinations\.com/ );
+		const link = page.locator( `${ CONTENT } a`, {
+			hasText: /^Read Our Reviews$/,
+		} );
+		await expect( link ).toHaveAttribute(
+			'href',
+			/trustpilot\.com\/review\/southerndestinations\.com/
+		);
 		await expect( link ).toHaveAttribute( 'target', '_blank' );
 	} );
 
-	test( 'runs the brand-logo carousel in the lodge-operator band', async ( { page, visit, routes } ) => {
+	test( 'runs the brand-logo carousel in the lodge-operator band', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, path ) );
 
-		const carousel = page.locator( `${ CONTENT } .wp-block-terms-query.is-style-slider-frame` );
+		const carousel = page.locator(
+			`${ CONTENT } .wp-block-terms-query.is-style-slider-frame`
+		);
 		await expect( carousel ).toHaveCount( 1 );
 		expect(
-			await carousel.locator( '.wp-block-post-featured-image, img' ).count(),
+			await carousel
+				.locator( '.wp-block-post-featured-image, img' )
+				.count(),
 			'fewer than five brand logos — live shows five at a time'
 		).toBeGreaterThanOrEqual( 5 );
 	} );
 } );
 
 test.describe( 'Connect With Us', () => {
-	test( 'lists up to six posts on the current post-grid card', async ( { page, visit, routes } ) => {
+	test( 'lists up to six posts on the current post-grid card', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, '/about-us/connect-with-us/' ) );
 
-		const cards = page.locator( `${ CONTENT } .wp-block-query .is-style-post-grid-card` );
+		const cards = page.locator(
+			`${ CONTENT } .wp-block-query .is-style-post-grid-card`
+		);
 		const count = await cards.count();
 		test.skip( 0 === count, 'No published posts in this environment' );
 
 		expect( count ).toBeLessThanOrEqual( 6 );
 
 		// The stale copy was cropped 3:2 and carried its own inline radius.
-		const image = cards.first().locator( '.wp-block-post-featured-image img' );
+		const image = cards
+			.first()
+			.locator( '.wp-block-post-featured-image img' );
 		if ( await image.count() ) {
-			await expect( image ).toHaveAttribute( 'style', /aspect-ratio:\s*16\s*\/\s*9/ );
+			await expect( image ).toHaveAttribute(
+				'style',
+				/aspect-ratio:\s*16\s*\/\s*9/
+			);
 		}
-		expect( ( await cards.first().getAttribute( 'style' ) ) || '' ).not.toMatch( /border-top-left-radius/ );
+		expect(
+			( await cards.first().getAttribute( 'style' ) ) || ''
+		).not.toMatch( /border-top-left-radius/ );
 	} );
 } );
 
 test.describe( 'Contact Us', () => {
 	const path = '/contact/';
 
-	test( 'runs the homepage TrustBox carousel, not a badge and reviews grid', async ( { page, visit, routes } ) => {
+	test( 'runs the homepage TrustBox carousel, not a badge and reviews grid', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, path ) );
 
 		// patterns/homepage-sd-difference.php's widget, same template and business unit.
 		const widget = page.locator( `${ CONTENT } .trustpilot-widget` );
 		await expect( widget ).toHaveCount( 1 );
-		await expect( widget ).toHaveAttribute( 'data-template-id', '53aa8912dec7e10d38f59f36' );
-		await expect( widget ).toHaveAttribute( 'data-businessunit-id', '564399480000ff0005856b81' );
+		await expect( widget ).toHaveAttribute(
+			'data-template-id',
+			'53aa8912dec7e10d38f59f36'
+		);
+		await expect( widget ).toHaveAttribute(
+			'data-businessunit-id',
+			'564399480000ff0005856b81'
+		);
 
 		// The fallback link is what shows with sd-enhancements off or JavaScript disabled.
-		await expect( widget.locator( 'a[href*="trustpilot.com/review/southerndestinations.com"]' ) ).toHaveCount( 1 );
+		await expect(
+			widget.locator(
+				'a[href*="trustpilot.com/review/southerndestinations.com"]'
+			)
+		).toHaveCount( 1 );
 
-		await expect( page.locator( `${ CONTENT } .sd-trustpilot` ), 'the old score badge is still on the page' ).toHaveCount( 0 );
-		await expect( page.locator( `${ CONTENT } .sd-trustpilot-review` ), 'the old reviews grid is still on the page' ).toHaveCount( 0 );
+		await expect(
+			page.locator( `${ CONTENT } .sd-trustpilot` ),
+			'the old score badge is still on the page'
+		).toHaveCount( 0 );
+		await expect(
+			page.locator( `${ CONTENT } .sd-trustpilot-review` ),
+			'the old reviews grid is still on the page'
+		).toHaveCount( 0 );
 	} );
 
-	test( 'loads the TrustBox script for its widget', async ( { page, visit, routes } ) => {
+	test( 'loads the TrustBox script for its widget', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, path ) );
 
 		// sd-enhancements enqueues the bootstrap only on a render that holds a widget.
-		await expect( page.locator( 'script[src*="widget.trustpilot.com"]' ) ).not.toHaveCount( 0 );
+		await expect(
+			page.locator( 'script[src*="widget.trustpilot.com"]' )
+		).not.toHaveCount( 0 );
 	} );
 
-	test( 'sets the safari gurus four across, as the homepage does @responsive', async ( { page, visit, routes } ) => {
+	test( 'sets the safari gurus four across, as the homepage does @responsive', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await page.setViewportSize( { width: 1280, height: 800 } );
 		await visit( envPath( routes, path ) );
 
@@ -350,49 +508,80 @@ test.describe( 'Contact Us', () => {
 		await expect( grid ).toHaveCount( 1 );
 
 		const cards = grid.locator( '> li' );
-		test.skip( 0 === ( await cards.count() ), 'No team members in this environment' );
+		test.skip(
+			0 === ( await cards.count() ),
+			'No team members in this environment'
+		);
 		expect( await cards.count() ).toBeLessThanOrEqual( 4 );
 
 		const columns = () =>
-			grid.evaluate( ( el ) => getComputedStyle( el ).gridTemplateColumns.split( ' ' ).length );
+			grid.evaluate(
+				( el ) =>
+					getComputedStyle( el ).gridTemplateColumns.split( ' ' )
+						.length
+			);
 
-		expect( await columns(), 'the gurus grid is not four across on desktop' ).toBe( 4 );
+		expect(
+			await columns(),
+			'the gurus grid is not four across on desktop'
+		).toBe( 4 );
 
 		// Four across would crush a 375px card; the grid falls to one column.
 		await page.setViewportSize( { width: 375, height: 667 } );
-		expect( await columns(), 'the gurus grid does not stack on a phone' ).toBe( 1 );
+		expect(
+			await columns(),
+			'the gurus grid does not stack on a phone'
+		).toBe( 1 );
 	} );
 } );
 
 test.describe( 'Thank You', () => {
 	const path = '/thank-you/';
 
-	test( 'thanks the enquirer and links the social profiles', async ( { page, visit, routes } ) => {
+	test( 'thanks the enquirer and links the social profiles', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, path ) );
 
 		await expect(
-			page.locator( `${ CONTENT } h2`, { hasText: /^Thank you for your travel enquiry$/ } )
+			page.locator( `${ CONTENT } h2`, {
+				hasText: /^Thank you for your travel enquiry$/,
+			} )
 		).toHaveCount( 1 );
 		await expect(
-			page.locator( `${ CONTENT } p`, { hasText: /^We will be in contact with you shortly\./ } )
+			page.locator( `${ CONTENT } p`, {
+				hasText: /^We will be in contact with you shortly\./,
+			} )
 		).toHaveCount( 1 );
 
 		// As authored: a plain intro, not a standfirst, and no core drop cap either.
-		await expect( page.locator( `${ CONTENT } .has-drop-cap` ) ).toHaveCount( 0 );
+		await expect(
+			page.locator( `${ CONTENT } .has-drop-cap` )
+		).toHaveCount( 0 );
 
-		const social = page.locator( `${ CONTENT } .wp-block-social-links .wp-social-link a` );
+		const social = page.locator(
+			`${ CONTENT } .wp-block-social-links .wp-social-link a`
+		);
 		await expect( social ).toHaveCount( 6 );
 		for ( const link of await social.all() ) {
 			await expect( link ).toHaveAttribute( 'href', /^https:\/\// );
 		}
 	} );
 
-	test( 'offers the safari gurus\' numbers, each with the phone icon', async ( { page, visit, routes } ) => {
+	test( "offers the safari gurus' numbers, each with the phone icon", async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, path ) );
 
-		const heading = page.locator( `${ CONTENT } h2`, { hasText: /^Want to chat to one of our safari gurus\?$/ } );
+		const heading = page.locator( `${ CONTENT } h2`, {
+			hasText: /^Want to chat to one of our safari gurus\?$/,
+		} );
 		await expect( heading ).toHaveCount( 1 );
 
-		await expectPhoneRow( heading.locator( 'xpath=..' ), 2, expect );
+		await expectPhoneRow( heading.locator( 'xpath=..' ), 2 );
 	} );
 } );

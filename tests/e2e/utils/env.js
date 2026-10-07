@@ -71,4 +71,48 @@ function hasAdminCredentials() {
 	return Boolean( process.env.WP_ADMIN_USER && process.env.WP_ADMIN_PASS );
 }
 
-module.exports = { loadEnv, hasAdminCredentials, ENV_PATH };
+/**
+ * Where the signed-in session is saved. A live session cookie plus a REST
+ * nonce — gitignored, never committed.
+ */
+const STORAGE_STATE_PATH = path.join( __dirname, '..', '.auth', 'admin.json' );
+
+/**
+ * Hand this suite's settings to `@wordpress/e2e-test-utils-playwright`.
+ *
+ * The package reads its own variable names — `WP_BASE_URL`, `WP_USERNAME`,
+ * `WP_PASSWORD`, `STORAGE_STATE_PATH` — once, when it is first required, and
+ * defaults to wp-env's `localhost:8889` and `admin` / `password`. This suite
+ * targets dev with a temporary account named in `WP_ADMIN_USER` /
+ * `WP_ADMIN_PASS`, so the values are mapped across before any spec loads the
+ * package. Call it from playwright.config.js; workers inherit the result.
+ *
+ * Existing values win, as they do in loadEnv().
+ *
+ * Deliberately a twin of the same function in `sd-enhancements-2026`.
+ *
+ * @param {string} baseURL The resolved target site.
+ * @return {void}
+ */
+function bridgeToWordPressTestUtils( baseURL ) {
+	const mapped = {
+		WP_BASE_URL: baseURL,
+		WP_USERNAME: process.env.WP_ADMIN_USER,
+		WP_PASSWORD: process.env.WP_ADMIN_PASS,
+		STORAGE_STATE_PATH,
+	};
+
+	for ( const [ key, value ] of Object.entries( mapped ) ) {
+		if ( value && ! process.env[ key ] ) {
+			process.env[ key ] = value;
+		}
+	}
+}
+
+module.exports = {
+	loadEnv,
+	hasAdminCredentials,
+	bridgeToWordPressTestUtils,
+	ENV_PATH,
+	STORAGE_STATE_PATH,
+};
