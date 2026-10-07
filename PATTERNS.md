@@ -205,11 +205,10 @@ only when you want a single tile as a feature.
 | **Card — Media Overlay** | The shared archive tile: photograph with the title over it. Used by every Tour Operator archive, unchanged, so all the archives match. |
 | **Card — Tour (Compact)** · **Card — Tour (List)** | Tour tiles, in a grid and in a row |
 | **Card — Accommodation (Compact)** · **Card — Accommodation (List)** | Accommodation tiles |
-| **Card — Destination (Compact)** | Destination tile |
 | **Card — Search Result (List)** | The row the search results page renders, for any kind of result. Same row as Card — Accommodation (List), plus a badge naming what the result is; the meta panel shows accommodation fields on a property and tour fields on a tour, and disappears on anything else. |
 | **Card — Post (Grid)** · **Card — Post (List)** | Blog post tiles |
 | **Card — Category** | Category tile |
-| **Blog Card** · **Blog Card Large** | Post tiles for the news landing page |
+| **Card — Mega Menu** | The featured card in the right-hand column of every header mega menu — the latest destination, tour, property or post. Part of the mega menus; you never place it. |
 | **Card — Review (Quote)** | The review slide the carousels on Tour Operator singles carry — a gold quote mark over the reviewer's photograph |
 | **Card — Team Member** | The consultant tile on the team page — a portrait with a dark band along its foot carrying the name and the role |
 | **Card — Trustpilot Review** | One Trustpilot review on a consultant's own page. Repeated three times by the reviews block; you never place it. |
@@ -224,8 +223,6 @@ they always match the tour, lodge or destination they sit on.
 | Pattern | What it is | In the inserter |
 |---|---|---|
 | **Post Loop List** | Posts in a vertical list | Yes |
-| **Post Loop Grid** | Posts in a grid, with the theme's own settings | No |
-| **Post Loop Grid Default** | Posts in a grid, inheriting the page's query | No |
 
 ---
 

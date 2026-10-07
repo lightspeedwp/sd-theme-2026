@@ -1175,9 +1175,9 @@
 /**
  * Listing Card (Compact) — the same hover lift, for the whole family.
  *
- * The three compact cards — patterns/card-tour-compact.php,
- * patterns/card-accommodation-compact.php and
- * patterns/card-destination-compact.php — are all the same device as the post
+ * The compact cards — patterns/card-tour-compact.php,
+ * patterns/card-accommodation-compact.php and the destination modal,
+ * parts/modal-destination.html — are all the same device as the post
  * grid card above: a panel carrying an *inline* `shadow|200`, a cropped
  * featured image and `sdLinkTo`. They get the same 4px rise and the same step
  * up the shadow scale, for the same reasons — including the `!important`, which

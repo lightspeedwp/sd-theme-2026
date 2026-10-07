@@ -48,7 +48,7 @@ style.css       Theme header + CSS reset/base.
 functions.php   Setup, block styles, pattern categories. Namespace SdTheme2026.
 inc/            Design-only modules. Usually empty — see inc/README.md.
 templates/      Core WP templates + Tour Operator archives, singles and taxonomies.
-parts/          header · footer · sidebar · mega-menu · dropdown-menu · mobile-menu · single-hero
+parts/          header · footer · sidebar · mega-menu · dropdown-menu · mobile-menu · modals · FAQ
 patterns/       Block patterns (.php), slugs namespaced sd-theme-2026/*
 styles/         Block & section style variations (scanned recursively)
   blocks/<block>/   Variations scoped to one block type
