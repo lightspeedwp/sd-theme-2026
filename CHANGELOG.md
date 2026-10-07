@@ -8,6 +8,35 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✅ **A full QA harness: theme contract tests, PHPUnit, PHPStan, Theme Check
+  and the WordPress linters.** ASD-36. `npm run lint` and `npm run test` run
+  everything that needs no browser; `tests/php/README.md` and
+  `tests/e2e/README.md` explain each layer.
+  - **Theme contract tests (Jest).** `tests/unit/theme/` checks the authored
+    files against AGENTS.md: theme.json and style variations, every token
+    reference defined, exactly one `<main>` per template, part and pattern
+    references resolve, no per-install `ref` ids, pattern headers.
+  - **`@wordpress/a11y` in both suites.** Jest and Playwright helpers that read
+    back what core's `speak()` announced.
+  - **`@wordpress/e2e-test-utils-playwright`.** New
+    `editor/block-validation.spec.js` parses every template, part and theme
+    pattern with the editor's own parser and fails on invalid or unregistered
+    blocks. `auth.setup.js` now signs in through the package's `RequestUtils`.
+  - **PHPUnit integration suite** (`composer run test`): theme setup, block
+    styles, pattern categories, every pattern registered and rendering without
+    a PHP error, every template and part resolving from its file. 194 tests.
+  - **PHPStan** level 5 over `functions.php` and `inc/` — clean.
+  - **Composer-managed phpcs** with PHPCompatibilityWP (PHP 7.4+), replacing
+    the global install; `.phpcs.xml.dist` is otherwise unchanged and clean.
+  - **ESLint, Stylelint, markdownlint, npm-package-json-lint**, `check:engines`
+    and `check:licenses` through `@wordpress/scripts`.
+  - **Theme Check.** `npm run check:theme` runs the wordpress.org Theme Check
+    through WP-CLI (`tests/bin/theme-check.php`). No REQUIRED findings.
+  - **CI.** New `lint.yml` (PHP syntax on 7.4 and 8.3, phpcs, PHPStan, JS) and
+    `php-tests.yml` (WordPress 7.1, Tour Operator 2.2.0, Ollie Menu Designer).
+    Jest, ESLint, Stylelint and markdownlint report without gating until the
+    findings below are resolved.
+
 - **`patterns/card-mega-menu.php` — the mega menus' featured card, as a theme
   pattern.** ASD-36. Replicated unchanged from the synced pattern "Card - Mega
   Menu" (`wp_block` 65890). See Changed for the four parts that now use it.
@@ -1013,6 +1042,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
+
+- 🐛 **`wp-scripts lint-js` crashed before linting anything.** ASD-36. npm
+  resolved TypeScript 7 as `@wordpress/eslint-plugin`'s peer, which the
+  bundled typescript-eslint 6 cannot load. `overrides` pins TypeScript ^5.9.
 
 - 🐛 **The itinerary no longer prints "Card Link" for a missing destination.**
   LS-2019 (line 9, Tour). `patterns/itinerary-stay.php`,

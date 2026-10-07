@@ -1,0 +1,127 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php-syntax:
+    name: PHP syntax
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The floor style.css declares, and what dev runs.
+        php: [ '7.4', '8.3' ]
+    steps:
+      # actions/checkout@v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      # shivammathur/setup-php@2.31.1
+      - uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Lint every PHP file
+        run: find . -path ./vendor -prune -o -path ./node_modules -prune -o -path ./.claude -prune -o -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+  phpcs:
+    name: WordPress coding standards
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout@v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      # shivammathur/setup-php@2.31.1
+      - uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231
+        with:
+          php-version: '7.4'
+          coverage: none
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      # The full WordPress standard plus PHPCompatibilityWP (PHP 7.4+). AGENTS.md
+      # requires patterns/ to be silent under it.
+      - name: Run phpcs
+        run: vendor/bin/phpcs --report=full
+
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout@v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      # shivammathur/setup-php@2.31.1
+      - uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run PHPStan
+        run: composer run phpstan -- --no-progress --error-format=github
+
+  js:
+    name: Theme contract, JS, CSS, Markdown and package.json
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout@v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      # actions/setup-node@v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: package.json
+        run: npm run lint:pkg-json
+
+      - name: Engines and licences
+        run: npm run check:engines && npm run check:licenses
+
+      # Jest runs the theme contract tests (tests/unit/theme): theme.json and
+      # style variations, token references, one <main> per template, part and
+      # pattern references, no per-install ids. On 2026-10-07 nine of them
+      # failed on real findings — hard-coded `wp:navigation` refs in six files
+      # and an undefined `spacing|0` preset in three patterns (see CHANGELOG).
+      # Reporting, not gating, until those are resolved; then remove
+      # `continue-on-error` here.
+      - name: Jest
+        continue-on-error: true
+        run: npm run test:unit
+
+      # Reporting, not gating, until the one-off clean-up pass lands. On
+      # 2026-10-07 lint:js and lint:css reported mostly Prettier and
+      # auto-fixable formatting (`npm run lint:js:fix`, `npm run lint:css:fix`).
+      # Remove `continue-on-error` from each step in the PR that clears it.
+      - name: ESLint
+        continue-on-error: true
+        run: npm run lint:js
+
+      - name: Stylelint
+        continue-on-error: true
+        run: npm run lint:css
+
+      - name: Markdown
+        continue-on-error: true
+        run: npm run lint:md

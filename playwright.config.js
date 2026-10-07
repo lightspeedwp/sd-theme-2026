@@ -34,7 +34,12 @@
  */
 
 const { defineConfig, devices } = require( '@playwright/test' );
-const { loadEnv, hasAdminCredentials } = require( './tests/e2e/utils/env.js' );
+const {
+	loadEnv,
+	hasAdminCredentials,
+	bridgeToWordPressTestUtils,
+	STORAGE_STATE_PATH,
+} = require( './tests/e2e/utils/env.js' );
 
 loadEnv();
 
@@ -67,6 +72,10 @@ if ( ! ALLOWED_HOSTS.includes( baseHost ) ) {
 			`(${ ALLOWED_HOSTS.join( ', ' ) }).`
 	);
 }
+
+// After the allowlist, deliberately: the package signs in to whatever
+// WP_BASE_URL it is handed.
+bridgeToWordPressTestUtils( baseURL );
 
 /**
  * Opt-in projects. Both cost something someone else pays for — `wide` costs
@@ -183,7 +192,20 @@ module.exports = defineConfig( {
 		 * the run — the test user is temporary by design.
 		 */
 		...( hasAdminCredentials()
-			? [ { name: 'setup', testMatch: /auth\.setup\.js/ } ]
+			? [
+					{
+						name: 'setup',
+						testMatch: /auth\.setup\.js/,
+						/**
+						 * `RequestUtils.setupRest()` posts to wp-login.php and
+						 * discovers the REST root in parallel, through an API
+						 * request context that inherits `actionTimeout`. A cold
+						 * stack can take most of 10s for the login alone.
+						 */
+						timeout: 120 * 1000,
+						use: { actionTimeout: 60 * 1000 },
+					},
+			  ]
 			: [] ),
 
 		{
@@ -292,7 +314,7 @@ module.exports = defineConfig( {
 						use: {
 							...chrome,
 							viewport: { width: 1280, height: 800 },
-							storageState: './tests/e2e/.auth/admin.json',
+							storageState: STORAGE_STATE_PATH,
 						},
 					},
 			  ]

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+	PHPUnit — integration suite. `composer run test` / `npm run test:php`.
+
+	Boots a real WordPress through the core test suite (wp-phpunit/wp-phpunit)
+	with this theme active — and Tour Operator and sd-enhancements loaded, when
+	they can be found. The test suite DROPS AND RECREATES every table in the
+	database it is given, so it must be a throwaway database, never the site's
+	own. tests/php/README.md has the one-line setup.
+
+	There is no unit suite: the theme's PHP is hook registration and template
+	glue, which only means something inside WordPress.
+-->
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+	bootstrap="tests/php/integration/bootstrap.php"
+	colors="true"
+	beStrictAboutOutputDuringTests="true"
+	failOnRisky="true"
+>
+	<testsuites>
+		<testsuite name="integration">
+			<directory prefix="test-" suffix=".php">tests/php/integration</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

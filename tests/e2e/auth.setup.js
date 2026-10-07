@@ -1,6 +1,13 @@
 /**
  * Sign in once, save the session for the `editor` project.
  *
+ * Signs in through `RequestUtils` from `@wordpress/e2e-test-utils-playwright`
+ * — the same path Gutenberg's own suite uses. `setupRest()` posts to
+ * wp-login.php, mints a REST nonce from `admin-ajax.php?action=rest-nonce`, and
+ * writes cookies, nonce and REST root to one storage-state file. The `editor`
+ * browser project loads the cookies from it; the package's `requestUtils`
+ * fixture loads the nonce, so no spec has to mint its own.
+ *
  * Credentials come from .env (WP_ADMIN_USER / WP_ADMIN_PASS) and never from
  * source. The saved state lands in tests/e2e/.auth/, which .gitignore excludes —
  * an auth-state file is a credential.
@@ -13,66 +20,56 @@
  * @subpackage Tests
  */
 
-const path = require( 'path' );
 const { test: setup, expect } = require( '@playwright/test' );
+const { RequestUtils } = require( '@wordpress/e2e-test-utils-playwright' );
+const { STORAGE_STATE_PATH } = require( './utils/env.js' );
 
-const STORAGE_STATE = path.join( __dirname, '.auth', 'admin.json' );
-
-setup( 'authenticate as an administrator', async ( { page, baseURL } ) => {
-	const user = process.env.WP_ADMIN_USER;
-	const pass = process.env.WP_ADMIN_PASS;
+setup( 'authenticate as an administrator', async ( { baseURL } ) => {
+	const username = process.env.WP_ADMIN_USER;
+	const password = process.env.WP_ADMIN_PASS;
 
 	setup.skip(
-		! user || ! pass,
+		! username || ! password,
 		'No WP_ADMIN_USER / WP_ADMIN_PASS — see .env.example'
 	);
 
-	await page.goto( '/wp-login.php' );
+	const requestUtils = await RequestUtils.setup( {
+		baseURL,
+		user: { username, password },
+		storageStatePath: STORAGE_STATE_PATH,
+	} );
 
 	/**
-	 * `#user_login` and `#user_pass` are core's own ids and have been stable
-	 * for the whole life of wp-login.php. The accessible names are translated,
-	 * so a label lookup would break on a non-English install — this is the one
-	 * place an id beats `getByLabel`.
+	 * A failed login is not an error to wp-login.php — it re-renders the form
+	 * with a 200 — so the nonce request that follows fails instead, and
+	 * setupRest() retries for a minute before giving up. Say what that
+	 * usually means.
 	 */
-	await page.locator( '#user_login' ).fill( user );
-	await page.locator( '#user_pass' ).fill( pass );
-	await page.locator( '#wp-submit' ).click();
-
-	/**
-	 * A failed login re-renders wp-login.php with an error div rather than
-	 * returning a non-200, so assert on where we landed, not on status.
-	 */
-	const loginError = page.locator( '#login_error' );
-	const adminBar = page.locator( '#wpadminbar' );
-
-	/**
-	 * Wait for whichever outcome arrives. Checking the error straight after
-	 * the click reads the page before the POST has come back.
-	 */
-	await adminBar.or( loginError ).first().waitFor( { timeout: 30 * 1000 } );
-
-	if ( await loginError.count() ) {
-		const message = ( await loginError.innerText() ).trim();
-
+	try {
+		await requestUtils.setupRest();
+	} catch ( error ) {
 		throw new Error(
-			`Login failed for the test administrator: ${ message }\n` +
+			`Could not sign in to ${ baseURL } as the test administrator.\n` +
 				'If the throwaway test user has been deleted, remove ' +
 				'WP_ADMIN_USER and WP_ADMIN_PASS from .env — the editor ' +
-				'project will then skip cleanly instead of failing.'
+				'project will then skip cleanly instead of failing.\n\n' +
+				error.message
 		);
 	}
 
-	await page.waitForURL( /\/wp-admin\//, { timeout: 30 * 1000 } );
+	const me = await requestUtils.rest( {
+		path: '/wp/v2/users/me',
+		params: { context: 'edit' },
+	} );
 
-	await expect(
-		page.locator( '#wpadminbar' ),
-		'signed in but no admin bar — is the account an administrator?'
-	).toBeAttached();
+	expect(
+		me.roles,
+		'signed in, but the account is not an administrator'
+	).toContain( 'administrator' );
 
-	await page.context().storageState( { path: STORAGE_STATE } );
+	await requestUtils.request.dispose();
 
-	process.stderr.write( `\n  Signed in to ${ baseURL } as the test administrator\n` );
+	process.stderr.write(
+		`\n  Signed in to ${ baseURL } as the test administrator\n`
+	);
 } );
-
-module.exports = { STORAGE_STATE };
