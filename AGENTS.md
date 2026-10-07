@@ -109,7 +109,7 @@ sd-theme-2026/
 ├── inc/                  # Design-only modules (third-party markup styling). Usually empty.
 ├── templates/            # Core WP templates + Tour Operator archives/singles/taxonomies.
 ├── parts/                # header, footer, sidebar, mega-menu, dropdown-menu, mobile-menu,
-│                         #   single-hero.
+│                         #   modals, FAQ.
 ├── patterns/             # Block patterns (.php). Slugs namespaced `sd-theme-2026/*`.
 ├── styles/               # Block & section style variations. Scanned recursively.
 │   ├── blocks/<block>/   #   Variations scoped to one block type.
@@ -171,9 +171,11 @@ sd-theme-2026/
   without one on its Tour Operator templates and had to retrofit it — don't repeat that.
 - **Never hardcode a `ref` ID on a `wp:navigation` block** or a Gravity Forms `formId` with
   inline colours. Those are per-install values that no deploy step can fix; they were the
-  single largest source of breakage inherited from the KWV base. **Attachment IDs are the
-  same** — `"id":52466` and `wp-image-52466` survive only because dev is deployed to live
-  wholesale.
+  single largest source of breakage inherited from the KWV base. **A synced pattern
+  (`<!-- wp:block {"ref":…} /-->`) is the same** — make it a theme pattern and reference
+  it by slug (`patterns/card-mega-menu.php` replaced `wp_block` 65890 this way).
+  **Attachment IDs are the same too** — `"id":52466` and `wp-image-52466` survive only
+  because dev is deployed to live wholesale.
 - **Uploads URLs are the exception to that**, and they are written out literally as core
   writes asset URLs. The go-live deployment runs a find-and-replace over the dev host by
   convention, so a `$sd_uploads`-style variable buys nothing — it was still a hardcoded dev

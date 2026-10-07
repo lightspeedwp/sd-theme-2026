@@ -251,6 +251,13 @@ function template_part_areas( array $areas ) {
 		'description' => __( 'The Sidebar template defines a page area that can be found on the Page (With Sidebar) template.', 'sd-theme-2026' ),
 		'icon'        => 'sidebar',
 	);
+	$areas[] = array(
+		'area'        => 'faq',
+		'area_tag'    => 'section',
+		'label'       => __( 'FAQ', 'sd-theme-2026' ),
+		'description' => __( 'FAQ template parts hold the Yoast FAQ blocks that close the Page (No Title), Destinations archive and Country templates.', 'sd-theme-2026' ),
+		'icon'        => 'layout',
+	);
 
 	return $areas;
 }
@@ -307,3 +314,9 @@ require_once get_theme_file_path( 'inc/trustpilot.php' );
 // lazy contract as intro-collapse above: the slide styling rides the core-* scan
 // on assets/styles/core-group.css, so only the script needs a module.
 require_once get_theme_file_path( 'inc/review-slider.php' );
+
+// Styles gravityforms/form's submit button. Its controls are Gravity Forms' own
+// markup, styled through Orbital's `--gf-*` custom properties, which theme.json
+// cannot set, and a non-core block is outside enqueue_custom_block_styles()'
+// core-* scan.
+require_once get_theme_file_path( 'inc/gravityforms.php' );

@@ -8,6 +8,26 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **`patterns/card-mega-menu.php` — the mega menus' featured card, as a theme
+  pattern.** ASD-36. Replicated unchanged from the synced pattern "Card - Mega
+  Menu" (`wp_block` 65890). See Changed for the four parts that now use it.
+
+- **FAQ template parts captured from the dev Site Editor.** ASD-36.
+  `parts/faq-countries.html`, `parts/pages.html` and
+  `parts/destinations.html` existed only as database parts on dev. They are
+  now theme files, registered in `theme.json` under a new `faq` part area,
+  which `functions.php` adds beside `sidebar`. Each part closes its template:
+  `template-single-country`, `template-page-full` (Page, Full Width, Banner)
+  and `template-archive-destination` now end their `<main>` with the matching
+  part. Only that addition was taken from the dev overrides. The rest of each
+  override was editor re-serialisation, or a copy older than the theme. The
+  `page-no-title` override still carried the pattern from before 2026-09-24,
+  with no banner, no breadcrumbs and no `#content` skip-link target, so those
+  stay as the theme has them. The `404`, `front-page` and `single-destination`
+  overrides and the `modal-enquiry` and `modal-accommodation` overrides held
+  no intended change and were not captured. Every override on dev is reset
+  once this deploys.
+
 - ✅ **`tests/e2e/templates/search-and-archive.spec.js`.** LS-2024.
   Runs the shared hero banner contract (`utils/hero-banner.js`) on the search
   results, and checks that the search page's keyword box stays on screen above
@@ -160,7 +180,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
   Header, at 1280px: exactly one band rendered, and it sticks; the logo sits
   wholly inside the band; the Call Us pop-out has a zero radius and no rule
-  between rows (skips where menu 65909 is absent, i.e. local). At 390px: exactly
+  between rows. At 390px: exactly
   one band rendered, and it scrolls away; the logo fits; the search opens under
   the bar, inside the viewport, with no horizontal scroll, takes focus, and
   returns it on Escape. In the mobile menu panel: no search field, four flags
@@ -173,9 +193,9 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   failing hover shipped. The new `contrast.js` resolves palette slugs through the
   browser, so the specs never hardcode a hex value.
 
-  Run against local, where these changes live: 23 passed, 1 skipped (the Call Us
-  check; menu 65909 does not exist locally). On dev they will fail until this
-  branch deploys and the overrides below are reset. That is expected.
+  Run against local, where these changes live: 23 passed, 1 skipped (the mobile
+  menu check; menu 65877 does not exist locally). On dev they will fail until
+  this branch deploys and the overrides below are reset. That is expected.
 
 - ✅ **`tests/e2e/templates/front-page.spec.js`.** LS-2031 (line 21, QA).
   Five checks on the homepage's per-screen-size swaps, run at phone, tablet
@@ -390,6 +410,45 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   A new per-route `axeDisable` field skips `link-in-text-block` on these pages
   only, because their inline links match live: coloured, not underlined. Colour
   contrast is still scanned on these pages.
+- 🔗 **The four mega menus take their featured card from the theme, not a
+  synced pattern.** ASD-36. `parts/mega-menu-destinations.html`,
+  `parts/mega-menu-tours.html`, `parts/mega-menu-accommodation.html`,
+  `parts/mega-menu-about.html`. Each `core/post-template` held
+  `<!-- wp:block {"ref":65890} /-->`, a per-install post ID that resolved only
+  because dev is deployed to live wholesale — the same class of value AGENTS.md
+  bans for navigation `ref`s, and the rule there now names synced patterns too.
+  Each now references `sd-theme-2026/card-mega-menu`. The loop's post context
+  survives a part-to-pattern reference: measured on local (WP 7), the same tour
+  title rendered inline and by reference. Markup and styling are unchanged — the
+  resting styles stay on `is-style-mega-panel` and the hover in
+  `assets/styles/ollie-mega-menu.css`. **Deploy step:** delete `wp_block` 65890
+  on dev once this is live there; until then the theme no longer reads it.
+
+- 🅱️ **Buttons are bold, so white on brand-500 passes as large text.**
+  LS-2015. `theme.json`, `styles/blocks/button/accent-cta.json`,
+  `styles/blocks/button/outline-light.json`, `inc/gravityforms.php` (new),
+  `assets/styles/gravityforms-form.css` (new), `functions.php`.
+
+  White on brand-500 is 3.17:1, and the button labels were 19px semi-bold.
+  Axe counts only 700 as bold, so it treated them as normal text needing
+  4.5:1. At bold they are large text, which needs 3:1, and they pass. The
+  brand orange is unchanged. `styles.elements.button` and the core Fill and
+  Outline variations go from `font-weight|semi-bold` to `|bold`, as do Accent
+  CTA and Outline Light. Plain Link is left alone, because it is a text link
+  with no button plate.
+
+  Gravity Forms' submits take the same step through Orbital's
+  `--gf-ctrl-btn-font-weight`, in a new module attached to `gravityforms/form`.
+  Their computed weight on dev goes from 500 to 700, and that module also sets
+  `--gf-ctrl-btn-color-primary` to `contrast`, which yields 6.61:1 on the
+  site-wide brand-500 fill and 4.65:1 on the brand-600 hover.
+
+- ☎️ **The header's Call Us Today rests on brand-700.** LS-2015.
+  `patterns/header.php`, `assets/styles/ollie-mega-menu.css`. Brand-500 on the
+  header's ground was 2.91:1, and brand-600 only reaches 4.15:1 at the 16px
+  minimum of `font-size|300`, so the trigger now rests on brand-700 at 5.81:1.
+  The phone icon beside it moves with it, because an icon needs 3:1 too. The
+  trigger's hover goes one step darker again, to brand-800.
 
 - 🔎 **Search results: the hero banner, phone stack included.** LS-2024.
   `patterns/template-page-search.php` drops the banner's inline spacing-40
@@ -1203,6 +1262,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   this issue's to write. Same band, one copy string apart — not a fourth design.
 
 ### Removed
+
+- 🗑️ **Unused patterns, a part and two card styles.** ASD-36. A usage audit
+  (`.github/reports/template-part-pattern-audit-2026-10-06.md` in the workspace)
+  counted every `wp:pattern` slug, `require __DIR__` composition, part slug,
+  `menuSlug`/`mobileMenuSlug` and `#to-modal-*` anchor across the theme,
+  `sd-enhancements-2026`, the tests and the database. None of these had a
+  reference:
+  - `patterns/post-loop-grid-custom.php` (slug `sd-theme-2026/post-loop-grid`)
+    and `patterns/post-loop-grid-default.php`, both `Inserter: false`.
+  - `patterns/blog-card.php` (its only user was `post-loop-grid-default`) and
+    `patterns/blog-card-large.php`, with their section styles
+    `styles/sections/cards/blog-card.json` and `blog-card-large.json` and the
+    `.is-style-blog-card-large` separator rule in
+    `assets/styles/core-separator.css`. The blog is unaffected: its landing,
+    category, tag and author archives render `card-post-list`
+    (`is-style-blog-card-wide`), and the homepage carousel and team pages render
+    `card-post-grid`. That closes `style.md` §12.6's open question of which of
+    the three was the landing row.
+  - `patterns/card-destination-compact.php`. `parts/modal-destination.html` is
+    the live copy of that card and stays; its block name no longer points at
+    the pattern, and `assets/styles/core-group.css` names the modal instead.
+  - `parts/single-hero.html` and its `theme.json` `templateParts` entry,
+    replaced when the singles moved to their own banners. `README.md` and
+    `AGENTS.md` list the modal and FAQ parts in its place.
+
+  `PATTERNS.md` drops the five patterns and lists Card — Mega Menu.
 
 - 🗑️ **`templates/single-special.html`.** LS-2021. The site does not publish a page
   per offer; `/special/{slug}/` 301s to the archive, and that redirect is issued by
@@ -4359,8 +4444,8 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **The header's Call Us disclosure is an Ollie dropdown, not a `core/accordion`.** Zared's
   call, taken from ATI Holidays where the same widget is built this way: it opens on hover,
   and the pop-out is the plugin's own construction rather than an in-flow accordion panel
-  argued out of the flow with `!important`. `patterns/header.php` now carries a
-  `core/navigation` (`ref` 65909, `overlayMenu: "never"`, `ariaLabel: "Call us"`) holding one
+  argued out of the flow with `!important`. `patterns/header.php` now carries an
+  uncontrolled `core/navigation` (`overlayMenu: "never"`, `ariaLabel: "Call us"`) holding one
   `ollie/mega-menu` whose `menuSlug` is the `dropdown-call-us` template part — the same one
   file the footer and the safari expert panel read, so the four numbers still cannot drift.
 

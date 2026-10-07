@@ -405,5 +405,6 @@
 	require __DIR__ . '/cta-not-sure-where-to-go.php';
 	?>
 
+<!-- wp:template-part {"slug":"destinations"} /-->
 </main>
 <!-- /wp:group -->

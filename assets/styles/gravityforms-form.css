@@ -1,0 +1,37 @@
+/* Gravity Forms — the submit button's weight
+   ---------------------------------------------
+   Attached to `gravityforms/form` by inc/gravityforms.php, so it prints only on
+   a page that renders a form.
+
+   ## Why this is authored CSS and not a block-style JSON partial
+
+   The submit is Gravity Forms' own `<input>`/`<button>`, not a
+   `.wp-element-button`, so `styles.elements.button` never reaches it, and the
+   form carries no block wrapper for a variation to hang off. The Orbital
+   framework reads its button type from `--gf-*` custom properties declared on
+   `.gform-theme--framework` (gravity-forms-theme-framework.min.css), so setting
+   the property is the supported way in, and it survives Orbital's own
+   selectors without a specificity fight.
+
+   ## Why bold
+
+   2026-09-24: every button on the site went up a step, from semi-bold to bold,
+   because white on brand-500 is 3.17:1. WCAG only accepts that for large text
+   (18.66px bold or 24px), and the block buttons are 19px, so at bold they pass.
+   Gravity Forms' submits get the same step so the site's buttons read as one
+   set.
+
+   ⚠️ Bold alone does not bring the submits to AA. On the site-wide
+   `buttonPrimaryBackgroundColor` of brand-500, the label stays under the
+   large-text floor, so the pairing needs a darker foreground as well.
+   `contrast` is 6.61:1 on brand-500 and still 4.65:1 on the brand-600 hover,
+   so it clears both states without resizing the control.
+
+   Orbital declares the button tokens on `.gform-theme--api,
+   .gform-theme--framework` at (0,1,0). The two-class selectors here are
+   (0,2,0), so they win whichever sheet prints first. */
+.gform-theme.gform-theme--api,
+.gform-theme.gform-theme--framework {
+	--gf-ctrl-btn-color-primary: var(--wp--preset--color--contrast);
+	--gf-ctrl-btn-font-weight: var(--wp--custom--font-weight--bold);
+}
