@@ -73,10 +73,14 @@ test.describe( 'Footer link hovers', () => {
 		 * is the header's neutral-200; the ratio is asserted against that.
 		 */
 		const ground = await presetColor( page, 'neutral-200' );
-		expect( contrastRatio( expected, ground ) ).toBeGreaterThanOrEqual( 4.5 );
+		expect( contrastRatio( expected, ground ) ).toBeGreaterThanOrEqual(
+			4.5
+		);
 
 		const links = page
-			.locator( 'footer.wp-block-template-part .is-style-site-footer a[href]' )
+			.locator(
+				'footer.wp-block-template-part .is-style-site-footer a[href]'
+			)
 			.filter( { hasNot: page.locator( 'img' ) } )
 			.filter( { hasText: /\S/ } );
 
@@ -90,7 +94,10 @@ test.describe( 'Footer link hovers', () => {
 			}
 		}
 
-		expect( textLinks.length, 'no text links found in the footer widgets' ).toBeGreaterThan( 0 );
+		expect(
+			textLinks.length,
+			'no text links found in the footer widgets'
+		).toBeGreaterThan( 0 );
 
 		for ( const link of textLinks ) {
 			await link.hover();
@@ -109,7 +116,10 @@ test.describe( 'Footer link hovers', () => {
 			'footer.wp-block-template-part .is-style-site-footer .wp-social-link a'
 		);
 
-		test.skip( 0 === ( await social.count() ), 'no labelled social links in the footer' );
+		test.skip(
+			0 === ( await social.count() ),
+			'no labelled social links in the footer'
+		);
 
 		for ( const link of await social.all() ) {
 			const label = link.locator( '.wp-block-social-link-label' );
@@ -126,12 +136,16 @@ test.describe( 'Footer link hovers', () => {
 	} ) => {
 		const expected = await presetColor( page, 'brand-400' );
 		const colophon = page
-			.locator( 'footer.wp-block-template-part .is-style-footer-colophon' )
+			.locator(
+				'footer.wp-block-template-part .is-style-footer-colophon'
+			)
 			.first();
 
 		await expect( colophon ).toBeVisible();
 
-		const ground = await colophon.evaluate( ( node ) => getComputedStyle( node ).backgroundColor );
+		const ground = await colophon.evaluate(
+			( node ) => getComputedStyle( node ).backgroundColor
+		);
 		const links = colophon.locator( 'a[href]' ).filter( { hasText: /\S/ } );
 
 		await expect( links ).not.toHaveCount( 0 );
@@ -140,10 +154,15 @@ test.describe( 'Footer link hovers', () => {
 			await link.hover();
 			await expect( link ).toHaveCSS( 'color', expected );
 			const ratio = contrastRatio(
-				await link.evaluate( ( node ) => getComputedStyle( node ).color ),
+				await link.evaluate(
+					( node ) => getComputedStyle( node ).color
+				),
 				ground
 			);
-			expect( ratio, `hover contrast ${ ratio.toFixed( 2 ) }:1` ).toBeGreaterThanOrEqual( 4.5 );
+			expect(
+				ratio,
+				`hover contrast ${ ratio.toFixed( 2 ) }:1`
+			).toBeGreaterThanOrEqual( 4.5 );
 		}
 	} );
 } );

@@ -16,6 +16,7 @@
  */
 
 const fs = require( 'fs' );
+const { known } = require( '../helpers/known-violations' );
 const {
 	list,
 	markup,
@@ -172,7 +173,7 @@ describe( 'references', () => {
 				.map( ( { ref } ) => `synced pattern wp:block ref ${ ref }` ),
 		];
 
-		expect( offending ).toEqual( [] );
+		expect( offending ).toEqual( known( 'per-install-ids', file ) );
 	} );
 } );
 

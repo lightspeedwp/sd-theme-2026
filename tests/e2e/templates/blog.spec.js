@@ -29,7 +29,11 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
-const { BANNER, describeHeroBanners, resolvePreset } = require( '../utils/hero-banner.js' );
+const {
+	BANNER,
+	describeHeroBanners,
+	resolvePreset,
+} = require( '../utils/hero-banner.js' );
 
 /**
  * A literal path, prefixed the way this environment's permalinks need.
@@ -43,7 +47,9 @@ const { BANNER, describeHeroBanners, resolvePreset } = require( '../utils/hero-b
  */
 function envPath( routes, path ) {
 	const sample = routes.post( 'post' ) || routes.post( 'tour' ) || '';
-	return `${ sample.startsWith( '/index.php/' ) ? '/index.php' : '' }${ path }`;
+	return `${
+		sample.startsWith( '/index.php/' ) ? '/index.php' : ''
+	}${ path }`;
 }
 
 /**
@@ -88,9 +94,13 @@ async function authorPath( routes, request ) {
  */
 async function postsBySlug( request, slugs ) {
 	const response = await request.get(
-		`/wp-json/wp/v2/posts?per_page=100&slug=${ slugs.map( encodeURIComponent ).join( ',' ) }&_fields=id,slug,author,categories`
+		`/wp-json/wp/v2/posts?per_page=100&slug=${ slugs
+			.map( encodeURIComponent )
+			.join( ',' ) }&_fields=id,slug,author,categories`
 	);
-	expect( response.ok(), 'Could not read posts from the REST API' ).toBe( true );
+	expect( response.ok(), 'Could not read posts from the REST API' ).toBe(
+		true
+	);
 	return response.json();
 }
 
@@ -101,43 +111,82 @@ async function postsBySlug( request, slugs ) {
  * @return {string} Slug.
  */
 function slugOf( href ) {
-	return new URL( href, 'https://example.test' ).pathname.split( '/' ).filter( Boolean ).pop();
+	return new URL( href, 'https://example.test' ).pathname
+		.split( '/' )
+		.filter( Boolean )
+		.pop();
 }
 
 const ROW = 'main .wp-block-post-template > li .is-style-blog-card-wide';
-const RELATED = '#related .lsx-post-related-post-query li.wp-block-post:not(.slick-cloned)';
+const RELATED =
+	'#related .lsx-post-related-post-query li.wp-block-post:not(.slick-cloned)';
 
 describeHeroBanners( { test, expect }, [
 	{ name: 'blog landing', path: ( routes ) => envPath( routes, '/blog/' ) },
 	{ name: 'category archive', path: ( routes ) => routes.term( 'category' ) },
 	{ name: 'tag archive', path: ( routes ) => routes.term( 'post_tag' ) },
-	{ name: 'author archive', path: ( routes, request ) => authorPath( routes, request ) },
+	{
+		name: 'author archive',
+		path: ( routes, request ) => authorPath( routes, request ),
+	},
 ] );
 
 test.describe( 'Blog landing', () => {
-	test( 'titles the banner "Blog" and heads the intro band with an h2', async ( { page, visit, routes } ) => {
+	test( 'titles the banner "Blog" and heads the intro band with an h2', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, '/blog/' ) );
 
-		await expect( page.locator( `${ BANNER } h1` ) ).toHaveText( /^\s*Blog\s*$/ );
+		await expect( page.locator( `${ BANNER } h1` ) ).toHaveText(
+			/^\s*Blog\s*$/
+		);
 
-		const intro = page.locator( 'main .is-style-tinted-page-section' ).first();
-		await expect( intro.locator( 'h2' ).first() ).toHaveText( /Tales from our trails/i );
+		const intro = page
+			.locator( 'main .is-style-tinted-page-section' )
+			.first();
+		await expect( intro.locator( 'h2' ).first() ).toHaveText(
+			/Tales from our trails/i
+		);
 	} );
 
-	test( 'shelves the blog categories, each tile linking to its archive', async ( { page, visit, routes } ) => {
+	test( 'shelves the blog categories, each tile linking to its archive', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visit( envPath( routes, '/blog/' ) );
 
-		const tiles = page.locator( 'main .wp-block-terms-query .wp-block-term-name a' );
-		await expect( tiles, 'the Browse By Category shelf is empty' ).not.toHaveCount( 0 );
+		const tiles = page.locator(
+			'main .wp-block-terms-query .wp-block-term-name a'
+		);
+		await expect(
+			tiles,
+			'the Browse By Category shelf is empty'
+		).not.toHaveCount( 0 );
 
-		for ( const href of await tiles.evaluateAll( ( els ) => els.map( ( el ) => el.href ) ) ) {
-			expect( href, 'a category tile does not link to a category archive' ).toMatch( /\/category\/[^/]+\/?$/ );
+		for ( const href of await tiles.evaluateAll( ( els ) =>
+			els.map( ( el ) => el.href )
+		) ) {
+			expect(
+				href,
+				'a category tile does not link to a category archive'
+			).toMatch( /\/category\/[^/]+\/?$/ );
 		}
 	} );
 
-	test( 'lists the newest posts as rows and pages the rest', async ( { page, visit, routes } ) => {
-		const response = await page.request.get( '/wp-json/wp/v2/posts?per_page=1&_fields=id,link' );
-		expect( response.ok(), 'Could not read posts from the REST API' ).toBe( true );
+	test( 'lists the newest posts as rows and pages the rest', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
+		const response = await page.request.get(
+			'/wp-json/wp/v2/posts?per_page=1&_fields=id,link'
+		);
+		expect( response.ok(), 'Could not read posts from the REST API' ).toBe(
+			true
+		);
 		const total = Number( response.headers()[ 'x-wp-total' ] || 0 );
 		const [ newest ] = await response.json();
 		test.skip( ! newest, 'No published posts in this environment' );
@@ -146,33 +195,67 @@ test.describe( 'Blog landing', () => {
 
 		const rows = page.locator( ROW );
 		const perPage = await rows.count();
-		expect( perPage, 'the blog landing lists no posts' ).toBeGreaterThan( 0 );
+		expect( perPage, 'the blog landing lists no posts' ).toBeGreaterThan(
+			0
+		);
 
-		const first = await rows.first().locator( '.wp-block-post-title a' ).getAttribute( 'href' );
-		expect( slugOf( first ), 'the first row is not the newest post' ).toBe( slugOf( newest.link ) );
+		const first = await rows
+			.first()
+			.locator( '.wp-block-post-title a' )
+			.getAttribute( 'href' );
+		expect( slugOf( first ), 'the first row is not the newest post' ).toBe(
+			slugOf( newest.link )
+		);
 
 		/**
 		 * Live's row title is 22px; font size 400 is the nearest token. The
 		 * row style had carried 500 (32px), which was never measured.
 		 */
-		const titleSize = await resolvePreset( page, 'font-size', '--wp--preset--font-size--400' );
+		const titleSize = await resolvePreset(
+			page,
+			'font-size',
+			'--wp--preset--font-size--400'
+		);
 
 		for ( let i = 0; i < perPage; i++ ) {
 			const row = rows.nth( i );
-			await expect( row.locator( '.wp-block-post-title a' ) ).toHaveCount( 1 );
-			await expect( row.locator( '.wp-block-post-date' ) ).toHaveCount( 1 );
-			await expect( row.locator( '.wp-block-post-title' ) ).toHaveCSS( 'font-size', titleSize );
+			await expect( row.locator( '.wp-block-post-title a' ) ).toHaveCount(
+				1
+			);
+			await expect( row.locator( '.wp-block-post-date' ) ).toHaveCount(
+				1
+			);
+			await expect( row.locator( '.wp-block-post-title' ) ).toHaveCSS(
+				'font-size',
+				titleSize
+			);
 		}
 
-		test.skip( total <= perPage, `Only ${ total } posts — one page, nothing to paginate` );
+		test.skip(
+			total <= perPage,
+			`Only ${ total } posts — one page, nothing to paginate`
+		);
 
 		const next = page.locator( 'main .wp-block-query-pagination-next' );
-		await expect( next, `${ total } posts but no next-page link` ).toBeVisible();
+		await expect(
+			next,
+			`${ total } posts but no next-page link`
+		).toBeVisible();
 
-		await Promise.all( [ page.waitForURL( /\/page\/2\/?$/ ), next.click() ] );
+		await Promise.all( [
+			page.waitForURL( /\/page\/2\/?$/ ),
+			next.click(),
+		] );
 
-		const secondFirst = await page.locator( ROW ).first().locator( '.wp-block-post-title a' ).getAttribute( 'href' );
-		expect( secondFirst, 'page 2 opens on the same post as page 1' ).not.toBe( first );
+		const secondFirst = await page
+			.locator( ROW )
+			.first()
+			.locator( '.wp-block-post-title a' )
+			.getAttribute( 'href' );
+		expect(
+			secondFirst,
+			'page 2 opens on the same post as page 1'
+		).not.toBe( first );
 	} );
 } );
 
@@ -202,15 +285,22 @@ test.describe( 'Blog archives', () => {
 			routes,
 		} ) => {
 			const target = await archive.path( routes, page.request );
-			test.skip( ! target, `No ${ archive.name } archive on ${ routes.baseURL }` );
+			test.skip(
+				! target,
+				`No ${ archive.name } archive on ${ routes.baseURL }`
+			);
 
 			await visit( target );
 
 			const title = page.locator( `${ BANNER } h1.wp-block-query-title` );
-			await expect( title, 'the banner h1 is not the query title' ).toHaveCount( 1 );
-			await expect( title, 'the archive title kept its "Category:"/"Tag:"/"Author:" prefix' ).not.toHaveText(
-				/^(Category|Tag|Author|Archives):/i
-			);
+			await expect(
+				title,
+				'the banner h1 is not the query title'
+			).toHaveCount( 1 );
+			await expect(
+				title,
+				'the archive title kept its "Category:"/"Tag:"/"Author:" prefix'
+			).not.toHaveText( /^(Category|Tag|Author|Archives):/i );
 
 			const back = page.locator( 'main .is-style-back-link a' );
 			await expect( back ).toHaveText( /Back To Blog/i );
@@ -223,14 +313,24 @@ test.describe( 'Blog archives', () => {
 			routes,
 		} ) => {
 			const target = await archive.path( routes, page.request );
-			test.skip( ! target, `No ${ archive.name } archive on ${ routes.baseURL }` );
+			test.skip(
+				! target,
+				`No ${ archive.name } archive on ${ routes.baseURL }`
+			);
 
 			await visit( target );
 
 			const back = page.locator( 'main .is-style-back-link a' );
-			const size = await resolvePreset( page, 'font-size', '--wp--preset--font-size--200' );
+			const size = await resolvePreset(
+				page,
+				'font-size',
+				'--wp--preset--font-size--200'
+			);
 
-			await expect( back, 'live\'s a.back-to-blog is uppercase' ).toHaveCSS( 'text-transform', 'uppercase' );
+			await expect(
+				back,
+				"live's a.back-to-blog is uppercase"
+			).toHaveCSS( 'text-transform', 'uppercase' );
 			await expect( back ).toHaveCSS( 'font-size', size );
 
 			/**
@@ -246,32 +346,53 @@ test.describe( 'Blog archives', () => {
 				};
 			} );
 
-			expect( arrow.content, 'the back link lost its arrow' ).toBe( '""' );
-			expect( arrow.mask, 'the arrow has no mask to draw' ).toMatch( /^url\(/ );
+			expect( arrow.content, 'the back link lost its arrow' ).toBe(
+				'""'
+			);
+			expect( arrow.mask, 'the arrow has no mask to draw' ).toMatch(
+				/^url\(/
+			);
 			expect( arrow.width ).toBeGreaterThan( 0 );
 			await expect( back ).toHaveAccessibleName( /^Back To Blog$/i );
 		} );
 
-		test( `every row on the ${ archive.name } archive belongs to it`, async ( { page, visit, routes } ) => {
+		test( `every row on the ${ archive.name } archive belongs to it`, async ( {
+			page,
+			visit,
+			routes,
+		} ) => {
 			const target = await archive.path( routes, page.request );
-			test.skip( ! target, `No ${ archive.name } archive on ${ routes.baseURL }` );
+			test.skip(
+				! target,
+				`No ${ archive.name } archive on ${ routes.baseURL }`
+			);
 
 			await visit( target );
 
-			const name = ( await page.locator( `${ BANNER } h1` ).textContent() ).trim();
+			const name = (
+				await page.locator( `${ BANNER } h1` ).textContent()
+			).trim();
 			const rows = page.locator( ROW );
 			const count = await rows.count();
 			expect( count, `${ target } lists no posts` ).toBeGreaterThan( 0 );
 
-			const titleSize = await resolvePreset( page, 'font-size', '--wp--preset--font-size--400' );
+			const titleSize = await resolvePreset(
+				page,
+				'font-size',
+				'--wp--preset--font-size--400'
+			);
 
 			for ( let i = 0; i < count; i++ ) {
-				await expect( rows.nth( i ).locator( '.wp-block-post-title' ) ).toHaveCSS( 'font-size', titleSize );
+				await expect(
+					rows.nth( i ).locator( '.wp-block-post-title' )
+				).toHaveCSS( 'font-size', titleSize );
 
 				const field = rows.nth( i ).locator( archive.rowField );
 				await expect(
 					field,
-					`row ${ i + 1 } does not show "${ name }" — the archive is not scoped to what was queried`
+					`row ${
+						i + 1
+					} does not show "${ name }" — the archive is not scoped to what was queried`
 				).toContainText( name, { ignoreCase: true } );
 			}
 		} );
@@ -282,7 +403,10 @@ test.describe( 'Single post', () => {
 	/**
 	 * Visit the newest post and read its REST record.
 	 *
-	 * @param {Object} fixtures `{ page, visit, routes }`.
+	 * @param {Object}                          fixtures        `{ page, visit, routes }`.
+	 * @param {import('@playwright/test').Page} fixtures.page   Page under test.
+	 * @param {Function}                        fixtures.visit  The visit fixture.
+	 * @param {Object}                          fixtures.routes The routes fixture.
 	 * @return {Promise<Object>} `{ id, slug, author, categories }`.
 	 */
 	async function visitPost( { page, visit, routes } ) {
@@ -291,7 +415,9 @@ test.describe( 'Single post', () => {
 
 		await visit( target );
 
-		const [ post ] = await postsBySlug( page.request, [ slugOf( target ) ] );
+		const [ post ] = await postsBySlug( page.request, [
+			slugOf( target ),
+		] );
 		expect( post, `${ target } is not in the posts endpoint` ).toBeTruthy();
 
 		return post;
@@ -304,11 +430,17 @@ test.describe( 'Single post', () => {
 	} ) => {
 		const post = await visitPost( { page, visit, routes } );
 
-		await expect( page.locator( 'main > .wp-block-cover' ), 'the single post grew a banner' ).toHaveCount( 0 );
+		await expect(
+			page.locator( 'main > .wp-block-cover' ),
+			'the single post grew a banner'
+		).toHaveCount( 0 );
 		await expect( page.locator( 'h1' ) ).toHaveCount( 1 );
 
 		const article = page.locator( 'main > article' );
-		await expect( article, 'no <article> directly inside <main>' ).toHaveCount( 1 );
+		await expect(
+			article,
+			'no <article> directly inside <main>'
+		).toHaveCount( 1 );
 		await expect(
 			article.locator( '.wp-block-post-featured-image' ),
 			'the article renders the featured image — live does not'
@@ -322,7 +454,9 @@ test.describe( 'Single post', () => {
 		const order = await article.evaluate( ( el ) => {
 			const at = ( selector ) => {
 				const node = el.querySelector( selector );
-				return node ? [ ...el.querySelectorAll( '*' ) ].indexOf( node ) : -1;
+				return node
+					? [ ...el.querySelectorAll( '*' ) ].indexOf( node )
+					: -1;
 			};
 			return {
 				date: at( '.wp-block-post-date' ),
@@ -343,56 +477,106 @@ test.describe( 'Single post', () => {
 		}
 
 		for ( const [ field, index ] of Object.entries( order ) ) {
-			expect( index, `the article has no ${ field }` ).toBeGreaterThanOrEqual( 0 );
+			expect(
+				index,
+				`the article has no ${ field }`
+			).toBeGreaterThanOrEqual( 0 );
 		}
 
-		expect( order.date, 'the date is not above the title' ).toBeLessThan( order.title );
+		expect( order.date, 'the date is not above the title' ).toBeLessThan(
+			order.title
+		);
 		if ( undefined !== order.author ) {
-			expect( order.author, 'the author is not above the title' ).toBeLessThan( order.title );
+			expect(
+				order.author,
+				'the author is not above the title'
+			).toBeLessThan( order.title );
 		}
-		expect( order.terms, 'the categories are not below the title' ).toBeGreaterThan( order.title );
-		expect( order.content, 'the body does not follow the header' ).toBeGreaterThan( order.terms );
+		expect(
+			order.terms,
+			'the categories are not below the title'
+		).toBeGreaterThan( order.title );
+		expect(
+			order.content,
+			'the body does not follow the header'
+		).toBeGreaterThan( order.terms );
 	} );
 
-	test( 'shelves up to fifteen related posts sharing a category, never itself', async ( { page, visit, routes } ) => {
+	test( 'shelves up to fifteen related posts sharing a category, never itself', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		const post = await visitPost( { page, visit, routes } );
 
-		await expect( page.locator( '#related h2' ).first() ).toHaveText( /Related Posts/i );
+		await expect( page.locator( '#related h2' ).first() ).toHaveText(
+			/Related Posts/i
+		);
 
 		const hrefs = await page
 			.locator( `${ RELATED } .wp-block-post-title a` )
-			.evaluateAll( ( els ) => els.map( ( el ) => el.getAttribute( 'href' ) ) );
+			.evaluateAll( ( els ) =>
+				els.map( ( el ) => el.getAttribute( 'href' ) )
+			);
 
-		expect( hrefs.length, 'the related shelf is empty' ).toBeGreaterThan( 0 );
-		expect( hrefs.length, 'more than fifteen related posts' ).toBeLessThanOrEqual( 15 );
+		expect( hrefs.length, 'the related shelf is empty' ).toBeGreaterThan(
+			0
+		);
+		expect(
+			hrefs.length,
+			'more than fifteen related posts'
+		).toBeLessThanOrEqual( 15 );
 
 		const slugs = hrefs.map( slugOf );
-		expect( slugs, 'the shelf offers the reader the post they are on' ).not.toContain( post.slug );
-		expect( new Set( slugs ).size, 'a post appears on the shelf twice' ).toBe( slugs.length );
+		expect(
+			slugs,
+			'the shelf offers the reader the post they are on'
+		).not.toContain( post.slug );
+		expect(
+			new Set( slugs ).size,
+			'a post appears on the shelf twice'
+		).toBe( slugs.length );
 
 		/**
 		 * Uncategorised posts fall back to the most recent posts, by design
 		 * (Queries::relate_posts_by_category()); only a categorised post can be
 		 * held to the category rule.
 		 */
-		test.skip( ! post.categories?.length, `${ post.slug } has no categories to share` );
+		test.skip(
+			! post.categories?.length,
+			`${ post.slug } has no categories to share`
+		);
 
 		const related = await postsBySlug( page.request, slugs );
 
 		for ( const item of related ) {
-			const shared = item.categories.filter( ( id ) => post.categories.includes( id ) );
-			expect( shared.length, `${ item.slug } shares no category with ${ post.slug }` ).toBeGreaterThan( 0 );
+			const shared = item.categories.filter( ( id ) =>
+				post.categories.includes( id )
+			);
+			expect(
+				shared.length,
+				`${ item.slug } shares no category with ${ post.slug }`
+			).toBeGreaterThan( 0 );
 		}
 	} );
 
-	test( 'closes the tinted band on the previous/next pager', async ( { page, visit, routes } ) => {
+	test( 'closes the tinted band on the previous/next pager', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await visitPost( { page, visit, routes } );
 
 		const pager = page.locator( '#related .sd-post-nav a' );
-		await expect( pager, 'no previous or next post link' ).not.toHaveCount( 0 );
+		await expect( pager, 'no previous or next post link' ).not.toHaveCount(
+			0
+		);
 
 		for ( const label of await pager.allInnerTexts() ) {
-			expect( label, 'a pager link lost its "Previous Post"/"Next Post" label' ).toMatch( /(Previous|Next) Post/i );
+			expect(
+				label,
+				'a pager link lost its "Previous Post"/"Next Post" label'
+			).toMatch( /(Previous|Next) Post/i );
 		}
 	} );
 } );

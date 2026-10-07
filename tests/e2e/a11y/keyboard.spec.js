@@ -48,7 +48,9 @@ test.describe( 'Keyboard', () => {
 	} ) => {
 		await visit( '/' );
 
-		const link = page.locator( 'header.wp-block-template-part a[href]' ).first();
+		const link = page
+			.locator( 'header.wp-block-template-part a[href]' )
+			.first();
 
 		const read = () =>
 			link.evaluate( ( node ) => {
@@ -108,7 +110,10 @@ test.describe( 'Keyboard', () => {
 			.first();
 
 		test.skip(
-			0 === ( await page.locator( '.wp-block-ollie-mega-menu__toggle' ).count() ),
+			0 ===
+				( await page
+					.locator( '.wp-block-ollie-mega-menu__toggle' )
+					.count() ),
 			'No mega menu toggles'
 		);
 
@@ -128,7 +133,10 @@ test.describe( 'Keyboard', () => {
 		 */
 		const openedOnFocus = await expect( toggle )
 			.toHaveAttribute( 'aria-expanded', 'true', { timeout: 750 } )
-			.then( () => true, () => false );
+			.then(
+				() => true,
+				() => false
+			);
 
 		if ( ! openedOnFocus ) {
 			await page.keyboard.press( 'Enter' );
@@ -185,7 +193,7 @@ test.describe( 'Keyboard', () => {
 
 		await page.keyboard.press( 'Escape' );
 
-		await expect( dialog ).not.toBeVisible();
+		await expect( dialog ).toBeHidden();
 		await expect(
 			trigger,
 			'focus did not return to the modal trigger'

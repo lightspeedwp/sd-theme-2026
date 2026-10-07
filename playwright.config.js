@@ -57,7 +57,11 @@ if ( /southerndestinations\.com/i.test( baseURL ) ) {
  * credentials to whatever `baseURL` is, and the CI workflow takes the target as
  * a free-text dispatch input — an arbitrary host would receive them.
  */
-const ALLOWED_HOSTS = [ 'southerndestinations.lightspeedwp.dev', 'localhost', '127.0.0.1' ];
+const ALLOWED_HOSTS = [
+	'southerndestinations.lightspeedwp.dev',
+	'localhost',
+	'127.0.0.1',
+];
 const baseHost = ( () => {
 	try {
 		return new URL( baseURL ).hostname;
@@ -68,8 +72,9 @@ const baseHost = ( () => {
 
 if ( ! ALLOWED_HOSTS.includes( baseHost ) ) {
 	throw new Error(
-		`Refusing to run: WP_BASE_URL host "${ baseHost || baseURL }" is not an approved target ` +
-			`(${ ALLOWED_HOSTS.join( ', ' ) }).`
+		`Refusing to run: WP_BASE_URL host "${
+			baseHost || baseURL
+		}" is not an approved target ` + `(${ ALLOWED_HOSTS.join( ', ' ) }).`
 	);
 }
 
@@ -94,7 +99,11 @@ const runVisual = 'true' === process.env.SD_RUN_VISUAL;
 /**
  * Functional specs, run at every breakpoint that opts in with `@responsive`.
  */
-const FUNCTIONAL = [ 'templates/**/*.spec.js', 'parts/**/*.spec.js', 'forms/**/*.spec.js' ];
+const FUNCTIONAL = [
+	'templates/**/*.spec.js',
+	'parts/**/*.spec.js',
+	'forms/**/*.spec.js',
+];
 
 /**
  * Chromium over HTTP/2, not HTTP/3.
@@ -155,7 +164,10 @@ module.exports = defineConfig( {
 	retries: process.env.CI ? 2 : 0,
 
 	reporter: [
-		[ 'html', { outputFolder: './tests/e2e/playwright-report', open: 'never' } ],
+		[
+			'html',
+			{ outputFolder: './tests/e2e/playwright-report', open: 'never' },
+		],
 		[ 'list' ],
 		...( process.env.CI ? [ [ 'github' ] ] : [] ),
 	],
@@ -224,7 +236,11 @@ module.exports = defineConfig( {
 			name: 'tablet',
 			testMatch: FUNCTIONAL,
 			grep: /@responsive/,
-			use: { ...chrome, viewport: { width: 768, height: 1024 }, isMobile: false },
+			use: {
+				...chrome,
+				viewport: { width: 768, height: 1024 },
+				isMobile: false,
+			},
 		},
 		{
 			name: 'mobile',
@@ -258,13 +274,19 @@ module.exports = defineConfig( {
 			name: 'firefox',
 			testMatch: FUNCTIONAL,
 			grep: /@smoke/,
-			use: { ...devices[ 'Desktop Firefox' ], viewport: { width: 1280, height: 800 } },
+			use: {
+				...devices[ 'Desktop Firefox' ],
+				viewport: { width: 1280, height: 800 },
+			},
 		},
 		{
 			name: 'webkit',
 			testMatch: FUNCTIONAL,
 			grep: /@smoke/,
-			use: { ...devices[ 'Desktop Safari' ], viewport: { width: 1280, height: 800 } },
+			use: {
+				...devices[ 'Desktop Safari' ],
+				viewport: { width: 1280, height: 800 },
+			},
 		},
 
 		/**
@@ -294,7 +316,10 @@ module.exports = defineConfig( {
 					{
 						name: 'visual',
 						testMatch: 'visual/**/*.spec.js',
-						use: { ...chrome, viewport: { width: 1280, height: 800 } },
+						use: {
+							...chrome,
+							viewport: { width: 1280, height: 800 },
+						},
 					},
 			  ]
 			: [] ),
@@ -332,7 +357,10 @@ module.exports = defineConfig( {
 						testMatch: 'parity/**/*.spec.js',
 						fullyParallel: false,
 						workers: 1,
-						use: { ...chrome, viewport: { width: 1280, height: 800 } },
+						use: {
+							...chrome,
+							viewport: { width: 1280, height: 800 },
+						},
 					},
 			  ]
 			: [] ),

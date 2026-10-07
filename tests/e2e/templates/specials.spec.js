@@ -39,8 +39,11 @@ const { describeHeroBanners } = require( '../utils/hero-banner.js' );
  * @return {string} Path for this environment.
  */
 function envPath( routes, path ) {
-	const sample = routes.post( 'tour' ) || routes.post( 'accommodation' ) || '';
-	return `${ sample.startsWith( '/index.php/' ) ? '/index.php' : '' }${ path }`;
+	const sample =
+		routes.post( 'tour' ) || routes.post( 'accommodation' ) || '';
+	return `${
+		sample.startsWith( '/index.php/' ) ? '/index.php' : ''
+	}${ path }`;
 }
 
 const BAND = 'main .wp-block-post-template > li > .is-style-special-card';
@@ -50,54 +53,100 @@ const MODAL = '#to-modal-modal-special';
 /**
  * Visit the landing page and skip when it lists no offers.
  *
- * @param {Object} fixtures `{ page, visit, routes }`.
+ * @param {Object}                          fixtures        `{ page, visit, routes }`.
+ * @param {import('@playwright/test').Page} fixtures.page   Page under test.
+ * @param {Function}                        fixtures.visit  The visit fixture.
+ * @param {Object}                          fixtures.routes The routes fixture.
  * @return {Promise<import('@playwright/test').Locator>} The bands.
  */
 async function visitSpecials( { page, visit, routes } ) {
 	await visit( envPath( routes, '/specials/' ) );
 
-	const response = await page.request.get( '/wp-json/wp/v2/special?per_page=1&status=publish&_fields=id' );
-	expect( response.ok(), 'Could not check whether specials are published' ).toBe( true );
+	const response = await page.request.get(
+		'/wp-json/wp/v2/special?per_page=1&status=publish&_fields=id'
+	);
+	expect(
+		response.ok(),
+		'Could not check whether specials are published'
+	).toBe( true );
 	const published = await response.json();
-	expect( Array.isArray( published ), 'Specials API did not return a list' ).toBe( true );
-	test.skip( 0 === published.length, 'No published specials in this environment' );
+	expect(
+		Array.isArray( published ),
+		'Specials API did not return a list'
+	).toBe( true );
+	test.skip(
+		0 === published.length,
+		'No published specials in this environment'
+	);
 
 	const bands = page.locator( BAND );
-	await expect( bands, 'Published specials have no matching offer bands' ).not.toHaveCount( 0 );
+	await expect(
+		bands,
+		'Published specials have no matching offer bands'
+	).not.toHaveCount( 0 );
 
 	return bands;
 }
 
 describeHeroBanners( { test, expect }, [
-	{ name: 'specials archive', path: ( routes ) => envPath( routes, '/specials/' ), strapline: true },
+	{
+		name: 'specials archive',
+		path: ( routes ) => envPath( routes, '/specials/' ),
+		strapline: true,
+	},
 ] );
 
 test.describe( 'Specials offer bands', () => {
-	test( 'lists at most four offers, each titled once with an h2', async ( { page, visit, routes } ) => {
+	test( 'lists at most four offers, each titled once with an h2', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		const bands = await visitSpecials( { page, visit, routes } );
 		const count = await bands.count();
 
-		expect( count, 'more than live\'s four offers to a page' ).toBeLessThanOrEqual( 4 );
+		expect(
+			count,
+			"more than live's four offers to a page"
+		).toBeLessThanOrEqual( 4 );
 
 		for ( let i = 0; i < count; i++ ) {
 			const titles = bands.nth( i ).locator( 'h2.wp-block-post-title' );
 			await expect( titles ).toHaveCount( 1 );
-			expect( ( await titles.textContent() ).trim(), `band ${ i + 1 } has an empty title` ).not.toBe( '' );
+			expect(
+				( await titles.textContent() ).trim(),
+				`band ${ i + 1 } has an empty title`
+			).not.toBe( '' );
 		}
 	} );
 
-	test( 'gives every band a unique special-{slug} anchor', async ( { page, visit, routes } ) => {
+	test( 'gives every band a unique special-{slug} anchor', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		const bands = await visitSpecials( { page, visit, routes } );
-		const ids = await bands.evaluateAll( ( els ) => els.map( ( el ) => el.id ) );
+		const ids = await bands.evaluateAll( ( els ) =>
+			els.map( ( el ) => el.id )
+		);
 
 		for ( const id of ids ) {
-			expect( id, 'a band has no special-{slug} anchor — is Specials::add_band_anchor() running?' ).toMatch( /^special-[a-z0-9-]+$/ );
+			expect(
+				id,
+				'a band has no special-{slug} anchor — is Specials::add_band_anchor() running?'
+			).toMatch( /^special-[a-z0-9-]+$/ );
 		}
 
-		expect( new Set( ids ).size, 'two bands share an anchor' ).toBe( ids.length );
+		expect( new Set( ids ).size, 'two bands share an anchor' ).toBe(
+			ids.length
+		);
 	} );
 
-	test( 'scrolls a /specials/#special-{slug} link to its band', async ( { page, visit, routes } ) => {
+	test( 'scrolls a /specials/#special-{slug} link to its band', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		const bands = await visitSpecials( { page, visit, routes } );
 		const id = await bands.last().getAttribute( 'id' );
 		test.skip( ! id, 'The last band has no anchor' );
@@ -124,26 +173,48 @@ test.describe( 'Specials offer bands', () => {
 			const band = bands.nth( i );
 			const box = await band.boundingBox();
 
-			expect( box.height, `band ${ i + 1 } is below its 540px floor` ).toBeGreaterThanOrEqual( 539 );
+			expect(
+				box.height,
+				`band ${ i + 1 } is below its 540px floor`
+			).toBeGreaterThanOrEqual( 539 );
 
-			const image = band.locator( ':scope > .wp-block-post-featured-image' );
+			const image = band.locator(
+				':scope > .wp-block-post-featured-image'
+			);
 
 			if ( await image.count() ) {
 				await expect( image ).toHaveCSS( 'position', 'absolute' );
 				const photograph = image.locator( 'img' );
 				await expect( photograph ).toHaveCount( 1 );
 				const imageBox = await photograph.boundingBox();
-				expect( Math.abs( imageBox.width - box.width ), `band ${ i + 1 }'s photograph does not fill its width` ).toBeLessThanOrEqual( 1 );
-				expect( Math.abs( imageBox.height - box.height ), `band ${ i + 1 }'s photograph does not fill it` ).toBeLessThanOrEqual( 1 );
+				expect(
+					Math.abs( imageBox.width - box.width ),
+					`band ${ i + 1 }'s photograph does not fill its width`
+				).toBeLessThanOrEqual( 1 );
+				expect(
+					Math.abs( imageBox.height - box.height ),
+					`band ${ i + 1 }'s photograph does not fill it`
+				).toBeLessThanOrEqual( 1 );
 			}
 
-			const panel = await band.locator( ':scope > .wp-block-group' ).boundingBox();
-			expect( panel.width, `band ${ i + 1 }'s panel is narrower than 460px` ).toBeGreaterThanOrEqual( 459 );
-			expect( panel.width, `band ${ i + 1 }'s panel is wider than 460px` ).toBeLessThanOrEqual( 461 );
+			const panel = await band
+				.locator( ':scope > .wp-block-group' )
+				.boundingBox();
+			expect(
+				panel.width,
+				`band ${ i + 1 }'s panel is narrower than 460px`
+			).toBeGreaterThanOrEqual( 459 );
+			expect(
+				panel.width,
+				`band ${ i + 1 }'s panel is wider than 460px`
+			).toBeLessThanOrEqual( 461 );
 
 			// Odd bands (1st, 3rd) hold the panel on the leading edge, even on the trailing.
 			if ( 0 === i % 2 ) {
-				expect( Math.abs( panel.x - box.x ), `band ${ i + 1 }'s panel is not on the leading edge` ).toBeLessThanOrEqual( 1 );
+				expect(
+					Math.abs( panel.x - box.x ),
+					`band ${ i + 1 }'s panel is not on the leading edge`
+				).toBeLessThanOrEqual( 1 );
 			} else {
 				expect(
 					Math.abs( panel.x + panel.width - ( box.x + box.width ) ),
@@ -153,7 +224,11 @@ test.describe( 'Specials offer bands', () => {
 		}
 	} );
 
-	test( 'butts the bands together with no gap', async ( { page, visit, routes } ) => {
+	test( 'butts the bands together with no gap', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await page.setViewportSize( { width: 1280, height: 900 } );
 		const bands = await visitSpecials( { page, visit, routes } );
 		const count = await bands.count();
@@ -163,11 +238,18 @@ test.describe( 'Specials offer bands', () => {
 			const above = await bands.nth( i - 1 ).boundingBox();
 			const below = await bands.nth( i ).boundingBox();
 
-			expect( Math.abs( below.y - ( above.y + above.height ) ), `a gap sits above band ${ i + 1 }` ).toBeLessThanOrEqual( 1 );
+			expect(
+				Math.abs( below.y - ( above.y + above.height ) ),
+				`a gap sits above band ${ i + 1 }`
+			).toBeLessThanOrEqual( 1 );
 		}
 	} );
 
-	test( 'narrows and centres the panel on phones @responsive', async ( { page, visit, routes } ) => {
+	test( 'narrows and centres the panel on phones @responsive', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		await page.setViewportSize( { width: 390, height: 844 } );
 		const bands = await visitSpecials( { page, visit, routes } );
 		const count = await bands.count();
@@ -176,17 +258,27 @@ test.describe( 'Specials offer bands', () => {
 			const box = await bands.nth( i ).boundingBox();
 			const panel = await page.locator( PANEL ).nth( i ).boundingBox();
 
-			expect( panel.width / box.width, `band ${ i + 1 }'s panel is not 90% of the band` ).toBeCloseTo( 0.9, 1 );
+			expect(
+				panel.width / box.width,
+				`band ${ i + 1 }'s panel is not 90% of the band`
+			).toBeCloseTo( 0.9, 1 );
 
 			const left = panel.x - box.x;
 			const right = box.x + box.width - ( panel.x + panel.width );
-			expect( Math.abs( left - right ), `band ${ i + 1 }'s panel is not centred` ).toBeLessThanOrEqual( 2 );
+			expect(
+				Math.abs( left - right ),
+				`band ${ i + 1 }'s panel is not centred`
+			).toBeLessThanOrEqual( 2 );
 		}
 	} );
 } );
 
 test.describe( 'Book Special', () => {
-	test( 'points every band at the one specials dialog', async ( { page, visit, routes } ) => {
+	test( 'points every band at the one specials dialog', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		const bands = await visitSpecials( { page, visit, routes } );
 		const count = await bands.count();
 
@@ -206,7 +298,10 @@ test.describe( 'Book Special', () => {
 		await page.setViewportSize( { width: 1280, height: 900 } );
 		await visitSpecials( { page, visit, routes } );
 
-		await page.locator( `${ PANEL } .wp-block-button__link` ).first().click();
+		await page
+			.locator( `${ PANEL } .wp-block-button__link` )
+			.first()
+			.click();
 
 		await expect( page.locator( `dialog${ MODAL }` ) ).toBeVisible();
 	} );

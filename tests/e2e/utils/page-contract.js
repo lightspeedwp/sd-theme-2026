@@ -50,8 +50,8 @@ function results( page ) {
 /**
  * Assert the structural invariants of a rendered block-theme page.
  *
- * @param {import('@playwright/test').Page} page      Page under test.
- * @param {Object}                          [options] Options.
+ * @param {import('@playwright/test').Page} page               Page under test.
+ * @param {Object}                          [options]          Options.
  * @param {boolean}                         [options.expectH1] Require exactly one h1.
  */
 async function assertPageContract( page, options = {} ) {
@@ -147,26 +147,24 @@ async function assertHeadingHierarchy( page ) {
  * @param {number}                          [limit] Maximum links to check.
  */
 async function assertNoEmptyLinks( page, limit = 200 ) {
-	const bad = await page
-		.locator( 'a[href]' )
-		.evaluateAll(
-			( nodes, max ) =>
-				nodes
-					.slice( 0, max )
-					.filter( ( node ) => {
-						const href = node.getAttribute( 'href' ) || '';
+	const bad = await page.locator( 'a[href]' ).evaluateAll(
+		( nodes, max ) =>
+			nodes
+				.slice( 0, max )
+				.filter( ( node ) => {
+					const href = node.getAttribute( 'href' ) || '';
 
-						/**
-						 * `#` alone and an empty href are both symptoms of a
-						 * binding that failed to resolve a permalink.
-						 */
-						return '' === href.trim() || '#' === href.trim();
-					} )
-					.map( ( node ) =>
-						( node.textContent || node.outerHTML ).trim().slice( 0, 60 )
-					),
-			limit
-		);
+					/**
+					 * `#` alone and an empty href are both symptoms of a
+					 * binding that failed to resolve a permalink.
+					 */
+					return '' === href.trim() || '#' === href.trim();
+				} )
+				.map( ( node ) =>
+					( node.textContent || node.outerHTML ).trim().slice( 0, 60 )
+				),
+		limit
+	);
 
 	expect(
 		bad,

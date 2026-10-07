@@ -75,13 +75,17 @@ test.describe( 'Front page', () => {
 				'is showing none or several'
 		).toHaveCount( 1 );
 
-		await expect( page.getByRole( 'heading', { level: 1 } ) ).toHaveCount( 1 );
+		await expect( page.getByRole( 'heading', { level: 1 } ) ).toHaveCount(
+			1
+		);
 
 		const { height } = await heroes.first().boundingBox();
 
 		expect(
 			Math.abs( height - expected.hero ),
-			`the ${ variant } hero is ${ Math.round( height ) }px; live is ${ expected.hero }px. ` +
+			`the ${ variant } hero is ${ Math.round( height ) }px; live is ${
+				expected.hero
+			}px. ` +
 				'On phones and tablets check the 430px cover floor in assets/styles/core-cover.css'
 		).toBeLessThanOrEqual( 2 );
 
@@ -106,9 +110,10 @@ test.describe( 'Front page', () => {
 			 * `getByRole` ignores `display: none`, so a count of one proves the
 			 * hidden copy really is hidden and the shown one really is shown.
 			 */
-			const heading = page
-				.locator( 'main' )
-				.getByRole( 'heading', { level: 2, name: new RegExp( `^${ name }` ) } );
+			const heading = page.locator( 'main' ).getByRole( 'heading', {
+				level: 2,
+				name: new RegExp( `^${ name }` ),
+			} );
 
 			await expect(
 				heading,
@@ -121,8 +126,9 @@ test.describe( 'Front page', () => {
 				let panel = h;
 				while (
 					panel.parentElement &&
-					panel.parentElement.querySelectorAll( ':scope > .wp-block-group' )
-						.length < 4
+					panel.parentElement.querySelectorAll(
+						':scope > .wp-block-group'
+					).length < 4
 				) {
 					panel = panel.parentElement;
 				}
@@ -134,7 +140,8 @@ test.describe( 'Front page', () => {
 					background: getComputedStyle( panel ).backgroundImage,
 					photoAbove:
 						!! photo &&
-						photo.getBoundingClientRect().bottom <= h.getBoundingClientRect().top,
+						photo.getBoundingClientRect().bottom <=
+							h.getBoundingClientRect().top,
 					bodyColor: body ? getComputedStyle( body ).color : null,
 				};
 			} );
@@ -201,10 +208,15 @@ test.describe( 'Front page', () => {
 		const broken = await page.evaluate( () =>
 			[ ...document.querySelectorAll( 'main svg [mask]' ) ]
 				.filter( ( el ) => el.ownerSVGElement.checkVisibility() )
-				.map( ( el ) => el.getAttribute( 'mask' ).match( /#([^)]+)/ )?.[ 1 ] )
+				.map(
+					( el ) =>
+						el.getAttribute( 'mask' ).match( /#([^)]+)/ )?.[ 1 ]
+				)
 				.filter( ( id ) => {
 					const target = id && document.getElementById( id );
-					return ! target || ! target.ownerSVGElement?.checkVisibility();
+					return (
+						! target || ! target.ownerSVGElement?.checkVisibility()
+					);
 				} )
 		);
 
@@ -250,12 +262,20 @@ test.describe( 'Front page', () => {
 
 				return {
 					clientWidth,
-					overflow: document.documentElement.scrollWidth - clientWidth,
+					overflow:
+						document.documentElement.scrollWidth - clientWidth,
 					outside: [ ...document.querySelectorAll( '.slick-arrow' ) ]
 						.filter( ( arrow ) => arrow.checkVisibility() )
 						.map( ( arrow ) => arrow.getBoundingClientRect() )
-						.filter( ( r ) => r.left < 0 || r.right > clientWidth + 1 )
-						.map( ( r ) => `${ Math.round( r.left ) }–${ Math.round( r.right ) }` ),
+						.filter(
+							( r ) => r.left < 0 || r.right > clientWidth + 1
+						)
+						.map(
+							( r ) =>
+								`${ Math.round( r.left ) }–${ Math.round(
+									r.right
+								) }`
+						),
 				};
 			} );
 

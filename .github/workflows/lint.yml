@@ -101,27 +101,20 @@ jobs:
 
       # Jest runs the theme contract tests (tests/unit/theme): theme.json and
       # style variations, token references, one <main> per template, part and
-      # pattern references, no per-install ids. On 2026-10-07 nine of them
-      # failed on real findings — hard-coded `wp:navigation` refs in six files
-      # and an undefined `spacing|0` preset in three patterns (see CHANGELOG).
-      # Reporting, not gating, until those are resolved; then remove
-      # `continue-on-error` here.
+      # pattern references, no per-install ids. Findings that predate the
+      # harness are listed in tests/baselines/known-violations.json; a new one
+      # fails, and so does a fixed one that is still listed.
       - name: Jest
-        continue-on-error: true
         run: npm run test:unit
 
-      # Reporting, not gating, until the one-off clean-up pass lands. On
-      # 2026-10-07 lint:js and lint:css reported mostly Prettier and
-      # auto-fixable formatting (`npm run lint:js:fix`, `npm run lint:css:fix`).
-      # Remove `continue-on-error` from each step in the PR that clears it.
+      # The ratchet (tests/bin/lint-baseline.js): fails on any lint error not
+      # recorded in tests/baselines/, and on a fix that leaves the baseline
+      # unshrunk. The recorded debt is cleared slice by slice, never regrown.
       - name: ESLint
-        continue-on-error: true
-        run: npm run lint:js
+        run: npm run lint:baseline -- eslint
 
       - name: Stylelint
-        continue-on-error: true
-        run: npm run lint:css
+        run: npm run lint:baseline -- stylelint
 
       - name: Markdown
-        continue-on-error: true
-        run: npm run lint:md
+        run: npm run lint:baseline -- markdownlint

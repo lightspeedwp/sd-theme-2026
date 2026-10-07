@@ -10,10 +10,7 @@
 
 const { test, expect } = require( '../fixtures/base.js' );
 const { RESOLVED_TAXONOMIES } = require( '../fixtures/routes.js' );
-const {
-	assertPageContract,
-	results,
-} = require( '../utils/page-contract.js' );
+const { assertPageContract, results } = require( '../utils/page-contract.js' );
 
 test.describe( 'Taxonomy archives', () => {
 	for ( const route of RESOLVED_TAXONOMIES ) {

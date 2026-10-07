@@ -28,7 +28,8 @@
  * @subpackage Tests
  */
 
-const LIVE_ORIGIN = process.env.SD_LIVE_URL || 'https://southerndestinations.com';
+const LIVE_ORIGIN =
+	process.env.SD_LIVE_URL || 'https://southerndestinations.com';
 
 /**
  * Hard cap on live requests per run. The navigation sample is naturally around
@@ -51,7 +52,10 @@ const PARITY_EXCLUDES = [
 	{ pattern: /^\/wp-admin/, reason: 'Admin, not a front-end page.' },
 	{ pattern: /^\/wp-login/, reason: 'Login screen.' },
 	{ pattern: /^\/feed/, reason: 'Feed, not a rendered template.' },
-	{ pattern: /\.(jpg|jpeg|png|gif|svg|pdf|zip)$/i, reason: 'Asset, not a page.' },
+	{
+		pattern: /\.(jpg|jpeg|png|gif|svg|pdf|zip)$/i,
+		reason: 'Asset, not a page.',
+	},
 	{
 		pattern: /^\/(cart|checkout|my-account)/,
 		reason: 'WooCommerce routes on live; the rebuild is enquiry-led and has no booking engine.',
@@ -83,7 +87,7 @@ function excludedReason( pathname ) {
  */
 function normalise( text ) {
 	return String( text || '' )
-		.replace( / /g, ' ' )
+		.replace( /\u00a0/g, ' ' )
 		.replace( /[‘’]/g, "'" )
 		.replace( /[“”]/g, '"' )
 		.replace( /[–—]/g, '-' )
@@ -163,7 +167,8 @@ async function navigationPaths( page, origin ) {
  */
 async function contentContract( page ) {
 	return page.evaluate( () => {
-		const text = ( node ) => ( node ? ( node.textContent || '' ).trim() : '' );
+		const text = ( node ) =>
+			node ? ( node.textContent || '' ).trim() : '';
 
 		return {
 			title: document.title || '',

@@ -52,7 +52,9 @@ const { assertHeadingHierarchy } = require( '../utils/page-contract.js' );
  */
 function reportOnly( results, route, template ) {
 	if ( ! results.violations.length ) {
-		process.stderr.write( `\n  ✅ ${ route }: no violations to baseline.\n` );
+		process.stderr.write(
+			`\n  ✅ ${ route }: no violations to baseline.\n`
+		);
 
 		return;
 	}
@@ -157,11 +159,7 @@ test.describe( 'Accessibility — search and 404 @a11y', () => {
 				expectStatus: route.expectStatus || 200,
 			} );
 
-			check(
-				await scan( page ),
-				route.path,
-				route.template
-			);
+			check( await scan( page ), route.path, route.template );
 		} );
 	}
 } );
@@ -213,13 +211,19 @@ test.describe( 'Accessibility — structure @a11y', () => {
 				 * `aria-label` — never from its content.
 				 */
 				nodes.map( ( node ) => {
-					const labelledBy = ( node.getAttribute( 'aria-labelledby' ) || '' )
+					const labelledBy = (
+						node.getAttribute( 'aria-labelledby' ) || ''
+					)
 						.split( /\s+/ )
 						.filter( Boolean );
 
 					if ( labelledBy.length ) {
 						return labelledBy
-							.map( ( id ) => document.getElementById( id )?.textContent || '' )
+							.map(
+								( id ) =>
+									document.getElementById( id )
+										?.textContent || ''
+							)
 							.join( ' ' )
 							.replace( /\s+/g, ' ' )
 							.trim();

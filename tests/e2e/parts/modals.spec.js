@@ -92,7 +92,8 @@ test.describe( 'Modals', () => {
 
 		for ( let index = 0; index < count; index++ ) {
 			const dialog = dialogs.nth( index );
-			const id = ( await dialog.getAttribute( 'id' ) ) || `index ${ index }`;
+			const id =
+				( await dialog.getAttribute( 'id' ) ) || `index ${ index }`;
 
 			const labelledBy = await dialog.getAttribute( 'aria-labelledby' );
 			const label = await dialog.getAttribute( 'aria-label' );
@@ -106,7 +107,9 @@ test.describe( 'Modals', () => {
 			 * An `aria-labelledby` pointing at a missing element is worse
 			 * than none — it reads as an empty name.
 			 */
-			for ( const ref of ( labelledBy || '' ).split( /\s+/ ).filter( Boolean ) ) {
+			for ( const ref of ( labelledBy || '' )
+				.split( /\s+/ )
+				.filter( Boolean ) ) {
 				/**
 				 * Compared as a plain id, not built into a selector — an id
 				 * holding quotes or backslashes would otherwise need escaping.
@@ -162,9 +165,6 @@ test.describe( 'Modals', () => {
 
 		await page.keyboard.press( 'Escape' );
 
-		await expect(
-			dialog,
-			'dialog stayed open after Escape'
-		).not.toBeVisible();
+		await expect( dialog, 'dialog stayed open after Escape' ).toBeHidden();
 	} );
 } );

@@ -158,7 +158,11 @@ async function resolveAuthorArchive( api, baseURL ) {
 
 	const authors = await response.json();
 
-	if ( ! Array.isArray( authors ) || 0 === authors.length || ! authors[ 0 ].link ) {
+	if (
+		! Array.isArray( authors ) ||
+		0 === authors.length ||
+		! authors[ 0 ].link
+	) {
 		return null;
 	}
 
@@ -239,7 +243,9 @@ module.exports = async function globalSetup( config ) {
 				);
 
 				if ( ! resolved.posts[ route.key ] ) {
-					( route.optional ? missing : requiredMissing ).push( route.name );
+					( route.optional ? missing : requiredMissing ).push(
+						route.name
+					);
 				}
 			} )
 		);
@@ -253,7 +259,9 @@ module.exports = async function globalSetup( config ) {
 				);
 
 				if ( ! resolved.terms[ route.key ] ) {
-					( route.optional ? missing : requiredMissing ).push( route.name );
+					( route.optional ? missing : requiredMissing ).push(
+						route.name
+					);
 				}
 			} )
 		);
@@ -266,14 +274,18 @@ module.exports = async function globalSetup( config ) {
 					: null;
 
 				if ( ! resolved.archives[ route.key ] ) {
-					( route.optional ? missing : requiredMissing ).push( route.name );
+					( route.optional ? missing : requiredMissing ).push(
+						route.name
+					);
 				}
 			} )
 		);
 
 		if ( requiredMissing.length ) {
 			throw new Error(
-				`No content for required route(s): ${ requiredMissing.join( ', ' ) } on ${ baseURL }.`
+				`No content for required route(s): ${ requiredMissing.join(
+					', '
+				) } on ${ baseURL }.`
 			);
 		}
 
@@ -289,7 +301,9 @@ module.exports = async function globalSetup( config ) {
 		Object.values( resolved.terms ).filter( Boolean ).length +
 		Object.values( resolved.archives ).filter( Boolean ).length;
 	const total =
-		RESOLVED_ROUTES.length + RESOLVED_TAXONOMIES.length + RESOLVED_ARCHIVES.length;
+		RESOLVED_ROUTES.length +
+		RESOLVED_TAXONOMIES.length +
+		RESOLVED_ARCHIVES.length;
 
 	/**
 	 * stderr, not stdout. The JSON and JUnit reporters write their payload to
@@ -303,7 +317,9 @@ module.exports = async function globalSetup( config ) {
 			`  Resolved: ${ found }/${ total } content routes\n` +
 			`  Page templates in use: ${ pageTemplateCount }\n` +
 			( missing.length
-				? `  No content: ${ missing.join( ', ' ) } — those specs will skip\n\n`
+				? `  No content: ${ missing.join(
+						', '
+				  ) } — those specs will skip\n\n`
 				: '\n' )
 	);
 };

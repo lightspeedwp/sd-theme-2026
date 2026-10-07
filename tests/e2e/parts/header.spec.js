@@ -39,7 +39,9 @@ test.describe( 'Header', () => {
 
 	test( 'links home from the site logo or title', async ( { page } ) => {
 		const header = page.locator( 'header.wp-block-template-part' );
-		const homeLink = header.locator( 'a[rel="home"], .wp-block-site-logo a' ).first();
+		const homeLink = header
+			.locator( 'a[rel="home"], .wp-block-site-logo a' )
+			.first();
 
 		await expect( homeLink ).toBeAttached();
 
@@ -60,7 +62,9 @@ test.describe( 'Header', () => {
 	 * the assertion is that the mobile affordance appears and the desktop one
 	 * yields, not that it matches a separate comp.
 	 */
-	test( 'swaps to a mobile menu trigger at small widths', async ( { page } ) => {
+	test( 'swaps to a mobile menu trigger at small widths', async ( {
+		page,
+	} ) => {
 		await page.setViewportSize( { width: 390, height: 844 } );
 
 		const opener = page
@@ -81,7 +85,7 @@ test.describe( 'Header', () => {
  * "rendered" here means it has a layout box.
  *
  * @param {import('@playwright/test').Page} page
- * @return {Promise<Array<{position: string, top: number, bottom: number}>>}
+ * @return {Promise<Array<{position: string, top: number, bottom: number}>>} One entry per rendered header band.
  */
 async function renderedHeaderBands( page ) {
 	return page
@@ -113,17 +117,24 @@ test.describe( 'Header — desktop', () => {
 		await visit( '/' );
 	} );
 
-	test( 'renders one band, and it sticks to the top on scroll', async ( { page } ) => {
+	test( 'renders one band, and it sticks to the top on scroll', async ( {
+		page,
+	} ) => {
 		const bands = await renderedHeaderBands( page );
 
-		expect( bands, 'expected exactly one rendered header band' ).toHaveLength( 1 );
+		expect(
+			bands,
+			'expected exactly one rendered header band'
+		).toHaveLength( 1 );
 		expect( bands[ 0 ].position ).toBe( 'sticky' );
 
 		await page.mouse.wheel( 0, 1200 );
 		await page.waitForFunction( () => window.scrollY > 600 );
 
 		const [ stuck ] = await renderedHeaderBands( page );
-		expect( Math.round( stuck.top ), 'desktop header scrolled away' ).toBe( 0 );
+		expect( Math.round( stuck.top ), 'desktop header scrolled away' ).toBe(
+			0
+		);
 	} );
 
 	/**
@@ -153,7 +164,9 @@ test.describe( 'Header — desktop', () => {
 		page,
 	} ) => {
 		const panel = page
-			.locator( '.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container' )
+			.locator(
+				'.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container'
+			)
 			.first();
 
 		test.skip(
@@ -167,11 +180,19 @@ test.describe( 'Header — desktop', () => {
 			.locator( '.wp-block-group' )
 			.evaluateAll( ( rows ) =>
 				rows
-					.filter( ( row ) => '0px' !== getComputedStyle( row ).borderTopWidth )
-					.map( ( row ) => ( row.textContent || '' ).trim().slice( 0, 40 ) )
+					.filter(
+						( row ) =>
+							'0px' !== getComputedStyle( row ).borderTopWidth
+					)
+					.map( ( row ) =>
+						( row.textContent || '' ).trim().slice( 0, 40 )
+					)
 			);
 
-		expect( ruled, `rows still carrying a top rule: ${ ruled.join( '; ' ) }` ).toEqual( [] );
+		expect(
+			ruled,
+			`rows still carrying a top rule: ${ ruled.join( '; ' ) }`
+		).toEqual( [] );
 	} );
 
 	/**
@@ -183,29 +204,49 @@ test.describe( 'Header — desktop', () => {
 	 * the toggle button (0.3.x with a URL).
 	 */
 	test.describe( 'mega-menu chevrons', () => {
-		const ROW = '.is-style-main-navigation > .wp-block-navigation__container > .wp-block-ollie-mega-menu';
+		const ROW =
+			'.is-style-main-navigation > .wp-block-navigation__container > .wp-block-ollie-mega-menu';
 		const ICON = [
 			`${ ROW } > .wp-block-navigation-item__content > .wp-block-ollie-mega-menu__toggle-icon`,
 			`${ ROW } > .wp-block-ollie-mega-menu__submenu-toggle > .wp-block-ollie-mega-menu__toggle-icon`,
 		].join( ', ' );
 
-		test( 'no chevron shows beside a top-level label', async ( { page } ) => {
+		test( 'no chevron shows beside a top-level label', async ( {
+			page,
+		} ) => {
 			const icons = page.locator( ICON );
-			test.skip( 0 === ( await icons.count() ), 'No mega menus in the main navigation' );
+			test.skip(
+				0 === ( await icons.count() ),
+				'No mega menus in the main navigation'
+			);
 
 			const shown = await icons.evaluateAll( ( els ) =>
 				els
-					.filter( ( el ) => 'none' !== getComputedStyle( el ).display )
-					.map( ( el ) => el.closest( 'li' ).querySelector( '.wp-block-navigation-item__label' )?.textContent.trim() )
+					.filter(
+						( el ) => 'none' !== getComputedStyle( el ).display
+					)
+					.map( ( el ) =>
+						el
+							.closest( 'li' )
+							.querySelector( '.wp-block-navigation-item__label' )
+							?.textContent.trim()
+					)
 			);
 
-			expect( shown, `chevrons visible beside: ${ shown.join( ', ' ) }` ).toEqual( [] );
+			expect(
+				shown,
+				`chevrons visible beside: ${ shown.join( ', ' ) }`
+			).toEqual( [] );
 		} );
 
 		test( 'a keyboard-focused toggle shows its chevron, so the Tab stop is visible', async ( {
 			page,
 		} ) => {
-			const toggle = page.locator( `${ ROW } > .wp-block-ollie-mega-menu__submenu-toggle` ).first();
+			const toggle = page
+				.locator(
+					`${ ROW } > .wp-block-ollie-mega-menu__submenu-toggle`
+				)
+				.first();
 			test.skip(
 				0 === ( await toggle.count() ),
 				'No split link-and-toggle mega menu (Ollie Menu Designer below 0.3)'
@@ -215,20 +256,38 @@ test.describe( 'Header — desktop', () => {
 			await page.keyboard.press( 'Shift' );
 			await toggle.focus();
 
-			await expect( toggle.locator( '.wp-block-ollie-mega-menu__toggle-icon' ) ).not.toHaveCSS( 'display', 'none' );
+			await expect(
+				toggle.locator( '.wp-block-ollie-mega-menu__toggle-icon' )
+			).not.toHaveCSS( 'display', 'none' );
 		} );
 
-		test( 'the label keeps its underline while its panel is open', async ( { page } ) => {
-			const row = page.locator( ROW ).filter( {
-				has: page.locator( ':scope > .wp-block-ollie-mega-menu__submenu-toggle' ),
-			} ).first();
-			test.skip( 0 === ( await row.count() ), 'No split link-and-toggle mega menu' );
+		test( 'the label keeps its underline while its panel is open', async ( {
+			page,
+		} ) => {
+			const row = page
+				.locator( ROW )
+				.filter( {
+					has: page.locator(
+						':scope > .wp-block-ollie-mega-menu__submenu-toggle'
+					),
+				} )
+				.first();
+			test.skip(
+				0 === ( await row.count() ),
+				'No split link-and-toggle mega menu'
+			);
 
-			const link = row.locator( ':scope > .wp-block-navigation-item__content' );
+			const link = row.locator(
+				':scope > .wp-block-navigation-item__content'
+			);
 			const underline = () =>
-				link.evaluate( ( el ) => getComputedStyle( el, '::after' ).transform );
+				link.evaluate(
+					( el ) => getComputedStyle( el, '::after' ).transform
+				);
 
-			expect( await underline(), 'the underline is drawn at rest' ).toBe( 'matrix(1, 0, 0, 0, 0, 0)' );
+			expect( await underline(), 'the underline is drawn at rest' ).toBe(
+				'matrix(1, 0, 0, 0, 0, 0)'
+			);
 
 			/**
 			 * Set the state the plugin sets on open, rather than hovering: a
@@ -237,7 +296,9 @@ test.describe( 'Header — desktop', () => {
 			 */
 			await row
 				.locator( ':scope > .wp-block-ollie-mega-menu__submenu-toggle' )
-				.evaluate( ( el ) => el.setAttribute( 'aria-expanded', 'true' ) );
+				.evaluate( ( el ) =>
+					el.setAttribute( 'aria-expanded', 'true' )
+				);
 
 			await expect.poll( underline ).toBe( 'matrix(1, 0, 0, 1, 0, 0)' );
 		} );
@@ -262,17 +323,25 @@ test.describe( 'Header — mobile', () => {
 	 * Live's masthead is `position: relative` at 390px and scrolls away with the
 	 * page. Only the desktop header sticks.
 	 */
-	test( 'renders one band, and it scrolls away with the page', async ( { page } ) => {
+	test( 'renders one band, and it scrolls away with the page', async ( {
+		page,
+	} ) => {
 		const bands = await renderedHeaderBands( page );
 
-		expect( bands, 'expected exactly one rendered header band' ).toHaveLength( 1 );
+		expect(
+			bands,
+			'expected exactly one rendered header band'
+		).toHaveLength( 1 );
 		expect( [ 'sticky', 'fixed' ] ).not.toContain( bands[ 0 ].position );
 
 		await page.mouse.wheel( 0, 1200 );
 		await page.waitForFunction( () => window.scrollY > 600 );
 
 		const [ scrolled ] = await renderedHeaderBands( page );
-		expect( scrolled.bottom, 'mobile header followed the scroll' ).toBeLessThanOrEqual( 0 );
+		expect(
+			scrolled.bottom,
+			'mobile header followed the scroll'
+		).toBeLessThanOrEqual( 0 );
 	} );
 
 	test( 'the logo sits wholly inside the header band', async ( { page } ) => {
@@ -296,7 +365,9 @@ test.describe( 'Header — mobile', () => {
 	test( 'the search drops down under the bar, inside the viewport, and takes focus', async ( {
 		page,
 	} ) => {
-		const search = page.locator( '.wp-block-search.is-style-header-search-dropdown' );
+		const search = page.locator(
+			'.wp-block-search.is-style-header-search-dropdown'
+		);
 
 		await expect( search ).toBeVisible();
 
@@ -304,32 +375,50 @@ test.describe( 'Header — mobile', () => {
 		const field = search.locator( '.wp-block-search__input' );
 
 		await trigger.click();
-		await expect( search ).not.toHaveClass( /wp-block-search__searchfield-hidden/ );
-		await expect( field, 'the opened field did not take focus' ).toBeFocused();
+		await expect( search ).not.toHaveClass(
+			/wp-block-search__searchfield-hidden/
+		);
+		await expect(
+			field,
+			'the opened field did not take focus'
+		).toBeFocused();
 
 		const bar = await trigger.evaluate( ( node ) =>
-			node.closest( '.wp-block-group.alignfull' ).getBoundingClientRect().toJSON()
+			node
+				.closest( '.wp-block-group.alignfull' )
+				.getBoundingClientRect()
+				.toJSON()
 		);
 		const box = await field.boundingBox();
 		const viewport = page.viewportSize();
 
-		expect( box.y, 'field opened over the bar, not under it' ).toBeGreaterThanOrEqual(
-			bar.bottom
-		);
+		expect(
+			box.y,
+			'field opened over the bar, not under it'
+		).toBeGreaterThanOrEqual( bar.bottom );
 		expect( box.x ).toBeGreaterThanOrEqual( 0 );
 		expect( box.x + box.width ).toBeLessThanOrEqual( viewport.width );
-		expect( box.width, 'field did not span the bar' ).toBeGreaterThan( viewport.width * 0.8 );
+		expect( box.width, 'field did not span the bar' ).toBeGreaterThan(
+			viewport.width * 0.8
+		);
 		expect( box.height ).toBeGreaterThanOrEqual( 44 );
 		await expect( field ).toHaveCSS( 'border-radius', '0px' );
 
 		const overflow = await page.evaluate(
-			() => document.documentElement.scrollWidth - document.documentElement.clientWidth
+			() =>
+				document.documentElement.scrollWidth -
+				document.documentElement.clientWidth
 		);
 		expect( overflow, 'the open field caused horizontal scroll' ).toBe( 0 );
 
 		await page.keyboard.press( 'Escape' );
-		await expect( search ).toHaveClass( /wp-block-search__searchfield-hidden/ );
-		await expect( trigger, 'focus did not return to the trigger' ).toBeFocused();
+		await expect( search ).toHaveClass(
+			/wp-block-search__searchfield-hidden/
+		);
+		await expect(
+			trigger,
+			'focus did not return to the trigger'
+		).toBeFocused();
 	} );
 
 	test.describe( 'menu panel', () => {
@@ -342,7 +431,9 @@ test.describe( 'Header — mobile', () => {
 		} );
 
 		const panel = ( page ) =>
-			page.locator( '.wp-block-navigation__responsive-container.is-menu-open .sd-mobile-menu' );
+			page.locator(
+				'.wp-block-navigation__responsive-container.is-menu-open .sd-mobile-menu'
+			);
 
 		/**
 		 * The header's own search is the only one. A second field inside the
@@ -350,10 +441,14 @@ test.describe( 'Header — mobile', () => {
 		 */
 		test( 'carries no search field of its own', async ( { page } ) => {
 			await expect( panel( page ) ).toBeVisible();
-			await expect( panel( page ).locator( '.wp-block-search' ) ).toHaveCount( 0 );
+			await expect(
+				panel( page ).locator( '.wp-block-search' )
+			).toHaveCount( 0 );
 		} );
 
-		test( 'shows a flag beside each of the four phone numbers', async ( { page } ) => {
+		test( 'shows a flag beside each of the four phone numbers', async ( {
+			page,
+		} ) => {
 			const flags = panel( page ).locator( 'img[src*="/flags/"]' );
 
 			await expect( flags ).toHaveCount( 4 );
@@ -361,12 +456,16 @@ test.describe( 'Header — mobile', () => {
 			for ( const flag of await flags.all() ) {
 				await expect( flag ).toBeVisible();
 				expect(
-					await flag.evaluate( ( img ) => img.complete && img.naturalWidth > 0 ),
+					await flag.evaluate(
+						( img ) => img.complete && img.naturalWidth > 0
+					),
 					'a flag image failed to load'
 				).toBe( true );
 			}
 
-			await expect( panel( page ).locator( 'a[href^="tel:"]' ) ).toHaveCount( 4 );
+			await expect(
+				panel( page ).locator( 'a[href^="tel:"]' )
+			).toHaveCount( 4 );
 		} );
 
 		/**
@@ -377,10 +476,19 @@ test.describe( 'Header — mobile', () => {
 			page,
 		} ) => {
 			const box = await panel( page ).boundingBox();
-			expect( box.y, 'panel is dragged above the viewport' ).toBeGreaterThanOrEqual( 0 );
+			expect(
+				box.y,
+				'panel is dragged above the viewport'
+			).toBeGreaterThanOrEqual( 0 );
 
-			const logo = await panel( page ).locator( 'img' ).first().boundingBox();
-			expect( logo.y, 'panel logo is cut off at the top' ).toBeGreaterThanOrEqual( 0 );
+			const logo = await panel( page )
+				.locator( 'img' )
+				.first()
+				.boundingBox();
+			expect(
+				logo.y,
+				'panel logo is cut off at the top'
+			).toBeGreaterThanOrEqual( 0 );
 		} );
 	} );
 } );

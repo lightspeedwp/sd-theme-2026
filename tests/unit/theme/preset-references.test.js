@@ -15,6 +15,7 @@
  */
 
 const { list, markupFiles, read } = require( '../helpers/theme-files' );
+const { known } = require( '../helpers/known-violations' );
 
 /**
  * Preset type as it appears in references → where theme.json defines it.
@@ -172,6 +173,8 @@ describe( 'token references', () => {
 					: `custom "${ ref.value }"`
 			);
 
-		expect( [ ...new Set( orphans ) ] ).toEqual( [] );
+		expect( [ ...new Set( orphans ) ] ).toEqual(
+			known( 'token-orphans', file )
+		);
 	} );
 } );

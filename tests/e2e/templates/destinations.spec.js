@@ -38,8 +38,7 @@ const DESTINATION_ROUTES = [
 
 const BANNER = 'main > .wp-block-cover.is-style-hero-banner';
 const BANNER_IMAGE = `${ BANNER } > img.wp-block-cover__image-background`;
-const CARD =
-	'.is-style-listing-card-compact, .is-style-listing-card-list';
+const CARD = '.is-style-listing-card-compact, .is-style-listing-card-list';
 
 /**
  * Resolve a preset custom property to the computed value the browser uses,
@@ -73,13 +72,19 @@ test.describe( 'Destination banner', () => {
 				routes,
 			} ) => {
 				const target = routes.post( route.key );
-				test.skip( ! target, `No published ${ route.key } on ${ routes.baseURL }` );
+				test.skip(
+					! target,
+					`No published ${ route.key } on ${ routes.baseURL }`
+				);
 
 				await page.setViewportSize( { width: 1280, height: 800 } );
 				await visit( target );
 
 				const banner = page.locator( BANNER ).first();
-				await expect( banner, 'no hero banner at the top of <main>' ).toBeVisible();
+				await expect(
+					banner,
+					'no hero banner at the top of <main>'
+				).toBeVisible();
 
 				/**
 				 * The banner opens the page: nothing inside <main> comes before
@@ -88,7 +93,10 @@ test.describe( 'Destination banner', () => {
 				const isFirst = await banner.evaluate(
 					( el ) => el === el.parentElement.firstElementChild
 				);
-				expect( isFirst, 'the banner is not the first child of <main>' ).toBe( true );
+				expect(
+					isFirst,
+					'the banner is not the first child of <main>'
+				).toBe( true );
 
 				await expect( banner.locator( 'h1' ) ).toHaveCount( 1 );
 				await expect( page.locator( 'h1' ) ).toHaveCount( 1 );
@@ -103,8 +111,14 @@ test.describe( 'Destination banner', () => {
 				).toHaveCount( 0 );
 
 				const height = ( await banner.boundingBox() ).height;
-				expect( height, 'the banner is below its 360px floor' ).toBeGreaterThanOrEqual( 359 );
-				expect( height, 'the banner is still on the old 400px floor' ).toBeLessThan( 399 );
+				expect(
+					height,
+					'the banner is below its 360px floor'
+				).toBeGreaterThanOrEqual( 359 );
+				expect(
+					height,
+					'the banner is still on the old 400px floor'
+				).toBeLessThan( 399 );
 			} );
 
 			test( 'fills the band with the photograph on desktop @responsive', async ( {
@@ -113,7 +127,10 @@ test.describe( 'Destination banner', () => {
 				routes,
 			} ) => {
 				const target = routes.post( route.key );
-				test.skip( ! target, `No published ${ route.key } on ${ routes.baseURL }` );
+				test.skip(
+					! target,
+					`No published ${ route.key } on ${ routes.baseURL }`
+				);
 
 				await page.setViewportSize( { width: 1280, height: 800 } );
 				await visit( target );
@@ -131,7 +148,9 @@ test.describe( 'Destination banner', () => {
 					image.boundingBox(),
 				] );
 
-				expect( Math.abs( imageBox.height - bannerBox.height ) ).toBeLessThanOrEqual( 1 );
+				expect(
+					Math.abs( imageBox.height - bannerBox.height )
+				).toBeLessThanOrEqual( 1 );
 			} );
 
 			test( 'stacks the title on the plate under a 3:1 strip on phones @responsive', async ( {
@@ -140,7 +159,10 @@ test.describe( 'Destination banner', () => {
 				routes,
 			} ) => {
 				const target = routes.post( route.key );
-				test.skip( ! target, `No published ${ route.key } on ${ routes.baseURL }` );
+				test.skip(
+					! target,
+					`No published ${ route.key } on ${ routes.baseURL }`
+				);
 
 				await page.setViewportSize( { width: 375, height: 667 } );
 				await visit( target );
@@ -149,12 +171,23 @@ test.describe( 'Destination banner', () => {
 				await expect( banner ).toBeVisible();
 
 				const [ plate, brand500 ] = await Promise.all( [
-					resolvePreset( page, 'background-color', '--wp--preset--color--neutral-200' ),
-					resolvePreset( page, 'color', '--wp--preset--color--brand-500' ),
+					resolvePreset(
+						page,
+						'background-color',
+						'--wp--preset--color--neutral-200'
+					),
+					resolvePreset(
+						page,
+						'color',
+						'--wp--preset--color--brand-500'
+					),
 				] );
 
 				await expect( banner ).toHaveCSS( 'background-color', plate );
-				await expect( banner.locator( 'h1' ) ).toHaveCSS( 'color', brand500 );
+				await expect( banner.locator( 'h1' ) ).toHaveCSS(
+					'color',
+					brand500
+				);
 
 				/**
 				 * The phone stack resets the section style's padding. An inline
@@ -163,7 +196,9 @@ test.describe( 'Destination banner', () => {
 				 */
 				await expect( banner ).toHaveCSS( 'padding-top', '0px' );
 
-				const image = banner.locator( ':scope > img.wp-block-cover__image-background' );
+				const image = banner.locator(
+					':scope > img.wp-block-cover__image-background'
+				);
 
 				if ( await image.count() ) {
 					await expect( image ).toHaveCSS( 'position', 'relative' );
@@ -192,7 +227,10 @@ test.describe( 'Destination listing cards', () => {
 	 * document is checked, including those inside unopened dialogs — computed
 	 * styles resolve on hidden elements.
 	 */
-	const CARD_ROUTES = [ ...DESTINATION_ROUTES, { key: 'tour', name: 'single tour' } ];
+	const CARD_ROUTES = [
+		...DESTINATION_ROUTES,
+		{ key: 'tour', name: 'single tour' },
+	];
 
 	for ( const route of CARD_ROUTES ) {
 		test( `${ route.name }: card copy is font size 200 and links are brand-600`, async ( {
@@ -201,7 +239,10 @@ test.describe( 'Destination listing cards', () => {
 			routes,
 		} ) => {
 			const target = routes.post( route.key );
-			test.skip( ! target, `No published ${ route.key } on ${ routes.baseURL }` );
+			test.skip(
+				! target,
+				`No published ${ route.key } on ${ routes.baseURL }`
+			);
 
 			await page.setViewportSize( { width: 1280, height: 800 } );
 			await visit( target );
@@ -210,17 +251,34 @@ test.describe( 'Destination listing cards', () => {
 			test.skip( 0 === cardCount, `No listing cards on ${ target }` );
 
 			const [ size200, brand600, neutral700 ] = await Promise.all( [
-				resolvePreset( page, 'font-size', '--wp--preset--font-size--200' ),
-				resolvePreset( page, 'color', '--wp--preset--color--brand-600' ),
-				resolvePreset( page, 'color', '--wp--preset--color--neutral-700' ),
+				resolvePreset(
+					page,
+					'font-size',
+					'--wp--preset--font-size--200'
+				),
+				resolvePreset(
+					page,
+					'color',
+					'--wp--preset--color--brand-600'
+				),
+				resolvePreset(
+					page,
+					'color',
+					'--wp--preset--color--neutral-700'
+				),
 			] );
 
 			const report = await page.evaluate( ( selector ) => {
-				const text = ( el ) => el.textContent.replace( /\s+/g, ' ' ).trim().slice( 0, 40 );
+				const text = ( el ) =>
+					el.textContent.replace( /\s+/g, ' ' ).trim().slice( 0, 40 );
 				const label = ( el ) => {
-					const card = el.closest( '[class*="is-style-listing-card-"]' );
+					const card = el.closest(
+						'[class*="is-style-listing-card-"]'
+					);
 					const title = card?.querySelector( '.wp-block-post-title' );
-					return `${ title ? text( title ) : 'card' } › ${ el.tagName.toLowerCase() } "${ text( el ) }"`;
+					return `${
+						title ? text( title ) : 'card'
+					} › ${ el.tagName.toLowerCase() } "${ text( el ) }"`;
 				};
 				const copy = [];
 				const links = [];
@@ -236,29 +294,45 @@ test.describe( 'Destination listing cards', () => {
 					for ( const el of card.querySelectorAll(
 						'p, .wp-block-post-terms, .wp-block-post-excerpt__excerpt'
 					) ) {
-						if ( ! text( el ) || /has-(?!200-)\d+-font-size/.test( el.className ) ) {
+						if (
+							! text( el ) ||
+							/has-(?!200-)\d+-font-size/.test( el.className )
+						) {
 							continue;
 						}
-						copy.push( [ label( el ), getComputedStyle( el ).fontSize ] );
+						copy.push( [
+							label( el ),
+							getComputedStyle( el ).fontSize,
+						] );
 					}
 
 					for ( const el of card.querySelectorAll(
 						'p a, .wp-block-post-terms a, .wp-block-post-excerpt a'
 					) ) {
 						if ( text( el ) ) {
-							links.push( [ label( el ), getComputedStyle( el ).color ] );
+							links.push( [
+								label( el ),
+								getComputedStyle( el ).color,
+							] );
 						}
 					}
 
-					for ( const el of card.querySelectorAll( '.wp-block-post-title a' ) ) {
-						titles.push( [ label( el ), getComputedStyle( el ).color ] );
+					for ( const el of card.querySelectorAll(
+						'.wp-block-post-title a'
+					) ) {
+						titles.push( [
+							label( el ),
+							getComputedStyle( el ).color,
+						] );
 					}
 				}
 
 				return { copy, links, titles };
 			}, CARD );
 
-			const wrongSize = report.copy.filter( ( [ , size ] ) => size !== size200 );
+			const wrongSize = report.copy.filter(
+				( [ , size ] ) => size !== size200
+			);
 			expect(
 				wrongSize,
 				`card copy not at font size 200 (${ size200 }):\n  ${ wrongSize
@@ -266,7 +340,9 @@ test.describe( 'Destination listing cards', () => {
 					.join( '\n  ' ) }`
 			).toEqual( [] );
 
-			const wrongLink = report.links.filter( ( [ , color ] ) => color !== brand600 );
+			const wrongLink = report.links.filter(
+				( [ , color ] ) => color !== brand600
+			);
 			expect(
 				wrongLink,
 				`card links not brand-600 (${ brand600 }):\n  ${ wrongLink
@@ -274,7 +350,9 @@ test.describe( 'Destination listing cards', () => {
 					.join( '\n  ' ) }`
 			).toEqual( [] );
 
-			const wrongTitle = report.titles.filter( ( [ , color ] ) => color !== neutral700 );
+			const wrongTitle = report.titles.filter(
+				( [ , color ] ) => color !== neutral700
+			);
 			expect(
 				wrongTitle,
 				`linked card titles not neutral-700 (${ neutral700 }):\n  ${ wrongTitle
@@ -284,7 +362,11 @@ test.describe( 'Destination listing cards', () => {
 		} );
 	}
 
-	test( 'a card link turns brand-700 on hover', async ( { page, visit, routes } ) => {
+	test( 'a card link turns brand-700 on hover', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
 		const target = routes.post( 'region' ) || routes.post( 'destination' );
 		test.skip( ! target, 'No published destination' );
 
@@ -298,7 +380,10 @@ test.describe( 'Destination listing cards', () => {
 			.filter( { visible: true } )
 			.first();
 
-		test.skip( 0 === ( await link.count() ), `No visible card links on ${ target }` );
+		test.skip(
+			0 === ( await link.count() ),
+			`No visible card links on ${ target }`
+		);
 
 		const brand700 = await resolvePreset(
 			page,

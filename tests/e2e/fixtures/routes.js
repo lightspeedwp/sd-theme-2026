@@ -82,7 +82,12 @@ const STATIC_ROUTES = [
 		template: 'page-no-title.html',
 		axeDisable: STATIC_PAGE_AXE_DISABLE,
 	},
-	{ name: 'tour archive', path: '/tours/', template: 'archive-tour.html', smoke: true },
+	{
+		name: 'tour archive',
+		path: '/tours/',
+		template: 'archive-tour.html',
+		smoke: true,
+	},
 	{
 		name: 'accommodation archive',
 		path: '/accommodation/',
@@ -94,8 +99,16 @@ const STATIC_ROUTES = [
 		template: 'archive-destination.html',
 	},
 	{ name: 'team archive', path: '/team/', template: 'archive-team.html' },
-	{ name: 'special archive', path: '/specials/', template: 'archive-special.html' },
-	{ name: 'review archive', path: '/reviews/', template: 'archive-review.html' },
+	{
+		name: 'special archive',
+		path: '/specials/',
+		template: 'archive-special.html',
+	},
+	{
+		name: 'review archive',
+		path: '/reviews/',
+		template: 'archive-review.html',
+	},
 	{ name: 'sitemap', path: '/sitemap/', template: 'page.html' },
 	{ name: 'brands', path: '/brand/', template: 'page-brands.html' },
 	{

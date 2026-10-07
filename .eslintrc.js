@@ -57,7 +57,12 @@ module.exports = {
 			files: [ 'tests/e2e/**/*.js', 'playwright.config.js' ],
 			extends: [ 'plugin:@wordpress/eslint-plugin/test-playwright' ],
 			env: { node: true },
+			// `page.evaluate()` callbacks run in the page, not in Node.
+			globals: { getComputedStyle: 'readonly' },
 			rules: {
+				// Same reason: inside `page.evaluate()` there is no node ref to
+				// take an `ownerDocument` from — `document` is the page's own.
+				'@wordpress/no-global-active-element': 'off',
 				// The suite skips — with a stated reason — when a route has no
 				// content or the temporary admin account is absent. That is the
 				// documented contract in tests/e2e/README.md, not a forgotten

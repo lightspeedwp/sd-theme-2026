@@ -41,6 +41,8 @@
 		"lint:css": "wp-scripts lint-style \"**/*.css\"",
 		"lint:css:fix": "wp-scripts lint-style \"**/*.css\" --fix",
 		"lint:md": "wp-scripts lint-md-docs",
+		"lint:baseline": "node tests/bin/lint-baseline.js",
+		"lint:baseline:update": "node tests/bin/lint-baseline.js --update",
 		"lint:pkg-json": "wp-scripts lint-pkg-json .",
 		"lint:php": "composer run lint",
 		"lint:php:fix": "composer run lint:fix",

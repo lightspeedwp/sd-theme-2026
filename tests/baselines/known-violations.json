@@ -1,0 +1,22 @@
+{
+	"$comment": "Contract-test findings that predate the QA harness. Each list must match the file exactly: a new finding fails the test, and so does a fixed one still listed here. Delete entries as they are fixed; never add one to make a test pass. See tests/baselines/README.md.",
+	"per-install-ids": {
+		"parts/mega-menu-about.html": [ "wp:navigation ref 65875" ],
+		"parts/mega-menu-accommodation.html": [ "wp:navigation ref 65874" ],
+		"parts/mega-menu-destinations.html": [
+			"wp:navigation ref 65872",
+			"wp:navigation ref 65878"
+		],
+		"parts/mega-menu-tours.html": [ "wp:navigation ref 65873" ],
+		"parts/mobile-menu.html": [ "wp:navigation ref 65877" ],
+		"patterns/header.php": [
+			"wp:navigation ref 65876",
+			"wp:navigation ref 65877"
+		]
+	},
+	"token-orphans": {
+		"patterns/card-post-grid.php": [ "preset spacing \"0\"" ],
+		"patterns/homepage-hero.php": [ "preset spacing \"0\"" ],
+		"patterns/homepage-main-content.php": [ "preset spacing \"0\"" ]
+	}
+}

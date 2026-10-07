@@ -8,6 +8,16 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🧪 **A lint ratchet and a known-violations list, so CI gates on new
+  findings only.** ASD-36. `tests/bin/lint-baseline.js` records ESLint,
+  Stylelint and markdownlint errors per file and rule in `tests/baselines/`
+  (40, 431 and 48 on 2026-10-07, all in shipped code, not the harness) and
+  fails on any increase, or on a decrease the baseline doesn't record yet.
+  The nine contract-test findings (six hard-coded `wp:navigation` refs, three
+  undefined `spacing|0` presets) are in `tests/baselines/known-violations.json`,
+  which the tests match exactly. `npm run lint:baseline`,
+  `npm run lint:baseline:update`; `tests/baselines/README.md`.
+
 - ✅ **A full QA harness: theme contract tests, PHPUnit, PHPStan, Theme Check
   and the WordPress linters.** ASD-36. `npm run lint` and `npm run test` run
   everything that needs no browser; `tests/php/README.md` and
@@ -418,6 +428,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 🚦 **The JS lint job gates again.** ASD-36. ESLint, Stylelint and
+  markdownlint and the Jest contract tests lost `continue-on-error`; the lint steps now run the
+  ratchet instead of the raw linter.
 
 - ✅ **The static page tests follow the 2026-09-24 page decisions.** LS-2015.
   `tests/e2e/templates/static-pages.spec.js`, `tests/e2e/fixtures/routes.js`,
@@ -1042,6 +1056,11 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
+
+- 🐛 **The harness's own JS linted dirty.** ASD-36. Prettier and JSDoc
+  across `tests/e2e/`, a shadowed `expect`, a literal no-break space in a
+  regex. `getComputedStyle` and `document.activeElement` are allowed in
+  `tests/e2e` because they run inside `page.evaluate()`.
 
 - 🐛 **`wp-scripts lint-js` crashed before linting anything.** ASD-36. npm
   resolved TypeScript 7 as `@wordpress/eslint-plugin`'s peer, which the

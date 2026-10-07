@@ -46,10 +46,12 @@ async function resolvePreset( page, property, variable ) {
  * Declare the hero banner tests for a set of routes.
  *
  * @param {Object}   deps        `{ test, expect }` from fixtures/base.js.
- * `path` may be async and receives the page's request context as a second
- * argument, for a route that has to be looked up in the REST API first (an
- * author archive has no entry in the resolved routes). Return null to skip.
+ *                               `path` may be async and receives the page's request context as a second
+ *                               argument, for a route that has to be looked up in the REST API first (an
+ *                               author archive has no entry in the resolved routes). Return null to skip.
  *
+ * @param {Function} deps.expect Playwright `expect`.
+ * @param {Function} deps.test   Playwright `test`.
  * @param {Object[]} routeConfig `{ name, path( routes, request ), strapline }` entries.
  */
 function describeHeroBanners( { test, expect }, routeConfig ) {
@@ -61,18 +63,27 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				routes,
 			} ) => {
 				const target = await route.path( routes, page.request );
-				test.skip( ! target, `No ${ route.name } on ${ routes.baseURL }` );
+				test.skip(
+					! target,
+					`No ${ route.name } on ${ routes.baseURL }`
+				);
 
 				await page.setViewportSize( { width: 1280, height: 800 } );
 				await visit( target );
 
 				const banner = page.locator( BANNER ).first();
-				await expect( banner, 'no hero banner at the top of <main>' ).toBeVisible();
+				await expect(
+					banner,
+					'no hero banner at the top of <main>'
+				).toBeVisible();
 
 				const isFirst = await banner.evaluate(
 					( el ) => el === el.parentElement.firstElementChild
 				);
-				expect( isFirst, 'the banner is not the first child of <main>' ).toBe( true );
+				expect(
+					isFirst,
+					'the banner is not the first child of <main>'
+				).toBe( true );
 
 				await expect( banner.locator( 'h1' ) ).toHaveCount( 1 );
 				await expect( page.locator( 'h1' ) ).toHaveCount( 1 );
@@ -83,11 +94,22 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				 * band past it.
 				 */
 				const height = ( await banner.boundingBox() ).height;
-				expect( height, 'the banner is below its 360px floor' ).toBeGreaterThanOrEqual( 359 );
-				expect( height, 'the banner is still on the old 400px floor' ).toBeLessThan( 399 );
+				expect(
+					height,
+					'the banner is below its 360px floor'
+				).toBeGreaterThanOrEqual( 359 );
+				expect(
+					height,
+					'the banner is still on the old 400px floor'
+				).toBeLessThan( 399 );
 
-				const inlinePadding = await banner.evaluate( ( el ) => el.style.paddingTop );
-				expect( inlinePadding, 'the cover still writes its own padding inline' ).toBe( '' );
+				const inlinePadding = await banner.evaluate(
+					( el ) => el.style.paddingTop
+				);
+				expect(
+					inlinePadding,
+					'the cover still writes its own padding inline'
+				).toBe( '' );
 			} );
 
 			test( 'fills the band with the photograph on desktop @responsive', async ( {
@@ -96,13 +118,19 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				routes,
 			} ) => {
 				const target = await route.path( routes, page.request );
-				test.skip( ! target, `No ${ route.name } on ${ routes.baseURL }` );
+				test.skip(
+					! target,
+					`No ${ route.name } on ${ routes.baseURL }`
+				);
 
 				await page.setViewportSize( { width: 1280, height: 800 } );
 				await visit( target );
 
 				const image = page.locator( BANNER_IMAGE ).first();
-				test.skip( 0 === ( await image.count() ), `${ target } has no banner photograph` );
+				test.skip(
+					0 === ( await image.count() ),
+					`${ target } has no banner photograph`
+				);
 
 				await expect( image ).toHaveCSS( 'position', 'absolute' );
 
@@ -111,7 +139,9 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 					image.boundingBox(),
 				] );
 
-				expect( Math.abs( imageBox.height - bannerBox.height ) ).toBeLessThanOrEqual( 1 );
+				expect(
+					Math.abs( imageBox.height - bannerBox.height )
+				).toBeLessThanOrEqual( 1 );
 			} );
 
 			test( 'stacks the title on the plate under a 3:1 strip on phones @responsive', async ( {
@@ -120,7 +150,10 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				routes,
 			} ) => {
 				const target = await route.path( routes, page.request );
-				test.skip( ! target, `No ${ route.name } on ${ routes.baseURL }` );
+				test.skip(
+					! target,
+					`No ${ route.name } on ${ routes.baseURL }`
+				);
 
 				await page.setViewportSize( { width: 375, height: 667 } );
 				await visit( target );
@@ -129,24 +162,46 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				await expect( banner ).toBeVisible();
 
 				const [ plate, brand500, neutral700 ] = await Promise.all( [
-					resolvePreset( page, 'background-color', '--wp--preset--color--neutral-200' ),
-					resolvePreset( page, 'color', '--wp--preset--color--brand-500' ),
-					resolvePreset( page, 'color', '--wp--preset--color--neutral-700' ),
+					resolvePreset(
+						page,
+						'background-color',
+						'--wp--preset--color--neutral-200'
+					),
+					resolvePreset(
+						page,
+						'color',
+						'--wp--preset--color--brand-500'
+					),
+					resolvePreset(
+						page,
+						'color',
+						'--wp--preset--color--neutral-700'
+					),
 				] );
 
 				await expect( banner ).toHaveCSS( 'background-color', plate );
 				await expect( banner ).toHaveCSS( 'padding-top', '0px' );
-				await expect( banner.locator( 'h1' ) ).toHaveCSS( 'color', brand500 );
+				await expect( banner.locator( 'h1' ) ).toHaveCSS(
+					'color',
+					brand500
+				);
 
 				if ( route.strapline ) {
-					const strapline = banner.locator( '.wp-block-cover__inner-container p' ).first();
+					const strapline = banner
+						.locator( '.wp-block-cover__inner-container p' )
+						.first();
 
 					if ( await strapline.count() ) {
-						await expect( strapline ).toHaveCSS( 'color', neutral700 );
+						await expect( strapline ).toHaveCSS(
+							'color',
+							neutral700
+						);
 					}
 				}
 
-				const image = banner.locator( ':scope > img.wp-block-cover__image-background' );
+				const image = banner.locator(
+					':scope > img.wp-block-cover__image-background'
+				);
 
 				if ( await image.count() ) {
 					await expect( image ).toHaveCSS( 'position', 'relative' );
