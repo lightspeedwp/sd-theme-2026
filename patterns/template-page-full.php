@@ -81,5 +81,6 @@
 	require __DIR__ . '/why-choose-sd.php';
 	?>
 
+<!-- wp:template-part {"slug":"pages"} /-->
 </main>
 <!-- /wp:group -->

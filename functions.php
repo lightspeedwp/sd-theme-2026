@@ -251,6 +251,13 @@ function template_part_areas( array $areas ) {
 		'description' => __( 'The Sidebar template defines a page area that can be found on the Page (With Sidebar) template.', 'sd-theme-2026' ),
 		'icon'        => 'sidebar',
 	);
+	$areas[] = array(
+		'area'        => 'faq',
+		'area_tag'    => 'section',
+		'label'       => __( 'FAQ', 'sd-theme-2026' ),
+		'description' => __( 'FAQ template parts hold the Yoast FAQ blocks that close the Page (No Title), Destinations archive and Country templates.', 'sd-theme-2026' ),
+		'icon'        => 'layout',
+	);
 
 	return $areas;
 }
