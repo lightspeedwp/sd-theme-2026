@@ -54,12 +54,13 @@ test.describe( 'Modals', () => {
 
 		for ( let index = 0; index < count; index++ ) {
 			const trigger = triggers.nth( index );
-			const controls = await trigger.getAttribute( 'aria-controls' );
 
-			expect(
-				controls,
+			await expect(
+				trigger,
 				`modal trigger ${ index } declares aria-haspopup but no aria-controls`
-			).toBeTruthy();
+			).toHaveAttribute( 'aria-controls', /\S/ );
+
+			const controls = await trigger.getAttribute( 'aria-controls' );
 
 			/**
 			 * ModalA11y only claims `aria-controls` over a dialog that is

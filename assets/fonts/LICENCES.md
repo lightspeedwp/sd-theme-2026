@@ -15,7 +15,7 @@ agent.
 ## Cleared for production
 
 | Face | Licence | Evidence |
-|---|---|---|
+| --- | --- | --- |
 | `open-sans-variable-normal` · `-italic` | SIL OFL 1.1 | in-font name ID 13/14 |
 | `belleza-400-normal` | SIL OFL 1.1 | in-font `license` / `licenseURL` |
 | `la-belle-aurore-400-normal` | SIL OFL 1.1 | in-font `license` / `licenseURL` |
@@ -33,7 +33,7 @@ nothing to resolve to. The bundle is now two faces built from Google's current *
 axis:
 
 | | Before (7 statics, v1.10) | After (2 variable, v3.003) |
-|---|---|---|
+| --- | --- | --- |
 | Weights | 300, 400, 600 + italics; 700 normal | **any 300–700**, normal + italic |
 | Typical page (400 + 600 normal) | 89 KB | **61 KB** |
 | With italics (300/400/600 + 400i) | 145 KB | **125 KB** |
@@ -111,7 +111,7 @@ So there are **two deliberate, separate purchases** — the desktop one is not a
 should not be treated as one:
 
 | Order | Date | Purpose | Licence | Delivered |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | **#9528082** | 24 Jul 2018 | superseded | Desktop | *Optima Bold* — Pro + Std cuts of one weight, OTF/TTF |
 | **#7491875209386** | 7 Sep 2026 | **Canva and other client design work**, 1 user | **Desktop** (EULA `2275`, Monotype *Font Software For Desktop* v250903) | *Optima LT Pro*, 12 styles, 400→950 + italics, OTF, `fsType 4` |
 | *kit received 2026-09-10* | — | **the website** | **Web, annually renewable** | *Optima LT Pro DemiBold* — **one weight**, WOFF2 + WOFF |
@@ -179,7 +179,7 @@ What the kit *does* carry is an `@license` block, and the instruction that it tr
 `<head>`. Two places now reproduce it verbatim:
 
 | Where | What |
-|---|---|
+| --- | --- |
 | `functions.php` → `font_licence_notice()` on `wp_head` (priority 1) | Prints the notice into every page, byte-identical to the kit |
 | `assets/fonts/optima-600-normal.LICENSE.txt` | The same text, sitting beside the font it covers |
 
@@ -204,7 +204,7 @@ Linotype splits the LT Pro family across four CSS families, so `font-family: "Op
 Pro"` exposes **only 400 and 700**:
 
 | OTF | CSS family (`name` ID 1) | Subfamily | `usWeightClass` |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `OptimaLTPro-Roman` / `-Italic` | `Optima LT Pro` | Regular / Italic | 400 |
 | `OptimaLTPro-Bold` / `-BoldItalic` | `Optima LT Pro` | Bold / Bold Italic | 700 |
 | `OptimaLTPro-Medium` / `-MediumItalic` | `Optima LT Pro Medium` | Regular / Italic | 500 |
@@ -221,7 +221,7 @@ it. Only real `@font-face` rules — i.e. the webfont kit — give the theme tru
 `theme.json` registers **one real Optima face** on the `heading` preset:
 
 | | |
-|---|---|
+| --- | --- |
 | File | `assets/fonts/optima-600-normal.woff2` (32 KB) |
 | Source | `docs/DS Optima DemiBold/font.woff2`, renamed to the theme's convention |
 | In-font identity | family `Optima LT Pro`, subfamily `SemiBold` / `Demi Bold`, PostScript `OptimaLTPro-DemiBold`, `usWeightClass 600`, foundry `MONO` |
@@ -250,7 +250,7 @@ decision recorded on 2026-08-12.
 Converted from the live site during LS-2012 and covered by no licence at all:
 
 | File | Real identity | Embedding bits |
-|---|---|---|
+| --- | --- | --- |
 | `optima-400-normal.woff2` | `Optima` — **©1991 AG Baltia**, a 1993 clone, not Monotype's | `fsType 1` — **embedding forbidden outright** |
 | `optima-500-normal.woff2` | `Optima Medium` — Adobe Systems 1995 | `fsType 260` — preview/print, **subsetting forbidden** |
 | `optima-700-normal.woff2` | `Optima Demi Bold` — Adobe Systems 1995 | `fsType 4` — preview/print only |

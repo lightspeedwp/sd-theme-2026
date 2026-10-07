@@ -9,7 +9,9 @@
  * @subpackage Tests
  */
 
-const { list, read } = require( '../helpers/theme-files' );
+import { describe, expect, it } from 'vitest';
+
+import { list, read } from '../helpers/theme-files';
 
 const STYLE_FILES = list( 'styles', '.json', true );
 

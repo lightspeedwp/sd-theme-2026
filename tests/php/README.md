@@ -35,7 +35,7 @@ mysql -uroot -e "CREATE DATABASE IF NOT EXISTS southerndestinations_tests CHARAC
 The defaults then work as they are. Override with environment variables:
 
 | Variable | Default |
-|---|---|
+| --- | --- |
 | `WP_CORE_DIR` | Three levels up from the theme — the local core install |
 | `TO_PLUGIN_DIR` | `wp-content/plugins/tour-operator` |
 | `SD_ENH_PLUGIN_DIR` | `wp-content/plugins/sd-enhancements-2026` |

@@ -4,9 +4,9 @@ Findings that predate the QA harness, recorded so CI can gate on anything
 **new** while the old debt is cleared slice by slice.
 
 | File | Holds | Written by |
-|---|---|---|
+| --- | --- | --- |
 | `eslint.json`, `stylelint.json`, `markdownlint.json` | Error counts per file and rule | `npm run lint:baseline:update` |
-| `known-violations.json` | Contract-test findings (Jest), listed per file | Hand-edited — remove entries as they are fixed |
+| `known-violations.json` | Contract-test findings (Vitest), listed per file | Hand-edited — remove entries as they are fixed |
 
 ## The ratchet
 

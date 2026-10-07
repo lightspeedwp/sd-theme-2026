@@ -111,16 +111,16 @@ to get Gutenberg's own fixtures: `admin`, `editor`, `pageUtils` and
 
 `utils/live-regions.js` reads the two live regions `@wordpress/a11y`'s
 `speak()` writes into (`#a11y-speak-polite`, `#a11y-speak-assertive`):
-`expectAnnounced( page, /results found/i )`. Its Jest twin,
+`expectAnnounced( page, /results found/i )`. Its Vitest twin,
 `tests/unit/helpers/live-regions.js`, runs the real package in jsdom.
 
-## Theme contract tests (Jest)
+## Theme contract tests (Vitest)
 
 `npm run test:unit` also runs `tests/unit/theme/` — static checks over the
 authored files, no WordPress and no browser:
 
 | Spec | Checks |
-|---|---|
+| --- | --- |
 | `theme-json.test.js` | theme.json is version 3 with no core default presets; every style variation is valid JSON with a unique basename |
 | `preset-references.test.js` | every `var:preset\|…`, `--wp--preset--…`, `var:custom\|…` and `--wp--custom--…` reference outside comments is defined |
 | `templates.test.js` | exactly one `<main>` per template, through its parts and patterns; part and pattern references resolve; no `wp:navigation` or `wp:block` `ref`; every pattern has a Title and a namespaced Slug |

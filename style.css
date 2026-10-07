@@ -64,6 +64,7 @@ figure {
 }
 
 /* Temporary fix for text-decoration-thickness in Firefox */
+/* stylelint-disable-next-line at-rule-prelude-no-invalid -- Firefox-only `url-prefix()` hook; no standard equivalent. */
 @-moz-document url-prefix() {
 	a {
 		text-decoration-thickness: .1rem !important;

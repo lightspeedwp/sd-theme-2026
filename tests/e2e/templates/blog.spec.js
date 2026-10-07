@@ -247,15 +247,10 @@ test.describe( 'Blog landing', () => {
 			next.click(),
 		] );
 
-		const secondFirst = await page
-			.locator( ROW )
-			.first()
-			.locator( '.wp-block-post-title a' )
-			.getAttribute( 'href' );
-		expect(
-			secondFirst,
+		await expect(
+			page.locator( ROW ).first().locator( '.wp-block-post-title a' ),
 			'page 2 opens on the same post as page 1'
-		).not.toBe( first );
+		).not.toHaveAttribute( 'href', first );
 	} );
 } );
 

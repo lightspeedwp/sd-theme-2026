@@ -47,7 +47,7 @@ tool.
 renders coherently while the real token map is produced.
 
 | Group | State |
-|---|---|
+| --- | --- |
 | `color.palette` → `brand-*` | **Provisional.** A lightness ramp anchored on `#CC7F16` — the dominant brand colour in the live site's `sd-lsx-child/assets/css/custom.css` (55 uses). |
 | `color.palette` → `neutral-*`, `base`, `contrast`, status colours | Generic greys and semantic status colours. Reusable; likely to survive as-is. |
 | `typography.fontFamilies` | **6 presets, 6 bundled WOFF2 faces, 236 KB** (`heading`, `belleza`, `body`, `accent`, `la-belle-aurore`, `monospace`). Bundled: **Optima DemiBold (600)** (web licence, annually renewable), **Open Sans variable ×2** (`wght` 300–700, normal + italic, OFL 1.1), Belleza, La Belle Aurore and Joe Hand. `heading` now leads with `Optima, "Optima LT Pro", Belleza, sans-serif`. Each typeface needs its *own* preset: WordPress overwrites a `fontFace`'s `fontFamily` with the first name of its preset's stack. → `style.md` §3.4, §3.7 · `assets/fonts/LICENCES.md` |
@@ -58,7 +58,7 @@ renders coherently while the real token map is produced.
 Extracted from `sd-lsx-child/assets/css/custom.css`, ordered by frequency:
 
 | Hex | Uses | Reads as |
-|---|---|---|
+| --- | --- | --- |
 | `#CC7F16` | 55 | Primary brand — amber/orange |
 | `#F7F5F2` | 34 | Paper / off-white |
 | `#60483B` | 30 | Warm brown |
@@ -137,7 +137,7 @@ Tour Operator card patterns and LSX binding conventions worth copying from.
 Patterns to build, from the spec:
 
 | Pattern | Notes |
-|---|---|
+| --- | --- |
 | **"Chat to a Safari Expert"** | CTA section, reused site-wide |
 | **"Not sure where to go"** | CTA section |
 | Card patterns | Shared across archives and related content — accommodation, destination, tour, review, team |
@@ -156,7 +156,7 @@ know what's available.
 ## 7. Verification
 
 | Check | Command / skill |
-|---|---|
+| --- | --- |
 | Presets match the token map | `themejson-extractor-orchestrator` report |
 | No broken preset references | `theme-orphaned-refs` → 0 orphans |
 | Global Styles coverage complete | `themejson-completion` |

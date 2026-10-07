@@ -5,13 +5,15 @@
  * @subpackage Tests
  */
 
-const {
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import {
 	LIVE_REGION_IDS,
 	announcement,
 	installWpA11yGlobal,
 	resetLiveRegions,
 	speak,
-} = require( '../helpers/live-regions' );
+} from '../helpers/live-regions';
 
 describe( 'live regions', () => {
 	beforeEach( () => {

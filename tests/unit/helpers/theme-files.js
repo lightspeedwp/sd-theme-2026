@@ -9,16 +9,22 @@
  * @subpackage Tests
  */
 
-const fs = require( 'fs' );
-const path = require( 'path' );
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const THEME_ROOT = path.join( __dirname, '..', '..', '..' );
+export const THEME_ROOT = path.join(
+	path.dirname( fileURLToPath( import.meta.url ) ),
+	'..',
+	'..',
+	'..'
+);
 
 /**
  * @param {string} relative Path relative to the theme root.
  * @return {string} Absolute path.
  */
-function themePath( relative ) {
+export function themePath( relative ) {
 	return path.join( THEME_ROOT, relative );
 }
 
@@ -26,7 +32,7 @@ function themePath( relative ) {
  * @param {string} relative Path relative to the theme root.
  * @return {string} File contents.
  */
-function read( relative ) {
+export function read( relative ) {
 	return fs.readFileSync( themePath( relative ), 'utf8' );
 }
 
@@ -38,7 +44,7 @@ function read( relative ) {
  * @param {boolean} recursive Whether to descend.
  * @return {string[]} Sorted theme-relative paths.
  */
-function list( directory, extension, recursive = false ) {
+export function list( directory, extension, recursive = false ) {
 	const absolute = themePath( directory );
 
 	if ( ! fs.existsSync( absolute ) ) {
@@ -69,7 +75,7 @@ function list( directory, extension, recursive = false ) {
  * @param {string} relative Path relative to the theme root.
  * @return {string} Markup.
  */
-function markup( relative ) {
+export function markup( relative ) {
 	const text = read( relative );
 
 	return relative.endsWith( '.php' )
@@ -83,7 +89,7 @@ function markup( relative ) {
  * @param {string} relative Pattern path relative to the theme root.
  * @return {Object<string, string>} Header values keyed by lower-cased name.
  */
-function patternHeaders( relative ) {
+export function patternHeaders( relative ) {
 	const docblock = read( relative ).match( /\/\*\*([\s\S]*?)\*\// );
 	const headers = {};
 
@@ -107,7 +113,7 @@ function patternHeaders( relative ) {
  *
  * @return {Map<string, string>} Slug → theme-relative path.
  */
-function patternsBySlug() {
+export function patternsBySlug() {
 	const bySlug = new Map();
 
 	for ( const file of list( 'patterns', '.php' ) ) {
@@ -126,21 +132,10 @@ function patternsBySlug() {
  *
  * @return {string[]} Theme-relative paths.
  */
-function markupFiles() {
+export function markupFiles() {
 	return [
 		...list( 'templates', '.html' ),
 		...list( 'parts', '.html' ),
 		...list( 'patterns', '.php' ),
 	];
 }
-
-module.exports = {
-	THEME_ROOT,
-	list,
-	markup,
-	markupFiles,
-	patternHeaders,
-	patternsBySlug,
-	read,
-	themePath,
-};

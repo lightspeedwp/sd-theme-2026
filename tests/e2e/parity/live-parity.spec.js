@@ -244,7 +244,7 @@ test.describe( 'Live parity @parity', () => {
 					( 40 < missing.length
 						? ` … and ${
 								missing.length - 40
-						  } more (see the annotation)`
+							} more (see the annotation)`
 						: '' ) +
 					'\n' +
 					'     Review these — some are deliberate (WooCommerce, campaigns), some are not.\n'

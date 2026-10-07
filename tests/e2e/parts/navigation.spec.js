@@ -98,12 +98,13 @@ test.describe( 'Mega menu', () => {
 		for ( let index = 0; index < count; index++ ) {
 			const toggle = toggles.nth( index );
 			const label = await labelOf( toggle );
-			const dropdownId = await toggle.getAttribute( 'aria-controls' );
 
-			expect(
-				dropdownId,
+			await expect(
+				toggle,
 				`mega menu toggle "${ label }" has no aria-controls`
-			).toBeTruthy();
+			).toHaveAttribute( 'aria-controls', /\S/ );
+
+			const dropdownId = await toggle.getAttribute( 'aria-controls' );
 
 			const dropdown = page.locator( `#${ dropdownId }` );
 

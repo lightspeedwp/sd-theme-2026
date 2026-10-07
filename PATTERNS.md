@@ -30,7 +30,7 @@ and do update everywhere.)
 ## The categories
 
 | Category | What is filed there |
-|---|---|
+| --- | --- |
 | **Hero** | Page and homepage banners |
 | **Cards** | The repeating tiles used inside listings |
 | **Call To Action** | Enquiry prompts and contact panels |
@@ -73,7 +73,7 @@ The homepage is built entirely from these, in this order. It is assembled by the
 template — you don't need to place them by hand.
 
 | Pattern | What it is | Live data |
-|---|---|---|
+| --- | --- | --- |
 | **Homepage — Hero** | Full-bleed photograph with the headline and a guest quote. The image is drawn at random from an eleven-image pool on each page load. | Banner pool |
 | **Homepage — How To Plan Your Dream Trip** | The monogram, the script heading, the italic standfirst and the "Start here" cue. | — |
 | **Homepage — Main Content** | The four stacked photograph panels — Destinations, Accommodation, Tours, and the enquiry invitation — with the translucent panel alternating side to side. | — |
@@ -108,7 +108,7 @@ with that **Role**. Nothing on the page is a hand-written list of people.
 So, to change the page:
 
 | To do this | Edit this |
-|---|---|
+| --- | --- |
 | Move somebody between sections, or add a new joiner | The team member's **Role** |
 | Change the order within a section | The team member's **Order** field — the sections read it low to high |
 | Change the name or the job title on a card | The team member's title and its **Role** text field |
@@ -134,7 +134,7 @@ post. Every section disappears on its own when the field behind it is empty, so 
 who has only a bio gets a page with only a bio — there is nothing to switch off.
 
 | Section | Comes from |
-|---|---|
+| --- | --- |
 | The banner photograph | **Banner Image** (falls back to the featured image) |
 | The job title under the name | The **Role** text field |
 | **Get in touch** | **Email** (falls back to the contact page) |
@@ -159,7 +159,7 @@ post and all six headings follow.
 Drop these into any page body.
 
 | Pattern | What it is | Live data |
-|---|---|---|
+| --- | --- | --- |
 | **Page Hero Banner** | The standard page banner — a full-width photograph carrying the page title, with the post's `banner_subtitle` under it when it has one. | — |
 | **Safari Expert Panel** | "Chat to your Safari Expert" — a brand-coloured card holding the consultant's portrait and name, a Call Us dropdown carrying the four office numbers, and an email action, with the Trustpilot badge beneath the card. Picks the right consultant for the page it is on. | Team · Trustpilot |
 | **CTA — Not Sure Where To Go** | The enquiry band: a script heading over the two office numbers, with "Send us an Email" beneath. | — |
@@ -201,7 +201,7 @@ they are what the listings and archive templates are built out of. Insert one on
 only when you want a single tile as a feature.
 
 | Pattern | Used for |
-|---|---|
+| --- | --- |
 | **Card — Media Overlay** | The shared archive tile: photograph with the title over it. Used by every Tour Operator archive, unchanged, so all the archives match. |
 | **Card — Tour (Compact)** · **Card — Tour (List)** | Tour tiles, in a grid and in a row |
 | **Card — Accommodation (Compact)** · **Card — Accommodation (List)** | Accommodation tiles |
@@ -221,7 +221,7 @@ they always match the tour, lodge or destination they sit on.
 ## Listings
 
 | Pattern | What it is | In the inserter |
-|---|---|---|
+| --- | --- | --- |
 | **Post Loop List** | Posts in a vertical list | Yes |
 
 ---
@@ -229,7 +229,7 @@ they always match the tour, lodge or destination they sit on.
 ## Header and footer
 
 | Pattern | Notes |
-|---|---|
+| --- | --- |
 | **Header** | The site header — logo, navigation, mega menus, the Trustpilot badge and the Call Us dropdown. Part of the header template part; you should not need to place it. |
 | **Footer** | The four-column footer. Same — it belongs to the footer template part. |
 
@@ -246,7 +246,7 @@ template is how you change it. They are listed here so you know they exist and c
 recognise the name if you meet it in the Site Editor.
 
 | Pattern | Template |
-|---|---|
+| --- | --- |
 | **Template: Destinations Archive** | The destinations landing page |
 | **Template: Tours Archive** | The tours landing page |
 | **Template: Accommodation Archive** | The accommodation landing page |
@@ -284,7 +284,7 @@ Pick one of the other two — in the **Template** panel in the destination's sid
 when you want to *force* the choice:
 
 | Pick | To get |
-|---|---|
+| --- | --- |
 | **Single Country** | The regions shelf, and **no** accommodation shelf even where lodges are connected to the country |
 | **Single Region** | The accommodation shelf, and no regions shelf |
 
@@ -296,7 +296,7 @@ Single Country — the shelf is its regions, and there are none to list.
 ## When something looks wrong
 
 | What you see | Usually means |
-|---|---|
+| --- | --- |
 | A section is empty | Its query found nothing — check the post type has published content, and check any role or category filter |
 | A destination page has no map at all | That destination has no **location** set. The whole map band removes itself rather than showing an empty box |
 | The destination map shows "Click here to display the map" and clicking does nothing | A known Tour Operator 2.2 fault, not a theme one — the plugin builds the map and then discards it, so the script that handles the click never starts. On the change register; it needs a plugin fix |

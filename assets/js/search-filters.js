@@ -83,7 +83,10 @@
 	function heading( section ) {
 		var child = section.firstElementChild;
 		for ( ; child; child = child.nextElementSibling ) {
-			if ( child.classList && child.classList.contains( 'wp-block-heading' ) ) {
+			if (
+				child.classList &&
+				child.classList.contains( 'wp-block-heading' )
+			) {
 				return child;
 			}
 		}
@@ -102,11 +105,16 @@
 	 * `display:none` in the plugin's own front.css and the block's front.js
 	 * adds it whenever `num_choices` for the facet drops to zero, so folding
 	 * one open would reveal an empty panel under a live-looking control.
+	 *
+	 * @param {Element} section The facet block.
+	 * @return {boolean} Whether to fold it.
 	 */
 	function isFold( section ) {
-		return !! heading( section ) &&
+		return (
+			!! heading( section ) &&
 			!! panel( section ) &&
-			! section.classList.contains( 'facetwp-hidden' );
+			! section.classList.contains( 'facetwp-hidden' )
+		);
 	}
 
 	function setState( section, isOpen ) {
@@ -202,7 +210,9 @@
 			return null;
 		}
 
-		var control = event.target.closest( CONTAINER + ' ' + SECTION + ' > .wp-block-heading' );
+		var control = event.target.closest(
+			CONTAINER + ' ' + SECTION + ' > .wp-block-heading'
+		);
 
 		if ( ! control ) {
 			return null;
@@ -246,7 +256,11 @@
 		} );
 
 		document.addEventListener( 'keydown', function ( event ) {
-			if ( 'Enter' !== event.key && ' ' !== event.key && 'Spacebar' !== event.key ) {
+			if (
+				'Enter' !== event.key &&
+				' ' !== event.key &&
+				'Spacebar' !== event.key
+			) {
 				return;
 			}
 
@@ -264,4 +278,4 @@
 	} else {
 		init();
 	}
-}() );
+} )();

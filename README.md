@@ -30,7 +30,7 @@ There is **no WooCommerce** on this site.
 ## Requirements
 
 | | |
-|---|---|
+| --- | --- |
 | WordPress | 6.9+ |
 | PHP | 7.4+ |
 | Post types | `accommodation`, `destination`, `tour` — from the **LSX Tour Operator** plugin |
@@ -104,7 +104,7 @@ discovered at startup, so start a fresh session after pulling changes to them.
 ## Documentation
 
 | File | What's in it |
-|---|---|
+| --- | --- |
 | [AGENTS.md](AGENTS.md) | Orchestration guide — boundary, scope, conventions, environment |
 | [DESIGN.md](DESIGN.md) | Design sources, token state, the extractor pipeline, pattern library |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Workflow, git, quality bar |

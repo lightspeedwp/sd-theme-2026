@@ -146,9 +146,10 @@ test.describe( 'Accommodation landing', () => {
 		expect( slugs ).toEqual(
 			LIVE_TYPE_ORDER.filter( ( slug ) => slugs.includes( slug ) )
 		);
-		expect( slugs.length, 'a featured type is missing from the grid' ).toBe(
-			LIVE_TYPE_ORDER.length
-		);
+		expect(
+			slugs,
+			'a featured type is missing from the grid'
+		).toHaveLength( LIVE_TYPE_ORDER.length );
 	} );
 } );
 

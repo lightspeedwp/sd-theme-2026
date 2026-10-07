@@ -21,12 +21,14 @@ test.describe( 'Keyboard', () => {
 		await page.keyboard.press( 'Tab' );
 
 		const focused = page.locator( ':focus' );
+
+		await expect(
+			focused,
+			'first tab stop is not a link — expected a skip link'
+		).toHaveAttribute( 'href', /\S/ );
+
 		const href = await focused.getAttribute( 'href' );
 
-		expect(
-			href,
-			'first tab stop is not a link — expected a skip link'
-		).toBeTruthy();
 		expect(
 			href.startsWith( '#' ),
 			`first tab stop points at ${ href }, not an in-page target`

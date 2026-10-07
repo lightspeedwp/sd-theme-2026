@@ -35,11 +35,13 @@ jobs:
         # has been generated on this runner image.
         project: [ desktop, tablet, mobile, responsive, a11y ]
     steps:
-      - uses: actions/checkout@v4
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - uses: actions/setup-node@v4
+      # actions/setup-node@v7.0.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
@@ -51,7 +53,8 @@ jobs:
         env:
           WP_BASE_URL: ${{ github.event.inputs.base_url || 'https://southerndestinations.lightspeedwp.dev' }}
 
-      - uses: actions/upload-artifact@v4
+      # actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: ${{ !cancelled() }}
         with:
           name: playwright-report-${{ matrix.project }}
@@ -82,13 +85,15 @@ jobs:
         if: env.WP_ADMIN_USER == '' || env.WP_ADMIN_PASS == ''
         run: echo "::notice::WP_ADMIN_USER / WP_ADMIN_PASS are not set on this repository — editor project skipped."
 
-      - uses: actions/checkout@v4
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         if: env.WP_ADMIN_USER != '' && env.WP_ADMIN_PASS != ''
 
-      - uses: actions/setup-node@v4
+      # actions/setup-node@v7.0.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         if: env.WP_ADMIN_USER != '' && env.WP_ADMIN_PASS != ''
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
@@ -102,7 +107,8 @@ jobs:
         if: env.WP_ADMIN_USER != '' && env.WP_ADMIN_PASS != ''
         run: npx playwright test --project=editor
 
-      - uses: actions/upload-artifact@v4
+      # actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: ${{ !cancelled() && env.WP_ADMIN_USER != '' && env.WP_ADMIN_PASS != '' }}
         with:
           name: playwright-report-editor

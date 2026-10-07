@@ -48,11 +48,11 @@ jobs:
     # sd-enhancements is a private repository and is not loaded here; the
     # suite passes without it (verified locally with SD_ENH_PLUGIN_DIR unset).
     steps:
-      # actions/checkout@v4.2.2
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      # actions/checkout@v4.2.2
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: lightspeedwp/tour-operator
           ref: ${{ matrix.to }}
@@ -66,8 +66,8 @@ jobs:
           curl -sSL -o /tmp/ollie.zip https://downloads.wordpress.org/plugin/ollie-menu-designer.latest-stable.zip
           unzip -q /tmp/ollie.zip -d /tmp/plugins
 
-      # shivammathur/setup-php@2.31.1
-      - uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231
+      # shivammathur/setup-php@2.37.2
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
         with:
           php-version: '8.3'
           coverage: none

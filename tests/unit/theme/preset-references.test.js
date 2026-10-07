@@ -14,8 +14,10 @@
  * @subpackage Tests
  */
 
-const { list, markupFiles, read } = require( '../helpers/theme-files' );
-const { known } = require( '../helpers/known-violations' );
+import { describe, expect, it } from 'vitest';
+
+import { list, markupFiles, read } from '../helpers/theme-files';
+import { known } from '../helpers/known-violations';
 
 /**
  * Preset type as it appears in references → where theme.json defines it.

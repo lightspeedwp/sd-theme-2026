@@ -2,8 +2,9 @@
 /**
  * Lint ratchet — fail on new lint findings, tolerate the recorded ones.
  *
- * ESLint 8, Stylelint 16 and markdownlint-cli have no suppressions file, so
- * this records each linter's findings as counts per file and rule in
+ * ESLint, Stylelint and markdownlint-cli share no suppressions format — only
+ * ESLint has one, and its own — so this records each linter's findings as
+ * counts per file and rule in
  * tests/baselines/<linter>.json and compares every run against it:
  *
  * - a count above its baseline fails — that is a new finding;

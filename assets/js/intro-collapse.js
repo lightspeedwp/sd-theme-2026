@@ -173,7 +173,10 @@
 		 */
 		button.setAttribute( 'role', 'button' );
 		button.setAttribute( 'tabindex', '0' );
-		button.setAttribute( 'data-label-collapsed', button.textContent.trim() );
+		button.setAttribute(
+			'data-label-collapsed',
+			button.textContent.trim()
+		);
 		button.setAttribute( 'data-label-expanded', expandedLabel() );
 
 		/*
@@ -206,7 +209,11 @@
 		button.addEventListener( 'click', toggleState );
 
 		button.addEventListener( 'keydown', function ( event ) {
-			if ( 'Enter' === event.key || ' ' === event.key || 'Spacebar' === event.key ) {
+			if (
+				'Enter' === event.key ||
+				' ' === event.key ||
+				'Spacebar' === event.key
+			) {
 				toggleState( event );
 			}
 		} );
@@ -226,4 +233,4 @@
 	} else {
 		init();
 	}
-}() );
+} )();

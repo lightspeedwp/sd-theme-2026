@@ -217,7 +217,7 @@ module.exports = defineConfig( {
 						timeout: 120 * 1000,
 						use: { actionTimeout: 60 * 1000 },
 					},
-			  ]
+				]
 			: [] ),
 
 		{
@@ -263,7 +263,7 @@ module.exports = defineConfig( {
 							viewport: { width: 1920, height: 1080 },
 						},
 					},
-			  ]
+				]
 			: [] ),
 
 		/**
@@ -321,7 +321,7 @@ module.exports = defineConfig( {
 							viewport: { width: 1280, height: 800 },
 						},
 					},
-			  ]
+				]
 			: [] ),
 
 		/**
@@ -342,7 +342,7 @@ module.exports = defineConfig( {
 							storageState: STORAGE_STATE_PATH,
 						},
 					},
-			  ]
+				]
 			: [] ),
 
 		/**
@@ -362,7 +362,7 @@ module.exports = defineConfig( {
 							viewport: { width: 1280, height: 800 },
 						},
 					},
-			  ]
+				]
 			: [] ),
 	],
 

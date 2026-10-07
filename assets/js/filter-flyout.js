@@ -87,7 +87,9 @@
 		return names.filter( function ( name ) {
 			var facet = '.facetwp-facet-' + name;
 
-			return !! document.querySelector( RAIL + ' ' + facet + ', ' + PANEL + ' ' + facet );
+			return !! document.querySelector(
+				RAIL + ' ' + facet + ', ' + PANEL + ' ' + facet
+			);
 		} );
 	}
 
@@ -132,10 +134,15 @@
 	 * @param {boolean} expanded Whether the panel is open.
 	 */
 	function setExpanded( expanded ) {
-		document.querySelectorAll( TRIGGER + ' button, ' + TRIGGER + ' a' ).forEach( function ( control ) {
-			control.setAttribute( 'aria-controls', 'sd-filter-flyout' );
-			control.setAttribute( 'aria-expanded', expanded ? 'true' : 'false' );
-		} );
+		document
+			.querySelectorAll( TRIGGER + ' button, ' + TRIGGER + ' a' )
+			.forEach( function ( control ) {
+				control.setAttribute( 'aria-controls', 'sd-filter-flyout' );
+				control.setAttribute(
+					'aria-expanded',
+					expanded ? 'true' : 'false'
+				);
+			} );
 	}
 
 	/**
@@ -145,9 +152,14 @@
 	 * @return {Element[]} Focusable controls, in tab order.
 	 */
 	function focusables( panel ) {
-		return Array.prototype.filter.call( panel.querySelectorAll( FOCUSABLE ), function ( el ) {
-			return el.offsetParent !== null || el === document.activeElement;
-		} );
+		return Array.prototype.filter.call(
+			panel.querySelectorAll( FOCUSABLE ),
+			function ( el ) {
+				return (
+					el.offsetParent !== null || el === document.activeElement
+				);
+			}
+		);
 	}
 
 	/**
@@ -184,10 +196,16 @@
 		var last = items[ items.length - 1 ];
 		var inside = panel.contains( document.activeElement );
 
-		if ( event.shiftKey && ( document.activeElement === first || ! inside ) ) {
+		if (
+			event.shiftKey &&
+			( document.activeElement === first || ! inside )
+		) {
 			event.preventDefault();
 			last.focus();
-		} else if ( ! event.shiftKey && ( document.activeElement === last || ! inside ) ) {
+		} else if (
+			! event.shiftKey &&
+			( document.activeElement === last || ! inside )
+		) {
 			event.preventDefault();
 			first.focus();
 		}
@@ -224,7 +242,12 @@
 	 * Register the add-on hooks, once, before it builds its panel.
 	 */
 	function hook() {
-		if ( hooked || ! window.FWP || ! window.FWP.hooks || ! window.FWP.flyout ) {
+		if (
+			hooked ||
+			! window.FWP ||
+			! window.FWP.hooks ||
+			! window.FWP.flyout
+		) {
 			return;
 		}
 
@@ -232,7 +255,10 @@
 		document.documentElement.classList.add( READY );
 
 		window.FWP.hooks.addFilter( 'facetwp/flyout/facets', railFacets );
-		window.FWP.hooks.addFilter( 'facetwp/flyout/flyout_html', accessiblePanel );
+		window.FWP.hooks.addFilter(
+			'facetwp/flyout/flyout_html',
+			accessiblePanel
+		);
 		window.FWP.hooks.addAction( 'facetwp/flyout/open', onOpen );
 		window.FWP.hooks.addAction( 'facetwp/flyout/close', onClose );
 
@@ -245,7 +271,10 @@
 	document.addEventListener(
 		'click',
 		function ( event ) {
-			var trigger = event.target && event.target.closest ? event.target.closest( TRIGGER ) : null;
+			var trigger =
+				event.target && event.target.closest
+					? event.target.closest( TRIGGER )
+					: null;
 
 			if ( trigger ) {
 				returnFocus = trigger.querySelector( 'button, a' ) || trigger;

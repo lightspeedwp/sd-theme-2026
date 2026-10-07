@@ -319,7 +319,7 @@ module.exports = async function globalSetup( config ) {
 			( missing.length
 				? `  No content: ${ missing.join(
 						', '
-				  ) } — those specs will skip\n\n`
+					) } — those specs will skip\n\n`
 				: '\n' )
 	);
 };

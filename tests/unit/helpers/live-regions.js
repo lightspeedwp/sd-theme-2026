@@ -17,12 +17,12 @@
  * @subpackage Tests
  */
 
-const a11y = require( '@wordpress/a11y' );
+import * as a11y from '@wordpress/a11y';
 
 /**
  * The live region ids `@wordpress/a11y` creates, by politeness.
  */
-const LIVE_REGION_IDS = Object.freeze( {
+export const LIVE_REGION_IDS = Object.freeze( {
 	polite: 'a11y-speak-polite',
 	assertive: 'a11y-speak-assertive',
 } );
@@ -32,7 +32,7 @@ const LIVE_REGION_IDS = Object.freeze( {
  *
  * @return {void}
  */
-function resetLiveRegions() {
+export function resetLiveRegions() {
 	document
 		.querySelectorAll(
 			'#a11y-speak-polite, #a11y-speak-assertive, #a11y-speak-intro-text'
@@ -51,7 +51,7 @@ function resetLiveRegions() {
  * @param {'polite'|'assertive'} [ariaLive='polite'] Which region.
  * @return {string} The announcement, or '' when there is none.
  */
-function announcement( ariaLive = 'polite' ) {
+export function announcement( ariaLive = 'polite' ) {
 	const region = document.getElementById( LIVE_REGION_IDS[ ariaLive ] );
 
 	return region ? region.textContent.replace( /\u00a0/g, ' ' ).trim() : '';
@@ -62,15 +62,9 @@ function announcement( ariaLive = 'polite' ) {
  *
  * @return {void}
  */
-function installWpA11yGlobal() {
+export function installWpA11yGlobal() {
 	window.wp = window.wp || {};
 	window.wp.a11y = { speak: a11y.speak, setup: a11y.setup };
 }
 
-module.exports = {
-	LIVE_REGION_IDS,
-	announcement,
-	installWpA11yGlobal,
-	resetLiveRegions,
-	speak: a11y.speak,
-};
+export const speak = a11y.speak;

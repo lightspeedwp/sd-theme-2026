@@ -9,15 +9,13 @@
  * @subpackage Tests
  */
 
-const KNOWN = require( '../../baselines/known-violations.json' );
+import KNOWN from '../../baselines/known-violations.json';
 
 /**
  * @param {string} check Check key, e.g. `per-install-ids`.
  * @param {string} file  Path relative to the theme root.
  * @return {string[]} Findings recorded for that file, or none.
  */
-function known( check, file ) {
+export function known( check, file ) {
 	return KNOWN[ check ]?.[ file ] ?? [];
 }
-
-module.exports = { known };

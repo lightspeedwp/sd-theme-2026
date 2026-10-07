@@ -236,9 +236,9 @@ test.describe( 'Accessibility — structure @a11y', () => {
 		const unnamed = navNames.filter( ( name ) => '' === name );
 
 		expect(
-			unnamed.length,
+			unnamed,
 			`${ unnamed.length } navigation landmark(s) have no accessible name`
-		).toBe( 0 );
+		).toHaveLength( 0 );
 
 		const duplicates = navNames.filter(
 			( name, index ) => name && navNames.indexOf( name ) !== index

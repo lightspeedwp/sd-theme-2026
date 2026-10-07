@@ -45,8 +45,10 @@ test.describe( 'Header', () => {
 
 		await expect( homeLink ).toBeAttached();
 
-		const href = await homeLink.getAttribute( 'href' );
-		expect( href, 'home link has no href' ).toBeTruthy();
+		await expect( homeLink, 'home link has no href' ).toHaveAttribute(
+			'href',
+			/\S/
+		);
 	} );
 
 	test( 'exposes a search control', async ( { page } ) => {

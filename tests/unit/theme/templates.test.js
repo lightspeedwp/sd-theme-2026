@@ -15,16 +15,18 @@
  * @subpackage Tests
  */
 
-const fs = require( 'fs' );
-const { known } = require( '../helpers/known-violations' );
-const {
+import { describe, expect, it } from 'vitest';
+
+import fs from 'node:fs';
+import { known } from '../helpers/known-violations';
+import {
 	list,
 	markup,
 	markupFiles,
 	patternHeaders,
 	patternsBySlug,
 	themePath,
-} = require( '../helpers/theme-files' );
+} from '../helpers/theme-files';
 
 const PATTERNS = patternsBySlug();
 
