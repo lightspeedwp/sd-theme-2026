@@ -8,6 +8,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **`patterns/card-mega-menu.php` — the mega menus' featured card, as a theme
+  pattern.** ASD-36. Replicated unchanged from the synced pattern "Card - Mega
+  Menu" (`wp_block` 65890). See Changed for the four parts that now use it.
+
 - **FAQ template parts captured from the dev Site Editor.** ASD-36.
   `parts/faq-countries.html`, `parts/pages.html` and
   `parts/destinations.html` existed only as database parts on dev. They are
@@ -385,6 +389,20 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 🔗 **The four mega menus take their featured card from the theme, not a
+  synced pattern.** ASD-36. `parts/mega-menu-destinations.html`,
+  `parts/mega-menu-tours.html`, `parts/mega-menu-accommodation.html`,
+  `parts/mega-menu-about.html`. Each `core/post-template` held
+  `<!-- wp:block {"ref":65890} /-->`, a per-install post ID that resolved only
+  because dev is deployed to live wholesale — the same class of value AGENTS.md
+  bans for navigation `ref`s, and the rule there now names synced patterns too.
+  Each now references `sd-theme-2026/card-mega-menu`. The loop's post context
+  survives a part-to-pattern reference: measured on local (WP 7), the same tour
+  title rendered inline and by reference. Markup and styling are unchanged — the
+  resting styles stay on `is-style-mega-panel` and the hover in
+  `assets/styles/ollie-mega-menu.css`. **Deploy step:** delete `wp_block` 65890
+  on dev once this is live there; until then the theme no longer reads it.
 
 - 🅱️ **Buttons are bold, so white on brand-500 passes as large text.**
   LS-2015. `theme.json`, `styles/blocks/button/accent-cta.json`,
@@ -1224,6 +1242,32 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   this issue's to write. Same band, one copy string apart — not a fourth design.
 
 ### Removed
+
+- 🗑️ **Unused patterns, a part and two card styles.** ASD-36. A usage audit
+  (`.github/reports/template-part-pattern-audit-2026-10-06.md` in the workspace)
+  counted every `wp:pattern` slug, `require __DIR__` composition, part slug,
+  `menuSlug`/`mobileMenuSlug` and `#to-modal-*` anchor across the theme,
+  `sd-enhancements-2026`, the tests and the database. None of these had a
+  reference:
+  - `patterns/post-loop-grid-custom.php` (slug `sd-theme-2026/post-loop-grid`)
+    and `patterns/post-loop-grid-default.php`, both `Inserter: false`.
+  - `patterns/blog-card.php` (its only user was `post-loop-grid-default`) and
+    `patterns/blog-card-large.php`, with their section styles
+    `styles/sections/cards/blog-card.json` and `blog-card-large.json` and the
+    `.is-style-blog-card-large` separator rule in
+    `assets/styles/core-separator.css`. The blog is unaffected: its landing,
+    category, tag and author archives render `card-post-list`
+    (`is-style-blog-card-wide`), and the homepage carousel and team pages render
+    `card-post-grid`. That closes `style.md` §12.6's open question of which of
+    the three was the landing row.
+  - `patterns/card-destination-compact.php`. `parts/modal-destination.html` is
+    the live copy of that card and stays; its block name no longer points at
+    the pattern, and `assets/styles/core-group.css` names the modal instead.
+  - `parts/single-hero.html` and its `theme.json` `templateParts` entry,
+    replaced when the singles moved to their own banners. `README.md` and
+    `AGENTS.md` list the modal and FAQ parts in its place.
+
+  `PATTERNS.md` drops the five patterns and lists Card — Mega Menu.
 
 - 🗑️ **`templates/single-special.html`.** LS-2021. The site does not publish a page
   per offer; `/special/{slug}/` 301s to the archive, and that redirect is issued by

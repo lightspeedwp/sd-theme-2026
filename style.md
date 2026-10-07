@@ -903,12 +903,11 @@ it should be applied consistently rather than corrected per-component.
 
 - **The blog card.** ~~Not ported.~~ **Ported 2026-08-22** as `blog-card-wide.json` — the live
   landing row, body two-thirds on the leading edge with everything centred inside it, image
-  one-third trailing, a rule closing each row. It does **not** replace `blog-card.json` or
-  `blog-card-large.json`: those still carry their KWV structure, and all three now sit side by
-  side on the Card Style Reference page so the choice can be made by looking at it. Live's
+  one-third trailing, a rule closing each row. It is the landing row: `card-post-list` carries
+  it on the blog, category, tag and author archives. The KWV `blog-card.json` and
+  `blog-card-large.json`, and their patterns, were removed unused on 2026-10-06 (ASD-36). Live's
   duplicated featured image — rendered twice, the second hidden with `hidden-xs` — is
-  reproduced as one image only, pending confirmation. **Open: which of the three is the
-  landing row.**
+  reproduced as one image only, pending confirmation.
 - **The list-card variant** of the archive card (container `#F6F3F0`, meta strip `#F0EBE5`,
   read-more `#3E3530` → `#4A4A4A`). ~~Measured and ready, blocked on open decision 5.~~
   **Ported 2026-08-22** as `listing-card-list.json`. Decision 5 resolved the strip onto

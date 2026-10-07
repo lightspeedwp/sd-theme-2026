@@ -302,8 +302,9 @@
 
 /* The featured card
    ---------------------------------------------------------------------------
-   One post, image over title over a clamped excerpt. The card is the synced
-   pattern `wp_block` 65890, which is ordinary core blocks — so its **resting**
+   One post, image over title over a clamped excerpt. The card is
+   patterns/card-mega-menu.php (the synced pattern `wp_block` 65890 until
+   2026-10-06), which is ordinary core blocks — so its **resting**
    styles moved to `is-style-mega-panel` (styles/sections/mega-panel.json) on
    2026-09-18, for the reason the "Link lists" note above gives: a variation's
    `css` field renders in the Site Editor and nothing in this file does. The

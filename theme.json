@@ -1269,11 +1269,6 @@
 			"area": "menu"
 		},
 		{
-			"name": "single-hero",
-			"title": "Single Hero",
-			"area": "uncategorized"
-		},
-		{
 			"name": "modal-tour",
 			"title": "Modal — Tour",
 			"area": "modals"
