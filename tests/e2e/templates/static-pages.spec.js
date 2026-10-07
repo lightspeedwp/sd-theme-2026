@@ -1,8 +1,8 @@
 /**
- * Static pages — About Us, its three children, and Contact Us, finalised
- * 2026-09-23.
+ * Static pages — About Us, its three children, Contact Us and Thank You,
+ * finalised 2026-09-23 and revised 2026-09-24.
  *
- * LS-2015 (Page Conversion). All five pages sit on `page-no-title.html` →
+ * LS-2015 (Page Conversion). All six pages sit on `page-no-title.html` →
  * patterns/template-page-full.php, and that template now owns their banner:
  * `patterns/hero-page-banner.php` (featured image, the page title as the h1,
  * `banner_subtitle` through `sd/banner` as the strapline), the breadcrumb strip
@@ -26,10 +26,19 @@
  * (assets/styles/core-paragraph.css). Core's `.has-drop-cap` outranks that rule
  * and caps at every width, so its presence anywhere fails the page.
  *
- * **Trustpilot** is the current `patterns/trustpilot-score.php` on Why Book
- * With Us, and on Contact the team single's band — the stacked badge beside
- * the review carousel. Both pages used to carry a pasted, stale copy of the
- * badge; the class checks below are what tell the two apart.
+ * **Trustpilot**, as decided 2026-09-24. On Why Book With Us, the Our Reviews
+ * badge is the "Why choose" band's stacked badge (logo, stars, then the
+ * TrustScore line), but in dark type with the dark logo, because it sits on a
+ * light card. On Contact the band is the homepage's TrustBox carousel, not the
+ * team single's stacked badge and reviews grid it carried before. Both pages
+ * used to carry a pasted, stale copy of the badge; the class checks below are
+ * what tell the versions apart.
+ *
+ * **Thank You** is checked as Zared authored it on 2026-09-24. Its intro is a
+ * plain `h2` and paragraph, not a standfirst, so it sits outside the standfirst
+ * checks. It does share the banner contract, which means its in-content banner
+ * is covered by the same cleanup. Its "Send Us an Email" eyebrow becomes the
+ * page's `banner_subtitle`.
  *
  * @package SD_Theme_2026
  * @subpackage Tests
@@ -59,7 +68,41 @@ const PAGES = [
 	{ name: 'Social Responsibility', path: '/about-us/social-responsibility/', title: 'Social Responsibility', strapline: 'About Us', intro: 2 },
 	{ name: 'Connect With Us', path: '/about-us/connect-with-us/', title: 'Connect With Us', strapline: 'About Us', intro: 1 },
 	{ name: 'Contact Us', path: '/contact/', title: 'Contact Us', strapline: 'Get in Touch', intro: 1 },
+	{ name: 'Thank You', path: '/thank-you/', title: 'Thank You', strapline: 'Send Us an Email', intro: 0 },
 ];
+
+/**
+ * Assert a row of phone numbers, each a `tel:` link with the phone icon
+ * beside it — the office markup of patterns/cta-tell-us-your-trip-ideas.php.
+ *
+ * @param {import('@playwright/test').Locator} scope  Section holding the numbers.
+ * @param {number}                             count  Numbers expected.
+ * @param {Function}                           expect Playwright `expect`.
+ */
+async function expectPhoneRow( scope, count, expect ) {
+	const links = scope.locator( 'a[href^="tel:"]' );
+	await expect( links ).toHaveCount( count );
+
+	for ( const link of await links.all() ) {
+		// The icon is the number's sibling inside the office's nowrap row.
+		const row = link.locator( 'xpath=ancestor::div[contains(@class,"wp-block-group")][1]' );
+		await expect( row.locator( '.wp-block-outermost-icon-block svg' ), 'a number has lost its phone icon' ).toHaveCount( 1 );
+	}
+}
+
+/**
+ * Relative luminance of a computed `rgb()` colour, 0 (black) to 1 (white).
+ *
+ * @param {string} rgb Computed colour, e.g. `rgb(29, 23, 17)`.
+ * @return {number} Relative luminance.
+ */
+function luminance( rgb ) {
+	const [ r, g, b ] = rgb.match( /\d+(\.\d+)?/g ).slice( 0, 3 ).map( ( v ) => {
+		const c = Number( v ) / 255;
+		return c <= 0.03928 ? c / 12.92 : ( ( c + 0.055 ) / 1.055 ) ** 2.4;
+	} );
+	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
 
 const BANNER = 'main > .wp-block-cover.is-style-hero-banner';
 const CONTENT = 'main .wp-block-post-content';
@@ -194,7 +237,7 @@ test.describe( 'Static page standfirsts', () => {
 test.describe( 'Why Book With Us', () => {
 	const path = '/about-us/why-book-with-us/';
 
-	test( 'carries the current Trustpilot badge and the Read Our Reviews link', async ( {
+	test( 'sets Our Reviews on the "Why choose" badge, in dark type', async ( {
 		page,
 		visit,
 		routes,
@@ -204,10 +247,38 @@ test.describe( 'Why Book With Us', () => {
 		const badge = page.locator( `${ CONTENT } .sd-trustpilot` );
 		await expect( badge ).toHaveCount( 1 );
 
-		// The stale copy set the band word at 100 and left the figures unpinned.
-		await expect( badge.locator( '.sd-trustpilot__wording' ) ).toHaveClass( /has-200-font-size/ );
-		await expect( badge.locator( '.sd-trustpilot__score' ) ).toHaveClass( /has-neutral-900-color/ );
-		await expect( badge.locator( '.sd-trustpilot__count' ) ).toHaveClass( /has-neutral-900-color/ );
+		// patterns/why-choose-sd.php's stack: logo, stars, then the TrustScore line.
+		await expect( badge ).not.toHaveClass( /sd-trustpilot--stacked/ );
+		await expect( badge.locator( '.sd-trustpilot__wording' ), 'the stale copy led with the rating word' ).toHaveCount( 0 );
+		await expect( badge.locator( '.sd-trustpilot__line .sd-trustpilot__score' ) ).toHaveText( /^TrustScore / );
+		await expect( badge.locator( '.sd-trustpilot__line .sd-trustpilot__count' ) ).toHaveText( / reviews$/ );
+
+		// Dark on a light card: the dark logo, not the band's white-green one.
+		const logo = badge.locator( '.sd-trustpilot__logo img' );
+		await expect( logo ).toHaveAttribute( 'src', /trustpilot-logo\.svg$/ );
+
+		for ( const figure of [ '.sd-trustpilot__score', '.sd-trustpilot__count' ] ) {
+			const color = await badge.locator( figure ).evaluate( ( el ) => getComputedStyle( el ).color );
+			expect( luminance( color ), `${ figure } is set light, as on the dark band` ).toBeLessThan( 0.2 );
+		}
+	} );
+
+	test( 'closes on the four office numbers, each with the phone icon', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
+		await visit( envPath( routes, path ) );
+
+		const offices = page.locator( `${ CONTENT } .wp-block-group`, {
+			has: page.locator( 'a[href="mailto:info@southerndestinations.com"]' ),
+		} ).last();
+
+		await expectPhoneRow( offices, 4, expect );
+	} );
+
+	test( 'carries the Read Our Reviews link', async ( { page, visit, routes } ) => {
+		await visit( envPath( routes, path ) );
 
 		const link = page.locator( `${ CONTENT } a`, { hasText: /^Read Our Reviews$/ } );
 		await expect( link ).toHaveAttribute( 'href', /trustpilot\.com\/review\/southerndestinations\.com/ );
@@ -246,17 +317,82 @@ test.describe( 'Connect With Us', () => {
 } );
 
 test.describe( 'Contact Us', () => {
-	test( 'sets the stacked Trustpilot badge beside the review carousel', async ( { page, visit, routes } ) => {
-		await visit( envPath( routes, '/contact/' ) );
+	const path = '/contact/';
 
-		await expect( page.locator( `${ CONTENT } .sd-trustpilot` ) ).toHaveCount( 1 );
-		await expect( page.locator( `${ CONTENT } .sd-trustpilot.sd-trustpilot--stacked` ) ).toHaveCount( 1 );
+	test( 'runs the homepage TrustBox carousel, not a badge and reviews grid', async ( { page, visit, routes } ) => {
+		await visit( envPath( routes, path ) );
 
-		const slider = page.locator( `${ CONTENT } .sd-review-slider .wp-block-sd-trustpilot-reviews` );
-		await expect( slider ).toHaveCount( 1 );
+		// patterns/homepage-sd-difference.php's widget, same template and business unit.
+		const widget = page.locator( `${ CONTENT } .trustpilot-widget` );
+		await expect( widget ).toHaveCount( 1 );
+		await expect( widget ).toHaveAttribute( 'data-template-id', '53aa8912dec7e10d38f59f36' );
+		await expect( widget ).toHaveAttribute( 'data-businessunit-id', '564399480000ff0005856b81' );
 
-		const reviews = slider.locator( '.sd-trustpilot-review' );
-		test.skip( 0 === ( await reviews.count() ), 'No Trustpilot reviews cached in this environment' );
-		expect( await reviews.count() ).toBeLessThanOrEqual( 3 );
+		// The fallback link is what shows with sd-enhancements off or JavaScript disabled.
+		await expect( widget.locator( 'a[href*="trustpilot.com/review/southerndestinations.com"]' ) ).toHaveCount( 1 );
+
+		await expect( page.locator( `${ CONTENT } .sd-trustpilot` ), 'the old score badge is still on the page' ).toHaveCount( 0 );
+		await expect( page.locator( `${ CONTENT } .sd-trustpilot-review` ), 'the old reviews grid is still on the page' ).toHaveCount( 0 );
+	} );
+
+	test( 'loads the TrustBox script for its widget', async ( { page, visit, routes } ) => {
+		await visit( envPath( routes, path ) );
+
+		// sd-enhancements enqueues the bootstrap only on a render that holds a widget.
+		await expect( page.locator( 'script[src*="widget.trustpilot.com"]' ) ).not.toHaveCount( 0 );
+	} );
+
+	test( 'sets the safari gurus four across, as the homepage does @responsive', async ( { page, visit, routes } ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( envPath( routes, path ) );
+
+		const grid = page.locator( `${ CONTENT } .sd-safari-gurus-query` );
+		await expect( grid ).toHaveCount( 1 );
+
+		const cards = grid.locator( '> li' );
+		test.skip( 0 === ( await cards.count() ), 'No team members in this environment' );
+		expect( await cards.count() ).toBeLessThanOrEqual( 4 );
+
+		const columns = () =>
+			grid.evaluate( ( el ) => getComputedStyle( el ).gridTemplateColumns.split( ' ' ).length );
+
+		expect( await columns(), 'the gurus grid is not four across on desktop' ).toBe( 4 );
+
+		// Four across would crush a 375px card; the grid falls to one column.
+		await page.setViewportSize( { width: 375, height: 667 } );
+		expect( await columns(), 'the gurus grid does not stack on a phone' ).toBe( 1 );
+	} );
+} );
+
+test.describe( 'Thank You', () => {
+	const path = '/thank-you/';
+
+	test( 'thanks the enquirer and links the social profiles', async ( { page, visit, routes } ) => {
+		await visit( envPath( routes, path ) );
+
+		await expect(
+			page.locator( `${ CONTENT } h2`, { hasText: /^Thank you for your travel enquiry$/ } )
+		).toHaveCount( 1 );
+		await expect(
+			page.locator( `${ CONTENT } p`, { hasText: /^We will be in contact with you shortly\./ } )
+		).toHaveCount( 1 );
+
+		// As authored: a plain intro, not a standfirst, and no core drop cap either.
+		await expect( page.locator( `${ CONTENT } .has-drop-cap` ) ).toHaveCount( 0 );
+
+		const social = page.locator( `${ CONTENT } .wp-block-social-links .wp-social-link a` );
+		await expect( social ).toHaveCount( 6 );
+		for ( const link of await social.all() ) {
+			await expect( link ).toHaveAttribute( 'href', /^https:\/\// );
+		}
+	} );
+
+	test( 'offers the safari gurus\' numbers, each with the phone icon', async ( { page, visit, routes } ) => {
+		await visit( envPath( routes, path ) );
+
+		const heading = page.locator( `${ CONTENT } h2`, { hasText: /^Want to chat to one of our safari gurus\?$/ } );
+		await expect( heading ).toHaveCount( 1 );
+
+		await expectPhoneRow( heading.locator( 'xpath=..' ), 2, expect );
 	} );
 } );

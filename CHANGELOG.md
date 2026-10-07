@@ -390,6 +390,26 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- ✅ **The static page tests follow the 2026-09-24 page decisions.** LS-2015.
+  `tests/e2e/templates/static-pages.spec.js`, `tests/e2e/fixtures/routes.js`,
+  `tests/e2e/a11y/templates.a11y.spec.js`.
+
+  Thank You joins the static pages. Its banner goes through the same banner
+  contract and cleanup, with "Send Us an Email" as its strapline. Its content is
+  checked as Zared authored it: a plain intro, six social links, and the two
+  office numbers with their phone icons.
+
+  Contact now expects the homepage TrustBox carousel and its script, not the
+  stacked badge and reviews grid. It also expects the safari gurus four across
+  on desktop and one column on phones. On Why Book With Us, Our Reviews expects
+  the "Why choose" badge in dark type with the dark logo. The page's closing
+  four numbers each need the phone icon.
+
+  All six pages are now in `STATIC_ROUTES` on `page-no-title.html`. Contact was
+  listed as `page.html`. The route sweep and the a11y project now cover all six.
+  A new per-route `axeDisable` field skips `link-in-text-block` on these pages
+  only, because their inline links match live: coloured, not underlined. Colour
+  contrast is still scanned on these pages.
 - 🔗 **The four mega menus take their featured card from the theme, not a
   synced pattern.** ASD-36. `parts/mega-menu-destinations.html`,
   `parts/mega-menu-tours.html`, `parts/mega-menu-accommodation.html`,

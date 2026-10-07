@@ -25,16 +25,63 @@
  * `template` is the file in templates/ that WordPress should resolve to.
  *
  * `smoke: true` marks the subset that also runs in Firefox and WebKit. The org
- * standard asks for three engines; running all thirteen routes three times over
+ * standard asks for three engines; running all eighteen routes three times over
  * triples the load on a shared dev host for very little extra signal, so the
  * smoke set is the pages where a rendering-engine difference would plausibly
  * show — the front page, an archive with a query loop, and a facet-driven
  * route.
+ *
+ * `axeDisable` lists axe rules the a11y project skips on that route, each one a
+ * recorded decision rather than a way to make a red run green.
+ *
+ * The static pages (About Us, its three children, Contact Us and Thank You) all
+ * sit on `page-no-title.html`. They skip `link-in-text-block`, because their
+ * inline links are migrated content styled as live styles them: coloured, not
+ * underlined. That matches live, and keeping it was decided 2026-09-24. Colour
+ * contrast is still scanned on these pages, so a link that is also too faint
+ * still fails.
  */
+const STATIC_PAGE_AXE_DISABLE = [ 'link-in-text-block' ];
+
 const STATIC_ROUTES = [
 	{ name: 'front page', path: '/', template: 'front-page.html', smoke: true },
 	{ name: 'blog', path: '/blog/', template: 'home.html' },
-	{ name: 'contact', path: '/contact/', template: 'page.html' },
+	{
+		name: 'about us',
+		path: '/about-us/',
+		template: 'page-no-title.html',
+		axeDisable: STATIC_PAGE_AXE_DISABLE,
+	},
+	{
+		name: 'why book with us',
+		path: '/about-us/why-book-with-us/',
+		template: 'page-no-title.html',
+		axeDisable: STATIC_PAGE_AXE_DISABLE,
+	},
+	{
+		name: 'social responsibility',
+		path: '/about-us/social-responsibility/',
+		template: 'page-no-title.html',
+		axeDisable: STATIC_PAGE_AXE_DISABLE,
+	},
+	{
+		name: 'connect with us',
+		path: '/about-us/connect-with-us/',
+		template: 'page-no-title.html',
+		axeDisable: STATIC_PAGE_AXE_DISABLE,
+	},
+	{
+		name: 'contact',
+		path: '/contact/',
+		template: 'page-no-title.html',
+		axeDisable: STATIC_PAGE_AXE_DISABLE,
+	},
+	{
+		name: 'thank you',
+		path: '/thank-you/',
+		template: 'page-no-title.html',
+		axeDisable: STATIC_PAGE_AXE_DISABLE,
+	},
 	{ name: 'tour archive', path: '/tours/', template: 'archive-tour.html', smoke: true },
 	{
 		name: 'accommodation archive',
