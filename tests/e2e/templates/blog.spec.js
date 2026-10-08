@@ -392,6 +392,45 @@ test.describe( 'Blog archives', () => {
 			}
 		} );
 	}
+
+	/**
+	 * The authored cover is the fallback. sd-enhancements swaps in a term's
+	 * own `banner` photograph when it has one (its suite asserts that); when it
+	 * doesn't — or the plugin is off — the image authored in
+	 * `patterns/template-category.php` is what shows. Either way the band is
+	 * never an empty scrim. Moved here from the plugin suite on 2026-10-08:
+	 * it held with the plugin deactivated, so it was testing this file.
+	 */
+	test( 'the category archive banner always carries a photograph', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
+		const target = routes.term( 'category' );
+		test.skip( ! target, `No category archive on ${ routes.baseURL }` );
+
+		await visit( target );
+
+		const background = page
+			.locator( `${ BANNER } .wp-block-cover__image-background` )
+			.first();
+
+		await expect(
+			background,
+			`${ target } rendered its banner with no image — the authored cover is gone`
+		).toHaveCount( 1 );
+
+		const source = await background.evaluate( ( node ) =>
+			'IMG' === node.tagName
+				? node.getAttribute( 'src' )
+				: window.getComputedStyle( node ).backgroundImage
+		);
+
+		expect(
+			source && ! /^(none|)$/.test( source ),
+			`${ target }: the banner image has no source`
+		).toBeTruthy();
+	} );
 } );
 
 test.describe( 'Single post', () => {

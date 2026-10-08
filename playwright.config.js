@@ -59,6 +59,8 @@ if ( /southerndestinations\.com/i.test( baseURL ) ) {
  */
 const ALLOWED_HOSTS = [
 	'southerndestinations.lightspeedwp.dev',
+	// The Homebrew nginx stack, a clone of dev's database (AGENTS.md, Local stack).
+	'southerndestinations.local',
 	'localhost',
 	'127.0.0.1',
 ];

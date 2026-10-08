@@ -8,6 +8,20 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🧪 **Four checks moved in from the sd-enhancements suite.** ASD-36. Each
+  passed with that plugin deactivated, so it was testing this theme or Tour
+  Operator, not the plugin.
+  - `templates/singles.spec.js`: tour, accommodation and destination singles
+    render the breadcrumb strip with ancestor links. The plugin suite keeps the
+    exact tour and accommodation trails, which it rewrites.
+  - `templates/blog.spec.js`: the category archive banner always carries a
+    photograph. The authored cover in `patterns/template-category.php` is the
+    fallback; the plugin swaps in a term's own banner and asserts that itself.
+  - `templates/front-page.spec.js`: the TrustBox container has a business-unit
+    id and a no-JS fallback link; the Tour Operator slider's controls advance
+    it. The plugin suite keeps the bootstrap enqueue and the stamped autoplay
+    settings.
+
 - 🧪 **A lint ratchet and a known-violations list, so CI gates on new
   findings only.** ASD-36. `tests/bin/lint-baseline.js` records ESLint,
   Stylelint and markdownlint errors per file and rule in `tests/baselines/`

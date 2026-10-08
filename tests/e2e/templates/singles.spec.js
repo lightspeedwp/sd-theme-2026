@@ -56,4 +56,37 @@ test.describe( 'Single templates', () => {
 		await visit( target );
 		await assertNoEmptyLinks( page );
 	} );
+
+	/**
+	 * The breadcrumb strip under the banner. Placing it is this theme's
+	 * (`patterns/breadcrumbs.php`); its content is Yoast's and Tour Operator's,
+	 * and the tour and accommodation trails are rewritten by sd-enhancements,
+	 * whose suite asserts their shape. Moved here from the plugin suite on
+	 * 2026-10-08: "a trail with ancestor links renders" held with the plugin
+	 * deactivated, so it was testing this theme.
+	 */
+	for ( const type of [ 'tour', 'accommodation', 'destination' ] ) {
+		test( `a single ${ type } renders a breadcrumb trail with ancestor links`, async ( {
+			page,
+			visit,
+			routes,
+		} ) => {
+			const target = routes.post( type );
+			test.skip( ! target, `No published ${ type }` );
+
+			await visit( target );
+
+			const trail = page.locator( 'main .yoast-breadcrumbs' ).first();
+
+			await expect(
+				trail,
+				`${ target } has no breadcrumb strip — patterns/breadcrumbs.php is not placed`
+			).toBeVisible();
+
+			await expect(
+				trail.locator( 'a[href]' ),
+				`${ target } has a breadcrumb trail with no ancestor links`
+			).not.toHaveCount( 0 );
+		} );
+	}
 } );
