@@ -291,3 +291,87 @@ test.describe( 'Front page', () => {
 		}
 	} );
 } );
+
+/**
+ * Two front-page bands whose tests moved here from the sd-enhancements suite
+ * on 2026-10-08. Both held with that plugin deactivated, so they were testing
+ * this theme and Tour Operator, not the plugin.
+ */
+test.describe( 'Front page — moved from the plugin suite', () => {
+	/**
+	 * The TrustBox container is authored in `patterns/homepage-sd-difference.php`.
+	 * Its business-unit id is a public identifier, not a credential. The fallback
+	 * link is the no-JS path: if the bootstrap never loads, it is the only way
+	 * to the reviews. The plugin's suite asserts that the bootstrap is enqueued.
+	 */
+	test( 'the Trustpilot band carries a well-formed TrustBox with a fallback link', async ( {
+		page,
+		visit,
+	} ) => {
+		await visit( '/' );
+
+		/**
+		 * Read from the served markup, not the live DOM: once Trustpilot's
+		 * bootstrap runs it replaces the container's contents with its iframe,
+		 * and the fallback link is the no-JS path by definition.
+		 */
+		const html = await ( await page.request.get( '/' ) ).text();
+		const container = ( html.match(
+			/<div class="trustpilot-widget"[^>]*>[\s\S]*?<\/div>/
+		) || [] )[ 0 ];
+
+		expect(
+			container,
+			'the front page renders no TrustBox container'
+		).toBeTruthy();
+
+		expect( container, 'the TrustBox carries no business unit id' ).toMatch(
+			/data-businessunit-id="[^"]+"/
+		);
+
+		expect(
+			container,
+			'the TrustBox has no fallback link — with the script blocked, the band would be dead space'
+		).toMatch( /<a [^>]*href="[^"]*trustpilot\.com/ );
+	} );
+
+	/**
+	 * Tour Operator loads Slick and initialises the `.lsx-to-slider` bands; the
+	 * plugin only stamps their autoplay settings, which its own suite asserts.
+	 */
+	test( 'the content slider controls advance it and one slide is current', async ( {
+		page,
+		visit,
+	} ) => {
+		await visit( '/' );
+
+		const slider = page
+			.locator( 'main .lsx-to-slider .slick-initialized' )
+			.first();
+
+		await expect(
+			slider,
+			'no initialised Tour Operator slider on the front page'
+		).toBeVisible();
+
+		const active = slider.locator( '.slick-slide.slick-current' );
+
+		await expect(
+			active,
+			'expected exactly one current slide'
+		).toHaveCount( 1 );
+
+		const before = await active.getAttribute( 'data-slick-index' );
+
+		await page
+			.locator( 'main .lsx-to-slider button.slick-next' )
+			.first()
+			.click();
+
+		// Retries until Slick finishes the transition, so no fixed wait.
+		await expect(
+			active,
+			'clicking next did not change the current slide'
+		).not.toHaveAttribute( 'data-slick-index', before );
+	} );
+} );
