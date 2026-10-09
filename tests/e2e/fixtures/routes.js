@@ -109,7 +109,6 @@ const STATIC_ROUTES = [
 		path: '/reviews/',
 		template: 'archive-review.html',
 	},
-	{ name: 'sitemap', path: '/sitemap/', template: 'page.html' },
 	{ name: 'brands', path: '/brand/', template: 'page-brands.html' },
 	{
 		name: 'faceted tour search',

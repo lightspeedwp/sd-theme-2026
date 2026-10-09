@@ -1337,6 +1337,12 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Removed
 
+- 🗑️ **The `/sitemap/` route check.** ASD-42. The HTML sitemap page is retired
+  rather than ported: it predates Yoast, was `noindex` and unlinked, and Yoast's
+  XML sitemaps cover the SEO job. `/sitemap/` now 301s to the home page through
+  Redirection on dev, so `tests/e2e/fixtures/routes.js` no longer expects it to
+  render `page.html`.
+
 - 🗑️ **Unused patterns, a part and two card styles.** ASD-36. A usage audit
   (`.github/reports/template-part-pattern-audit-2026-10-06.md` in the workspace)
   counted every `wp:pattern` slug, `require __DIR__` composition, part slug,
