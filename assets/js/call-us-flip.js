@@ -11,9 +11,8 @@
  * Whether the panel fits depends on where the trigger is when it opens, which
  * only the browser knows. Ollie's own answer is a script too: on every open it
  * caps the panel at `window.innerHeight - top - 24px` and makes it scroll. The
- * stylesheet turns that cap off (assets/styles/ollie-mega-menu.css, "Call Us:
- * the panel always contains its rows") because four phone numbers should never
- * need a scrollbar — so something has to move the panel instead.
+ * stylesheet replaces that cap with the space on the chosen side of the
+ * trigger, allowing taller panels to scroll within the viewport.
  *
  * ## What it does
  *
@@ -81,21 +80,40 @@
 		// Measure from the natural, downward position.
 		panel.classList.remove( FLIPPED );
 
-		if (
-			anchor &&
-			shouldFlip(
-				panel.getBoundingClientRect(),
-				anchor.getBoundingClientRect(),
-				window.innerHeight
-			)
-		) {
-			panel.classList.add( FLIPPED );
+		if ( ! anchor ) {
+			return;
 		}
+
+		var panelBox = panel.getBoundingClientRect();
+		var anchorBox = anchor.getBoundingClientRect();
+		// Include clipped content and borders so a previous cap cannot change
+		// the direction decision. Do not uncap: that would reset scrollTop.
+		var height = Math.max(
+			panelBox.bottom - panelBox.top,
+			panel.scrollHeight + panel.offsetHeight - panel.clientHeight
+		);
+		var flipped = shouldFlip(
+			{ top: panelBox.top, bottom: panelBox.top + height },
+			anchorBox,
+			window.innerHeight
+		);
+
+		panel.classList.toggle( FLIPPED, flipped );
+		// Read the actual flipped edge: its CSS gap can differ from the
+		// downward gap. The max-height applies to the border box.
+		var available = flipped
+			? panel.getBoundingClientRect().bottom
+			: window.innerHeight - panelBox.top;
+
+		panel.style.setProperty(
+			'--sd-call-us-max-height',
+			Math.max( 0, Math.min( window.innerHeight, available ) ) + 'px'
+		);
 	}
 
 	/**
 	 * Watch one toggle and re-place its panel whenever it opens or the window
-	 * is resized while it is open.
+	 * is resized or scrolled while it is open.
 	 *
 	 * @param {HTMLElement} toggle A Call Us `__toggle` button.
 	 * @return {void}
@@ -121,10 +139,16 @@
 			attributeFilter: [ 'aria-expanded' ],
 		} );
 
-		window.addEventListener( 'resize', function () {
+		function reposition() {
 			if ( isOpen() ) {
 				place( panel );
 			}
+		}
+
+		window.addEventListener( 'resize', reposition );
+		window.addEventListener( 'scroll', reposition, {
+			capture: true,
+			passive: true,
 		} );
 	}
 

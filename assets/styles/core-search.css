@@ -251,14 +251,17 @@
    at the same specificity, and this block is the later one. */
 @media (min-width: 782px) {
 
+	/* stylelint-disable-next-line selector-class-pattern -- Core search BEM classes are fixed by WordPress markup. */
 	.wp-block-search.is-style-header-search .wp-block-search__input {
 		padding-block: var(--wp--preset--spacing--5);
 	}
 
+	/* stylelint-disable-next-line selector-class-pattern -- Core search BEM classes are fixed by WordPress markup. */
 	.wp-block-search.is-style-header-search:not(.wp-block-search__searchfield-hidden) .wp-block-search__input {
 		padding-inline: var(--wp--preset--spacing--20) var(--wp--preset--spacing--5);
 	}
 
+	/* stylelint-disable-next-line selector-class-pattern -- Core search BEM classes are fixed by WordPress markup. */
 	.wp-block-search.is-style-header-search .wp-block-search__input::placeholder {
 		font-size: inherit;
 	}

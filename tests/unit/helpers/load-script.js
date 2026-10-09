@@ -25,9 +25,9 @@ import { vi } from 'vitest';
 const SCRIPTS = import.meta.glob( '../../../assets/js/*.js' );
 
 /**
- * Listeners added to `document` by scripts loaded in this test.
+ * Listeners added to `document` or `window` by scripts loaded in this test.
  *
- * @type {Array<[string, Function, boolean|Object|undefined]>}
+ * @type {Array<[EventTarget, string, Function, boolean|Object|undefined]>}
  */
 let attached = [];
 
@@ -38,27 +38,29 @@ let attached = [];
  * @return {Promise<void>} Resolves once the script has run.
  */
 export async function loadScript( file ) {
-	const add = document.addEventListener.bind( document );
+	for ( const target of [ document, window ] ) {
+		const add = target.addEventListener.bind( target );
 
-	vi.spyOn( document, 'addEventListener' ).mockImplementation(
-		( type, listener, options ) => {
-			attached.push( [ type, listener, options ] );
-			add( type, listener, options );
-		}
-	);
+		vi.spyOn( target, 'addEventListener' ).mockImplementation(
+			( type, listener, options ) => {
+				attached.push( [ target, type, listener, options ] );
+				add( type, listener, options );
+			}
+		);
+	}
 
 	vi.resetModules();
 	await SCRIPTS[ `../../../assets/js/${ file }` ]();
 }
 
 /**
- * Remove every `document` listener a loaded script added.
+ * Remove every `document` or `window` listener a loaded script added.
  *
  * @return {void}
  */
 export function unloadScripts() {
-	for ( const [ type, listener, options ] of attached ) {
-		document.removeEventListener( type, listener, options );
+	for ( const [ target, type, listener, options ] of attached ) {
+		target.removeEventListener( type, listener, options );
 	}
 
 	attached = [];

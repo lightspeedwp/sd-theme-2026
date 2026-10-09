@@ -42,6 +42,6 @@
 				}
 			}
 		},
-		"css": "& .wp-block-social-links .wp-block-social-link-anchor{display:flex !important;align-items:center !important;gap:var(--wp--preset--spacing--10) !important;line-height:var(--wp--custom--line-height--body) !important;} & .wp-block-social-links .wp-social-link .wp-block-social-link-label{margin:0 !important;color:var(--wp--preset--color--neutral-700) !important;font-size:var(--wp--preset--font-size--200) !important;line-height:var(--wp--custom--line-height--body) !important;}"
+		"css": "& .wp-block-column > .wp-block-group.is-vertical{width:fit-content !important;max-width:100% !important;} & .wp-block-social-links .wp-block-social-link-anchor{display:flex !important;align-items:center !important;gap:var(--wp--preset--spacing--10) !important;line-height:var(--wp--custom--line-height--body) !important;} & .wp-block-social-links .wp-social-link .wp-block-social-link-label{margin:0 !important;color:var(--wp--preset--color--neutral-700) !important;font-size:var(--wp--preset--font-size--200) !important;line-height:var(--wp--custom--line-height--body) !important;}"
 	}
 }

@@ -399,6 +399,18 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .is-style-mobil
 	padding: 0 0 0 22px;
 }
 
+/* The chevron's own svg carries the plugin's optical nudge for a baseline
+   layout, `margin-top: 0.075em` (1.44px at this size), which pushes the drawn
+   chevron below the centre of its box. In a centred row there is no baseline to
+   correct for, so it goes, and `display: block` stops the svg sitting on its
+   span's baseline. `(0,4,1)` to clear the plugin's rule on the same element at
+   `(0,3,1)`. */
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
+.sd-header__call .wp-block-ollie-mega-menu .wp-block-ollie-mega-menu__toggle .wp-block-ollie-mega-menu__toggle-icon svg {
+	display: block;
+	margin-top: 0;
+}
+
 .wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child.open-on-hover-click > .wp-block-navigation-submenu__toggle svg {
 	flex: none;
 	width: 16px;
@@ -541,24 +553,15 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .is-style-mobil
    `text-box` is Chrome 133+ and Safari 18.2+; elsewhere the label keeps its
    ordinary line box and only the chevron is corrected. `(0,3,0)` to clear the
    plugin's own `.wp-block-ollie-mega-menu .wp-block-ollie-mega-menu__toggle`. */
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
 .sd-header__call .wp-block-ollie-mega-menu .wp-block-ollie-mega-menu__toggle {
 	display: flex;
 	align-items: center;
 }
 
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
 .sd-header__call .wp-block-ollie-mega-menu__toggle .wp-block-navigation-item__label {
 	text-box: trim-both cap alphabetic;
-}
-
-/* The chevron's own svg carries the plugin's optical nudge for a baseline
-   layout, `margin-top: 0.075em` (1.44px at this size), which pushes the drawn
-   chevron below the centre of its box. In a centred row there is no baseline to
-   correct for, so it goes, and `display: block` stops the svg sitting on its
-   span's baseline. `(0,4,1)` to clear the plugin's rule on the same element at
-   `(0,3,1)`. */
-.sd-header__call .wp-block-ollie-mega-menu .wp-block-ollie-mega-menu__toggle .wp-block-ollie-mega-menu__toggle-icon svg {
-	display: block;
-	margin-top: 0;
 }
 
 /* The label's hover and focus.
@@ -571,7 +574,9 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .is-style-mobil
 
    This also stops assets/styles/ollie-mega-menu.css's brand-800 hover from
    reaching the header — that rule is `(0,3,0)` and this is `(0,4,0)`. */
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
 .sd-header__call .wp-block-navigation.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:hover,
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
 .sd-header__call .wp-block-navigation.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:focus-visible {
 	color: var(--wp--preset--color--primary-600);
 }

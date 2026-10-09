@@ -1152,6 +1152,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **Call Us viewport handling and lint ratchet.** ASD-36. Open panels remeasure
+  on scroll and resize, and scroll internally when neither side fits. Footer
+  brand-group sizing now lives in its section variation.
+
 - **Call Us dropdown.** ASD-36. No block padding on the panel, so the first
   and last numbers' hover tint reaches its edge. Ollie's inline `max-height` cap
   is dropped, so near the viewport bottom the numbers no longer run past the

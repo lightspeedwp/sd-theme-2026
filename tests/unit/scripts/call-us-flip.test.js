@@ -23,9 +23,10 @@ const HEIGHT = 200;
  * Build one Call Us item with stubbed geometry.
  *
  * @param {number} anchorTop Top of the containing block, in viewport px.
+ * @param {number} height    Natural panel height.
  * @return {{toggle: HTMLElement, panel: HTMLElement}} The two elements.
  */
-function callUs( anchorTop ) {
+function callUs( anchorTop, height = HEIGHT ) {
 	const nav = document.createElement( 'nav' );
 
 	nav.className = 'is-style-call-us-navigation';
@@ -40,23 +41,37 @@ function callUs( anchorTop ) {
 	const panel = nav.querySelector(
 		'.wp-block-ollie-mega-menu__menu-container'
 	);
-	const anchorBottom = anchorTop + 40;
-	const panelTop = anchorBottom + GAP;
 
 	Object.defineProperty( panel, 'offsetParent', {
 		value: {
 			getBoundingClientRect: () => ( {
 				top: anchorTop,
-				bottom: anchorBottom,
+				bottom: anchorTop + 40,
 			} ),
 		},
 	} );
-	panel.getBoundingClientRect = () => ( {
-		top: panelTop,
-		bottom: panelTop + HEIGHT,
-	} );
+	Object.defineProperty( panel, 'scrollHeight', { value: height } );
+	panel.getBoundingClientRect = () => {
+		const cappedHeight = Math.min(
+			height,
+			parseFloat(
+				panel.style.getPropertyValue( '--sd-call-us-max-height' )
+			) || height
+		);
+		const top = panel.classList.contains( 'is-flipped-up' )
+			? anchorTop - GAP - cappedHeight
+			: anchorTop + 40 + GAP;
 
-	return { toggle, panel };
+		return { top, bottom: top + cappedHeight };
+	};
+
+	return {
+		toggle,
+		panel,
+		move: ( top ) => {
+			anchorTop = top;
+		},
+	};
 }
 
 const open = async ( toggle ) => {
@@ -139,4 +154,77 @@ describe( 'call-us-flip.js', () => {
 
 		expect( panel.classList.contains( 'is-flipped-up' ) ).toBe( false );
 	} );
+
+	it.each( [ 'resize', 'scroll' ] )(
+		'repositions open panels on %s',
+		async ( event ) => {
+			const { toggle, panel, move } = callUs( 100 );
+
+			await loadScript( 'call-us-flip.js' );
+			await open( toggle );
+			move( 700 );
+			window.dispatchEvent( new Event( event ) );
+			expect( panel.classList.contains( 'is-flipped-up' ) ).toBe( true );
+			expect(
+				panel.style.getPropertyValue( '--sd-call-us-max-height' )
+			).toBe( '692px' );
+
+			move( 100 );
+			window.dispatchEvent( new Event( event ) );
+			expect( panel.classList.contains( 'is-flipped-up' ) ).toBe( false );
+		}
+	);
+
+	it.each( [ 'resize', 'scroll' ] )(
+		'ignores closed panels on %s',
+		async ( event ) => {
+			const { panel } = callUs( 700 );
+
+			await loadScript( 'call-us-flip.js' );
+			window.dispatchEvent( new Event( event ) );
+			expect(
+				panel.style.getPropertyValue( '--sd-call-us-max-height' )
+			).toBe( '' );
+			expect( panel.classList.contains( 'is-flipped-up' ) ).toBe( false );
+		}
+	);
+
+	it( 'remeasures when a containing element scrolls without bubbling', async () => {
+		const { toggle, panel, move } = callUs( 100 );
+
+		await loadScript( 'call-us-flip.js' );
+		await open( toggle );
+		move( 700 );
+		toggle.closest( 'nav' ).dispatchEvent( new Event( 'scroll' ) );
+		expect( panel.classList.contains( 'is-flipped-up' ) ).toBe( true );
+	} );
+
+	it.each( [
+		[ 100, false, '152px' ],
+		[ 220, true, '212px' ],
+	] )(
+		'caps a tall panel on the chosen side at anchor %s',
+		async ( top, flipped, cap ) => {
+			const { toggle, panel } = callUs( top, 500 );
+
+			window.innerHeight = 300;
+			await loadScript( 'call-us-flip.js' );
+			await open( toggle );
+			expect( panel.classList.contains( 'is-flipped-up' ) ).toBe(
+				flipped
+			);
+			expect(
+				panel.style.getPropertyValue( '--sd-call-us-max-height' )
+			).toBe( cap );
+			panel.scrollTop = 50;
+			panel.dispatchEvent( new Event( 'scroll' ) );
+			expect( panel.classList.contains( 'is-flipped-up' ) ).toBe(
+				flipped
+			);
+			expect(
+				panel.style.getPropertyValue( '--sd-call-us-max-height' )
+			).toBe( cap );
+			expect( panel.scrollTop ).toBe( 50 );
+		}
+	);
 } );

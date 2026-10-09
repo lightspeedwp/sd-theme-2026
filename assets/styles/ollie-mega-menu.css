@@ -452,17 +452,15 @@
    themselves, so the first and last numbers' hover tint runs to the border at
    both ends. That lives in styles/blocks/navigation/call-us-navigation.json.
 
-   **Ollie's height cap.** On every open Ollie's `applyMaxHeight()` writes an
-   inline `max-height: innerHeight - panelTop - 24px` and `overflow-y: auto`, so
-   a tall panel scrolls instead of leaving the screen. The variation sets
-   `overflow: visible !important` (so the pop-out's shadow is not clipped), which
-   cancels the scroll half and leaves the cap: near the bottom of a viewport the
-   box was cut to the remaining space while the rows carried on past it, hanging
-   out of the background. Four phone numbers should never scroll, so the cap is
-   dropped — an `!important` author declaration beats the inline style — and
-   assets/js/call-us-flip.js opens the panel upwards when there is no room below. */
+   assets/js/call-us-flip.js measures the space on the chosen side of the
+   trigger. Override Ollie's downward-only inline cap and the variation's
+   visible overflow so tall panels scroll within that space. Keep this beside
+   the flip rule: its specificity must beat the plugin and variation rules. */
+/* stylelint-disable-next-line selector-class-pattern -- Ollie owns this panel class. */
 .wp-block-navigation.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container {
-	max-height: none !important;
+	box-sizing: border-box;
+	max-height: var(--sd-call-us-max-height, 100vh) !important;
+	overflow-y: auto !important;
 }
 
 /* Narrow viewports

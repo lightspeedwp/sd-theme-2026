@@ -875,19 +875,6 @@
    than being split by block type across core-columns.css and core-image.css —
    the same reasoning as the utility bar above. */
 
-/* The brand column's two marks — logo and We Are Africa badge
-   ---------------------------------------------------------------------------
-   Live centres the badge under the logo (`#footer-widgets #custom_html-20 {
-   text-align: center }`). Here the column is wider than the 254px logo, so the
-   vertical flex group that holds the two marks shrinks to the logo's width and
-   the badge is centred within that, which puts it on the logo's axis rather
-   than the column's. Scoped to the footer band; `.is-vertical` is the flex
-   group's own orientation class, and the Instagram grid is not one. */
-.is-style-site-footer .wp-block-column > .wp-block-group.is-vertical {
-	width: fit-content;
-	max-width: 100%;
-}
-
 @media (max-width: 767px) {
 	.is-style-site-footer .wp-block-column {
 		max-width: 290px;
