@@ -398,3 +398,41 @@ test.describe( 'Destination listing cards', () => {
 		await expect( link ).toHaveCSS( 'color', brand700 );
 	} );
 } );
+
+test.describe( 'Destination template assignment', () => {
+	/**
+	 * `single-country.html` and `single-region.html` render only for a
+	 * destination that stores them, as `_wp_page_template`. One that stores
+	 * nothing falls back to `single-destination.html` without a sound — the
+	 * page still renders, and so every other check in this file still passes.
+	 * Assert the assignment itself: a top-level destination is a country, a
+	 * child is a region.
+	 */
+	test( 'every published destination stores the template its level calls for', async ( {
+		page,
+	} ) => {
+		const response = await page.request.get(
+			'/wp-json/wp/v2/destination?per_page=100&_fields=link,parent,template'
+		);
+		expect( response.status(), 'destination endpoint' ).toBe( 200 );
+
+		const destinations = await response.json();
+		test.skip( ! destinations.length, 'No published destinations' );
+
+		const misassigned = destinations
+			.filter(
+				( { parent, template } ) =>
+					template !== ( parent ? 'single-region' : 'single-country' )
+			)
+			.map(
+				( { link, parent, template } ) =>
+					`${ link } (${ parent ? 'region' : 'country' }) stores "${ template }"`
+			);
+
+		expect(
+			misassigned,
+			'a destination is not assigned its country or region template and ' +
+				'falls back to single-destination.html'
+		).toEqual( [] );
+	} );
+} );

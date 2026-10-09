@@ -8,6 +8,28 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- 🧪 **The theme pass: five checks the matrix said were missing.** ASD-36
+  (matrix §4 #3, #14, #18, #19). Measured on dev and local, 2026-10-09.
+  - `templates/cta.spec.js`: each of the five CTA bands is on the templates
+    that include it and on no other, found by its heading anchor (`h-{slug}`),
+    with one enquiry action pointing at `#to-modal-modal-enquiry`, and that
+    dialog is in the page. Ten checks, all green on local.
+  - `templates/destinations.spec.js`: every published destination stores
+    `single-country` (top level) or `single-region` (child). The matrix's
+    "no destination is assigned them" was stale: dev and local both hold 10
+    countries and 90 regions on those templates.
+  - `templates/page-variants.spec.js`: no published page stores a template the
+    theme does not register, beyond a three-entry ratchet of LSX slugs
+    (`template-full-width`, `template-full-width-no-margins`,
+    `template-sitemap`), and each of those still renders through `page.html`.
+    The matrix said seven dev pages; it is three.
+  - `tests/unit/scripts/`: Vitest for `intro-collapse.js` (13 checks) and
+    `search-filters.js` (10), through a new `helpers/load-script.js` that
+    runs a no-export IIFE in jsdom and removes its `document` listeners
+    afterwards. Five mutations of the scripts were each caught. Plus one
+    Playwright toggle check for each (brand Read more, facet fold).
+    `review-slider.js` is left: it is a jQuery/Slick option set with no logic.
+
 - 🧪 **Four checks moved in from the sd-enhancements suite.** ASD-36. Each
   passed with that plugin deactivated, so it was testing this theme or Tour
   Operator, not the plugin.
@@ -450,6 +472,18 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- 🧪 **The harness now follows the plugin's, and is gentler on a local host.**
+  ASD-36. Two workers against `.local`/localhost (four on dev), the `a11y`
+  project's timeout 45 s → 120 s, the `_fbp` cookie message and third-party
+  React dev-build warnings (from `SCRIPT_DEBUG` on local) allowlisted in
+  `fixtures/base.js`. `routes.js` drops `single-special.html` (it does not exist;
+  specials have no single) and names `single-country`/`single-region` for the
+  country and region routes; `search-and-archive.spec.js` drops the empty "All
+  archives" describe. The 17 static-route a11y scans pass on dev in under 10 s
+  each at two workers, so axe is deliberately **not** narrowed to `<main>`:
+  that would stop scanning the header and navigation, where the recorded
+  debt is.
 
 - 🚦 **The JS lint job gates again.** ASD-36. ESLint, Stylelint and
   markdownlint and the Jest contract tests lost `continue-on-error`; the lint steps now run the

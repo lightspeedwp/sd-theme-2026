@@ -10,6 +10,12 @@
  * Tag and author archives are the blog archive, not this layout — blog.spec.js
  * covers them.
  *
+ * `archive.html` has no route to test. It serves `special-type`, `post_format`
+ * and `role`, none of which is in REST on dev or linked from anywhere, so there
+ * is nothing to resolve. An "All archives" describe sat here with an empty
+ * target list and produced no tests; it was removed 2026-10-09 (ASD-36). Bring
+ * it back from git history when one of those archives gets a public URL.
+ *
  * **The banner** on both is the hero banner, phone stack included, on the
  * 360px floor — utils/hero-banner.js carries that contract. The archive's `h1`
  * is the archive title, with no "Tag:" prefix.
@@ -33,17 +39,8 @@ const { describeHeroBanners } = require( '../utils/hero-banner.js' );
 
 const SEARCH = '/?s=safari';
 
-/**
- * Archives that render through `archive.html`: `special-type`, `post_format`
- * and `role`. None is in REST on dev and nothing links to them, so there is no
- * route to resolve yet and the "All archives" checks below have no target. Add
- * an entry here once one resolves.
- */
-const ARCHIVES = [];
-
 describeHeroBanners( { test, expect }, [
 	{ name: 'search results', path: () => SEARCH, strapline: true },
-	...ARCHIVES.map( ( route ) => ( { ...route, strapline: true } ) ),
 ] );
 
 /**
@@ -64,63 +61,6 @@ async function flyoutReady( page ) {
 		document.documentElement.classList.contains( 'sd-has-filter-flyout' )
 	);
 }
-
-test.describe( 'All archives', () => {
-	for ( const archive of ARCHIVES ) {
-		test( `${ archive.name } titles the banner with the archive name, unprefixed`, async ( {
-			page,
-			visit,
-			routes,
-		} ) => {
-			const target = archive.path( routes );
-			test.skip( ! target, `No ${ archive.name }` );
-
-			await visit( target );
-
-			const title = page.locator(
-				'main > .wp-block-cover h1.wp-block-query-title'
-			);
-			await expect( title ).toHaveCount( 1 );
-			await expect( title ).not.toHaveText( /^\s*$/ );
-			await expect( title ).not.toHaveText(
-				/^\s*(tag|category|author|archives?)\s*:/i
-			);
-		} );
-
-		test( `${ archive.name } is the search layout without the keyword box, count or sort`, async ( {
-			page,
-			visit,
-			routes,
-		} ) => {
-			const target = archive.path( routes );
-			test.skip( ! target, `No ${ archive.name }` );
-
-			await page.setViewportSize( { width: 1280, height: 900 } );
-			await visit( target );
-
-			const main = page.locator( 'main' );
-			await expect(
-				main.locator( 'aside.sd-search-filters' )
-			).toHaveCount( 1 );
-			await expect(
-				main.locator( 'aside.sd-search-filters .sd-filters-toggle' )
-			).toHaveCount( 1 );
-			await expect( main.locator( '.wp-block-query' ) ).toHaveCount( 1 );
-
-			await expect(
-				main.locator( '.wp-block-search' ),
-				'the archive still carries the keyword box'
-			).toHaveCount( 0 );
-			await expect(
-				main.locator( '.sd-search-toolbar' ),
-				'the archive still carries the results toolbar'
-			).toHaveCount( 0 );
-			await expect(
-				main.locator( '.sd-search-sort, .sd-search-counts' )
-			).toHaveCount( 0 );
-		} );
-	}
-} );
 
 test.describe( 'Search results filter rail', () => {
 	test( 'opens with the keyword box, above the rail on desktop @responsive', async ( {
@@ -185,5 +125,45 @@ test.describe( 'Search results filter rail', () => {
 			1
 		);
 		await expect( panel.locator( '.facetwp-type-sort' ) ).toHaveCount( 0 );
+	} );
+
+	/**
+	 * `search-filters.js` turns each facet's heading into a disclosure. The unit
+	 * tests cover which fold opens first and what survives a re-render; this is
+	 * the wiring on a real FacetWP rail: the script loaded, found the markup,
+	 * and the controls answer to a pointer and to the keyboard.
+	 */
+	test( 'a facet heading closes and reopens its panel on click and on Enter', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 900 } );
+		await visit( SEARCH );
+		await flyoutReady( page );
+
+		const folds = page.locator(
+			'aside.sd-search-filters .facet-wrap.sd-facet-fold'
+		);
+		test.skip(
+			0 === ( await folds.count() ),
+			'No facet folds in this environment'
+		);
+
+		await expect(
+			page.locator( 'aside.sd-search-filters' ),
+			'search-filters.js did not run'
+		).toHaveClass( /\bsd-filters-collapsible\b/ );
+
+		// The first eligible fold opens by itself, so start from open and close.
+		const heading = folds.first().locator( ':scope > .wp-block-heading' );
+		await expect( heading ).toHaveAttribute( 'aria-expanded', 'true' );
+
+		await heading.click();
+		await expect( heading ).toHaveAttribute( 'aria-expanded', 'false' );
+		await expect( folds.first() ).not.toHaveClass( /\bsd-filter-open\b/ );
+
+		await heading.focus();
+		await page.keyboard.press( 'Enter' );
+		await expect( heading ).toHaveAttribute( 'aria-expanded', 'true' );
 	} );
 } );

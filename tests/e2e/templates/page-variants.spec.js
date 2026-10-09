@@ -14,6 +14,8 @@
  * @subpackage Tests
  */
 
+const fs = require( 'fs' );
+const path = require( 'path' );
 const { test, expect } = require( '../fixtures/base.js' );
 const {
 	assertPageContract,
@@ -126,6 +128,127 @@ test.describe( 'Custom page templates', () => {
 			),
 			'the page content still carries its own post-title block'
 		).toHaveCount( 0 );
+	} );
+} );
+
+/**
+ * Template slugs that pages still store from the LSX theme and that this theme
+ * does not have. Each falls back to `page.html`, which is the right outcome for
+ * a page with no variant of its own — the slugs are debris, not a break.
+ *
+ * Measured on dev and on local, 2026-10-09: three published pages. The list is
+ * a ratchet. A fourth unregistered slug fails the run; clearing one is fixed
+ * by deleting its line here, and the content fix (assign the page to a variant
+ * or reset it to the default template) is Zared's call, not the suite's.
+ */
+const KNOWN_LEGACY_TEMPLATES = {
+	'page-templates/template-full-width.php': 'LSX full-width page',
+	'page-templates/template-full-width-no-margins.php':
+		'LSX full-width page without margins',
+	'page-templates/template-sitemap.php':
+		'LSX HTML sitemap — the sitemap itself was retired in ASD-42',
+};
+
+/**
+ * Slugs the theme registers: one per `templates/*.html` file.
+ *
+ * Read from disk rather than `/wp/v2/templates`, which needs a login. The
+ * suite runs from the theme root, and the file set is what a deploy ships.
+ */
+const REGISTERED_TEMPLATES = new Set(
+	fs
+		.readdirSync( path.join( __dirname, '..', '..', '..', 'templates' ) )
+		.filter( ( file ) => file.endsWith( '.html' ) )
+		.map( ( file ) => file.replace( /\.html$/, '' ) )
+);
+
+/**
+ * Every published page with the template it stores.
+ *
+ * The unauthenticated endpoint returns published pages only, which is exactly
+ * the set a visitor can reach.
+ *
+ * @param {import('@playwright/test').Page} page Page, for its request context.
+ * @return {Promise<Array<{link: string, slug: string, template: string}>>} Pages.
+ */
+async function publishedPages( page ) {
+	const pages = [];
+	let totalPages = 1;
+
+	for ( let number = 1; number <= totalPages; number++ ) {
+		const response = await page.request.get(
+			`/wp-json/wp/v2/pages?per_page=100&page=${ number }&_fields=link,slug,template`
+		);
+		expect( response.status(), 'pages endpoint' ).toBe( 200 );
+
+		totalPages = Number( response.headers()[ 'x-wp-totalpages' ] || 1 );
+		pages.push( ...( await response.json() ) );
+	}
+
+	return pages;
+}
+
+/**
+ * @param {string} template A page's stored template.
+ * @return {boolean} True when the page uses the default template.
+ */
+const isDefaultTemplate = ( template ) =>
+	'' === template || 'default' === template;
+
+test.describe( 'Legacy page-template slugs', () => {
+	test( 'no published page stores a template the theme lacks, beyond the known legacy ones', async ( {
+		page,
+	} ) => {
+		const unregistered = ( await publishedPages( page ) ).filter(
+			( { template } ) =>
+				! isDefaultTemplate( template ) &&
+				! REGISTERED_TEMPLATES.has( template )
+		);
+
+		for ( const { template, link } of unregistered ) {
+			if ( KNOWN_LEGACY_TEMPLATES[ template ] ) {
+				test.info().annotations.push( {
+					type: 'legacy-template',
+					description: `${ link } stores ${ template } (${ KNOWN_LEGACY_TEMPLATES[ template ] })`,
+				} );
+			}
+		}
+
+		const unexpected = unregistered.filter(
+			( { template } ) => ! KNOWN_LEGACY_TEMPLATES[ template ]
+		);
+
+		expect(
+			unexpected.map(
+				( { link, template } ) => `${ link } → ${ template }`
+			),
+			'a page stores a template slug the theme does not register and the ' +
+				'ratchet does not know — assign it a variant, or add it to ' +
+				'KNOWN_LEGACY_TEMPLATES with a reason'
+		).toEqual( [] );
+	} );
+
+	test( 'a page storing a legacy slug still renders through the default page template', async ( {
+		page,
+		visit,
+	} ) => {
+		const legacy = ( await publishedPages( page ) ).filter(
+			( { template } ) => KNOWN_LEGACY_TEMPLATES[ template ]
+		);
+		test.skip( ! legacy.length, 'No published page stores a legacy slug' );
+
+		for ( const { link } of legacy ) {
+			await visit( new URL( link ).pathname );
+
+			/**
+			 * The fallback is what is under test, not the title: whether the
+			 * page has one h1 is the content's to decide (/thank-you-for-
+			 * subscribing/ carries its own `<h1>` in the body, measured on
+			 * local 2026-10-09), and the page-variant checks above own the
+			 * h1 rule for pages that do opt into a template.
+			 */
+			await assertPageContract( page, { expectH1: false } );
+		}
 	} );
 } );
 
