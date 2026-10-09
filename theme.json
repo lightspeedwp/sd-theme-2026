@@ -1192,6 +1192,13 @@
 			]
 		},
 		{
+			"name": "page-about-us",
+			"title": "About Us",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
 			"name": "page-no-title",
 			"title": "Page (Full Width, Banner)",
 			"postTypes": [

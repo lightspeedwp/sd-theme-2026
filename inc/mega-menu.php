@@ -23,7 +23,9 @@
  *
  * It is also *only* styling. The same README bans "sticky-header, mobile-menu
  * and banner behaviour" from this directory, and none of that is here — this
- * module registers one stylesheet and nothing else. The mega menu's behaviour is
+ * module registers one stylesheet and, for the Call Us panel, one presentational
+ * script (flip upwards near the viewport bottom) and nothing else. The mega
+ * menu's behaviour is
  * the plugin's (Interactivity API), the menu content is `wp_navigation` content
  * resolved by SD Enhancements, and the sticky header is a handful of CSS rules
  * in assets/styles/core-group.css with no JavaScript at all.
@@ -58,3 +60,38 @@ function enqueue_mega_menu_style() {
 	);
 }
 add_action( 'init', __NAMESPACE__ . '\\enqueue_mega_menu_style' );
+
+/**
+ * Enqueue the Call Us flip script when the Call Us panel renders.
+ *
+ * Opens the dropdown-call-us panel upwards when there is no room below it; the
+ * behaviour and its CSS counterpart are documented at the head of
+ * assets/js/call-us-flip.js. Hooked to the block's render so it is lazy, as
+ * inc/intro-collapse.php is, and restricted to the one panel — the header mega
+ * menus are full-width panels under a sticky header and never need it.
+ *
+ * @param string $block_content The block's rendered markup, returned unchanged.
+ * @param array  $parsed_block  The parsed block, whose attributes name the panel.
+ * @return string
+ */
+function enqueue_call_us_flip_script( $block_content, $parsed_block ) {
+	if ( 'dropdown-call-us' !== ( $parsed_block['attrs']['menuSlug'] ?? '' ) ) {
+		return $block_content;
+	}
+
+	$relative = 'assets/js/call-us-flip.js';
+
+	wp_enqueue_script(
+		'sd-theme-2026-call-us-flip',
+		get_theme_file_uri( $relative ),
+		array(),
+		asset_version( $relative ),
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
+	);
+
+	return $block_content;
+}
+add_filter( 'render_block_ollie/mega-menu', __NAMESPACE__ . '\\enqueue_call_us_flip_script', 10, 2 );

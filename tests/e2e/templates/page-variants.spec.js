@@ -33,6 +33,11 @@ const PAGE_VARIANTS = [
 		expectH1: true,
 	},
 	{
+		file: 'page-about-us.html',
+		name: 'About Us page with its own banner',
+		expectH1: true,
+	},
+	{
 		file: 'page-no-header.html',
 		name: 'page without a header',
 		expectH1: true,
@@ -48,6 +53,21 @@ const PAGE_VARIANTS = [
 		expectH1: true,
 	},
 ];
+
+/**
+ * The h1 each About Us page carries in its own banner, as live shows it. The
+ * three children title themselves (their "About Us" line is a paragraph above
+ * the h1); the parent, Contact and Thank You keep live's script line as the h1.
+ * A page not listed is only checked for having one h1.
+ */
+const ABOUT_US_H1 = {
+	'/about-us/': 'About Us',
+	'/about-us/why-book-with-us/': 'Why Book With Us',
+	'/about-us/social-responsibility/': 'Social Responsibility',
+	'/about-us/connect-with-us/': 'Connect With Us',
+	'/thank-you/': 'Send Us an Email',
+	'/contact/': 'Get in Touch',
+};
 
 test.describe( 'Custom page templates', () => {
 	for ( const variant of PAGE_VARIANTS ) {
@@ -95,14 +115,17 @@ test.describe( 'Custom page templates', () => {
 	} );
 
 	/**
-	 * `page-no-title` kept its slug — five pages store it — but since
-	 * 2026-09-23 it is the full-width page *with* the hero banner, and the page
-	 * title is the banner's `<h1>`. What the variant still has to prove is
-	 * that it differs from page.html in the way its slug once promised: no
-	 * title of its own in the content column. The one title it renders is the
-	 * banner's.
+	 * `page-no-title` kept its slug — pages store it — but since 2026-09-23 it
+	 * is the full-width page *with* the template's hero banner, and the page
+	 * title is that banner's `<h1>`. What the variant has to prove is that the
+	 * banner is the template's, not the content's: one h1, a direct child of
+	 * `<main>`, and no second title in the content column.
+	 *
+	 * The six About Us pages that used to store this slug moved to
+	 * `page-about-us` on 2026-10-09, so on a site with no other page on it this
+	 * skips; it runs again the day a page is assigned.
 	 */
-	test( 'the full-width banner variant titles the page in its banner only', async ( {
+	test( 'the full-width banner variant titles the page in its template banner only', async ( {
 		page,
 		visit,
 		routes,
@@ -120,7 +143,7 @@ test.describe( 'Custom page templates', () => {
 			mainContent( page ).locator(
 				':scope > .wp-block-cover.is-style-hero-banner h1.wp-block-post-title'
 			),
-			"the page title is not the banner's h1"
+			"the page title is not the template banner's h1"
 		).toHaveCount( 1 );
 		await expect(
 			mainContent( page ).locator(
@@ -129,6 +152,86 @@ test.describe( 'Custom page templates', () => {
 			'the page content still carries its own post-title block'
 		).toHaveCount( 0 );
 	} );
+
+	/**
+	 * The About Us template is the full-width banner template *without* the
+	 * banner: each page brings its own cover, because the photograph and the
+	 * strapline differ per page. So the h1 has to come from the content, and
+	 * the template must not add a second.
+	 *
+	 * Every published page on the template is checked, not one: the failure
+	 * this guards against is a page whose content lost its cover (no h1) or a
+	 * template that regained one (two).
+	 */
+	test( 'the About Us variant has one h1, from the banner in its own content', async ( {
+		page,
+		visit,
+	} ) => {
+		const aboutUs = ( await publishedPages( page ) ).filter(
+			( { template } ) => 'page-about-us' === template
+		);
+		test.skip( ! aboutUs.length, 'No page assigned to page-about-us' );
+
+		for ( const { link } of aboutUs ) {
+			await visit( new URL( link ).pathname );
+
+			await expect(
+				page.locator( 'h1' ),
+				`${ link }: expected exactly one h1`
+			).toHaveCount( 1 );
+			await expect(
+				mainContent( page ).locator(
+					'.wp-block-post-content .wp-block-cover.is-style-hero-banner h1'
+				),
+				`${ link }: the h1 is not in the banner the page carries`
+			).toHaveCount( 1 );
+			await expect(
+				mainContent( page ).locator(
+					':scope > .wp-block-cover.is-style-hero-banner'
+				),
+				`${ link }: the template added a banner of its own`
+			).toHaveCount( 0 );
+
+			const expected = ABOUT_US_H1[ new URL( link ).pathname ] || /\S/;
+			await expect(
+				page.locator( 'h1' ),
+				`${ link }: the banner h1 is not ${ expected }`
+			).toHaveText( expected );
+		}
+	} );
+
+	/**
+	 * The two templates differ in exactly one way, and the difference is in
+	 * their pattern files, so it holds whether or not any page is assigned.
+	 */
+	test( 'page-about-us is page-no-title without the template banner', () => {
+		const patterns = path.join( __dirname, '..', '..', '..', 'patterns' );
+		const full = fs.readFileSync(
+			path.join( patterns, 'template-page-full.php' ),
+			'utf8'
+		);
+		const aboutUs = fs.readFileSync(
+			path.join( patterns, 'template-page-about-us.php' ),
+			'utf8'
+		);
+
+		expect( full, 'page-no-title lost its banner' ).toContain(
+			"require __DIR__ . '/hero-page-banner.php';"
+		);
+		expect( aboutUs, 'page-about-us gained a banner' ).not.toContain(
+			"require __DIR__ . '/hero-page-banner.php';"
+		);
+		expect(
+			aboutUs,
+			'page-about-us gained a trail above its banner'
+		).not.toContain( "require __DIR__ . '/breadcrumbs.php';" );
+		expect( aboutUs, 'page-about-us lost the closing band' ).toContain(
+			"require __DIR__ . '/why-choose-sd.php';"
+		);
+		expect( aboutUs, 'page-about-us lost the FAQ part' ).toContain(
+			'"slug":"pages"'
+		);
+	} );
 } );
 
 /**
@@ -136,18 +239,13 @@ test.describe( 'Custom page templates', () => {
  * does not have. Each falls back to `page.html`, which is the right outcome for
  * a page with no variant of its own — the slugs are debris, not a break.
  *
- * Measured on dev and on local, 2026-10-09: three published pages. The list is
- * a ratchet. A fourth unregistered slug fails the run; clearing one is fixed
- * by deleting its line here, and the content fix (assign the page to a variant
- * or reset it to the default template) is Zared's call, not the suite's.
+ * Empty since 2026-10-09: the three pages that stored one were cleared on dev
+ * and local (terms-conditions and thank-you-for-subscribing reset to the
+ * default template, the retired HTML sitemap set to draft). The list is a
+ * ratchet. A new unregistered slug fails the run; either reset the page to the
+ * default template, assign it a variant, or add a line here with a reason.
  */
-const KNOWN_LEGACY_TEMPLATES = {
-	'page-templates/template-full-width.php': 'LSX full-width page',
-	'page-templates/template-full-width-no-margins.php':
-		'LSX full-width page without margins',
-	'page-templates/template-sitemap.php':
-		'LSX HTML sitemap — the sitemap itself was retired in ASD-42',
-};
+const KNOWN_LEGACY_TEMPLATES = {};
 
 /**
  * Slugs the theme registers: one per `templates/*.html` file.

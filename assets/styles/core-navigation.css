@@ -399,6 +399,18 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .is-style-mobil
 	padding: 0 0 0 22px;
 }
 
+/* The chevron's own svg carries the plugin's optical nudge for a baseline
+   layout, `margin-top: 0.075em` (1.44px at this size), which pushes the drawn
+   chevron below the centre of its box. In a centred row there is no baseline to
+   correct for, so it goes, and `display: block` stops the svg sitting on its
+   span's baseline. `(0,4,1)` to clear the plugin's rule on the same element at
+   `(0,3,1)`. */
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
+.sd-header__call .wp-block-ollie-mega-menu .wp-block-ollie-mega-menu__toggle .wp-block-ollie-mega-menu__toggle-icon svg {
+	display: block;
+	margin-top: 0;
+}
+
 .wp-block-navigation__responsive-container.is-menu-open .is-style-mobile-navigation .wp-block-navigation__container > .has-child.open-on-hover-click > .wp-block-navigation-submenu__toggle svg {
 	flex: none;
 	width: 16px;
@@ -513,6 +525,60 @@ body.rtl .wp-block-navigation__responsive-container.is-menu-open .is-style-mobil
    Inside a panel the list fills its column. */
 .sd-mega-panel .is-style-mega-menu-nav .wp-block-navigation__container {
 	width: 100%;
+}
+
+/* The header's Call Us label — alignment with the phone icon
+   ---------------------------------------------------------------------------
+   `.sd-header__call` is the group in patterns/header.php: the phone icon, then
+   the `is-style-call-us-navigation` trigger. Measured on local at 1440px,
+   2026-10-09, the icon (24px, `align-items: center`) and the trigger's box were
+   already centred on one another to within 0.4px. What was off was *inside*
+   the trigger:
+
+   - **The label's line box is not its cap height.** Optima's ascent and descent
+     are asymmetric, so the 19px content area is centred 24.3px down while the
+     capitals' own centre sits at 21.9px — 2.1px above the icon's 24.0px.
+   - **The chevron sat on the baseline.** Ollie's toggle is a block holding an
+     inline label and an inline-block chevron, so the chevron is placed by
+     `vertical-align: baseline`: its box centre was 21.6px, 3.1px above the icon,
+     and the drawn chevron a further 1.7px below its own box's centre (the
+     plugin's `margin-top: 0.075em` on the svg, a nudge for baseline layouts).
+   - The line-height was never the cause: the toggle already inherits the body's
+     1.5, 28.8px at this size.
+
+   The fix is to centre the pieces on each other rather than on a baseline: the
+   toggle becomes a flex row, and the label's box is trimmed to the capitals
+   (`text-box`), so that "centred" means the capitals are centred. It follows the
+   font, not a measured nudge, so it holds for Belleza as well as Optima.
+   `text-box` is Chrome 133+ and Safari 18.2+; elsewhere the label keeps its
+   ordinary line box and only the chevron is corrected. `(0,3,0)` to clear the
+   plugin's own `.wp-block-ollie-mega-menu .wp-block-ollie-mega-menu__toggle`. */
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
+.sd-header__call .wp-block-ollie-mega-menu .wp-block-ollie-mega-menu__toggle {
+	display: flex;
+	align-items: center;
+}
+
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
+.sd-header__call .wp-block-ollie-mega-menu__toggle .wp-block-navigation-item__label {
+	text-box: trim-both cap alphabetic;
+}
+
+/* The label's hover and focus.
+   ---------------------------------------------------------------------------
+   The label rests on the block's own `primary-500` (8.71:1 on the header's
+   neutral-200 ground). Hover takes it one step deeper in the same brown,
+   `primary-600` — 11.55:1. Not an orange: brand-600 on neutral-200 is 4.15:1,
+   under AA for the normal-size text this becomes below 600px, and the orange
+   step that clears it is brand-700, which is not used here.
+
+   This also stops assets/styles/ollie-mega-menu.css's brand-800 hover from
+   reaching the header — that rule is `(0,3,0)` and this is `(0,4,0)`. */
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
+.sd-header__call .wp-block-navigation.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:hover,
+/* stylelint-disable-next-line selector-class-pattern -- Existing header hook and WordPress/Ollie BEM classes. */
+.sd-header__call .wp-block-navigation.is-style-call-us-navigation .wp-block-ollie-mega-menu__toggle:focus-visible {
+	color: var(--wp--preset--color--primary-600);
 }
 
 /* Hover and focus on a panel's link rows.

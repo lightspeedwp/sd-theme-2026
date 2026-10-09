@@ -751,7 +751,6 @@ Two things that changed the picture:
 | Dark Page Section | `dark-page-section` | `core/group` | `.footer-cta-section` — 70px padding |
 | Brand Page Section | `brand-page-section` | `core/group`, `core/column` | The expert / enquiry panel |
 | Hero Banner | `hero-banner` | `core/cover`, `core/group` | `#lsx-banner .page-banner` — 680px home / 454px inner |
-| Section Header | `section-header` | `core/group` | The centred title cluster |
 | Media Overlay Card | `media-overlay-card` | `core/group` | `.lsx-to-archive-wrapper` — scrim **lifts** on hover |
 | Team Member Card | `team-member-card` | `core/group` | Team archive — `rgba(26,18,5,.7)` 70px strip |
 | Slider Frame | `slider-frame` | `core/group` | `.slick-arrow` / `.slick-dots` |

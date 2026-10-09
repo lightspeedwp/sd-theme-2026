@@ -8,6 +8,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **"About Us" page template (`page-about-us`).** ASD-36. `page-no-title`
+  without the template banner: the six static pages (About Us and its three
+  children, Contact, Thank You) carry their own banner cover in content, with
+  live's image and a hardcoded subtitle where live has one, so each renders one
+  `<h1>`. On the three child pages the `<h1>` is the page's own title, styled
+  as live's uppercase subtitle, under an "About Us" script line. Breadcrumbs
+  move into the content under the cover. Assigned on local only; dev rollout in
+  `.github/tasks/about-us-template-rollout-2026-10-09.md`.
+- **Yoast FAQ block styling** (`assets/styles/yoast-faq-block.css`, loaded only
+  where the block renders). ASD-36. Square-cornered cards, `neutral-200` hover,
+  1px `brand-600` border on focus-within/target. Each FAQ group heading in
+  `parts/pages.html`, `parts/destinations.html` and `parts/faq-countries.html`
+  takes the Section Title style in `neutral-800`.
+- **`assets/js/call-us-flip.js`.** ASD-36. Opens a Call Us panel upwards when it
+  would cross the bottom of the viewport and there is more room above. Six unit
+  tests.
+
 - 🧪 **The theme pass: five checks the matrix said were missing.** ASD-36
   (matrix §4 #3, #14, #18, #19). Measured on dev and local, 2026-10-09.
   - `templates/cta.spec.js`: each of the five CTA bands is on the templates
@@ -472,6 +489,28 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   author theirs directly.
 
 ### Changed
+
+- **Header.** ASD-36. "Call Us Today" in `primary-500`, not uppercase, with
+  the phone icon, label and chevron centred on one axis (flex toggle,
+  `text-box` trim to cap height); hover `primary-600`. "Get in touch" stays the
+  plain `is-style-fill` button (`brand-600`, `brand-700` hover), like every
+  other fill button. The desktop fold-out search keeps size 200 type with
+  `spacing-5` block padding and a `spacing-20` left inset, so its focus ring
+  sits inside the header.
+- **Footer.** ASD-36. Follow Us icon-to-label gap from spacing 30 to 10; We Are
+  Africa badge centred under the logo and 131px to 144px; Contact Us and Follow
+  Us titles, and the Instagram title beside them, from size 300 to 400 with a
+  spacing-40 gap below; Contact Us text from 300 to 200.
+- **Gravity Forms submit buttons** match the fill button: padding, Optima
+  uppercase type, 2px border, `brand-600` plate, `brand-700` hover. Orbital
+  forms through their `--gf-ctrl-btn-*` tokens; the legacy Popup Maker popups
+  (newsletter, Send us an email), previously the browser's default button,
+  through properties. ASD-36.
+- **Tours & Safaris intro** is a 50/50 split like Destinations, so the Safari
+  Expert shows expanded. ASD-36.
+- Legacy LSX template slugs reset to default on `/terms-conditions/` and
+  `/thank-you-for-subscribing/`; `/sitemap/` set to draft (ASD-42);
+  `KNOWN_LEGACY_TEMPLATES` emptied. ASD-36.
 
 - 🧪 **The harness now follows the plugin's, and is gentler on a local host.**
   ASD-36. Two workers against `.local`/localhost (four on dev), the `a11y`
@@ -1113,6 +1152,27 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **Call Us viewport handling and lint ratchet.** ASD-36. Open panels remeasure
+  on scroll and resize, and scroll internally when neither side fits. Footer
+  brand-group sizing now lives in its section variation.
+
+- **Call Us dropdown.** ASD-36. No block padding on the panel, so the first
+  and last numbers' hover tint reaches its edge. Ollie's inline `max-height` cap
+  is dropped, so near the viewport bottom the numbers no longer run past the
+  panel's background.
+- **Facet "See more" toggles** showed both labels ("See 5 moreSee less"): the
+  rail's `display: inline-block` on `.facetwp-toggle` outranked FacetWP's
+  `.facetwp-hidden`. Regression test in `search-and-archive.spec.js`. ASD-36.
+- **Carousel Block slider** (Connect With Us videos): the track is inset so the
+  arrows no longer overlap the videos, without moving the arrows; Carousel
+  Block's 64px pagination reserve and the slide's trailing margin are dropped
+  (video to dots 83px to 29px at 1440). Below 768px the arrows are 40px with no
+  extra gap, so the video keeps 292px of a 390px screen. ASD-36.
+- `intro-collapse.js` mints a unique panel id per container
+  (`sd-intro-collapse-text-<n>`). ASD-36.
+- `/thank-you-for-subscribing/` body heading is an `h2` (content, dev and
+  local). ASD-36.
+
 - 🐛 **The harness's own JS linted dirty.** ASD-36. Prettier and JSDoc
   across `tests/e2e/`, a shadowed `expect`, a literal no-break space in a
   regex. `getComputedStyle` and `document.activeElement` are allowed in
@@ -1370,6 +1430,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   this issue's to write. Same band, one copy string apart — not a fourth design.
 
 ### Removed
+
+- Unreferenced style variations `paragraph/subheading-medium`,
+  `paragraph/subheading-small`, `sections/inner-page-section` and
+  `sections/section-header`. ASD-36.
 
 - 🗑️ **The `/sitemap/` route check.** ASD-42. The HTML sitemap page is retired
   rather than ported: it predates Yoast, was `noindex` and unlinked, and Yoast's

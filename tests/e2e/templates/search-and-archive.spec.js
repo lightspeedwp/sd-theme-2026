@@ -166,4 +166,44 @@ test.describe( 'Search results filter rail', () => {
 		await page.keyboard.press( 'Enter' );
 		await expect( heading ).toHaveAttribute( 'aria-expanded', 'true' );
 	} );
+
+	/**
+	 * FacetWP prints a "See N more" / "See less" pair under a long facet and
+	 * hides the inactive one with `.facetwp-hidden`. The rail's own
+	 * `.sd-search-filters .facetwp-toggle { display: inline-block }` outranked
+	 * that, so both showed as "See 5 moreSee less" (2026-10-09).
+	 */
+	test( 'a long facet shows one of its See more / See less toggles at a time', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 900 } );
+		await visit( '/accommodation-type/safari-lodges/' );
+		await flyoutReady( page );
+
+		const fold = page
+			.locator( 'aside.sd-search-filters .facet-wrap' )
+			.filter( { has: page.locator( '.facetwp-toggle' ) } )
+			.first();
+		test.skip(
+			0 === ( await fold.count() ),
+			'No facet with a See more toggle in this environment'
+		);
+
+		// search-filters.js folds all but the first facet; open this one.
+		const heading = fold.locator( ':scope > .wp-block-heading' );
+		if ( 'false' === ( await heading.getAttribute( 'aria-expanded' ) ) ) {
+			await heading.click();
+			await expect( heading ).toHaveAttribute( 'aria-expanded', 'true' );
+		}
+
+		const toggles = fold.locator( '.facetwp-toggle' );
+		const shown = toggles.filter( { visible: true } );
+		await expect( shown ).toHaveCount( 1 );
+		const before = await shown.textContent();
+
+		await shown.click();
+		await expect( shown ).toHaveCount( 1 );
+		await expect( shown ).not.toHaveText( before );
+	} );
 } );

@@ -134,14 +134,7 @@ describe( 'intro-collapse.js', () => {
 		);
 	} );
 
-	/**
-	 * Pinned as current behaviour, not as a decision. The fallback id is a fixed
-	 * string, so two containers that both need one would share it and the second
-	 * `aria-controls` would point at the first panel. A taxonomy archive carries
-	 * one description, so nothing hits this today; the pattern's own comment says
-	 * "an id has to be unique on the page", which is what this does not deliver.
-	 */
-	it( 'gives two containers the same fallback id (known limitation)', async () => {
+	it( 'gives each container its own fallback id, so aria-controls never crosses panels', async () => {
 		const [ one, two ] = [
 			collapse( { natural: 300, clamped: 120 } ),
 			collapse( { natural: 300, clamped: 120 } ),
@@ -149,9 +142,34 @@ describe( 'intro-collapse.js', () => {
 
 		await loadScript( 'intro-collapse.js' );
 
-		expect( buttonOf( one ).getAttribute( 'aria-controls' ) ).toBe(
-			buttonOf( two ).getAttribute( 'aria-controls' )
+		const idOne = buttonOf( one ).getAttribute( 'aria-controls' );
+		const idTwo = buttonOf( two ).getAttribute( 'aria-controls' );
+
+		expect( idOne ).not.toBe( idTwo );
+		expect( one.querySelector( '.sd-intro-collapse__text' ).id ).toBe(
+			idOne
 		);
+		expect( two.querySelector( '.sd-intro-collapse__text' ).id ).toBe(
+			idTwo
+		);
+		expect( document.querySelectorAll( `[id="${ idOne }"]` ) ).toHaveLength(
+			1
+		);
+	} );
+
+	it( 'skips a fallback id that another element already holds', async () => {
+		const taken = document.createElement( 'div' );
+
+		taken.id = 'sd-intro-collapse-text-1';
+		document.body.append( taken );
+
+		const container = collapse( { natural: 300, clamped: 120 } );
+
+		await loadScript( 'intro-collapse.js' );
+
+		expect(
+			buttonOf( container ).getAttribute( 'aria-controls' )
+		).not.toBe( 'sd-intro-collapse-text-1' );
 	} );
 
 	it( 'toggles on click, swapping the label and aria-expanded', async () => {
