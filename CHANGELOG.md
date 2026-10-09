@@ -1152,6 +1152,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **Yoast FAQ styling under Tour Operator's accordion.** ASD-36. Dev's Tour
+  Operator build adds `.is-accordion` to the block and styles it as rounded
+  cards at higher specificity, printed after the theme's stylesheet, so the
+  theme's square corners and hover were overridden. `yoast-faq-block.css` now
+  out-ranks it in both shapes: square corners, `neutral-200` hover with a
+  `brand-600` border, `brand-600` border when open, focused or targeted, and the
+  question back at semi-bold. The border stays 2px in every state, replacing
+  the 1px selected border.
 - **Call Us viewport handling and lint ratchet.** ASD-36. Open panels remeasure
   on scroll and resize, and scroll internally when neither side fits. Footer
   brand-group sizing now lives in its section variation.
