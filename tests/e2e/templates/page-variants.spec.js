@@ -54,6 +54,21 @@ const PAGE_VARIANTS = [
 	},
 ];
 
+/**
+ * The h1 each About Us page carries in its own banner, as live shows it. The
+ * three children title themselves (their "About Us" line is a paragraph above
+ * the h1); the parent, Contact and Thank You keep live's script line as the h1.
+ * A page not listed is only checked for having one h1.
+ */
+const ABOUT_US_H1 = {
+	'/about-us/': 'About Us',
+	'/about-us/why-book-with-us/': 'Why Book With Us',
+	'/about-us/social-responsibility/': 'Social Responsibility',
+	'/about-us/connect-with-us/': 'Connect With Us',
+	'/thank-you/': 'Send Us an Email',
+	'/contact/': 'Get in Touch',
+};
+
 test.describe( 'Custom page templates', () => {
 	for ( const variant of PAGE_VARIANTS ) {
 		test( `${ variant.name } (${ variant.file }) renders @responsive`, async ( {
@@ -176,6 +191,12 @@ test.describe( 'Custom page templates', () => {
 				),
 				`${ link }: the template added a banner of its own`
 			).toHaveCount( 0 );
+
+			const expected = ABOUT_US_H1[ new URL( link ).pathname ] || /\S/;
+			await expect(
+				page.locator( 'h1' ),
+				`${ link }: the banner h1 is not ${ expected }`
+			).toHaveText( expected );
 		}
 	} );
 

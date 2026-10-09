@@ -271,8 +271,8 @@
 
 			<!-- wp:column {"metadata":{"name":"Instagram"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}}} -->
 			<div class="wp-block-column">
-				<!-- wp:heading {"level":2,"fontSize":"300"} -->
-				<h2 class="wp-block-heading has-300-font-size"><?php esc_html_e( 'Instagram', 'sd-theme-2026' ); ?></h2>
+				<!-- wp:heading {"level":2,"fontSize":"400","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
+				<h2 class="wp-block-heading has-400-font-size" style="margin-bottom:var(--wp--preset--spacing--40)"><?php esc_html_e( 'Instagram', 'sd-theme-2026' ); ?></h2>
 				<!-- /wp:heading -->
 
 				<?php

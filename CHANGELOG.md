@@ -12,8 +12,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   without the template banner: the six static pages (About Us and its three
   children, Contact, Thank You) carry their own banner cover in content, with
   live's image and a hardcoded subtitle where live has one, so each renders one
-  `<h1>`. Breadcrumbs move into the content under the cover. Assigned on local
-  only; dev rollout in `.github/tasks/about-us-template-rollout-2026-10-09.md`.
+  `<h1>`. On the three child pages the `<h1>` is the page's own title, styled
+  as live's uppercase subtitle, under an "About Us" script line. Breadcrumbs
+  move into the content under the cover. Assigned on local only; dev rollout in
+  `.github/tasks/about-us-template-rollout-2026-10-09.md`.
 - **Yoast FAQ block styling** (`assets/styles/yoast-faq-block.css`, loaded only
   where the block renders). ASD-36. Square-cornered cards, `neutral-200` hover,
   1px `brand-600` border on focus-within/target. Each FAQ group heading in
@@ -497,8 +499,8 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   sits inside the header.
 - **Footer.** ASD-36. Follow Us icon-to-label gap from spacing 30 to 10; We Are
   Africa badge centred under the logo and 131px to 144px; Contact Us and Follow
-  Us titles from size 300 to 400 with a spacing-40 gap below; Contact Us text
-  from 300 to 200.
+  Us titles, and the Instagram title beside them, from size 300 to 400 with a
+  spacing-40 gap below; Contact Us text from 300 to 200.
 - **Gravity Forms submit buttons** match the fill button: padding, Optima
   uppercase type, 2px border, `brand-600` plate, `brand-700` hover. Orbital
   forms through their `--gf-ctrl-btn-*` tokens; the legacy Popup Maker popups
@@ -1160,7 +1162,8 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Carousel Block slider** (Connect With Us videos): the track is inset so the
   arrows no longer overlap the videos, without moving the arrows; Carousel
   Block's 64px pagination reserve and the slide's trailing margin are dropped
-  (video to dots 83px to 29px at 1440). ASD-36.
+  (video to dots 83px to 29px at 1440). Below 768px the arrows are 40px with no
+  extra gap, so the video keeps 292px of a 390px screen. ASD-36.
 - `intro-collapse.js` mints a unique panel id per container
   (`sd-intro-collapse-text-<n>`). ASD-36.
 - `/thank-you-for-subscribing/` body heading is an `h2` (content, dev and
