@@ -380,22 +380,60 @@
    Measured on dev 2026-09-23. */
 .is-style-slider-frame {
 	--sd-slider-nav-edge: 9px;
+
+	/* Where each arrow's outer edge sits relative to the frame edge (negative =
+	   outside it). One definition so the arrows and, on the Swiper carousel, the
+	   track inset that clears them cannot drift apart. */
+	--sd-slider-nav-pos: max(
+		calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)),
+		calc((100% - 100vw) / 2 + var(--sd-slider-nav-edge))
+	);
 }
 
 .is-style-slider-frame :is(.slick-prev, .swiper-button-prev) {
-	left: max(
-		calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)),
-		calc((100% - 100vw) / 2 + var(--sd-slider-nav-edge))
-	) !important;
+	left: var(--sd-slider-nav-pos) !important;
 	right: auto !important;
 }
 
 .is-style-slider-frame :is(.slick-next, .swiper-button-next) {
-	right: max(
-		calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)),
-		calc((100% - 100vw) / 2 + var(--sd-slider-nav-edge))
-	) !important;
+	right: var(--sd-slider-nav-pos) !important;
 	left: auto !important;
+}
+
+/* Swiper (Carousel Block) — clear the arrows, tighten the dots.
+   ---------------------------------------------------------------------------
+   Slick's `.slick-list` carries the slide inset and the card shelves rely on
+   that, so none of this touches Slick; it is keyed to Swiper's own classes.
+
+   1. Arrows. The arrows sit at `--sd-slider-nav-pos` and may overlap the shelf
+      (by 18px at 1440, by ~50px on a phone where the frame has no margin to
+      hang them in). Carousel Block runs its track edge to edge, so a video
+      slide sat underneath its own arrow. The track is inset by the arrow's
+      inner edge plus `--sd-slider-nav-gap` instead; the arrows stay exactly
+      where they were. Margin percentages resolve against the frame's width,
+      the same box `left`/`right` 100% resolve against above.
+
+   2. Dots. Carousel Block reserves `bullet-size * 4` (64px) under the track for
+      an absolutely-positioned pagination bar. Ours is a static row with its own
+      top margin (above), so that reserve is dead space on top of it. The slide
+      also keeps its last child's bottom margin (a figure's 1em), which is more
+      dead space between the artwork and the dots.
+
+   (0,4,0) to beat Carousel Block's own
+   `.wp-block-cb-carousel-v2[data-cb-pagination="true"] .swiper-horizontal`
+   (0,3,0) whichever stylesheet loads last. */
+.is-style-slider-frame.wp-block-cb-carousel-v2[data-cb-navigation="true"] .swiper-horizontal {
+	margin-inline: calc(
+		var(--sd-slider-nav-pos) + var(--sd-slider-nav-size, 56px) + var(--sd-slider-nav-gap, var(--wp--preset--spacing--20))
+	);
+}
+
+.is-style-slider-frame.wp-block-cb-carousel-v2[data-cb-pagination="true"] .swiper-horizontal {
+	margin-block-end: 0;
+}
+
+.is-style-slider-frame.wp-block-cb-carousel-v2 .swiper-slide > :last-child {
+	margin-block-end: 0;
 }
 
 /* The chevron itself.
@@ -816,6 +854,20 @@
    One responsive decision about one component, so it stays in one block rather
    than being split by block type across core-columns.css and core-image.css —
    the same reasoning as the utility bar above. */
+
+/* The brand column's two marks — logo and We Are Africa badge
+   ---------------------------------------------------------------------------
+   Live centres the badge under the logo (`#footer-widgets #custom_html-20 {
+   text-align: center }`). Here the column is wider than the 254px logo, so the
+   vertical flex group that holds the two marks shrinks to the logo's width and
+   the badge is centred within that, which puts it on the logo's axis rather
+   than the column's. Scoped to the footer band; `.is-vertical` is the flex
+   group's own orientation class, and the Instagram grid is not one. */
+.is-style-site-footer .wp-block-column > .wp-block-group.is-vertical {
+	width: fit-content;
+	max-width: 100%;
+}
+
 @media (max-width: 767px) {
 	.is-style-site-footer .wp-block-column {
 		max-width: 290px;
@@ -829,6 +881,13 @@
 	   box for the column's `text-align` to move. Direct children of the column
 	   only — the Instagram tiles are inside a grid that centres itself below. */
 	.is-style-site-footer .wp-block-column > .wp-block-image img {
+		margin-inline: auto;
+	}
+
+	/* The brand marks' group is shrink-wrapped to the logo, so it is the box
+	   that has to be centred in the stacked column; the badge is already
+	   centred inside it. */
+	.is-style-site-footer .wp-block-column > .wp-block-group.is-vertical {
 		margin-inline: auto;
 	}
 

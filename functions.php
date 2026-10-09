@@ -281,6 +281,11 @@ require_once get_theme_file_path( 'inc/mega-menu.php' );
 // enqueue_custom_block_styles()' core-* scan.
 require_once get_theme_file_path( 'inc/yoast-breadcrumbs.php' );
 
+// Styles yoast/faq-block — bare `.schema-faq` markup with a `<strong>` question and
+// no toggle, so there is nothing for theme.json to target — and a non-core block
+// is outside enqueue_custom_block_styles()' core-* scan.
+require_once get_theme_file_path( 'inc/yoast-faq.php' );
+
 // Styles facetwp/facet, whose inner markup is emitted by the plugin as a bare
 // `.facetwp-facet` div and then filled from JS, so it carries no block wrapper
 // attributes for theme.json to target — and a non-core block is outside

@@ -73,6 +73,32 @@
 	var OVERFLOW_TOLERANCE = 4;
 
 	/**
+	 * How many fallback ids this script has minted.
+	 *
+	 * @type {number}
+	 */
+	var idCount = 0;
+
+	/**
+	 * Mint an id for a collapse panel that has none, unique on the page.
+	 *
+	 * A counter suffix keeps two containers apart; the `getElementById` check
+	 * covers an id that something else on the page already took.
+	 *
+	 * @return {string} An id no element currently carries.
+	 */
+	function uniqueId() {
+		var id;
+
+		do {
+			idCount += 1;
+			id = 'sd-intro-collapse-text-' + idCount;
+		} while ( document.getElementById( id ) );
+
+		return id;
+	}
+
+	/**
 	 * The translated "Read less" label.
 	 *
 	 * Localised onto `window.sdIntroCollapse` by inc/intro-collapse.php. The
@@ -183,10 +209,11 @@
 		 * The panel the button controls. `core/term-description` renders no id
 		 * of its own, so one is minted here rather than authored in the
 		 * pattern — the pattern serves every brand and an id has to be unique
-		 * on the page, not across the template.
+		 * on the page, not across the template. `uniqueId()` numbers each one
+		 * so a second container cannot share the first's panel.
 		 */
 		if ( ! text.id ) {
-			text.id = 'sd-intro-collapse-text';
+			text.id = uniqueId();
 		}
 
 		button.setAttribute( 'aria-controls', text.id );

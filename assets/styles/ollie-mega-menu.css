@@ -446,6 +446,25 @@
 	text-decoration: underline;
 }
 
+/* The panel always contains its rows
+   ---------------------------------------------------------------------------
+   The panel carries no block padding of its own (2026-10-09): the rows pad
+   themselves, so the first and last numbers' hover tint runs to the border at
+   both ends. That lives in styles/blocks/navigation/call-us-navigation.json.
+
+   **Ollie's height cap.** On every open Ollie's `applyMaxHeight()` writes an
+   inline `max-height: innerHeight - panelTop - 24px` and `overflow-y: auto`, so
+   a tall panel scrolls instead of leaving the screen. The variation sets
+   `overflow: visible !important` (so the pop-out's shadow is not clipped), which
+   cancels the scroll half and leaves the cap: near the bottom of a viewport the
+   box was cut to the remaining space while the rows carried on past it, hanging
+   out of the background. Four phone numbers should never scroll, so the cap is
+   dropped — an `!important` author declaration beats the inline style — and
+   assets/js/call-us-flip.js opens the panel upwards when there is no room below. */
+.wp-block-navigation.is-style-call-us-navigation .wp-block-ollie-mega-menu__menu-container {
+	max-height: none !important;
+}
+
 /* Narrow viewports
    ---------------------------------------------------------------------------
    Below the point where an anchored pop-out has room to be anchored, the panel
@@ -594,4 +613,22 @@
 	.sd-expert__call-box {
 		transition-duration: 1ms;
 	}
+}
+
+/* 4 — Opening upwards when there is no room below
+   ---------------------------------------------------------------------------
+   assets/js/call-us-flip.js adds `.is-flipped-up` to the panel when it would
+   cross the bottom of the viewport and there is more room above the trigger.
+   The panel is pinned by its bottom edge to the top of its containing block
+   instead — the nav item in the header, the box on the safari expert card — with
+   the same clearance as the downward position. Applies to every Call Us panel;
+   in the header, which sits at the top of the page, the script never asks for it.
+
+   Specificity (0,4,0) — the `li` is `.wp-block-ollie-mega-menu` — beats both
+   the variation's `inset-block-start` and the safari expert override in
+   section 2, which are `!important` at (0,2,0) and (0,3,0). The inline `top` Ollie writes is not `!important`, so `auto` here
+   wins over it too. */
+.wp-block-navigation.is-style-call-us-navigation .wp-block-ollie-mega-menu .is-flipped-up {
+	inset-block-start: auto !important;
+	inset-block-end: calc(100% + var(--wp--preset--spacing--10)) !important;
 }

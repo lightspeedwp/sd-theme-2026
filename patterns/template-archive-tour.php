@@ -109,10 +109,16 @@
 
 	<?php
 	/*
-	 * The intro band. Identical in structure to the destinations archive's —
-	 * live's `col-md-7` / `col-md-5`, the columns aligned top with the expert
+	 * The intro band. Identical in structure to the destinations archive's,
+	 * including the split: live's `col-md-7` / `col-md-5` (58.33% / 41.67%) became
+	 * **50/50** here on 2026-10-09, as it did on destinations on 2026-09-23. At
+	 * 58.33/41.67 the expert column was too narrow for the 36rem (576px) container
+	 * query that gives `.sd-expert` its wide arrangement
+	 * (assets/styles/core-group.css), so the card sat in the narrow one; a half
+	 * column clears it. The columns are aligned top with the expert
 	 * column re-centring itself, on the `neutral-200` ground that
-	 * `is-style-tinted-page-section` owns.
+	 * `is-style-tinted-page-section` owns. → template-archive-destination.php
+	 * for the full reasoning.
 	 */
 	?>
 	<!-- wp:group {"tagName":"section","metadata":{"name":"Archive Intro"},"align":"full","className":"is-style-tinted-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
@@ -121,16 +127,16 @@
 		<!-- wp:columns {"verticalAlignment":"top","align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
 		<div class="wp-block-columns alignwide are-vertically-aligned-top">
 
-			<!-- wp:column {"verticalAlignment":"top","width":"58.33%"} -->
-			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:58.33%">
+			<!-- wp:column {"verticalAlignment":"top","width":"50%"} -->
+			<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:50%">
 				<!-- wp:paragraph {"className":"is-style-archive-intro"} -->
 				<p class="is-style-archive-intro"><?php esc_html_e( 'From the thick bushveld of the Kruger in South Africa to the grassy plains of the Masai Mara in East Africa and beyond, Africa is a place of startling contrasts and stupendous beauty. Let us share our favourite destinations and travel insights with you as you prepare to explore and experience this amazing continent.', 'sd-theme-2026' ); ?></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:column -->
 
-			<!-- wp:column {"verticalAlignment":"center","width":"41.67%"} -->
-			<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:41.67%">
+			<!-- wp:column {"verticalAlignment":"center","width":"50%"} -->
+			<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:50%">
 				<?php
 				/*
 				 * `require`, not a nested `wp:pattern` reference: a pattern

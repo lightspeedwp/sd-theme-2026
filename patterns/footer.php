@@ -148,9 +148,22 @@
 				 * from theme.json with the classes that read them.
 				 *
 				 * Measured on live 2026-08-20 at 1440px: the brand mark renders
-				 * 254px wide, the We Are Africa badge 131px.
+				 * 254px wide, the We Are Africa badge 131px (now 144px — about a tenth
+				 * larger at Zared's request, 2026-10-09).
 				 */
 				?>
+				<?php
+				/*
+				 * The two marks sit in one vertical flex group so the badge can be
+				 * centred on the logo rather than on the column. The column is
+				 * wider than the 254px logo, so centring the badge on the column
+				 * would leave it off-axis; assets/styles/core-group.css shrinks
+				 * this group to the logo's width (live's `#custom_html-20` is
+				 * `text-align: center` for the same result).
+				 */
+				?>
+				<!-- wp:group {"metadata":{"name":"Brand Marks"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+				<div class="wp-block-group">
 				<!-- wp:image {"width":"254px","sizeSlug":"full","linkDestination":"none"} -->
 				<figure class="wp-block-image size-full is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/footer-logo.svg" alt="<?php esc_attr_e( 'Southern Destinations — Journeys with Imagination', 'sd-theme-2026' ); ?>" style="width:254px"/></figure>
 				<!-- /wp:image -->
@@ -160,19 +173,21 @@
 				 * The We Are Africa 2024 Tribe Member badge, linking out to the
 				 * trade body. The `-300x300` intermediate is used rather than the
 				 * original: the full file is 2250px and 35KB, a pointless
-				 * download for a 131px mark.
+				 * download for a 144px mark.
 				 */
 				?>
-				<!-- wp:image {"width":"131px","sizeSlug":"medium","linkDestination":"custom"} -->
-				<figure class="wp-block-image size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:131px"/></a></figure>
+				<!-- wp:image {"width":"144px","sizeSlug":"medium","linkDestination":"custom"} -->
+				<figure class="wp-block-image size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:144px"/></a></figure>
 				<!-- /wp:image -->
+				</div>
+				<!-- /wp:group -->
 			</div>
 			<!-- /wp:column -->
 
 			<!-- wp:column {"metadata":{"name":"Contact"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
 			<div class="wp-block-column">
-				<!-- wp:heading {"level":2,"fontSize":"300"} -->
-				<h2 class="wp-block-heading has-300-font-size"><?php esc_html_e( 'Contact Us', 'sd-theme-2026' ); ?></h2>
+				<!-- wp:heading {"level":2,"fontSize":"400","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
+				<h2 class="wp-block-heading has-400-font-size" style="margin-bottom:var(--wp--preset--spacing--40)"><?php esc_html_e( 'Contact Us', 'sd-theme-2026' ); ?></h2>
 				<!-- /wp:heading -->
 
 				<?php
@@ -198,24 +213,24 @@
 				 * theme's.
 				 */
 				?>
-				<!-- wp:paragraph -->
-				<p><?php echo esc_html_x( 'RSA:', 'office phone number label', 'sd-theme-2026' ); ?> <a href="tel:+27216713090">+27 21 671 3090</a><br><?php echo esc_html_x( 'US:', 'office phone number label', 'sd-theme-2026' ); ?> <a href="tel:+16469068113">+1 646-906-8113</a></p>
+				<!-- wp:paragraph {"fontSize":"200"} -->
+				<p class="has-200-font-size"><?php echo esc_html_x( 'RSA:', 'office phone number label', 'sd-theme-2026' ); ?> <a href="tel:+27216713090">+27 21 671 3090</a><br><?php echo esc_html_x( 'US:', 'office phone number label', 'sd-theme-2026' ); ?> <a href="tel:+16469068113">+1 646-906-8113</a></p>
 				<!-- /wp:paragraph -->
 
-				<!-- wp:paragraph -->
-				<p><a href="https://maps.app.goo.gl/oYv5Chxqswqyv71L7" target="_blank" rel="noreferrer noopener">46 Main Road, Claremont 7735<br>Cape Town, South Africa</a></p>
+				<!-- wp:paragraph {"fontSize":"200"} -->
+				<p class="has-200-font-size"><a href="https://maps.app.goo.gl/oYv5Chxqswqyv71L7" target="_blank" rel="noreferrer noopener">46 Main Road, Claremont 7735<br>Cape Town, South Africa</a></p>
 				<!-- /wp:paragraph -->
 
-				<!-- wp:paragraph -->
-				<p><?php echo esc_html_x( 'T', 'abbreviation for telephone, precedes a phone number', 'sd-theme-2026' ); ?> <a href="tel:+27216713090">+27 (0) 21 671 3090</a><br><a href="mailto:info@southerndestinations.com">info@southerndestinations.com</a></p>
+				<!-- wp:paragraph {"fontSize":"200"} -->
+				<p class="has-200-font-size"><?php echo esc_html_x( 'T', 'abbreviation for telephone, precedes a phone number', 'sd-theme-2026' ); ?> <a href="tel:+27216713090">+27 (0) 21 671 3090</a><br><a href="mailto:info@southerndestinations.com">info@southerndestinations.com</a></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:column -->
 
 			<!-- wp:column {"metadata":{"name":"Follow"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}}} -->
 			<div class="wp-block-column">
-				<!-- wp:heading {"level":2,"fontSize":"300"} -->
-				<h2 class="wp-block-heading has-300-font-size"><?php esc_html_e( 'Follow Us', 'sd-theme-2026' ); ?></h2>
+				<!-- wp:heading {"level":2,"fontSize":"400","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
+				<h2 class="wp-block-heading has-400-font-size" style="margin-bottom:var(--wp--preset--spacing--40)"><?php esc_html_e( 'Follow Us', 'sd-theme-2026' ); ?></h2>
 				<!-- /wp:heading -->
 
 				<?php

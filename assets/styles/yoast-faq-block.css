@@ -1,0 +1,85 @@
+/**
+ * Yoast FAQ block.
+ *
+ * Markup, as the block saves it (and as Yoast leaves it on the front end —
+ * the plugin ships no front-end stylesheet for this block, only an editor one):
+ *
+ *   div.schema-faq.wp-block-yoast-faq-block
+ *     div.schema-faq-section#faq-question-…
+ *       strong.schema-faq-question
+ *       p.schema-faq-answer
+ *
+ * The question is a `<strong>`, not a heading, and every answer is always
+ * visible: there is no `<details>`, no toggle and no open state in the markup.
+ * Neither this theme nor kwv-theme-2026 styled it before this file, so it
+ * rendered as bare text inside the `listing-card-list` group that wraps it in
+ * parts/pages.html, parts/destinations.html and parts/faq-countries.html.
+ *
+ * Each item is a card: a 2px neutral-300 border, square corners, neutral-200
+ * on hover.
+ *
+ * "Selected" has no toggle to hang on, so it is the two states an item can
+ * really be in: a link or control inside it has focus (`:focus-within`), or it
+ * is the target of the URL fragment (`:target`, the `#faq-question-…` ids
+ * Yoast writes). Both drop the border to 1px and colour it brand-600; the
+ * padding grows by the 1px lost, so nothing shifts when the state changes.
+ *
+ * The question keeps what it inherits from the `listing-card-list` group that
+ * wraps the block (heading face, semi-bold, inline `<strong>`); nothing here
+ * restyles it. The Section Title heading above each group is set on the heading
+ * blocks in parts/pages.html, parts/destinations.html and
+ * parts/faq-countries.html, not in this file.
+ *
+ * Plain authored CSS rather than a `styles/**` partial: Yoast's wrapper does
+ * not carry an `is-style-*` class the editor can set, and a variation's `css`
+ * field strips `:hover` and `:focus-within`. The selectors are (0,2,0)+, which
+ * beats the (0,1,0) of the `listing-card-list` section style and theme.json's
+ * `:root :where()` element rules without `!important`.
+ *
+ * @package sd-theme-2026
+ */
+
+.schema-faq .schema-faq-section {
+	--sd-faq-pad-block: var(--wp--preset--spacing--20);
+	--sd-faq-pad-inline: var(--wp--preset--spacing--30);
+
+	box-sizing: border-box;
+	margin: 0;
+	padding: var(--sd-faq-pad-block) var(--sd-faq-pad-inline);
+	border: var(--wp--custom--border-width--200) solid var(--wp--preset--color--neutral-300);
+	border-radius: var(--wp--preset--border-radius--0);
+	transition: background-color 0.25s ease-in-out, border-color 0.25s ease-in-out;
+}
+
+.schema-faq .schema-faq-section + .schema-faq-section {
+	margin-block-start: var(--wp--preset--spacing--10);
+}
+
+.schema-faq .schema-faq-section:hover {
+	background-color: var(--wp--preset--color--neutral-200);
+}
+
+/* Selected. 1px border, brand-600; padding makes up the 1px so the box holds. */
+.schema-faq .schema-faq-section:focus-within,
+.schema-faq .schema-faq-section:target {
+	padding: calc(var(--sd-faq-pad-block) + 1px) calc(var(--sd-faq-pad-inline) + 1px);
+	border-width: var(--wp--custom--border-width--100);
+	border-color: var(--wp--preset--color--brand-600);
+}
+
+.schema-faq .schema-faq-answer {
+	margin-block: var(--wp--preset--spacing--10) 0;
+}
+
+/* Keyboard users. Links in an answer are the only focusable things in an item. */
+.schema-faq .schema-faq-section :focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-600);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.schema-faq .schema-faq-section {
+		transition: none;
+	}
+}

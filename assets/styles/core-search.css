@@ -228,6 +228,42 @@
 	outline-offset: 1px;
 }
 
+/* The fold-out's padding, above the stacking breakpoint only.
+   ---------------------------------------------------------------------------
+   `spacing-5` above, below and on the right, 4–5px; `spacing-20` on the left,
+   the open panel's original inset, so the text does not crowd the edge
+   (Zared, 2026-10-09). The text is
+   `font-size-200` (1rem); the box is built from it — unitless line-height, token
+   padding — so the padding is what sets the height. That height is what keeps
+   the focus ring inside the header. The row is 50px (`nav-link-height`) and the
+   2px ring at a 1px offset adds 3px a side, so the field can be at most ~44px.
+   At `spacing-10` it was 45.5px at 1440px and the ring ran 0.74px past the
+   header's bottom edge (measured on local, 2026-10-09); `spacing-5` is the next
+   step down, and `spacing-10` is the only other token near enough to matter.
+
+   The placeholder is set to `inherit`. Without that it takes the global
+   `::placeholder` size in style.css, `font-size-300` — larger than the text the
+   user types.
+
+   Not below 782px: there the panel is in flow on a touch device and the field
+   keeps its own padding. This block matches the 781px breakpoint of the in-flow
+   rules just below. The open rule is repeated because it sets `padding-inline`
+   at the same specificity, and this block is the later one. */
+@media (min-width: 782px) {
+
+	.wp-block-search.is-style-header-search .wp-block-search__input {
+		padding-block: var(--wp--preset--spacing--5);
+	}
+
+	.wp-block-search.is-style-header-search:not(.wp-block-search__searchfield-hidden) .wp-block-search__input {
+		padding-inline: var(--wp--preset--spacing--20) var(--wp--preset--spacing--5);
+	}
+
+	.wp-block-search.is-style-header-search .wp-block-search__input::placeholder {
+		font-size: inherit;
+	}
+}
+
 /* The panel below the header's stacking breakpoint
    ===========================================================================
    Above 781px the panel unrolls out of flow, leftwards over the header row,

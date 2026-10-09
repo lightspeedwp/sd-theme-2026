@@ -450,6 +450,12 @@
 	color: var(--wp--preset--color--brand-700);
 }
 
+/* Hide the inactive toggle. Specificity (0,3,0) beats the base toggle rule
+   (0,2,0) so that FacetWP's visibility control is respected. */
+.sd-search-filters .facetwp-toggle.facetwp-hidden {
+	display: none;
+}
+
 /* ============================================
    The keyword search facet
 
