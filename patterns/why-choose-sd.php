@@ -211,8 +211,8 @@
 
 		<!-- wp:column {"verticalAlignment":"center"} -->
 		<div class="wp-block-column is-vertically-aligned-center">
-			<!-- wp:image {"width":"185px","height":"auto","sizeSlug":"medium","linkDestination":"custom","align":"center"} -->
-			<figure class="wp-block-image aligncenter size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:185px;height:auto"/></a></figure>
+			<!-- wp:image {"id":64289,"width":"185px","height":"auto","sizeSlug":"medium","linkDestination":"custom","align":"center"} -->
+			<figure class="wp-block-image aligncenter size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" class="wp-image-64289" style="width:185px;height:auto"/></a></figure>
 			<!-- /wp:image -->
 		</div>
 		<!-- /wp:column -->

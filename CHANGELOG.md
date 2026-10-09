@@ -1152,6 +1152,26 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **Theme images get `srcset`, dimensions and lazy loading.** ASD-36, 20.1.
+  Thirty `core/image` and `core/cover` blocks in 17 patterns wrote an uploads
+  URL with no attachment ID, so core added no `srcset`, `sizes`, width, height
+  or `loading`: archive banners up to 3,840 px wide reached phones at full size,
+  and the footer's eleven images loaded eagerly on every page. Each block now
+  carries its `"id"` and `wp-image-{id}` class (IDs checked against dev, where
+  they match live). On local the homepage goes from 44 to 66 lazy images
+  and from 30 to 36 with `srcset`. The `/tours/` banner gains width, height and
+  a 300–1,920 px `srcset`. New `inc/menu-images.php` lazy-loads the images in
+  menu panels that start hidden: mega-menu cards, the Call Us flags, and the
+  mobile menu (a `core/navigation` with `overlayMenu: "always"`). Core never
+  lazy-loads in the header, and those images were using up its allowance of
+  three eager images. Lighthouse on dev put the homepage's off-screen image
+  waste at about 440 KiB (mobile). New
+  `tests/php/integration/test-image-loading.php` (4 tests) covers the filter,
+  plus a ratchet that fails on any pattern, part or template image pointing at
+  uploads without a `wp-image-{id}` class. Three mutations (module removed,
+  overlay check removed, one footer ID dropped) are each caught.
+  `block-validation.spec.js` passes on local (4/4), so the edited blocks still
+  validate in the editor.
 - **Call Us dropdown.** ASD-36. No block padding on the panel, so the first
   and last numbers' hover tint reaches its edge. Ollie's inline `max-height` cap
   is dropped, so near the viewport bottom the numbers no longer run past the

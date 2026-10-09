@@ -164,8 +164,8 @@
 				?>
 				<!-- wp:group {"metadata":{"name":"Brand Marks"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
 				<div class="wp-block-group">
-				<!-- wp:image {"width":"254px","sizeSlug":"full","linkDestination":"none"} -->
-				<figure class="wp-block-image size-full is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/footer-logo.svg" alt="<?php esc_attr_e( 'Southern Destinations — Journeys with Imagination', 'sd-theme-2026' ); ?>" style="width:254px"/></figure>
+				<!-- wp:image {"id":50258,"width":"254px","sizeSlug":"full","linkDestination":"none"} -->
+				<figure class="wp-block-image size-full is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/footer-logo.svg" alt="<?php esc_attr_e( 'Southern Destinations — Journeys with Imagination', 'sd-theme-2026' ); ?>" class="wp-image-50258" style="width:254px"/></figure>
 				<!-- /wp:image -->
 
 				<?php
@@ -176,8 +176,8 @@
 				 * download for a 144px mark.
 				 */
 				?>
-				<!-- wp:image {"width":"144px","sizeSlug":"medium","linkDestination":"custom"} -->
-				<figure class="wp-block-image size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:144px"/></a></figure>
+				<!-- wp:image {"id":64289,"width":"144px","sizeSlug":"medium","linkDestination":"custom"} -->
+				<figure class="wp-block-image size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" class="wp-image-64289" style="width:144px"/></a></figure>
 				<!-- /wp:image -->
 				</div>
 				<!-- /wp:group -->
@@ -301,32 +301,32 @@
 				?>
 				<!-- wp:group {"metadata":{"name":"Instagram Grid"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"grid","columnCount":3}} -->
 				<div class="wp-block-group">
-					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-1.jpg" alt="<?php esc_attr_e( 'Palm trees silhouetted against an orange sunset over open plains', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- wp:image {"id":50259,"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-1.jpg" alt="<?php esc_attr_e( 'Palm trees silhouetted against an orange sunset over open plains', 'sd-theme-2026' ); ?>" class="wp-image-50259" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
-					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-2.jpg" alt="<?php esc_attr_e( 'A river winding in tight bends through a green floodplain, seen from the air', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- wp:image {"id":50260,"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-2.jpg" alt="<?php esc_attr_e( 'A river winding in tight bends through a green floodplain, seen from the air', 'sd-theme-2026' ); ?>" class="wp-image-50260" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
-					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-3.jpg" alt="<?php esc_attr_e( 'Guides poling mokoro dugout canoes along a reed-lined channel', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- wp:image {"id":50261,"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-3.jpg" alt="<?php esc_attr_e( 'Guides poling mokoro dugout canoes along a reed-lined channel', 'sd-theme-2026' ); ?>" class="wp-image-50261" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
-					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-4.jpg" alt="<?php esc_attr_e( 'A lioness grooming her cub', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- wp:image {"id":50262,"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-4.jpg" alt="<?php esc_attr_e( 'A lioness grooming her cub', 'sd-theme-2026' ); ?>" class="wp-image-50262" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
-					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-5.jpg" alt="<?php esc_attr_e( 'A hot-air balloon drifting over red desert dunes', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- wp:image {"id":50263,"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-5.jpg" alt="<?php esc_attr_e( 'A hot-air balloon drifting over red desert dunes', 'sd-theme-2026' ); ?>" class="wp-image-50263" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
-					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-6.jpg" alt="<?php esc_attr_e( 'A malachite kingfisher perched on a reed', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- wp:image {"id":50264,"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-6.jpg" alt="<?php esc_attr_e( 'A malachite kingfisher perched on a reed', 'sd-theme-2026' ); ?>" class="wp-image-50264" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
-					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-7.jpg" alt="<?php esc_attr_e( 'Table Mountain and the Cape Town coastline seen from the sea', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- wp:image {"id":50265,"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-7.jpg" alt="<?php esc_attr_e( 'Table Mountain and the Cape Town coastline seen from the sea', 'sd-theme-2026' ); ?>" class="wp-image-50265" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
-					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-8.jpg" alt="<?php esc_attr_e( 'A rainbow arching through the spray of Victoria Falls', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- wp:image {"id":50266,"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-8.jpg" alt="<?php esc_attr_e( 'A rainbow arching through the spray of Victoria Falls', 'sd-theme-2026' ); ?>" class="wp-image-50266" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
-					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
-					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-9.jpg" alt="<?php esc_attr_e( 'An elephant walking across pale desert sand', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
+					<!-- wp:image {"id":50267,"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
+					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-9.jpg" alt="<?php esc_attr_e( 'An elephant walking across pale desert sand', 'sd-theme-2026' ); ?>" class="wp-image-50267" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
 				</div>
 				<!-- /wp:group -->
