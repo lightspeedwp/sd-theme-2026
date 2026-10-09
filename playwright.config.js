@@ -85,6 +85,11 @@ if ( ! ALLOWED_HOSTS.includes( baseHost ) ) {
 bridgeToWordPressTestUtils( baseURL );
 
 /**
+ * The local stack, rather than dev: `.local` or a loopback host.
+ */
+const isLocal = /^(.+\.local|localhost|127\.0\.0\.1)$/i.test( baseHost );
+
+/**
  * Opt-in projects. Both cost something someone else pays for — `wide` costs
  * runtime, `parity` costs requests against the client's production site — so
  * neither runs unless asked for.
@@ -159,9 +164,14 @@ module.exports = defineConfig( {
 	 * These specs are read-only HTTP GETs against a shared server — they carry
 	 * no fixture state and cannot collide with each other, so unlike an admin
 	 * suite they parallelise safely. Workers are capped to stay polite to dev.
+	 *
+	 * Two against local. It renders a page in 2–7 s uncached on the same
+	 * machine as the browsers. Measured 2026-10-07 on an 8 GB Mac: four
+	 * workers kept PHP-FPM's pool full and the load average near 9, and up to
+	 * a dozen navigations hit the 30 s cap.
 	 */
 	fullyParallel: true,
-	workers: process.env.CI ? 2 : 4,
+	workers: process.env.CI || isLocal ? 2 : 4,
 	forbidOnly: !! process.env.CI,
 	retries: process.env.CI ? 2 : 0,
 
@@ -302,9 +312,15 @@ module.exports = defineConfig( {
 			use: { ...chrome },
 		},
 
+		/**
+		 * Axe walks the whole DOM inside the page, so the heavy archives (query
+		 * loops, the brands grid) overrun the global 45 s. The 2026-09-24 run
+		 * lost eight scans to that and none to an actual violation.
+		 */
 		{
 			name: 'a11y',
 			testMatch: 'a11y/**/*.spec.js',
+			timeout: 120 * 1000,
 			use: { ...chrome, viewport: { width: 1280, height: 800 } },
 		},
 

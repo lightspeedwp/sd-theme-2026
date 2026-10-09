@@ -13,7 +13,7 @@
  *                   URL per entry from the REST API at the start of each run.
  *
  * Each entry names the theme template it exercises. That mapping is the point of
- * the suite: it is how you tell which of the 31 templates are actually covered.
+ * the suite: it is how you tell which of the 33 templates are actually covered.
  *
  * @package SD_Theme_2026
  * @subpackage Tests
@@ -161,16 +161,19 @@ const RESOLVED_ROUTES = [
 	 * (a region's) is on the page. `query` is appended to the REST request:
 	 * a country is a top-level destination, a region has a parent.
 	 *
-	 * Both resolve through `single-destination.html` — `single-country` and
-	 * `single-region` are assignable templates, and no destination is assigned
-	 * one on dev — so all three share the same section partials.
+	 * Since the content was migrated every published destination stores one of
+	 * the two templates (measured on dev and local, 2026-10-09: 10 countries
+	 * on `single-country`, 90 regions on `single-region`). `single-destination`
+	 * is the fallback for a destination with none; the generic `destination`
+	 * entry above still names it, but in practice resolves to one of the two.
+	 * destinations.spec.js asserts the assignment.
 	 */
 	{
 		key: 'country',
 		name: 'single country',
 		restBase: 'destination',
 		query: 'parent=0',
-		template: 'single-destination.html',
+		template: 'single-country.html',
 		optional: true,
 	},
 	{
@@ -178,7 +181,7 @@ const RESOLVED_ROUTES = [
 		name: 'single region',
 		restBase: 'destination',
 		query: 'parent_exclude=0',
-		template: 'single-destination.html',
+		template: 'single-region.html',
 		optional: true,
 	},
 	{
@@ -186,13 +189,6 @@ const RESOLVED_ROUTES = [
 		name: 'single review',
 		restBase: 'review',
 		template: 'single-review.html',
-		optional: true,
-	},
-	{
-		key: 'special',
-		name: 'single special',
-		restBase: 'special',
-		template: 'single-special.html',
 		optional: true,
 	},
 	{

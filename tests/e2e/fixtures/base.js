@@ -57,6 +57,9 @@ const CONSOLE_ALLOWLIST = [
 	'googletagmanager.com',
 	'doubleclick.net',
 	'analytics.tiktok.com',
+	// Firefox logs the pixel's first-party cookie being refused on a `.local`
+	// host. The message names the cookie, not Facebook.
+	'Cookie “_fbp” has been rejected',
 	// WETU itinerary embeds and their analytics, loaded cross-origin.
 	'wetu.com',
 	'staticstuff.net',
@@ -71,6 +74,34 @@ const CONSOLE_ALLOWLIST = [
 	// Favicon 404s are not a theme defect worth failing a suite over.
 	'favicon.ico',
 ];
+
+/**
+ * React's development build, which WordPress serves only when `SCRIPT_DEBUG`
+ * is on — as it is on local, and not on dev. Production React logs none of
+ * these warnings.
+ */
+const REACT_DEV_BUILD = /\/wp-includes\/js\/dist\/vendor\/react(-dom)?\.js/;
+
+/**
+ * A development-only React warning about someone else's components.
+ *
+ * Measured on local 2026-10-07 in the plugin suite, all from third-party admin
+ * code (AI Engine Pro, Yoast) in the block editor, which the `editor` project
+ * also opens. React logs them from its own file, so the source URL alone cannot
+ * name the culprit; the component stack in the message can. A warning whose
+ * stack reaches into this theme still fails the test.
+ *
+ * @param {string} text   Console message.
+ * @param {string} source URL the message was logged from.
+ * @return {boolean} True when it is a third-party React dev-build warning.
+ */
+function isThirdPartyReactDevWarning( text, source ) {
+	return (
+		REACT_DEV_BUILD.test( source ) &&
+		String( text ).startsWith( 'Warning: ' ) &&
+		! String( text ).includes( 'sd-theme-2026' )
+	);
+}
 
 /**
  * @param {string} text Message or URL to test.
@@ -236,7 +267,8 @@ const test = base.test.extend( {
 
 				if (
 					isAllowedConsoleNoise( text ) ||
-					isAllowedConsoleNoise( source )
+					isAllowedConsoleNoise( source ) ||
+					isThirdPartyReactDevWarning( text, source )
 				) {
 					return;
 				}

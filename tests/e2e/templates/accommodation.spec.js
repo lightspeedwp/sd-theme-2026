@@ -365,6 +365,55 @@ test.describe( 'Brands', () => {
 	} );
 } );
 
+test.describe( 'Brand intro Read more', () => {
+	/**
+	 * `intro-collapse.js` clamps a long brand description and adds a Read more —
+	 * only when the text genuinely overflows, so a brand with a short one has no
+	 * button at all. That is a content fact, so the test skips on it rather than
+	 * failing. The unit tests own the measuring; this proves the script runs on
+	 * the real pattern and the toggle reveals text.
+	 */
+	test( 'a long description clamps, and Read more opens and closes it', async ( {
+		page,
+		visit,
+		routes,
+	} ) => {
+		const target = routes.term( 'accommodation-brand' );
+		test.skip( ! target, 'No populated accommodation brand' );
+
+		await visit( target );
+
+		const intro = page.locator( 'main .sd-intro-collapse' ).first();
+		test.skip(
+			0 === ( await intro.count() ) ||
+				! ( await intro.evaluate( ( el ) =>
+					el.classList.contains( 'is-enhanced' )
+				) ),
+			'This brand\u2019s description fits without a clamp'
+		);
+
+		const button = intro.locator( '.sd-intro-collapse__toggle a' );
+		const text = intro.locator( '.sd-intro-collapse__text' );
+
+		await expect( button ).toHaveAttribute( 'role', 'button' );
+		await expect( button ).toHaveAttribute( 'aria-expanded', 'false' );
+
+		const clamped = ( await text.boundingBox() ).height;
+
+		await button.click();
+		await expect( button ).toHaveAttribute( 'aria-expanded', 'true' );
+		await expect( intro ).toHaveClass( /\bis-expanded\b/ );
+		expect(
+			( await text.boundingBox() ).height,
+			'expanding revealed nothing'
+		).toBeGreaterThan( clamped );
+
+		await button.click();
+		await expect( button ).toHaveAttribute( 'aria-expanded', 'false' );
+		await expect( intro ).not.toHaveClass( /\bis-expanded\b/ );
+	} );
+} );
+
 test.describe( 'Filter flyout', () => {
 	/**
 	 * Wait for FacetWP's first load, and report whether the Flyout add-on
