@@ -1,0 +1,1062 @@
+{
+  "vocabulary": {
+    "version": "30.1"
+  },
+  "pages": [
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/",
+      "finalUrl": "https://beta.local/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/hello-world/",
+      "finalUrl": "https://beta.local/hello-world/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/hello-world/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/review/empty-review/",
+      "finalUrl": "https://beta.local/review/empty-review/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "Review": 1,
+        "Person": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<Review>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/review/empty-review/, which no block on the page defines."
+        },
+        {
+          "severity": "warn",
+          "check": "rich-result-required",
+          "path": "block0.@graph[0]<Review>",
+          "detail": "Review needs 'reviewRating' for a Google rich result."
+        },
+        {
+          "severity": "warn",
+          "check": "rich-result-required",
+          "path": "block0.@graph[0]<Review>",
+          "detail": "Review needs 'itemReviewed' for a Google rich result."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/reviews/",
+      "finalUrl": "https://beta.local/reviews/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/reviews/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/accommodation/clouds-estate/",
+      "finalUrl": "https://beta.local/accommodation/clouds-estate/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "LodgingBusiness": 1,
+        "GeoCoordinates": 1,
+        "TouristDestination": 2
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<LodgingBusiness>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/accommodation/clouds-estate/, which no block on the page defines."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<LodgingBusiness>.containedInPlace[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<LodgingBusiness>.containedInPlace[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[0]<LodgingBusiness>",
+          "detail": "LocalBusiness should have 'telephone'."
+        },
+        {
+          "severity": "info",
+          "check": "address-text",
+          "path": "block0.@graph[0]<LodgingBusiness>",
+          "detail": "'address' is plain text; Google expects a PostalAddress."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/accommodation/",
+      "finalUrl": "https://beta.local/accommodation/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/accommodation/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/destination/south-africa/stellenbosch/",
+      "finalUrl": "https://beta.local/destination/south-africa/stellenbosch/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "TouristDestination": 2,
+        "GeoCoordinates": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<TouristDestination>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/destination/south-africa/stellenbosch/, which no block on the page defines."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristDestination>.containedInPlace<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/destinations/",
+      "finalUrl": "https://beta.local/destinations/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/destinations/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/tour/western-cape-in-8-days/",
+      "finalUrl": "https://beta.local/tour/western-cape-in-8-days/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "TouristTrip": 10,
+        "Product": 1,
+        "PropertyValue": 4,
+        "Place": 1,
+        "Offer": 1,
+        "LodgingBusiness": 9,
+        "TouristDestination": 9
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<TouristTrip/Product>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/tour/western-cape-in-8-days/, which no block on the page defines."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>",
+          "detail": "'subTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[0]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[0]<TouristTrip>.itinerary[0]<LodgingBusiness>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[0]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[1]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[1]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[1]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[2]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[2]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[2]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[3]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[3]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[3]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[4]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[4]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[4]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[5]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[5]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[5]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[6]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[6]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[6]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[7]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[7]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[7]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[8]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[8]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[8]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[0]<TouristTrip/Product>.offers<Offer>",
+          "detail": "Offer should have 'availability'."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[0]<TouristTrip/Product>.offers<Offer>",
+          "detail": "Offer should have 'url'."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/tours/",
+      "finalUrl": "https://beta.local/tours/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/tours/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/special/giraffe-conservation-safari/",
+      "finalUrl": "https://beta.local/special/giraffe-conservation-safari/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "Offer": 1,
+        "UnitPriceSpecification": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<Offer>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/special/giraffe-conservation-safari/, which no block on the page defines."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/specials/",
+      "finalUrl": "https://beta.local/specials/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/specials/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/team/warwick-booth/",
+      "finalUrl": "https://beta.local/team/warwick-booth/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "Person": 1,
+        "TouristTrip": 3,
+        "LodgingBusiness": 6
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<Person>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/team/warwick-booth/, which no block on the page defines."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<Person>.knowsAbout[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<Person>.knowsAbout[1]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<Person>.knowsAbout[2]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/team/",
+      "finalUrl": "https://beta.local/team/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/team/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/category/uncategorized/",
+      "finalUrl": "https://beta.local/category/uncategorized/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/category/uncategorized/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/accommodation-type/hotel/",
+      "finalUrl": "https://beta.local/accommodation-type/hotel/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/accommodation-type/hotel/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/travel-style/self-drive/",
+      "finalUrl": "https://beta.local/travel-style/self-drive/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/travel-style/self-drive/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/facility/available-services/",
+      "finalUrl": "https://beta.local/facility/available-services/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/facility/available-services/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/continent/africa/",
+      "finalUrl": "https://beta.local/continent/africa/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/continent/africa/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/author/admin/",
+      "finalUrl": "https://beta.local/author/admin/",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/author/admin/",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/?s=a",
+      "finalUrl": "https://beta.local/?s=a",
+      "status": 200,
+      "redirects": [],
+      "generators": [],
+      "yoastActive": false,
+      "blocks": 0,
+      "types": {},
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "no-structured-data",
+          "path": "https://beta.local/?s=a",
+          "detail": "The page has no JSON-LD."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/review/rachel-nigel/",
+      "finalUrl": "https://beta.local/review/rachel-nigel/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "Review": 1,
+        "Person": 1,
+        "Rating": 1,
+        "TouristTrip": 1,
+        "LodgingBusiness": 1,
+        "TouristDestination": 4
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<Review>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/review/rachel-nigel/, which no block on the page defines."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<Review>.itemReviewed[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<Review>.itemReviewed[2]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<Review>.itemReviewed[3]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<Review>.spatialCoverage[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<Review>.spatialCoverage[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/destination/zimbabwe/",
+      "finalUrl": "https://beta.local/destination/zimbabwe/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "TouristDestination": 2,
+        "GeoCoordinates": 1,
+        "PropertyValue": 6
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<TouristDestination>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/destination/zimbabwe/, which no block on the page defines."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristDestination>.containsPlace[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/special/best-of-the-desert-special-11-nights/",
+      "finalUrl": "https://beta.local/special/best-of-the-desert-special-11-nights/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "Offer": 1,
+        "UnitPriceSpecification": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<Offer>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/special/best-of-the-desert-special-11-nights/, which no block on the page defines."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/tour/phuket-krabi-thailand-14-nights/",
+      "finalUrl": "https://beta.local/tour/phuket-krabi-thailand-14-nights/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "TouristTrip": 7,
+        "Product": 1,
+        "PropertyValue": 4,
+        "Place": 1,
+        "Offer": 1,
+        "LodgingBusiness": 6,
+        "TouristDestination": 6
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<TouristTrip/Product>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/tour/phuket-krabi-thailand-14-nights/, which no block on the page defines."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[0]<TouristTrip/Product>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>",
+          "detail": "'subTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[0]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[0]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[1]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[1]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[1]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[2]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[2]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[2]<TouristTrip>.itinerary[0]<LodgingBusiness>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[2]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[3]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[3]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[3]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[4]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[4]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[4]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[5]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[5]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristTrip/Product>.subTrip[5]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[0]<TouristTrip/Product>.offers<Offer>",
+          "detail": "Offer should have 'availability'."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[0]<TouristTrip/Product>.offers<Offer>",
+          "detail": "Offer should have 'url'."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/destination/namibia/",
+      "finalUrl": "https://beta.local/destination/namibia/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "unattributed"
+      ],
+      "yoastActive": false,
+      "blocks": 1,
+      "types": {
+        "TouristDestination": 2,
+        "GeoCoordinates": 1,
+        "PropertyValue": 6
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "unresolved-reference",
+          "path": "block0.@graph[0]<TouristDestination>.mainEntityOfPage",
+          "detail": "'mainEntityOfPage' points to https://beta.local/destination/namibia/, which no block on the page defines."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[0]<TouristDestination>.containsPlace[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "error": 0,
+    "warn": 28,
+    "info": 74
+  },
+  "notes": []
+}
