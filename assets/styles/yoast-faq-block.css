@@ -9,10 +9,10 @@
  *       strong.schema-faq-question
  *       p.schema-faq-answer
  *
- * Tour Operator (the build on dev, not yet local's 2.2) turns that into an
- * accordion: `build/faq-accordion.js` adds `.is-accordion` to the wrapper,
+ * The Tour Operator FAQ plugin (lightspeedwp/to-faq) turns that into an
+ * accordion: `faq-accordion.js` adds `.is-accordion` to the wrapper,
  * `.is-open` to an expanded section and `role="button"` to the question, and
- * `build/style.css` styles it as rounded cards with the padding moved onto the
+ * its stylesheet styles it as rounded cards with the padding moved onto the
  * question and answer. Its selectors are (0,3,0)–(0,4,0) and its stylesheet
  * prints after this one, so every rule below is prefixed
  * `.wp-block-yoast-faq-block.schema-faq` and, where TO has a matching
@@ -90,8 +90,27 @@
 	font-weight: var(--wp--custom--font-weight--semi-bold);
 }
 
+/* The chevron is a two-bordered square turned 45deg, so the visible "V" fills
+   only the half of the turned box it points towards. The plugin's 1px nudge
+   leaves it below the question's centre line; 3px, up when closed and down when
+   open, puts the V's optical centre on it. Measured on dev, 2026-10-21. */
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-question::after {
+	transform: translateY(-3px) rotate(45deg);
+}
+
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-section.is-open > .schema-faq-question::after {
+	transform: translateY(3px) rotate(-135deg);
+}
+
 .wp-block-yoast-faq-block.schema-faq .schema-faq-answer {
 	margin-block: var(--wp--preset--spacing--10) 0;
+}
+
+/* The accordion collapses the answer to `max-height: 0` but cannot collapse a
+   margin, so the gap above would stay under every closed question and push it
+   off-centre in its card. The plugin spaces the open answer itself. */
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-answer {
+	margin-block: 0;
 }
 
 /* Keyboard users: links in an answer, and the accordion's question button. */

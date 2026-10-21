@@ -504,6 +504,13 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   with its group gaps tightened (`80`→`40`, `30`→`20`). The four desktop panels
   in `homepage-main-content` centre their heading, copy and CTA row, so the
   arrow sits beside its text, and their frame padding halves (`100`→`50`).
+- **FAQ accordion: question and chevron centred in a closed card.** With the
+  Tour Operator FAQ plugin active, the answer's `spacing|10` top margin stayed
+  under every collapsed question (a margin does not collapse with
+  `max-height: 0`), making closed cards 72.8px with the question riding high.
+  It is zeroed in accordion mode — cards are 62.8px, question centred — and the
+  chevron's nudge goes from the plugin's 1px to 3px each way, onto the
+  question's centre line (`assets/styles/yoast-faq-block.css`).
 - **Home intro: more room above "Start here".** The logo and the heading +
   standfirst move into their own "Intro" group (gap `spacing|40`, unchanged), so
   the outer gap sets intro → "Start here" alone: `spacing|40` → `spacing|100`,
