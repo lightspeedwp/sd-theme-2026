@@ -669,6 +669,20 @@
 	display: none !important;
 }
 
+/* Slider Frame — no dot / counter row, site-wide.
+ *
+ * Client feedback (BugHerd, dev /blog/): "turn off the slide show counter site
+ * wide". The numbered/bar dots are Slick's `.slick-dots` (Tour Operator) and
+ * Swiper's `.swiper-pagination` (Carousel Block). Tour Operator's
+ * `build_slider()` hardcodes `dots: true` with no filter or data attribute, so
+ * there is no setting to switch off — suppressed here, scoped to the slider
+ * frame, arrows untouched. `display: none` (not visibility) so no hidden tab
+ * stop remains. Doubled class beats the `display: flex !important` dot-row
+ * rule above on specificity, not source order. */
+.is-style-slider-frame.is-style-slider-frame :is(.slick-dots, .swiper-pagination) {
+	display: none !important;
+}
+
 /* Slider Frame — the flush variant.
  *
  * The review band is edge to edge on live: the quote's dimmed image runs the

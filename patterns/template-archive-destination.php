@@ -231,7 +231,7 @@
 	 *
 	 * That arrangement is a container query on `.sd-expert` at 36rem (576px,
 	 * assets/styles/core-group.css), so the split is what decides it. Against
-	 * the 1340px wide rail less the spacing-50 gap, a half column is ~645px at
+	 * the 1280px wide rail less the spacing-50 gap, a half column is ~615px at
 	 * a 1440px viewport and ~595px at 1280px — both clear of 576px. Below
 	 * ~1240px it drops back to the narrow card, and below 782px core stacks the
 	 * columns and the card has the full width again.

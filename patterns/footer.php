@@ -170,14 +170,14 @@
 
 				<?php
 				/*
-				 * The We Are Africa 2024 Tribe Member badge, linking out to the
-				 * trade body. The `-300x300` intermediate is used rather than the
+				 * The We Are Africa 2024 Tribe Member badge. Unlinked at the
+				 * client's request (BugHerd #4). The `-300x300` intermediate is used rather than the
 				 * original: the full file is 2250px and 35KB, a pointless
 				 * download for a 144px mark.
 				 */
 				?>
-				<!-- wp:image {"width":"144px","sizeSlug":"medium","linkDestination":"custom"} -->
-				<figure class="wp-block-image size-medium is-resized"><a href="https://www.weareafricatravel.com/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:144px"/></a></figure>
+				<!-- wp:image {"width":"144px","sizeSlug":"medium","linkDestination":"none"} -->
+				<figure class="wp-block-image size-medium is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:144px"/></figure>
 				<!-- /wp:image -->
 				</div>
 				<!-- /wp:group -->
@@ -251,16 +251,14 @@
 				 * hook class and a block of assets/styles/core-social-links.css;
 				 * nothing here needs a class of its own any more.
 				 *
-				 * `twitter`, not `x`: live links to twitter.com and shows the
-				 * bird, and this is a port. Switching the mark is a client
-				 * decision with a copy change attached.
+				 * No Twitter/X link: the client asked for it to be removed
+				 * (BugHerd #3).
 				 */
 				?>
 				<!-- wp:social-links {"iconColor":"primary-500","iconColorValue":"var(--wp--preset--color--primary-500)","showLabels":true,"size":"has-small-icon-size","className":"is-style-logos-only","style":{"spacing":{"blockGap":{"top":"0","left":"0"}}},"layout":{"type":"flex","orientation":"vertical"}} -->
 				<ul class="wp-block-social-links has-small-icon-size has-visible-labels has-icon-color is-style-logos-only">
 					<!-- wp:social-link {"url":"https://www.facebook.com/SouthernDestinations/","service":"facebook","label":"Facebook"} /-->
-					<!-- wp:social-link {"url":"https://twitter.com/southerndest","service":"twitter","label":"Twitter"} /-->
-					<!-- wp:social-link {"url":"https://www.instagram.com/southerndestinations/","service":"instagram","label":"Instagram"} /-->
+						<!-- wp:social-link {"url":"https://www.instagram.com/southerndestinations/","service":"instagram","label":"Instagram"} /-->
 					<!-- wp:social-link {"url":"https://www.pinterest.com/SouthernDestinations/","service":"pinterest","label":"Pinterest"} /-->
 					<!-- wp:social-link {"url":"https://www.linkedin.com/company/southern-destinations/","service":"linkedin","label":"LinkedIn"} /-->
 					<!-- wp:social-link {"url":"https://www.youtube.com/channel/UCny_nCkQmY1vZwQPOmYbs_Q","service":"youtube","label":"YouTube"} /-->

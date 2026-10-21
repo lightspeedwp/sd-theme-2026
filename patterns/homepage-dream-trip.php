@@ -37,22 +37,22 @@
 
 ?>
 <!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - How to plan your dream trip"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull is-style-light-page-section"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|80"}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull is-style-light-page-section"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignwide"><!-- wp:image {"id":50292,"width":"300px","sizeSlug":"full","linkDestination":"none","align":"center","blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
 <figure class="wp-block-image aligncenter size-full is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/home-intro-logo.svg" alt="" class="wp-image-50292" style="width:300px;height:auto"/></figure>
 <!-- /wp:image -->
 
-<!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+<!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
 <div class="wp-block-group alignwide"><!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","fontFamily":"accent","anchor":"h-how-to-plan-your-dream-trip-to-africa"} -->
 <h2 class="wp-block-heading has-text-align-center is-style-script-accent has-accent-font-family" id="h-how-to-plan-your-dream-trip-to-africa"><?php esc_html_e( 'How to plan your dream trip to Africa…', 'sd-theme-2026' ); ?></h2>
 <!-- /wp:heading -->
 
-<!-- wp:paragraph {"align":"center","fontSize":"400"} -->
-<p class="has-text-align-center has-400-font-size"><em><?php esc_html_e( 'So you want to see Africa? You may have an idea where you want to go and what you want to see. Weaving your ideas into a seriously addictive travel experience is where we shine. Your dreams. Our expertise. Together we can help you plan your ultimate African safari!', 'sd-theme-2026' ); ?></em></p>
+<!-- wp:paragraph {"align":"center","fontSize":"300"} -->
+<p class="has-text-align-center has-300-font-size"><em><?php esc_html_e( 'So you want to see Africa? You may have an idea where you want to go and what you want to see. Weaving your ideas into a seriously addictive travel experience is where we shine. Your dreams. Our expertise. Together we can help you plan your ultimate African safari!', 'sd-theme-2026' ); ?></em></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center","verticalAlignment":"center"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
+<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center","verticalAlignment":"center"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
 <div class="wp-block-group"><!-- wp:heading {"level":3,"className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|brand-500"}}}},"textColor":"brand-500","fontSize":"600","fontFamily":"accent","anchor":"h-start-here"} -->
 <h3 id="h-start-here" class="wp-block-heading is-style-script-accent has-brand-500-color has-text-color has-link-color has-accent-font-family has-600-font-size"><?php echo esc_html_x( 'Start here', 'cue pointing down to the homepage panels', 'sd-theme-2026' ); ?></h3>
 <!-- /wp:heading -->

@@ -490,6 +490,29 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Site-wide type and spacing brought back to live's scale.** BugHerd #6, #7,
+  #9, #10. Measured at 1650px: live's body copy is 15px/24px against our
+  19.2px/28.8px, and our root `blockGap` put ~60px between blocks where live
+  has 12–24px. Root `fontSize` in `theme.json` moves from `300` to `200` (16px;
+  the nearest token, 1px over live) and root `blockGap` from `spacing|60` to
+  `spacing|30`. The home intro (`homepage-dream-trip`) paragraph drops to `300`,
+  with its group gaps tightened (`80`→`40`, `30`→`20`). The four desktop panels
+  in `homepage-main-content` centre their heading, copy and CTA row, so the
+  arrow sits beside its text, and their frame padding halves (`100`→`50`).
+- **Wide layout narrows from 1340px to 1280px** (`settings.layout.wideSize`).
+  Zared's call alongside BugHerd #7. The safari expert card keeps its wide
+  arrangement: emulated on dev at a 1651px viewport, the card is 610px against
+  its 576px container threshold, at an unchanged 183px tall. Below ~1250px
+  viewports the card switched to the narrow arrangement before and still does.
+- **About Us mega menu colours match live.** BugHerd #11. The three panel
+  headings and the "Meet the team" button take `contrast` (live's black) as
+  block attributes in `parts/mega-menu-about.html`; the site-wide
+  `section-title-left` and Outline styles are untouched.
+- **Safari expert: Call Us matches Send an Email.** BugHerd #12. The Call Us box
+  in `patterns/safari-expert.php` takes the `accent-cta` plate — `accent-400`
+  fill, `primary-600` bold label, matching border width — and its hover/focus
+  in `assets/styles/ollie-mega-menu.css` moves to `accent-200`, as the CTA's
+  does.
 - **Header.** ASD-36. "Call Us Today" in `primary-500`, not uppercase, with
   the phone icon, label and chevron centred on one axis (flex toggle,
   `text-box` trim to cap height); hover `primary-600`. "Get in touch" stays the
@@ -1439,6 +1462,16 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Removed
 
+- **UK and Australia toll-free numbers** from the Call Us dropdown
+  (`parts/dropdown-call-us.html`), which the desktop header, the safari expert
+  panel and the mobile menu all share. US and South Africa remain. BugHerd #1.
+- **Slider counter, site-wide.** BugHerd #8. Tour Operator's slick sliders
+  hardcode `dots: true` with no filter, so `.slick-dots` and
+  `.swiper-pagination` are hidden inside `.is-style-slider-frame`
+  (`assets/styles/core-group.css`). Prev/next arrows stay.
+- **Footer: the Twitter link** from Follow Us (BugHerd #3), and **the link on
+  the We Are Africa badge** (BugHerd #4) — the image, alt text and size stay
+  (`patterns/footer.php`).
 - Unreferenced style variations `paragraph/subheading-medium`,
   `paragraph/subheading-small`, `sections/inner-page-section` and
   `sections/section-header`. ASD-36.

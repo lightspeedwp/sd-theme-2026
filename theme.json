@@ -326,7 +326,7 @@
 		},
 		"layout": {
 			"contentSize": "900px",
-			"wideSize": "1340px"
+			"wideSize": "1280px"
 		},
 		"shadow": {
 			"defaultPresets": false,
@@ -1168,7 +1168,7 @@
 			}
 		},
 		"spacing": {
-			"blockGap": "var:preset|spacing|60",
+			"blockGap": "var:preset|spacing|30",
 			"padding": {
 				"top": "0",
 				"right": "var:preset|spacing|20",
@@ -1178,7 +1178,7 @@
 		},
 		"typography": {
 			"fontFamily": "var:preset|font-family|body",
-			"fontSize": "var:preset|font-size|300",
+			"fontSize": "var:preset|font-size|200",
 			"fontWeight": "var:custom|font-weight|regular",
 			"lineHeight": "var:custom|line-height|body"
 		}
