@@ -504,6 +504,13 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   with its group gaps tightened (`80`→`40`, `30`→`20`). The four desktop panels
   in `homepage-main-content` centre their heading, copy and CTA row, so the
   arrow sits beside its text, and their frame padding halves (`100`→`50`).
+- **Category tiles hold their shape without an image.** The Category Card
+  section style takes a 16:9 ratio on the tile itself, so a category with no
+  `thumbnail` renders the same 256×144 tile — name centred on the existing
+  neutral-700 ground — rather than collapsing to 1px and leaving a gap in the
+  blog's category slider. Safari Tips is that category on dev, and it has no
+  image on live either; one is to come from the client
+  (`styles/sections/cards/category-card.json`).
 - **FAQ accordion: question and chevron centred in a closed card.** With the
   Tour Operator FAQ plugin active, the answer's `spacing|10` top margin stayed
   under every collapsed question (a margin does not collapse with
