@@ -504,6 +504,17 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   with its group gaps tightened (`80`→`40`, `30`→`20`). The four desktop panels
   in `homepage-main-content` centre their heading, copy and CTA row, so the
   arrow sits beside its text, and their frame padding halves (`100`→`50`).
+- **Home intro: more room above "Start here".** The logo and the heading +
+  standfirst move into their own "Intro" group (gap `spacing|40`, unchanged), so
+  the outer gap sets intro → "Start here" alone: `spacing|40` → `spacing|100`,
+  87px at desktop against live's 89px, where it was 35px
+  (`patterns/homepage-dream-trip.php`).
+- **Vertical cards tightened.** The home blog card (`card-post-grid`) and the
+  tour and accommodation compact cards take their Body gap from `spacing|20` to
+  `spacing|10`, so title → meta → excerpt sit closer; the tour meta rows go
+  from `spacing|5` to `0` (each row keeps its 2px padding) and the
+  accommodation meta rows from `spacing|10` to `spacing|5`. Judged by eye, not
+  matched to a live measurement.
 - **Destination summary map group carries `lsx-map`.** Captured from dev's
   `single-country` Site Editor override (2026-10-20), its one genuine edit, so
   the override can be reset. Whether it revives the map plate's click on TO 2.2

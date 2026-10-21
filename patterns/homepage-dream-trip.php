@@ -37,7 +37,8 @@
 
 ?>
 <!-- wp:group {"tagName":"section","metadata":{"name":"Homepage - How to plan your dream trip"},"align":"full","className":"is-style-light-page-section","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull is-style-light-page-section"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull is-style-light-page-section"><!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|100"}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignwide"><!-- wp:group {"metadata":{"name":"Intro"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignwide"><!-- wp:image {"id":50292,"width":"300px","sizeSlug":"full","linkDestination":"none","align":"center","blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
 <figure class="wp-block-image aligncenter size-full is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/home-intro-logo.svg" alt="" class="wp-image-50292" style="width:300px;height:auto"/></figure>
 <!-- /wp:image -->
@@ -50,6 +51,7 @@
 <!-- wp:paragraph {"align":"center","fontSize":"300"} -->
 <p class="has-text-align-center has-300-font-size"><em><?php esc_html_e( 'So you want to see Africa? You may have an idea where you want to go and what you want to see. Weaving your ideas into a seriously addictive travel experience is where we shine. Your dreams. Our expertise. Together we can help you plan your ultimate African safari!', 'sd-theme-2026' ); ?></em></p>
 <!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center","verticalAlignment":"center"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
