@@ -161,6 +161,10 @@
 			 * here. The preview plate renders either way, so the column is no
 			 * longer empty while that is outstanding.
 			 *
+			 * **`lsx-map` on "Map Container"** was added in the Site Editor on dev
+			 * (2026-10-20) and is captured here: maps.js is gated on `.lsx-map`
+			 * existing, and this group is the element that carries it.
+			 *
 			 * ⚠️ **And that makes the plate a dead click on TO 2.2.** maps.js's
 			 * whole ready handler is gated on `.lsx-map` existing —
 			 * `jQuery(".lsx-map").length > 0 && ( … ? watchMapTriggers() :
@@ -181,8 +185,8 @@
 			<!-- wp:group {"tagName":"section","metadata":{"name":"Google Map"},"align":"full","className":"lsx-location-wrapper","layout":{"type":"constrained"}} -->
 			<section class="wp-block-group alignfull lsx-location-wrapper">
 
-				<!-- wp:group {"metadata":{"name":"Map Container"},"align":"wide","layout":{"type":"default"}} -->
-				<div class="wp-block-group alignwide">
+				<!-- wp:group {"metadata":{"name":"Map Container"},"align":"wide","className":"lsx-map","layout":{"type":"default"}} -->
+				<div class="wp-block-group alignwide lsx-map">
 
 					<!-- wp:cover {"url":"/wp-content/plugins/tour-operator/assets/img/blocks/placeholder-map-1920x656.jpg","dimRatio":50,"customOverlayColor":"#e2f0f7","isUserOverlayColor":false,"isDark":false,"className":"lsx-map-preview","style":{"dimensions":{"aspectRatio":"1"}},"layout":{"type":"constrained"}} -->
 					<div class="wp-block-cover is-light lsx-map-preview"><img class="wp-block-cover__image-background" alt="" src="/wp-content/plugins/tour-operator/assets/img/blocks/placeholder-map-1920x656.jpg" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-background-dim" style="background-color:#e2f0f7"></span><div class="wp-block-cover__inner-container"><!-- wp:paragraph {"className":"has-text-align-center has-large-font-size","style":{"typography":{"textAlign":"center"}},"fontSize":"large"} -->

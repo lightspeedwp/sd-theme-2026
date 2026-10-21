@@ -494,25 +494,37 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   #9, #10. Measured at 1650px: live's body copy is 15px/24px against our
   19.2px/28.8px, and our root `blockGap` put ~60px between blocks where live
   has 12–24px. Root `fontSize` in `theme.json` moves from `300` to `200` (16px;
-  the nearest token, 1px over live) and root `blockGap` from `spacing|60` to
-  `spacing|30`. The home intro (`homepage-dream-trip`) paragraph drops to `300`,
+  the nearest token, 1px over live). Rather than dropping root `blockGap` a step
+  (tried as `spacing|30`, too tight a lever — Zared's call), the scales shrink:
+  font sizes `300`/`400`/`500` go to 18/22/28px max (from 19.2/24/32px), mins in
+  proportion, and spacing `20`–`100` drops ~13% at both clamp ends while still
+  reaching its max at 1600px (`spacing|60` is 52px at desktop, from 60px).
+  `100`, `200`, `600`+ and spacing `5`/`10` are unchanged. These values depart
+  from the Figma token map, by decision. The home intro (`homepage-dream-trip`) paragraph drops to `300`,
   with its group gaps tightened (`80`→`40`, `30`→`20`). The four desktop panels
   in `homepage-main-content` centre their heading, copy and CTA row, so the
   arrow sits beside its text, and their frame padding halves (`100`→`50`).
+- **Destination summary map group carries `lsx-map`.** Captured from dev's
+  `single-country` Site Editor override (2026-10-20), its one genuine edit, so
+  the override can be reset. Whether it revives the map plate's click on TO 2.2
+  is untested (`patterns/destination-summary.php`). Full reconciliation in
+  `.github/reports/dev-override-reconciliation-2026-10-21.md`.
 - **Wide layout narrows from 1340px to 1280px** (`settings.layout.wideSize`).
   Zared's call alongside BugHerd #7. The safari expert card keeps its wide
   arrangement: emulated on dev at a 1651px viewport, the card is 610px against
   its 576px container threshold, at an unchanged 183px tall. Below ~1250px
   viewports the card switched to the narrow arrangement before and still does.
-- **About Us mega menu colours match live.** BugHerd #11. The three panel
-  headings and the "Meet the team" button take `contrast` (live's black) as
-  block attributes in `parts/mega-menu-about.html`; the site-wide
-  `section-title-left` and Outline styles are untouched.
-- **Safari expert: Call Us matches Send an Email.** BugHerd #12. The Call Us box
-  in `patterns/safari-expert.php` takes the `accent-cta` plate — `accent-400`
-  fill, `primary-600` bold label, matching border width — and its hover/focus
-  in `assets/styles/ollie-mega-menu.css` moves to `accent-200`, as the CTA's
-  does.
+- **About Us mega menu matches live.** BugHerd #11. The three panel headings
+  take `contrast` (live's black) and step down from `500` to `400`, as block
+  attributes in `parts/mega-menu-about.html`; the site-wide
+  `section-title-left` style is untouched. The "Meet the team" button is
+  removed — live has none, and it repeated the left column's Meet Our Team link.
+- **Safari expert: Send an Email matches Call Us.** BugHerd #12. Both actions
+  are live's 1px white outline with a white semi-bold label. Send an Email
+  moves from the `accent-cta` amber plate to `is-style-outline-light`, with the
+  Call Us box's 1px border, semi-bold weight and side padding as block
+  attributes (`patterns/safari-expert.php`). The Call Us box and its white-fill
+  hover in `assets/styles/ollie-mega-menu.css` are unchanged.
 - **Header.** ASD-36. "Call Us Today" in `primary-500`, not uppercase, with
   the phone icon, label and chevron centred on one axis (flex toggle,
   `text-box` trim to cap height); hover `primary-600`. "Get in touch" stays the

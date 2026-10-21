@@ -378,47 +378,47 @@
 				},
 				{
 					"name": "S",
-					"size": "clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.469), 1.25rem)",
+					"size": "clamp(0.761rem, 0.761rem + ((1vw - 0.2rem) * 0.407), 1.087rem)",
 					"slug": "20"
 				},
 				{
 					"name": "M",
-					"size": "clamp(1.25rem, 1.25rem + ((1vw - 0.2rem) * 0.781), 1.875rem)",
+					"size": "clamp(1.087rem, 1.087rem + ((1vw - 0.2rem) * 0.68), 1.631rem)",
 					"slug": "30"
 				},
 				{
 					"name": "L",
-					"size": "clamp(1.625rem, 1.625rem + ((1vw - 0.2rem) * 1.094), 2.5rem)",
+					"size": "clamp(1.414rem, 1.414rem + ((1vw - 0.2rem) * 0.951), 2.175rem)",
 					"slug": "40"
 				},
 				{
 					"name": "XL",
-					"size": "clamp(2.063rem, 2.063rem + ((1vw - 0.2rem) * 1.327), 3.125rem)",
+					"size": "clamp(1.795rem, 1.795rem + ((1vw - 0.2rem) * 1.155), 2.719rem)",
 					"slug": "50"
 				},
 				{
 					"name": "XXL",
-					"size": "clamp(2.313rem, 2.313rem + ((1vw - 0.2rem) * 1.796), 3.75rem)",
+					"size": "clamp(2.012rem, 2.012rem + ((1vw - 0.2rem) * 1.564), 3.263rem)",
 					"slug": "60"
 				},
 				{
 					"name": "XXXL",
-					"size": "clamp(2.625rem, 2.625rem + ((1vw - 0.2rem) * 2.188), 4.375rem)",
+					"size": "clamp(2.284rem, 2.284rem + ((1vw - 0.2rem) * 1.903), 3.806rem)",
 					"slug": "70"
 				},
 				{
 					"name": "XXXXL",
-					"size": "clamp(3rem, 3rem + ((1vw - 0.2rem) * 2.5), 5rem)",
+					"size": "clamp(2.61rem, 2.61rem + ((1vw - 0.2rem) * 2.175), 4.35rem)",
 					"slug": "80"
 				},
 				{
 					"name": "Gigantic",
-					"size": "clamp(3.5rem, 3.5rem + ((1vw - 0.2rem) * 2.656), 5.625rem)",
+					"size": "clamp(3.045rem, 3.045rem + ((1vw - 0.2rem) * 2.311), 4.894rem)",
 					"slug": "90"
 				},
 				{
 					"name": "Colossal",
-					"size": "clamp(4rem, 4rem + ((1vw - 0.2rem) * 2.812), 6.25rem)",
+					"size": "clamp(3.48rem, 3.48rem + ((1vw - 0.2rem) * 2.447), 5.438rem)",
 					"slug": "100"
 				}
 			],
@@ -556,28 +556,28 @@
 				},
 				{
 					"fluid": {
-						"min": "1rem",
-						"max": "1.20rem"
+						"min": "0.9375rem",
+						"max": "1.125rem"
 					},
-					"size": "1.20rem",
+					"size": "1.125rem",
 					"slug": "300",
 					"name": "Small"
 				},
 				{
 					"fluid": {
-						"min": "1.25rem",
-						"max": "1.5rem"
+						"min": "1.125rem",
+						"max": "1.375rem"
 					},
-					"size": "1.5rem",
+					"size": "1.375rem",
 					"slug": "400",
 					"name": "Medium"
 				},
 				{
 					"fluid": {
-						"min": "1.625rem",
-						"max": "2rem"
+						"min": "1.4375rem",
+						"max": "1.75rem"
 					},
-					"size": "2rem",
+					"size": "1.75rem",
 					"slug": "500",
 					"name": "Large"
 				},
@@ -1168,7 +1168,7 @@
 			}
 		},
 		"spacing": {
-			"blockGap": "var:preset|spacing|30",
+			"blockGap": "var:preset|spacing|60",
 			"padding": {
 				"top": "0",
 				"right": "var:preset|spacing|20",

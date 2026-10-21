@@ -592,13 +592,10 @@
 		color 0.25s ease-in-out;
 }
 
-/* Same hover as `is-style-accent-cta` beside it (accent-200 plate, primary-600
-   label) — the two actions are one style, per BugHerd client feedback. */
 .sd-expert__call-box:hover,
 .sd-expert__call-box:focus-within {
-	background-color: var(--wp--preset--color--accent-200);
-	border-color: var(--wp--preset--color--accent-200);
-	color: var(--wp--preset--color--primary-600);
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--primary-500);
 }
 
 /* The trigger's colour is set by the variation's own `:hover` rule above, which
@@ -606,7 +603,7 @@
    follows the box rather than the header's rule. */
 .sd-expert__call-box:hover .sd-expert__call .wp-block-ollie-mega-menu__toggle,
 .sd-expert__call-box:focus-within .sd-expert__call .wp-block-ollie-mega-menu__toggle {
-	color: var(--wp--preset--color--primary-600);
+	color: var(--wp--preset--color--primary-500);
 }
 
 @media (prefers-reduced-motion: reduce) {

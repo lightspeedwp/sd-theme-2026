@@ -45,34 +45,30 @@
  *     .lsx-to-contact-name  white             base, title case, font-size 400
  *     .lsx-to-meta-data     1px #fff, radius 2px, white text
  *                                             a bordered box, full-width half
- *     .lsx-to-enquire-form  the amber CTA     is-style-accent-cta, full-width half
+ *     .lsx-to-enquire-form  white-border CTA  is-style-outline-light, full-width half
  *     .trust-pilot-box beneath the card       beneath the card, centred
  *
  * ### ⚠️ The ground is brand-600, not live's brand-500
  *
  * Live's `#cc7f16` **is** brand-500 exactly — the palette carries it. It is not
  * used here because white text on it measures **3.18:1**, under the 4.5:1
- * AA floor for the eyebrow, the Call Us label and the office numbers; and
- * accent-400 — the "Send an Email" fill — measures **1.83:1** against it, well
- * under the 3:1 SC 1.4.11 floor for a control's own boundary. Both are live
- * failings, inherited rather than introduced.
+ * AA floor for the eyebrow, both action labels and the office numbers. That is
+ * a live failing, inherited rather than introduced.
  *
  * brand-600 is the next step down the same ramp. Measured off the rendered
- * page on local, 2026-08-28:
+ * page on local, 2026-08-28 (re-computed from the palette on 2026-10-21 at
+ * 4.52:1 — re-measure before quoting either figure):
  *
- *     white eyebrow / name / label   5.18:1   AA at any size
- *     white Call Us outline          5.18:1   SC 1.4.11
- *     accent-400 CTA fill            2.98:1   see below
- *     primary-600 CTA label          7.23:1   AA at any size
+ *     white eyebrow / name / labels  5.18:1   AA at any size
+ *     white Call Us / Email outline  5.18:1   SC 1.4.11
  *
- * The CTA fill lands a hundredth under the 3:1 non-text floor, and that is
- * accepted rather than tuned: SC 1.4.11 asks for contrast on "visual
- * information required to identify" a control, and this control is identified
- * by a 19.2px uppercase label at 7.23:1, not by its fill. Moving it would mean
- * either a bespoke colour — no palette token sits between accent-400 and the
- * card — or giving `is-style-accent-cta` a visible boundary everywhere it is
- * used, which is a change to a shared button style and not this panel's to
- * make.
+ * Both actions are the same 1px white outline, as on live — Call Us and Send an
+ * Email were made one style at the client's request (BugHerd #12). Send an
+ * Email used to be the `is-style-accent-cta` amber plate, and Call Us was
+ * briefly given it too; Zared chose live's outline for both, so
+ * `is-style-outline-light` carries Send an Email, with
+ * the 1px border, semi-bold label and side padding of the Call Us box set as
+ * block attributes.
  *
  * Nothing between brand-500 and brand-600 exists in the palette, so the ground
  * is one token step, not a tuned value. **If Zared wants live's exact orange back it is one word** —
@@ -382,20 +378,20 @@
 			 * is the target, and why the icon takes no colour of its own.
 			 */
 			?>
-			<!-- wp:group {"metadata":{"name":"Call Us"},"className":"sd-expert__call-box","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:custom|spacing|button|padding-vertical","right":"var:preset|spacing|20","bottom":"var:custom|spacing|button|padding-vertical","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|0","width":"var:custom|border-width|200","style":"solid"},"layout":{"selfStretch":"fill"}},"borderColor":"accent-400","backgroundColor":"accent-400","textColor":"primary-600","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"center"}} -->
-			<div class="wp-block-group sd-expert__call-box has-primary-600-color has-accent-400-background-color has-text-color has-background has-border-color has-accent-400-border-color" style="border-style:solid;border-width:var(--wp--custom--border-width--200);border-radius:var(--wp--preset--border-radius--0);padding-top:var(--wp--custom--spacing--button--padding-vertical);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--custom--spacing--button--padding-vertical);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","width":"20px"} -->
+			<!-- wp:group {"metadata":{"name":"Call Us"},"className":"sd-expert__call-box","style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:custom|spacing|button|padding-vertical","right":"var:preset|spacing|20","bottom":"var:custom|spacing|button|padding-vertical","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|0","width":"var:custom|border-width|100","style":"solid"},"layout":{"selfStretch":"fill"}},"borderColor":"base","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"center"}} -->
+			<div class="wp-block-group sd-expert__call-box has-border-color has-base-border-color" style="border-style:solid;border-width:var(--wp--custom--border-width--100);border-radius:var(--wp--preset--border-radius--0);padding-top:var(--wp--custom--spacing--button--padding-vertical);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--custom--spacing--button--padding-vertical);padding-left:var(--wp--preset--spacing--20)"><!-- wp:outermost/icon-block {"iconName":"","width":"20px"} -->
 			<div class="wp-block-outermost-icon-block"><div class="icon-container" style="width:20px;transform:rotate(0deg) scaleX(1) scaleY(1)"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M231.88,175.08A56.26,56.26,0,0,1,176,224C96.6,224,32,159.4,32,80A56.26,56.26,0,0,1,80.92,24.12a16,16,0,0,1,16.62,9.52l21.12,47.15,0,.12A16,16,0,0,1,117.39,96c-.18.27-.37.52-.57.77L96,121.45c7.49,15.22,23.41,31,38.83,38.51l24.34-20.71a8.12,8.12,0,0,1,.75-.56,16,16,0,0,1,15.17-1.4l.13.06,47.11,21.11A16,16,0,0,1,231.88,175.08Z"></path></svg></div></div>
 			<!-- /wp:outermost/icon-block -->
 
-			<!-- wp:navigation {"overlayMenu":"never","ariaLabel":"<?php esc_attr_e( 'Office numbers', 'sd-theme-2026' ); ?>","className":"is-style-call-us-navigation sd-expert__call","textColor":"primary-600","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--bold)"},"spacing":{"blockGap":"0"}},"fontSize":"300"} -->
-			<!-- wp:ollie/mega-menu {"label":"<?php esc_attr_e( 'Call Us', 'sd-theme-2026' ); ?>","menuSlug":"dropdown-call-us","showOnHover":true,"justifyMenu":"left","width":"custom","customWidth":320,"topSpacing":8,"fontFamily":"heading","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--bold)","textTransform":"uppercase"}},"metadata":{"name":"Call Us"}} /-->
+			<!-- wp:navigation {"overlayMenu":"never","ariaLabel":"<?php esc_attr_e( 'Office numbers', 'sd-theme-2026' ); ?>","className":"is-style-call-us-navigation sd-expert__call","textColor":"base","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--semi-bold)"},"spacing":{"blockGap":"0"}},"fontSize":"300"} -->
+			<!-- wp:ollie/mega-menu {"label":"<?php esc_attr_e( 'Call Us', 'sd-theme-2026' ); ?>","menuSlug":"dropdown-call-us","showOnHover":true,"justifyMenu":"left","width":"custom","customWidth":320,"topSpacing":8,"fontFamily":"heading","style":{"typography":{"fontWeight":"var(--wp--custom--font-weight--semi-bold)","textTransform":"uppercase"}},"metadata":{"name":"Call Us"}} /-->
 			<!-- /wp:navigation --></div>
 			<!-- /wp:group -->
 
 			<?php /* Placeholder for the Enquiry module's modal — see the note above. */ ?>
 			<!-- wp:buttons {"className":"sd-expert__email","style":{"layout":{"selfStretch":"fill"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
-			<div class="wp-block-buttons sd-expert__email"><!-- wp:button {"className":"is-style-accent-cta","style":{"dimensions":{"width":"var:preset|dimension|100"}}} -->
-			<div class="wp-block-button is-style-accent-cta"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send an Email', 'sd-theme-2026' ); ?></a></div>
+			<div class="wp-block-buttons sd-expert__email"><!-- wp:button {"className":"is-style-outline-light","style":{"dimensions":{"width":"var:preset|dimension|100"},"border":{"width":"var:custom|border-width|100"},"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}}} -->
+			<div class="wp-block-button is-style-outline-light"><a class="wp-block-button__link wp-element-button" style="border-width:var(--wp--custom--border-width--100);padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);font-weight:var(--wp--custom--font-weight--semi-bold)" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send an Email', 'sd-theme-2026' ); ?></a></div>
 			<!-- /wp:button --></div>
 			<!-- /wp:buttons -->
 
