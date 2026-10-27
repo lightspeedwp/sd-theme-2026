@@ -1365,9 +1365,11 @@
 }
 
 /* The empty paragraph the parser splits off in front of `.rating-stars` (note
-   2 above). Harmless in a row, but in the single accommodation's vertical
-   rating stack it is a flex item, and the block gap lands on both sides of it. */
-.lsx-rating-wrapper > p:empty {
+   2 above), and the star-authority paragraph when the rating is Unspecified
+   (its binding returns null). Both are flex items, and the block gap lands on
+   both sides of each. A descendant selector because the stars and the
+   authority now share a row group one level below the wrapper. */
+.lsx-rating-wrapper p:empty {
 	display: none;
 }
 
