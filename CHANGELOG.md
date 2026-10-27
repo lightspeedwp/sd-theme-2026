@@ -490,6 +490,16 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Site still reads "zoomed in": wide rail narrows and spacing drops another
+  step.** Client follow-up by email on BugHerd #6/#7/#10, 2026-10-27.
+  `settings.layout.wideSize` goes from 1280px to 1200px. Live's Bootstrap
+  `.container` is 1170px; 1200px is used instead because the expert card's wide
+  arrangement in `template-archive-destination` needs a 576px half column, and
+  at 1170px that falls to ~566px. Spacing `20`–`100` drops another 12.5% at
+  both clamp ends (`spacing|60` is now ~46px max, from 52px), still reaching
+  its max at 1600px. Spacing `5`/`10` are unchanged, as in the last pass.
+- **Home hero reads "29 years".** BugHerd #17. Both the desktop and mobile
+  `<h1>` in `homepage-hero`, and the desktop heading's anchor.
 - **Site-wide type and spacing brought back to live's scale.** BugHerd #6, #7,
   #9, #10. Measured at 1650px: live's body copy is 15px/24px against our
   19.2px/28.8px, and our root `blockGap` put ~60px between blocks where live

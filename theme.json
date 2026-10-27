@@ -326,7 +326,7 @@
 		},
 		"layout": {
 			"contentSize": "900px",
-			"wideSize": "1280px"
+			"wideSize": "1200px"
 		},
 		"shadow": {
 			"defaultPresets": false,
@@ -378,47 +378,47 @@
 				},
 				{
 					"name": "S",
-					"size": "clamp(0.761rem, 0.761rem + ((1vw - 0.2rem) * 0.407), 1.087rem)",
+					"size": "clamp(0.666rem, 0.666rem + ((1vw - 0.2rem) * 0.356), 0.951rem)",
 					"slug": "20"
 				},
 				{
 					"name": "M",
-					"size": "clamp(1.087rem, 1.087rem + ((1vw - 0.2rem) * 0.68), 1.631rem)",
+					"size": "clamp(0.951rem, 0.951rem + ((1vw - 0.2rem) * 0.595), 1.427rem)",
 					"slug": "30"
 				},
 				{
 					"name": "L",
-					"size": "clamp(1.414rem, 1.414rem + ((1vw - 0.2rem) * 0.951), 2.175rem)",
+					"size": "clamp(1.237rem, 1.237rem + ((1vw - 0.2rem) * 0.832), 1.903rem)",
 					"slug": "40"
 				},
 				{
 					"name": "XL",
-					"size": "clamp(1.795rem, 1.795rem + ((1vw - 0.2rem) * 1.155), 2.719rem)",
+					"size": "clamp(1.571rem, 1.571rem + ((1vw - 0.2rem) * 1.011), 2.379rem)",
 					"slug": "50"
 				},
 				{
 					"name": "XXL",
-					"size": "clamp(2.012rem, 2.012rem + ((1vw - 0.2rem) * 1.564), 3.263rem)",
+					"size": "clamp(1.76rem, 1.76rem + ((1vw - 0.2rem) * 1.369), 2.855rem)",
 					"slug": "60"
 				},
 				{
 					"name": "XXXL",
-					"size": "clamp(2.284rem, 2.284rem + ((1vw - 0.2rem) * 1.903), 3.806rem)",
+					"size": "clamp(1.998rem, 1.998rem + ((1vw - 0.2rem) * 1.665), 3.33rem)",
 					"slug": "70"
 				},
 				{
 					"name": "XXXXL",
-					"size": "clamp(2.61rem, 2.61rem + ((1vw - 0.2rem) * 2.175), 4.35rem)",
+					"size": "clamp(2.284rem, 2.284rem + ((1vw - 0.2rem) * 1.903), 3.806rem)",
 					"slug": "80"
 				},
 				{
 					"name": "Gigantic",
-					"size": "clamp(3.045rem, 3.045rem + ((1vw - 0.2rem) * 2.311), 4.894rem)",
+					"size": "clamp(2.664rem, 2.664rem + ((1vw - 0.2rem) * 2.022), 4.282rem)",
 					"slug": "90"
 				},
 				{
 					"name": "Colossal",
-					"size": "clamp(3.48rem, 3.48rem + ((1vw - 0.2rem) * 2.447), 5.438rem)",
+					"size": "clamp(3.045rem, 3.045rem + ((1vw - 0.2rem) * 2.141), 4.758rem)",
 					"slug": "100"
 				}
 			],

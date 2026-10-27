@@ -231,10 +231,11 @@
 	 *
 	 * That arrangement is a container query on `.sd-expert` at 36rem (576px,
 	 * assets/styles/core-group.css), so the split is what decides it. Against
-	 * the 1280px wide rail less the spacing-50 gap, a half column is ~615px at
-	 * a 1440px viewport and ~595px at 1280px — both clear of 576px. Below
-	 * ~1240px it drops back to the narrow card, and below 782px core stacks the
-	 * columns and the card has the full width again.
+	 * the 1200px wide rail less the spacing-50 gap, a half column is ~581px at
+	 * a 1280px viewport and wider — clear of 576px, but only just: a wide rail
+	 * narrower than ~1190px (live's 1170px, say) loses the wide card on desktop.
+	 * Below ~1220px it drops back to the narrow card, and below 782px core
+	 * stacks the columns and the card has the full width again.
 	 *
 	 * The vertical alignment is split the way live splits it: the row is
 	 * `align-items: center`, and the description overrides itself back to the
