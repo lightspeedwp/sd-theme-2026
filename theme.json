@@ -1199,6 +1199,13 @@
 			]
 		},
 		{
+			"name": "page-faq",
+			"title": "FAQ",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
 			"name": "page-no-title",
 			"title": "Page (Full Width, Banner)",
 			"postTypes": [

@@ -8,6 +8,18 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **FAQ page template (`page-faq`).** Every FAQ template part on one page, as
+  ASC's FAQ page composes its own: the hero banner and trail, the page's
+  content as an intro, then `pages` (About, enquiries, service, connecting),
+  `destinations` and all ten countries from `faq-countries` — 50 questions —
+  closing on the "Why choose" band. Every group in `pages` and `faq-countries`
+  is Block-Visibility-gated to its own page or destination, so each gains a
+  second, OR'd rule set for the FAQ page (51738); the rules on their own pages
+  are unchanged. The "Connect with us" group's heading becomes "Connecting with
+  us" (anchor `h-connecting-with-us`) so the page doesn't show two "Our
+  service" headings. Live's `/faq/` is a lorem-ipsum placeholder, so this
+  replaces it on the same URL.
+
 - **"About Us" page template (`page-about-us`).** ASD-36. `page-no-title`
   without the template banner: the six static pages (About Us and its three
   children, Contact, Thank You) carry their own banner cover in content, with
