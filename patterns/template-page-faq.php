@@ -2,7 +2,7 @@
 /**
  * Title: Template: FAQ Page
  * Slug: sd-theme-2026/template-page-faq
- * Description: FAQ page template body — the hero banner and breadcrumb trail, the page's own content as an intro, then every FAQ template part in one place: the general questions (About, enquiries, service, connecting), destinations, and every country. Closes on the "Why choose Southern Destinations" band. Used by the "FAQ" template.
+ * Description: FAQ page template body — the hero banner and breadcrumb trail, the page's own content as an intro, then the general FAQ template parts in one place: About, enquiries, service, connecting, and destinations. Country FAQs stay on their country pages. Closes on the "Why choose Southern Destinations" band. Used by the "FAQ" template.
  * Categories: hidden
  * Keywords: template, page, faq, questions
  * Block Types: core/post-content
@@ -38,23 +38,23 @@
 	 * pages they belong to, so there is one copy of each question.
 	 *
 	 * Order: the general questions first (About, enquiries, service,
-	 * connecting — parts/pages.html), then destinations as a whole, then each
-	 * country. Each group brings its own section title.
+	 * connecting — parts/pages.html), then destinations as a whole. Each group
+	 * brings its own section title. The per-country groups
+	 * (parts/faq-countries.html) stay on their own country pages and are not
+	 * repeated here — ASC's FAQ page is general questions only too.
 	 *
-	 * ⚠️ Every group in `pages` and `faq-countries` is gated by Block
-	 * Visibility to the page or destination it belongs to. Each carries a
-	 * second rule set for the FAQ page (ID 51738) — rule sets are OR'd
+	 * ⚠️ Every group in `pages` is gated by Block Visibility to the page it
+	 * belongs to. Each carries a second rule set for the FAQ page (ID 51738) —
+	 * rule sets are OR'd
 	 * (block-visibility/includes/frontend/visibility-tests/location.php) — so
-	 * the groups appear here as well as on their own pages. A new FAQ group
-	 * needs that second rule set too, or it will not show on this page.
+	 * the groups appear here as well as on their own pages. A new general FAQ
+	 * group needs that second rule set too, or it will not show on this page.
 	 * The ID survives because dev is deployed to live wholesale.
 	 */
 	?>
 	<!-- wp:template-part {"slug":"pages"} /-->
 
 	<!-- wp:template-part {"slug":"destinations"} /-->
-
-	<!-- wp:template-part {"slug":"faq-countries"} /-->
 
 	<?php
 	/*

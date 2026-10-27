@@ -8,12 +8,12 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
-- **FAQ page template (`page-faq`).** Every FAQ template part on one page, as
-  ASC's FAQ page composes its own: the hero banner and trail, the page's
-  content as an intro, then `pages` (About, enquiries, service, connecting),
-  `destinations` and all ten countries from `faq-countries` — 50 questions —
-  closing on the "Why choose" band. Every group in `pages` and `faq-countries`
-  is Block-Visibility-gated to its own page or destination, so each gains a
+- **FAQ page template (`page-faq`).** The general FAQ template parts on one
+  page, as ASC's FAQ page composes its own: the hero banner and trail, the
+  page's content as an intro, then `pages` (About, enquiries, service,
+  connecting) and `destinations` — 20 questions — closing on the "Why choose"
+  band. The country FAQs stay on their country pages, as on ASC. Every group
+  in `pages` is Block-Visibility-gated to its own page, so each gains a
   second, OR'd rule set for the FAQ page (51738); the rules on their own pages
   are unchanged. The "Connect with us" group's heading becomes "Connecting with
   us" (anchor `h-connecting-with-us`) so the page doesn't show two "Our
