@@ -498,6 +498,18 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   at 1170px that falls to ~566px. Spacing `20`–`100` drops another 12.5% at
   both clamp ends (`spacing|60` is now ~46px max, from 52px), still reaching
   its max at 1600px. Spacing `5`/`10` are unchanged, as in the last pass.
+- **Stylelint accepts BEM class names; `core-group.css` lints clean.** The
+  global pre-commit hook lints whole staged files, and `core-group.css` carried
+  70 errors, so any change to it was blocked. 45 were `selector-class-pattern`
+  on `__`/`--` classes, including core's own (`.wp-block-post-author__name`,
+  `.block-editor-block-list__block`) and the theme's `sd-expert__*` family:
+  `.stylelintrc.json` now allows `block__element--modifier`. 17 were
+  formatting, autofixed (`currentcolor`, unquoted `url()`, blank lines). The
+  remaining 7 carry scoped disables with the reason inline: five
+  `no-descending-specificity` pairs where the earlier rule is the more
+  specific (so it wins whatever the order), the deliberate second
+  `.is-style-slider-frame` block, and core's `taxonomy-post_tag`. Compared with
+  comments stripped, the rules are unchanged.
 - **Accommodation rating shows its star authority, as live does.** The stars
   and a new "Rating Authority" paragraph share a row in
   `template-single-accommodation`, so a TGCSA lodge reads ★★★★☆ (TGCSA) like

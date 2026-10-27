@@ -1,3 +1,11 @@
 {
-	"extends": "@wordpress/stylelint-config"
+	"extends": "@wordpress/stylelint-config",
+	"rules": {
+		"selector-class-pattern": [
+			"^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$",
+			{
+				"message": "Selector should be lowercase-hyphenated, optionally BEM (block__element--modifier), as core's own classes are (selector-class-pattern)"
+			}
+		]
+	}
 }

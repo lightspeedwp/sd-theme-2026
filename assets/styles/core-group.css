@@ -7,6 +7,7 @@
 }
 
 @media (max-width: 600px) {
+
 	header div.is-style-background-blur {
 		backdrop-filter: none;
 	}
@@ -114,6 +115,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.is-style-media-overlay-card .media-overlay-card__scrim {
 		transition-duration: 1ms;
 	}
@@ -168,6 +170,7 @@
  * Resting state: hidden, faded out, nudged down. Visibility switches with a
  * delay so it doesn't cut the opacity/transform fade short on the way out.
  */
+/* stylelint-disable-next-line no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
 .is-style-team-member-card .team-member-card__overlay {
 	opacity: 0;
 	visibility: hidden;
@@ -199,6 +202,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.is-style-team-member-card .team-member-card__overlay {
 		transform: none;
 		transition-duration: 1ms;
@@ -338,6 +342,7 @@
 	border: 0 !important;
 	background-color: transparent !important;
 	color: var(--sd-slider-nav-color) !important;
+
 	/* Slick's arrow carries a visible text label ("Previous"/"Next") that its own
 	   `font-size: 0` collapses. We override the vendor's `color: transparent`, so
 	   the collapse has to be restated here or the label reappears. The chevron is
@@ -360,6 +365,7 @@
    the chevron ends up sitting almost against the artwork. `.sd-slider-tight`
    buys it back here rather than re-introducing a gutter it deliberately does
    not want. Zared, 2026-09-16. */
+
 /* …but never further out than the viewport allows. The offset above assumes
    the page has room either side of the frame, and a wide frame does not: at
    1280px an `alignwide` shelf sits ~18px from the viewport edge, so an arrow
@@ -378,6 +384,7 @@
    what `--sd-slider-nav-edge` absorbs — half of the widest desktop scrollbar
    (Windows, 17px), so the arrow clears the viewport with or without one.
    Measured on dev 2026-09-23. */
+/* stylelint-disable-next-line no-duplicate-selectors -- the custom-property half of .is-style-slider-frame, kept beside the arrow rules it documents. */
 .is-style-slider-frame {
 	--sd-slider-nav-edge: 9px;
 
@@ -506,6 +513,7 @@
    The glyph's viewBox is square, so `--sd-slider-chevron-size` sets both box
    dimensions — no aspect calc needed, unlike the polyline treatment it
    replaced. */
+/* stylelint-disable no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
 .is-style-slider-frame :is(.slick-prev)::before,
 .is-style-slider-frame :is(.swiper-button-prev)::after {
 	content: "" !important;
@@ -522,7 +530,7 @@
 	line-height: 0;
 	color: inherit !important;
 	background-image: none !important;
-	background-color: currentColor !important;
+	background-color: currentcolor !important;
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
 	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
 	-webkit-mask-position: center;
@@ -532,7 +540,9 @@
 	-webkit-mask-size: contain;
 	mask-size: contain;
 }
+/* stylelint-enable no-descending-specificity */
 
+/* stylelint-disable no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
 .is-style-slider-frame :is(.slick-next)::before,
 .is-style-slider-frame :is(.swiper-button-next)::after {
 	content: "" !important;
@@ -549,7 +559,7 @@
 	line-height: 0;
 	color: inherit !important;
 	background-image: none !important;
-	background-color: currentColor !important;
+	background-color: currentcolor !important;
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
 	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
 	-webkit-mask-position: center;
@@ -559,9 +569,11 @@
 	-webkit-mask-size: contain;
 	mask-size: contain;
 }
+/* stylelint-enable no-descending-specificity */
 
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):hover,
 .is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):focus-visible {
+
 	/* !important because the base `color` above now carries it — without a
 	   matching flag here the hover state would lose to our own base rule. */
 	color: var(--sd-slider-nav-color-active) !important;
@@ -632,6 +644,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next, .slick-dots li button, .swiper-pagination-bullet) {
 		transition-duration: 1ms;
 	}
@@ -734,6 +747,7 @@
 	align-items: stretch !important;
 }
 
+/* stylelint-disable-next-line no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
 .sd-slider-flush .slick-slide {
 	height: auto !important;
 }
@@ -772,6 +786,7 @@
  * No arrow rules: the script runs this row without arrows at every width, and
  * why is documented there.
  */
+/* stylelint-disable-next-line no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
 .sd-review-slider .slick-slide {
 	padding-inline: calc(var(--wp--preset--spacing--40) / 2);
 	height: auto;
@@ -890,6 +905,7 @@
    the same reasoning as the utility bar above. */
 
 @media (max-width: 767px) {
+
 	.is-style-site-footer .wp-block-column {
 		max-width: 290px;
 		margin-inline: auto;
@@ -977,8 +993,9 @@
    between the text and the sky, at the shorter height — so trimming the dead
    space costs no legibility. */
 @media (max-width: 600px) {
+
 	.is-style-site-footer {
-		background-image: url("https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/08/mobile-footer-bg-img.jpg") !important;
+		background-image: url(https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/08/mobile-footer-bg-img.jpg) !important;
 		background-position: 50% 0% !important;
 	}
 }
@@ -1018,6 +1035,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.is-style-category-card .category-card__label {
 		transition-duration: 1ms;
 		transition-delay: 0s;
@@ -1086,6 +1104,7 @@
  * the query has to be here.
  */
 @media (max-width: 900px) {
+
 	.is-style-special-card > .wp-block-group,
 	.wp-block-post-template > li:nth-child(even) > .is-style-special-card > .wp-block-group {
 		max-width: 90%;
@@ -1158,6 +1177,7 @@
  * every other responsive rule in this file already uses it.
  */
 @media (max-width: 781px) {
+
 	.is-style-blog-card-wide > .wp-block-column:last-child {
 		text-align: center;
 	}
@@ -1180,6 +1200,7 @@
  * `content: ""` is dropped whole, the same limit that forced the read-more
  * chevron down here.
  */
+/* stylelint-disable-next-line selector-class-pattern -- `taxonomy-post_tag` is core's class, built from the taxonomy slug. */
 .is-style-blog-card-wide .wp-block-post-terms.taxonomy-post_tag a::before {
 	content: "#";
 	display: inline-block;
@@ -1240,6 +1261,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.is-style-post-grid-card {
 		transition-duration: 1ms;
 	}
@@ -1301,6 +1323,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.is-style-listing-card-compact.sd-has-link {
 		transition-duration: 1ms;
 	}
@@ -1374,6 +1397,7 @@
 }
 
 .rating-stars figure {
+
 	/* The <img> is hidden below, so the figure carries its own box. 20px is
 	   TO's own inline width on the image it replaces. */
 	flex: none;
@@ -1596,6 +1620,7 @@
    `break-inside: avoid` that keeps an item whole across the column break is in
    the section style, where it belongs — only the query has to be here. */
 @media (min-width: 768px) {
+
 	.is-style-highlights-list ul {
 		columns: 2;
 		column-gap: var(--wp--preset--spacing--50);
