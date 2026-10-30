@@ -61,6 +61,14 @@
  * beneath it and as the tour card's meta block on the same template. The 2px
  * `padding-block` is the optical alignment applied across the meta rows there;
  * see patterns/card-tour-compact.php for what it settles.
+ *
+ * ## The body padding is a step up from the signed-off composition
+ *
+ * BugHerd #20 (2026-10-30): with body copy at its larger size the panel read
+ * crowded, so the Body group steps up one rung each way — 30/20 to 40/30
+ * (block/inline). The sides now match the compact tour and accommodation
+ * cards' `spacing|30`. Like the square corners, this is a markup change, so the
+ * dev front-page DB override is behind this file until it is reconciled.
  */
 ?>
 <!-- wp:group {"metadata":{"name":"Card — Post (Grid)"},"className":"is-style-post-grid-card","style":{"shadow":"var:preset|shadow|200","spacing":{"blockGap":"var:preset|spacing|0"}},"backgroundColor":"neutral-100","layout":{"type":"default"},"sdLinkTo":"post"} -->
@@ -71,8 +79,8 @@
 	</div>
 	<!-- /wp:group -->
 
-	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--20)">
+	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|30","right":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--30)">
 		<!-- wp:post-title {"level":3,"isLink":true,"style":{"typography":{"textAlign":"center"}}} /-->
 
 		<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|0"}},"layout":{"type":"constrained"}} -->

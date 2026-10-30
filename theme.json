@@ -289,10 +289,10 @@
 				"black": 900
 			},
 			"lineHeight": {
-				"snug": "1.125",
-				"heading": "1.25",
-				"button": "1.35",
-				"body": "1.5"
+				"snug": "1.1",
+				"heading": "1.2",
+				"button": "1.3",
+				"body": "1.45"
 			},
 			"letterSpacing": {
 				"none": "0em",
@@ -1097,7 +1097,7 @@
 					"fontSize": "var:preset|font-size|700",
 					"lineHeight": "var:custom|line-height|heading",
 					"fontWeight": "var:custom|font-weight|semi-bold",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				}
 			},
 			"h2": {
@@ -1105,7 +1105,7 @@
 					"fontSize": "var:preset|font-size|500",
 					"lineHeight": "var:custom|line-height|heading",
 					"fontWeight": "var:custom|font-weight|semi-bold",
-					"letterSpacing": "var:custom|letter-spacing|heading",
+					"letterSpacing": "var:custom|letter-spacing|narrow",
 					"textTransform": "uppercase"
 				}
 			},
@@ -1114,7 +1114,7 @@
 					"fontSize": "var:preset|font-size|400",
 					"lineHeight": "var:custom|line-height|button",
 					"fontWeight": "var:custom|font-weight|semi-bold",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				}
 			},
 			"h4": {
@@ -1122,7 +1122,7 @@
 					"fontSize": "var:preset|font-size|300",
 					"lineHeight": "var:custom|line-height|button",
 					"fontWeight": "var:custom|font-weight|semi-bold",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				}
 			},
 			"h5": {
@@ -1130,7 +1130,7 @@
 					"fontSize": "var:preset|font-size|200",
 					"lineHeight": "var:custom|line-height|button",
 					"fontWeight": "var:custom|font-weight|semi-bold",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				}
 			},
 			"h6": {
