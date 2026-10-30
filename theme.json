@@ -289,7 +289,7 @@
 				"black": 900
 			},
 			"fontSize": {
-				"excerpt": "0.875rem"
+				"card": "0.9375rem"
 			},
 			"lineHeight": {
 				"snug": "1.1",

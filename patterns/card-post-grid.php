@@ -53,20 +53,22 @@
  * keeps it selectable and labelled in the editor, where an author can still see
  * and edit the footer that a tagless post will hide.
  *
- * ## The byline is base, not tiny
+ * ## The byline, excerpt and tags share one size
  *
- * The date and category rows were `100` (0.75rem) against the tag row's `200`,
- * which put three sizes on a card carrying four meta rows. Both are `200` now —
- * Zared's call, 2026-09-16 — so the byline reads at the same weight as the tags
- * beneath it and as the tour card's meta block on the same template. The 2px
- * `padding-block` is the optical alignment applied across the meta rows there;
- * see patterns/card-tour-compact.php for what it settles.
+ * The rows were `200` (16px) and the excerpt `300`. All of them now take
+ * `custom|font-size|card` (15px) from styles/sections/cards/post-grid-card.json
+ * — the size the compact tour and accommodation cards use — and none carries a
+ * `fontSize` attribute, because a preset size writes the `!important`
+ * `has-*-font-size` class and would beat the card style. BugHerd #20,
+ * 2026-10-30. The 2px `padding-block` is the optical alignment applied across
+ * the meta rows; see patterns/card-tour-compact.php for what it settles.
  *
  * ## The body padding is a step up from the signed-off composition
  *
  * BugHerd #20 (2026-10-30): with body copy at its larger size the panel read
  * crowded, so the Body group steps up two rungs each way — 30/20 to 50/40
- * (block/inline). Live is no guide to the number: its panel has no padding at
+ * (block/inline), the padding the compact tour and accommodation cards now
+ * share. Live is no guide to the number: its panel has no padding at
  * all and the excerpt runs edge to edge; its air comes from 24px margins
  * between title, byline and excerpt (measured 2026-10-30 at 1200px). Like the
  * square corners, this is a markup change, so the dev front-page DB override
@@ -87,9 +89,9 @@
 
 		<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|0"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group">
-			<!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}},"style":{"typography":{"textAlign":"center"},"spacing":{"padding":{"top":"2px","bottom":"2px"}}},"fontSize":"200"} /-->
+			<!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}},"style":{"typography":{"textAlign":"center"},"spacing":{"padding":{"top":"2px","bottom":"2px"}}}} /-->
 
-			<!-- wp:post-terms {"term":"category","prefix":"Posted in: ","style":{"typography":{"textAlign":"center"},"spacing":{"padding":{"top":"2px","bottom":"2px"}}},"fontSize":"200"} /-->
+			<!-- wp:post-terms {"term":"category","prefix":"Posted in: ","style":{"typography":{"textAlign":"center"},"spacing":{"padding":{"top":"2px","bottom":"2px"}}}} /-->
 		</div>
 		<!-- /wp:group -->
 
@@ -97,7 +99,7 @@
 
 		<!-- wp:group {"metadata":{"name":"Tags"},"style":{"border":{"top":{"color":"var:preset|color|primary-300","width":"1px"}},"spacing":{"padding":{"top":"var:preset|spacing|20"}}},"layout":{"type":"constrained","justifyContent":"left"}} -->
 		<div class="wp-block-group" style="border-top-color:var(--wp--preset--color--primary-300);border-top-width:1px;padding-top:var(--wp--preset--spacing--20)">
-			<!-- wp:post-terms {"term":"post_tag","prefix":"Tags: ","style":{"typography":{"textAlign":"center"}},"fontSize":"200"} /-->
+			<!-- wp:post-terms {"term":"post_tag","prefix":"Tags: ","style":{"typography":{"textAlign":"center"}}} /-->
 		</div>
 		<!-- /wp:group -->
 	</div>

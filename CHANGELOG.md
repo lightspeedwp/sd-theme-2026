@@ -502,26 +502,28 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- **Card typography loosened up and tightened: BugHerd #20.** Changes to the
-  homepage "Tales from our trails" cards and the type scale around them:
+- **Cards share one text size, one padding and tighter meta: BugHerd #20.**
+  The homepage post cards, the compact tour and accommodation cards, and the
+  tour/accommodation/destination modals now read as one family:
+  - New `settings.custom.fontSize.card` token, 0.9375rem (15px, live's
+    excerpt size). Every line of card text below the title (meta, byline,
+    excerpt, tags) uses it, set by `post-grid-card` and `listing-card-compact`.
+    Preset `200` read large and no preset sits between `100` (12px) and `200`
+    (16px).
+  - The explicit `fontSize: 200` on card rows is removed. A preset size writes
+    the `!important` `has-*-font-size` class, which beat the card style; that
+    is why the tour cards did not change in the first pass.
+  - Post, tour and accommodation card body padding is now `50`/`40`
+    (block/inline), up from `30`/`20` (post) and `30` (compact). Live's post
+    card panel has no padding; its air is 24px margins between title, byline
+    and excerpt. The modals keep `30`.
+  - Meta, byline and tag rows take `line-height|button`; the Meta group
+    `blockGap` is `0` on every compact card and modal.
   - Headings h1–h5 drop from `letter-spacing|heading` (0.04em) to `narrow`
-    (0.02em). Live sets none on any title. The post card's title now sets
-    `none`, which matches live exactly.
-  - New `settings.custom.fontSize.excerpt` token, 0.875rem (14px; live's
-    excerpt is 15px). The post card excerpt uses it instead of inheriting
-    `core/paragraph`'s `300`. Preset `200` was tried first and still read
-    large, and no preset sits between `100` (12px) and `200` (16px).
-  - The post card body padding steps up from `30`/`20` to `50`/`40`
-    (block/inline). Live's panel has no padding; its air is 24px margins
-    between title, byline and excerpt.
+    (0.02em). Live sets none on any title. The post card title sets `none`,
+    matching live exactly.
   - Line-height tokens drop a step: snug 1.125→1.1, heading 1.25→1.2,
     button 1.35→1.3, body 1.5→1.45.
-  - The meta rows on the compact tour and accommodation cards and the
-    tour/accommodation/destination modals sit closer: Meta `blockGap` → `0`,
-    and rows directly inside a group take `line-height|button`.
-
-  The post card padding is a pattern markup change, so dev's front-page DB
-  override needs reconciling before it shows there.
 
 - **Site still reads "zoomed in": wide rail narrows and spacing drops another
   step.** Client follow-up by email on BugHerd #6/#7/#10, 2026-10-27.
