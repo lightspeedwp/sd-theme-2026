@@ -513,10 +513,11 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   - The explicit `fontSize: 200` on card rows is removed. A preset size writes
     the `!important` `has-*-font-size` class, which beat the card style; that
     is why the tour cards did not change in the first pass.
-  - Post, tour and accommodation card body padding is now `50`/`40`
+  - Post, tour and accommodation card and modal body padding is now `50`/`40`
     (block/inline), up from `30`/`20` (post) and `30` (compact). Live's post
     card panel has no padding; its air is 24px margins between title, byline
-    and excerpt. The modals keep `30`.
+    and excerpt. The tour, accommodation and destination modals take the
+    same `50`/`40`.
   - Meta, byline and tag rows take `line-height|button`; the Meta group
     `blockGap` is `0` on every compact card and modal.
   - Headings h1–h5 drop from `letter-spacing|heading` (0.04em) to `narrow`
