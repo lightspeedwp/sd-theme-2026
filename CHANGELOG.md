@@ -507,10 +507,13 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   - Headings h1–h5 drop from `letter-spacing|heading` (0.04em) to `narrow`
     (0.02em). Live sets none on any title. The post card's title now sets
     `none`, which matches live exactly.
-  - The post card excerpt is held at font size `200` (14–16px; live's is 15px)
-    instead of inheriting `core/paragraph`'s `300`.
-  - The post card body padding steps up from `30`/`20` to `40`/`30`
-    (block/inline).
+  - New `settings.custom.fontSize.excerpt` token, 0.875rem (14px; live's
+    excerpt is 15px). The post card excerpt uses it instead of inheriting
+    `core/paragraph`'s `300`. Preset `200` was tried first and still read
+    large, and no preset sits between `100` (12px) and `200` (16px).
+  - The post card body padding steps up from `30`/`20` to `50`/`40`
+    (block/inline). Live's panel has no padding; its air is 24px margins
+    between title, byline and excerpt.
   - Line-height tokens drop a step: snug 1.125→1.1, heading 1.25→1.2,
     button 1.35→1.3, body 1.5→1.45.
   - The meta rows on the compact tour and accommodation cards and the

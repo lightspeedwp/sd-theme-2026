@@ -288,6 +288,9 @@
 				"extra-bold": 800,
 				"black": 900
 			},
+			"fontSize": {
+				"excerpt": "0.875rem"
+			},
 			"lineHeight": {
 				"snug": "1.1",
 				"heading": "1.2",

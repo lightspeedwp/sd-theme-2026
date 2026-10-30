@@ -65,10 +65,12 @@
  * ## The body padding is a step up from the signed-off composition
  *
  * BugHerd #20 (2026-10-30): with body copy at its larger size the panel read
- * crowded, so the Body group steps up one rung each way — 30/20 to 40/30
- * (block/inline). The sides now match the compact tour and accommodation
- * cards' `spacing|30`. Like the square corners, this is a markup change, so the
- * dev front-page DB override is behind this file until it is reconciled.
+ * crowded, so the Body group steps up two rungs each way — 30/20 to 50/40
+ * (block/inline). Live is no guide to the number: its panel has no padding at
+ * all and the excerpt runs edge to edge; its air comes from 24px margins
+ * between title, byline and excerpt (measured 2026-10-30 at 1200px). Like the
+ * square corners, this is a markup change, so the dev front-page DB override
+ * is behind this file until it is reconciled.
  */
 ?>
 <!-- wp:group {"metadata":{"name":"Card — Post (Grid)"},"className":"is-style-post-grid-card","style":{"shadow":"var:preset|shadow|200","spacing":{"blockGap":"var:preset|spacing|0"}},"backgroundColor":"neutral-100","layout":{"type":"default"},"sdLinkTo":"post"} -->
@@ -79,8 +81,8 @@
 	</div>
 	<!-- /wp:group -->
 
-	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|30","right":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--30)">
+	<!-- wp:group {"metadata":{"name":"Body"},"style":{"spacing":{"blockGap":"var:preset|spacing|10","padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
 		<!-- wp:post-title {"level":3,"isLink":true,"style":{"typography":{"textAlign":"center"}}} /-->
 
 		<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|0"}},"layout":{"type":"constrained"}} -->
