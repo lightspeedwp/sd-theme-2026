@@ -40,11 +40,11 @@
 
 	<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group">
-		<!-- wp:post-title {"isLink":true,"fontSize":"300"} /-->
+		<!-- wp:post-title {"isLink":true,"fontSize":"200"} /-->
 
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"}} -->
 		<div class="wp-block-group">
-			<!-- wp:post-excerpt {"excerptLength":35,"className":"is-style-excerpt-truncate-3","style":{"typography":{"textTransform":"none"}},"fontSize":"200"} /-->
+			<!-- wp:post-excerpt {"excerptLength":35,"className":"is-style-excerpt-truncate-3","style":{"typography":{"textTransform":"none"}}} /-->
 		</div>
 		<!-- /wp:group -->
 	</div>

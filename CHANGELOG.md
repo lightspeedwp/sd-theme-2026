@@ -502,6 +502,21 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Mega menu type is sans-serif again, as live.** Client follow-up by email
+  on BugHerd #20, 2026-10-30. Measured on live and dev at 1440px,
+  2026-11-03: every line in live's four panels is Open Sans, while dev set the
+  column headings and the featured card title in the heading serif.
+  - Column headings (Countries, Popular Destinations, Featured…): body
+    family, `bold`, size `200`; was heading family, `semi-bold`, `300`. Live is
+    Open Sans 15px/700 uppercase. Set in `mega-panel.json`'s css field with
+    `!important`, as the size already was, to beat `is-style-section-title-left`.
+  - Featured card title: body family, `medium`, size `200`,
+    `line-height|heading`; was heading family, `semi-bold`, `300`, `snug`.
+    Live is Open Sans 16px/500 at 20px.
+  - Featured card excerpt: italic, `custom|font-size|card`; was upright at
+    preset `200`. Live is Open Sans 14px italic. The pattern's `fontSize`
+    attribute is removed so its `!important` class can't beat the panel style.
+
 - **Card line spacing tightens again; mega menu card title is charcoal
   brown.** Client follow-up by email on BugHerd #20, 2026-10-30.
   - New `settings.custom.lineHeight.card` token, 1.35 (between `button` 1.3
