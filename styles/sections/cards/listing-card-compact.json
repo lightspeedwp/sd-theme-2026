@@ -31,7 +31,7 @@
 					"fontFamily": "var:preset|font-family|heading",
 					"fontSize": "var:preset|font-size|400",
 					"fontWeight": "var:custom|font-weight|semi-bold",
-					"lineHeight": "var:custom|line-height|heading",
+					"lineHeight": "var:custom|line-height|snug",
 					"textTransform": "none"
 				}
 			},
@@ -55,12 +55,14 @@
 		"blocks": {
 			"core/paragraph": {
 				"typography": {
-					"fontSize": "var:custom|font-size|card"
+					"fontSize": "var:custom|font-size|card",
+					"lineHeight": "var:custom|line-height|card"
 				}
 			},
 			"core/post-excerpt": {
 				"typography": {
-					"fontSize": "var:custom|font-size|card"
+					"fontSize": "var:custom|font-size|card",
+					"lineHeight": "var:custom|line-height|card"
 				}
 			},
 			"core/post-title": {

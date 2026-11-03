@@ -61,8 +61,8 @@
 	<div class="wp-block-column is-vertically-aligned-top" style="padding-top:var(--wp--preset--spacing--30)">
 		<!-- wp:post-title {"level":3,"isLink":true} /-->
 
-		<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"typography":{"fontStyle":"italic","lineHeight":"var:custom|line-height|body"},"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"200","layout":{"type":"flex","flexWrap":"wrap"}} -->
-		<div class="wp-block-group has-brand-600-color has-text-color has-link-color has-200-font-size" style="font-style:italic;line-height:var(--wp--custom--line-height--body)">
+		<!-- wp:group {"metadata":{"name":"Byline"},"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"typography":{"fontStyle":"italic","lineHeight":"var:custom|line-height|card"},"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"200","layout":{"type":"flex","flexWrap":"wrap"}} -->
+		<div class="wp-block-group has-brand-600-color has-text-color has-link-color has-200-font-size" style="font-style:italic;line-height:var(--wp--custom--line-height--card)">
 			<!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}}} /-->
 
 			<!-- wp:group {"style":{"layout":{"selfStretch":"fit","flexSize":null},"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"top","justifyContent":"left"}} -->
@@ -79,7 +79,7 @@
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:post-excerpt {"moreText":".../","showMoreOnNewLine":false,"excerptLength":40,"style":{"typography":{"lineHeight":"var:custom|line-height|body"}}} /-->
+		<!-- wp:post-excerpt {"moreText":".../","showMoreOnNewLine":false,"excerptLength":40,"style":{"typography":{"lineHeight":"var(--wp--custom--line-height--card)"}}} /-->
 
 		<!-- wp:post-terms {"term":"post_tag","separator":" ","prefix":"Tags: ","style":{"spacing":{"padding":{"top":"var:preset|spacing|20"}},"border":{"top":{"color":"var:preset|color|neutral-300","width":"1px"}},"typography":{"fontStyle":"italic"},"elements":{"link":{"color":{"text":"var:preset|color|brand-600"}}}},"textColor":"brand-600","fontSize":"200"} /-->
 	</div>

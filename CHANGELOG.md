@@ -502,6 +502,23 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Card line spacing tightens again; mega menu card title is charcoal
+  brown.** Client follow-up by email on BugHerd #20, 2026-10-30.
+  - New `settings.custom.lineHeight.card` token, 1.35 (between `button` 1.3
+    and `body` 1.45). Card body copy uses it: `core/paragraph` and
+    `core/post-excerpt` in `post-grid-card` and `listing-card-compact`, the
+    tour/accommodation/destination modal bodies, and the blog list card
+    (`core/paragraph` in `blog-card-wide`, plus the byline in
+    `card-post-list`). Page copy keeps `body`. The blog list excerpt's own
+    attribute was `var:custom|…`, which a dynamic block drops; it is now the
+    `var(--wp--custom--…)` form.
+  - Card titles drop `line-height|heading` (1.2) → `snug` (1.1) in
+    `post-grid-card`, `listing-card-compact`, `blog-card-wide` and the mega
+    menu featured card.
+  - The mega menu featured card's title rested at `contrast` (#000), the only
+    card title not on `neutral-700`. It now matches the other cards; the
+    `brand-600` hover is unchanged.
+
 - **Cards share one text size, one padding and tighter meta: BugHerd #20.**
   The homepage post cards, the compact tour and accommodation cards, and the
   tour/accommodation/destination modals now read as one family:
