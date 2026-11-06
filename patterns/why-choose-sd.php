@@ -74,8 +74,8 @@
  */
 
 ?>
-<!-- wp:group {"tagName":"section","metadata":{"name":"Why choose Southern Destinations"},"align":"full","className":"is-style-light-page-section","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/home-why-choose-sd-bg-img.jpg","source":"file"},"backgroundSize":"cover"},"spacing":{"padding":{"top":"var:preset|spacing|90","bottom":"var:preset|spacing|90"},"blockGap":"var:preset|spacing|60"}},"backgroundColor":"primary-500","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull is-style-light-page-section has-primary-500-background-color has-background" style="padding-top:var(--wp--preset--spacing--90);padding-bottom:var(--wp--preset--spacing--90)">
+<!-- wp:group {"tagName":"section","metadata":{"name":"Why choose Southern Destinations"},"align":"full","className":"is-style-light-page-section","style":{"background":{"backgroundImage":{"url":"https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/home-why-choose-sd-bg-img.jpg","source":"file"},"backgroundSize":"cover"},"spacing":{"padding":{"top":"var:preset|spacing|100","bottom":"var:preset|spacing|100"},"blockGap":"var:preset|spacing|60"}},"backgroundColor":"primary-500","layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull is-style-light-page-section has-primary-500-background-color has-background" style="padding-top:var(--wp--preset--spacing--100);padding-bottom:var(--wp--preset--spacing--100)">
 
 	<!-- wp:heading {"textAlign":"center","className":"is-style-section-title","style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base","anchor":"h-why-choose-southern-destinations"} -->
 	<h2 class="wp-block-heading has-text-align-center is-style-section-title has-base-color has-text-color has-link-color" id="h-why-choose-southern-destinations"><?php esc_html_e( 'Why choose Southern Destinations', 'sd-theme-2026' ); ?></h2>

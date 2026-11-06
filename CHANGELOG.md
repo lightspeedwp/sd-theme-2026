@@ -510,13 +510,16 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   (`patterns/footer.php`), so they show on every page. The band
   (`patterns/why-choose-sd.php`) keeps only its title and three value columns.
   The Trustpilot stack keeps the band's arrangement at 120px/140px rather than
-  160px/200px, but takes the dark `trustpilot-logo.svg` and neutral-700 text.
+  160px/200px, but takes neutral-700 text and a new
+  `assets/images/trustpilot/trustpilot-logo-neutral-700.svg`: the header's
+  logo with its #191919 wordmark recoloured to neutral-700, the footer's text
+  colour. The star stays Trustpilot green.
   The band's white wordmark and white text were washed out on the footer's
   light photograph. The WAA badge is 120px and stays unlinked (BugHerd
   #4). The band's own badge linked out, so that link is gone with it.
 
 - **"Why choose" band has more top and bottom padding.** With the logo row
-  gone it read as narrow, so `patterns/why-choose-sd.php` now sets spacing 90
+  gone it read as narrow, so `patterns/why-choose-sd.php` now sets spacing 100
   top and bottom on the block, up from the Light Page Section style's 70. The
   side padding still comes from the style.
 
