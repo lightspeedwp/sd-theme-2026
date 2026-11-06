@@ -502,6 +502,26 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Trustpilot score and We Are Africa badge moved to the footer.** BugHerd #21,
+  client email 2026-11-05, pending client approval. Both marks sat in two
+  half-width columns under the "Why choose" band, so they read as off-centre,
+  and the footer carried a second WAA badge under the logo. They now sit
+  side by side in a centred "Trust Marks" row under the footer logo
+  (`patterns/footer.php`), so they show on every page. The band
+  (`patterns/why-choose-sd.php`) keeps only its title and three value columns.
+  The Trustpilot stack is the band's white-wordmark variant, at 120px/140px
+  rather than 160px/200px. The WAA badge is 120px and stays unlinked (BugHerd
+  #4). The band's own badge linked out, so that link is gone with it.
+
+- **About Us mega menu matches the other panels.** Client email 2026-11-05.
+  `parts/mega-menu-about.html`'s three headings carried `textColor: contrast`
+  and `fontSize: 400`, which the Tours, Destinations and Accommodation panels
+  don't. Both are removed, so the headings take the Section Title Left style
+  like the rest. The Meet the Team intro is one italic paragraph at 200, which
+  is live's 15px body size. It replaces a bare `<p>` (caught by the sitewide
+  paragraph size of 300) in a wrapper group. The column gap is 10, as in the
+  other columns.
+
 - **Mega menu type is sans-serif again, as live.** Client follow-up by email
   on BugHerd #20, 2026-10-30. Measured on live and dev at 1440px,
   2026-11-03: every line in live's four panels is Open Sans, while dev set the
@@ -1311,6 +1331,15 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.github/reports/sd-theme-e2e-shakedown-2026-09-23.md`.
 
 ### Fixed
+
+- **Blog post body text is the site's body size.** BugHerd #22. Post
+  paragraphs are bare `<p>`s, so theme.json's `core/paragraph` size (300,
+  1.125rem) beat the body's 200. They rendered larger than the rest of the
+  site's body copy, such as the rooms cards. `patterns/template-single-post.php`'s
+  `core/post-content` is now set to 200. The new
+  `assets/styles/core-post-content.css` lets that size reach the paragraphs,
+  mirroring `core-post-excerpt.css`. Only a post-content block that sets a size
+  is affected, so pages and Tour Operator singles don't change.
 
 - **Yoast FAQ styling under Tour Operator's accordion.** ASD-36. Dev's Tour
   Operator build adds `.is-accordion` to the block and styles it as rounded

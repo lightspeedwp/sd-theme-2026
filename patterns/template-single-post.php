@@ -284,7 +284,7 @@
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:post-content {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"constrained"}} /-->
+		<!-- wp:post-content {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"fontSize":"200","layout":{"type":"constrained"}} /-->
 
 	</article>
 	<!-- /wp:group -->

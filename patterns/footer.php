@@ -148,18 +148,19 @@
 				 * from theme.json with the classes that read them.
 				 *
 				 * Measured on live 2026-08-20 at 1440px: the brand mark renders
-				 * 254px wide, the We Are Africa badge 131px (now 144px — about a tenth
-				 * larger at Zared's request, 2026-10-09).
+				 * 254px wide, the We Are Africa badge 131px. The badge is now 120px,
+				 * sized down to sit beside the Trustpilot stack in the Trust Marks
+				 * row (2026-11-06).
 				 */
 				?>
 				<?php
 				/*
-				 * The two marks sit in one vertical flex group so the badge can be
-				 * centred on the logo rather than on the column. The column is
-				 * wider than the 254px logo, so centring the badge on the column
-				 * would leave it off-axis; assets/styles/core-group.css shrinks
-				 * this group to the logo's width (live's `#custom_html-20` is
-				 * `text-align: center` for the same result).
+				 * The logo and the Trust Marks row sit in one vertical flex group,
+				 * so the row is centred on the logo rather than on the column. The
+				 * column is wider than the 254px logo, so centring on the column
+				 * would leave the marks off-axis. The group shrink-wraps to its
+				 * widest child (live's `#custom_html-20` is `text-align: center`
+				 * for the same result).
 				 */
 				?>
 				<!-- wp:group {"metadata":{"name":"Brand Marks"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
@@ -170,15 +171,75 @@
 
 				<?php
 				/*
-				 * The We Are Africa 2024 Tribe Member badge. Unlinked at the
-				 * client's request (BugHerd #4). The `-300x300` intermediate is used rather than the
-				 * original: the full file is 2250px and 35KB, a pointless
-				 * download for a 144px mark.
+				 * Trust Marks — the Trustpilot score and the We Are Africa badge, side
+				 * by side under the logo. Moved here from the closing band in
+				 * patterns/why-choose-sd.php at the client's request (BugHerd #21,
+				 * email 2026-11-05), so both marks show on every page rather than only
+				 * on the eight templates that carry the band. Pending client approval.
+				 *
+				 * The Trustpilot stack is the band's white-wordmark variant, moved as
+				 * it was apart from its size. The footer has the same dark photograph
+				 * the band had, and the shared patterns/trustpilot-score.php mark is
+				 * #191919, which would read as a hole here. Everything variable comes
+				 * through the `sd/trustpilot` binding source. The two number
+				 * paragraphs are authored empty so a null binding prints nothing, and
+				 * the star tile falls back to the grey `stars-0.svg`.
+				 *
+				 * The badge stays unlinked at the client's request (BugHerd #4). The
+				 * `-300x300` intermediate is used because the full file is 2250px.
 				 */
 				?>
-				<!-- wp:image {"width":"144px","sizeSlug":"medium","linkDestination":"none"} -->
-				<figure class="wp-block-image size-medium is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:144px"/></figure>
-				<!-- /wp:image -->
+				<!-- wp:group {"metadata":{"name":"Trust Marks"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center","verticalAlignment":"center"}} -->
+				<div class="wp-block-group">
+					<!-- wp:group {"metadata":{"name":"Trustpilot Score"},"className":"sd-trustpilot","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+					<div class="wp-block-group sd-trustpilot">
+
+						<?php /* The mark. Static — theme asset, constant URL — and the one link in the badge. */ ?>
+						<!-- wp:image {"width":"120px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
+						<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo-white-green.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:120px;height:auto"/></a></figure>
+						<!-- /wp:image -->
+
+						<?php /* The star tile. Bound on `url`; decorative, because the rating is in the line below it. */ ?>
+						<!-- wp:image {"width":"140px","sizeSlug":"full","className":"sd-trustpilot__stars","metadata":{"name":"Star rating","bindings":{"url":{"source":"sd/trustpilot","args":{"key":"stars_image"}}}}} -->
+						<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg' ) ); ?>" alt="" style="width:140px;height:auto"/></figure>
+						<!-- /wp:image -->
+
+						<?php
+						/*
+						 * The TrustScore line — one row, as live sets it. Two paragraphs
+						 * rather than one with a bound span, because a binding replaces a
+						 * block's whole `content`, so the static words travel as the
+						 * source's `prefix` and `suffix` args. The spaces sit here, outside
+						 * the translation calls, so a translator cannot drop the one thing
+						 * holding the words apart.
+						 *
+						 * Both take base explicitly rather than inheriting the footer's
+						 * link and text colours, so the stack reads the same on the
+						 * photograph wherever it is placed.
+						 */
+						?>
+						<!-- wp:group {"metadata":{"name":"TrustScore line"},"className":"sd-trustpilot__line","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
+						<div class="wp-block-group sd-trustpilot__line">
+
+							<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","textColor":"base","fontSize":"100"} -->
+							<p class="sd-trustpilot__score has-base-color has-text-color has-100-font-size"></p>
+							<!-- /wp:paragraph -->
+
+							<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","textColor":"base","fontSize":"100"} -->
+							<p class="sd-trustpilot__count has-base-color has-text-color has-100-font-size"></p>
+							<!-- /wp:paragraph -->
+
+						</div>
+						<!-- /wp:group -->
+
+					</div>
+					<!-- /wp:group -->
+
+					<!-- wp:image {"width":"120px","sizeSlug":"medium","linkDestination":"none"} -->
+					<figure class="wp-block-image size-medium is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:120px"/></figure>
+					<!-- /wp:image -->
+				</div>
+				<!-- /wp:group -->
 				</div>
 				<!-- /wp:group -->
 			</div>
