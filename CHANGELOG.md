@@ -509,9 +509,16 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   side by side in a centred "Trust Marks" row under the footer logo
   (`patterns/footer.php`), so they show on every page. The band
   (`patterns/why-choose-sd.php`) keeps only its title and three value columns.
-  The Trustpilot stack is the band's white-wordmark variant, at 120px/140px
-  rather than 160px/200px. The WAA badge is 120px and stays unlinked (BugHerd
+  The Trustpilot stack keeps the band's arrangement at 120px/140px rather than
+  160px/200px, but takes the dark `trustpilot-logo.svg` and neutral-700 text.
+  The band's white wordmark and white text were washed out on the footer's
+  light photograph. The WAA badge is 120px and stays unlinked (BugHerd
   #4). The band's own badge linked out, so that link is gone with it.
+
+- **"Why choose" band has more top and bottom padding.** With the logo row
+  gone it read as narrow, so `patterns/why-choose-sd.php` now sets spacing 90
+  top and bottom on the block, up from the Light Page Section style's 70. The
+  side padding still comes from the style.
 
 - **About Us mega menu matches the other panels.** Client email 2026-11-05.
   `parts/mega-menu-about.html`'s three headings carried `textColor: contrast`

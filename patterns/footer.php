@@ -177,13 +177,16 @@
 				 * email 2026-11-05), so both marks show on every page rather than only
 				 * on the eight templates that carry the band. Pending client approval.
 				 *
-				 * The Trustpilot stack is the band's white-wordmark variant, moved as
-				 * it was apart from its size. The footer has the same dark photograph
-				 * the band had, and the shared patterns/trustpilot-score.php mark is
-				 * #191919, which would read as a hole here. Everything variable comes
-				 * through the `sd/trustpilot` binding source. The two number
-				 * paragraphs are authored empty so a null binding prints nothing, and
-				 * the star tile falls back to the grey `stars-0.svg`.
+				 * The Trustpilot stack keeps the band's arrangement (mark over stars
+				 * over the score line) but not its colours. The band sat on a dark
+				 * photograph and used the white wordmark and white text. The footer's
+				 * sunset photograph is light and its copy is neutral-700, so white read
+				 * as washed out (client feedback, 2026-11-06). The mark here is the
+				 * dark `trustpilot-logo.svg` that patterns/header.php uses on its light
+				 * ground. Everything variable comes through the `sd/trustpilot` binding
+				 * source. The two number paragraphs are authored empty so a null
+				 * binding prints nothing, and the star tile falls back to the grey
+				 * `stars-0.svg`.
 				 *
 				 * The badge stays unlinked at the client's request (BugHerd #4). The
 				 * `-300x300` intermediate is used because the full file is 2250px.
@@ -196,7 +199,7 @@
 
 						<?php /* The mark. Static — theme asset, constant URL — and the one link in the badge. */ ?>
 						<!-- wp:image {"width":"120px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
-						<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo-white-green.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:120px;height:auto"/></a></figure>
+						<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:120px;height:auto"/></a></figure>
 						<!-- /wp:image -->
 
 						<?php /* The star tile. Bound on `url`; decorative, because the rating is in the line below it. */ ?>
@@ -213,20 +216,19 @@
 						 * the translation calls, so a translator cannot drop the one thing
 						 * holding the words apart.
 						 *
-						 * Both take base explicitly rather than inheriting the footer's
-						 * link and text colours, so the stack reads the same on the
-						 * photograph wherever it is placed.
+						 * Both set neutral-700, the footer's body colour, explicitly so
+						 * the score reads the same as the copy around it.
 						 */
 						?>
 						<!-- wp:group {"metadata":{"name":"TrustScore line"},"className":"sd-trustpilot__line","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
 						<div class="wp-block-group sd-trustpilot__line">
 
-							<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","textColor":"base","fontSize":"100"} -->
-							<p class="sd-trustpilot__score has-base-color has-text-color has-100-font-size"></p>
+							<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","textColor":"neutral-700","fontSize":"100"} -->
+							<p class="sd-trustpilot__score has-neutral-700-color has-text-color has-100-font-size"></p>
 							<!-- /wp:paragraph -->
 
-							<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","textColor":"base","fontSize":"100"} -->
-							<p class="sd-trustpilot__count has-base-color has-text-color has-100-font-size"></p>
+							<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","textColor":"neutral-700","fontSize":"100"} -->
+							<p class="sd-trustpilot__count has-neutral-700-color has-text-color has-100-font-size"></p>
 							<!-- /wp:paragraph -->
 
 						</div>
