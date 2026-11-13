@@ -1363,6 +1363,26 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- ♿ **One `h1` on the home page.** ASD-41, 21.7. `patterns/homepage-hero.php`
+  carries three copies of the hero, one per breakpoint, switched by Block
+  Visibility, and all three were `h1`. The desktop copy keeps the `h1`. The
+  tablet and mobile copies are now `h2`, with `textTransform: none` so they
+  don't pick up `h2`'s uppercase. Their explicit font size, weight and family
+  already matched, and `is-style-shadow-text` is level-agnostic, so they look
+  as before.
+
+- ♿ **Compact card titles no longer skip a heading level.** ASD-41, 21.7. The
+  single tour's related cards went `h2` → `h4`. `card-tour-compact`,
+  `card-accommodation-compact` and `card-category` now use `h3`. Their section
+  styles (`listing-card-compact`, `category-card`) set the heading's size,
+  weight, line height and case through `elements.heading`, which applies to
+  every level, so nothing changes visually.
+
+- ✅ **E2E specs brought in line with decisions taken in review.** ASD-41. The mobile
+  call-us panel test expects two numbers, as on live and as Vanessa asked; the
+  review archive and single are out of the route fixtures, because the Reviews
+  templates were sunset in favour of Trustpilot.
+
 - **Blog post body text is the site's body size.** ASD-41. BugHerd #22. Post
   paragraphs are bare `<p>`s, so theme.json's `core/paragraph` size (300,
   1.125rem) beat the body's 200. They rendered larger than the rest of the

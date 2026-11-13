@@ -40,12 +40,24 @@ test.describe( 'Static routes', () => {
 		route.template.startsWith( 'archive-' )
 	);
 
+	/**
+	 * /tours/ and /accommodation/ are landing pages, not post listings: their
+	 * patterns (template-archive-tour / -accommodation) run a terms query over
+	 * travel styles and accommodation types, so they hold no `.wp-block-post`
+	 * at all. Their results are the term cards.
+	 */
+	const TERM_ARCHIVES = [ 'tour archive', 'accommodation archive' ];
+
 	for ( const archive of archives ) {
 		test( `${ archive.name } lists results`, async ( { page, visit } ) => {
 			await visit( archive.path );
 
+			const found = TERM_ARCHIVES.includes( archive.name )
+				? page.locator( 'main .wp-block-term-template > li' )
+				: results( page );
+
 			await expect(
-				results( page ),
+				found,
 				`${ archive.path } rendered no results in its main landmark — ` +
 					"check the query block's post type"
 			).not.toHaveCount( 0 );

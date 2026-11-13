@@ -233,7 +233,7 @@ test.describe( 'Destination listing cards', () => {
 	];
 
 	for ( const route of CARD_ROUTES ) {
-		test( `${ route.name }: card copy is font size 200 and links are brand-600`, async ( {
+		test( `${ route.name }: card copy is the card font size and links are brand-600`, async ( {
 			page,
 			visit,
 			routes,
@@ -250,11 +250,13 @@ test.describe( 'Destination listing cards', () => {
 			const cardCount = await page.locator( CARD ).count();
 			test.skip( 0 === cardCount, `No listing cards on ${ target }` );
 
-			const [ size200, brand600, neutral700 ] = await Promise.all( [
+			// Commit 04c3b0c: all text under the title takes the custom card size
+			// (15px), set by the card style, not a per-row font size 200.
+			const [ sizeCard, brand600, neutral700 ] = await Promise.all( [
 				resolvePreset(
 					page,
 					'font-size',
-					'--wp--preset--font-size--200'
+					'--wp--custom--font-size--card'
 				),
 				resolvePreset(
 					page,
@@ -296,7 +298,11 @@ test.describe( 'Destination listing cards', () => {
 					) ) {
 						if (
 							! text( el ) ||
-							/has-(?!200-)\d+-font-size/.test( el.className )
+							/has-\d+-font-size/.test( el.className ) ||
+							// The country FAQ groups wear the card style for their frame
+							// (parts/faq-countries.html); the Yoast answers inside are
+							// page copy at body size, not card text.
+							el.closest( '.wp-block-yoast-faq-block' )
 						) {
 							continue;
 						}
@@ -331,11 +337,11 @@ test.describe( 'Destination listing cards', () => {
 			}, CARD );
 
 			const wrongSize = report.copy.filter(
-				( [ , size ] ) => size !== size200
+				( [ , size ] ) => size !== sizeCard
 			);
 			expect(
 				wrongSize,
-				`card copy not at font size 200 (${ size200 }):\n  ${ wrongSize
+				`card copy not at the card font size (${ sizeCard }):\n  ${ wrongSize
 					.map( ( row ) => row.join( ' → ' ) )
 					.join( '\n  ' ) }`
 			).toEqual( [] );

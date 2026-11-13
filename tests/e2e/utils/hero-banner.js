@@ -17,7 +17,15 @@
  */
 
 const BANNER = 'main > .wp-block-cover.is-style-hero-banner';
-const BANNER_IMAGE = `${ BANNER } > img.wp-block-cover__image-background`;
+
+/**
+ * The banner of a page on the `page-about-us` template (ASD-36). That template
+ * provides no banner of its own: each page carries its hero cover inside its
+ * post content, so the cover is the first child of the post-content block, not
+ * of `<main>`.
+ */
+const CONTENT_BANNER =
+	'main .wp-block-post-content > .wp-block-cover.is-style-hero-banner';
 
 /**
  * Resolve a preset custom property to the computed value the browser uses,
@@ -52,10 +60,15 @@ async function resolvePreset( page, property, variable ) {
  *
  * @param {Function} deps.expect Playwright `expect`.
  * @param {Function} deps.test   Playwright `test`.
- * @param {Object[]} routeConfig `{ name, path( routes, request ), strapline }` entries.
+ * @param {Object[]} routeConfig `{ name, path( routes, request ), strapline, banner }` entries.
+ *                               `banner` overrides the default `BANNER` selector, for a page whose cover
+ *                               lives in its post content (see `CONTENT_BANNER`).
  */
 function describeHeroBanners( { test, expect }, routeConfig ) {
 	for ( const route of routeConfig ) {
+		const bannerSelector = route.banner || BANNER;
+		const imageSelector = `${ bannerSelector } > img.wp-block-cover__image-background`;
+
 		test.describe( `${ route.name } banner`, () => {
 			test( 'is the hero banner: one h1, the 360px floor, no inline padding @responsive', async ( {
 				page,
@@ -71,7 +84,7 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				await page.setViewportSize( { width: 1280, height: 800 } );
 				await visit( target );
 
-				const banner = page.locator( BANNER ).first();
+				const banner = page.locator( bannerSelector ).first();
 				await expect(
 					banner,
 					'no hero banner at the top of <main>'
@@ -126,7 +139,7 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				await page.setViewportSize( { width: 1280, height: 800 } );
 				await visit( target );
 
-				const image = page.locator( BANNER_IMAGE ).first();
+				const image = page.locator( imageSelector ).first();
 				test.skip(
 					0 === ( await image.count() ),
 					`${ target } has no banner photograph`
@@ -135,7 +148,7 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				await expect( image ).toHaveCSS( 'position', 'absolute' );
 
 				const [ bannerBox, imageBox ] = await Promise.all( [
-					page.locator( BANNER ).first().boundingBox(),
+					page.locator( bannerSelector ).first().boundingBox(),
 					image.boundingBox(),
 				] );
 
@@ -158,7 +171,7 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 				await page.setViewportSize( { width: 375, height: 667 } );
 				await visit( target );
 
-				const banner = page.locator( BANNER ).first();
+				const banner = page.locator( bannerSelector ).first();
 				await expect( banner ).toBeVisible();
 
 				const [ plate, brand500, neutral700 ] = await Promise.all( [
@@ -223,4 +236,4 @@ function describeHeroBanners( { test, expect }, routeConfig ) {
 	}
 }
 
-module.exports = { BANNER, describeHeroBanners, resolvePreset };
+module.exports = { BANNER, CONTENT_BANNER, describeHeroBanners, resolvePreset };

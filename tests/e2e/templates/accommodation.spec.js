@@ -85,6 +85,13 @@ const LIVE_TYPE_ORDER = [
 const SPECIAL_ARCHIVE = '/accommodation-type/houseboats/';
 const SPECIAL_PROPERTY = /zambezi queen/i;
 
+/**
+ * An archive with mostly un-special properties: Houseboats lists two, both on
+ * special, so it cannot show the empty case. Safari Lodges lists a full page
+ * (12) of which one carries a special, measured on dev 2026-11-13.
+ */
+const NO_SPECIAL_ARCHIVE = '/accommodation-type/safari-lodges/';
+
 /** A property with a star rating, measured on dev 2026-09-23. */
 const RATED_PROPERTY = '/accommodation/chitwa-chitwa/';
 
@@ -243,26 +250,32 @@ test.describe( 'Accommodation list card', () => {
 		visit,
 		routes,
 	} ) => {
-		await visit( envPath( routes, SPECIAL_ARCHIVE ) );
+		await visit( envPath( routes, NO_SPECIAL_ARCHIVE ) );
 
 		const cards = page.locator( CARD );
 		const count = await cards.count();
-		test.skip( 0 === count, `${ SPECIAL_ARCHIVE } renders no cards` );
-		let hasNoBadgeCard = false;
+		test.skip( 0 === count, `${ NO_SPECIAL_ARCHIVE } renders no cards` );
+		let hasNoSpecialCard = false;
 
+		/**
+		 * The badge element is printed on every card and holds the special's
+		 * text, or nothing. An empty one has to be hidden, or it shows as a
+		 * bare square on the image.
+		 */
 		for ( let i = 0; i < count; i++ ) {
 			const badge = cards
 				.nth( i )
 				.locator( '.listing-card-list__badge--special' );
 
 			if ( ! ( await badge.count() ) ) {
-				hasNoBadgeCard = true;
+				hasNoSpecialCard = true;
 				continue;
 			}
 
 			const text = ( await badge.textContent() ).trim();
 
 			if ( '' === text ) {
+				hasNoSpecialCard = true;
 				await expect(
 					badge,
 					'an empty badge is showing as a bare square'
@@ -271,7 +284,7 @@ test.describe( 'Accommodation list card', () => {
 		}
 
 		expect(
-			hasNoBadgeCard,
+			hasNoSpecialCard,
 			'every property in the probe archive shows a special badge'
 		).toBe( true );
 	} );
