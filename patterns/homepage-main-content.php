@@ -154,8 +154,8 @@
 
 	<!-- wp:group {"metadata":{"name":"Explore the destinations (mobile)"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"right":"var:preset|spacing|20","bottom":"var:preset|spacing|60","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true,"medium":true}}}}]}} -->
 	<div class="wp-block-group alignwide" style="padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--20)">
-		<!-- wp:image {"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
-		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-explore-bg-img.jpg" alt="" style="aspect-ratio:16/7;object-fit:cover"/></figure>
+		<!-- wp:image {"id":51416,"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-explore-bg-img.jpg" alt="" class="wp-image-51416" style="aspect-ratio:16/7;object-fit:cover"/></figure>
 		<!-- /wp:image -->
 
 		<!-- wp:group {"metadata":{"name":"Copy"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
@@ -235,8 +235,8 @@
 
 	<!-- wp:group {"metadata":{"name":"Review lodges and camps (mobile)"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"right":"var:preset|spacing|20","bottom":"var:preset|spacing|60","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true,"medium":true}}}}]}} -->
 	<div class="wp-block-group alignwide" style="padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--20)">
-		<!-- wp:image {"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
-		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-accommodation-bg-img.jpg" alt="" style="aspect-ratio:16/7;object-fit:cover"/></figure>
+		<!-- wp:image {"id":51413,"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-accommodation-bg-img.jpg" alt="" class="wp-image-51413" style="aspect-ratio:16/7;object-fit:cover"/></figure>
 		<!-- /wp:image -->
 
 		<!-- wp:group {"metadata":{"name":"Copy"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
@@ -316,8 +316,8 @@
 
 	<!-- wp:group {"metadata":{"name":"Choose your safari (mobile)"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"right":"var:preset|spacing|20","bottom":"var:preset|spacing|60","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true,"medium":true}}}}]}} -->
 	<div class="wp-block-group alignwide" style="padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--20)">
-		<!-- wp:image {"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
-		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-experience-bg-img.jpg" alt="" style="aspect-ratio:16/7;object-fit:cover"/></figure>
+		<!-- wp:image {"id":51415,"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-experience-bg-img.jpg" alt="" class="wp-image-51415" style="aspect-ratio:16/7;object-fit:cover"/></figure>
 		<!-- /wp:image -->
 
 		<!-- wp:group {"metadata":{"name":"Copy"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
@@ -385,8 +385,8 @@
 
 	<!-- wp:group {"metadata":{"name":"Ask us (mobile)"},"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30","padding":{"right":"var:preset|spacing|20","bottom":"var:preset|spacing|60","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"large":true,"medium":true}}}}]}} -->
 	<div class="wp-block-group alignwide" style="padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--20)">
-		<!-- wp:image {"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
-		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-dream-trip-bg-img.jpg" alt="" style="aspect-ratio:16/7;object-fit:cover"/></figure>
+		<!-- wp:image {"id":51414,"aspectRatio":"16/7","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
+		<figure class="wp-block-image size-full"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/08/home-dream-trip-bg-img.jpg" alt="" class="wp-image-51414" style="aspect-ratio:16/7;object-fit:cover"/></figure>
 		<!-- /wp:image -->
 
 		<!-- wp:group {"metadata":{"name":"Copy"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
