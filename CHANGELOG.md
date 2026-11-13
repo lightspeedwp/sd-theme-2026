@@ -8,6 +8,22 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- ✅ **E2E coverage of the 2019 functional scope.** ASD-41, 21.3. New specs
+  (`forms/enquiry-fields`, `forms/newsletter-popup`, `templates/search-facets`,
+  `templates/destination-sections`, `templates/team`) and additions to ten more,
+  traced to the 2019 spec in
+  `.github/reports/asd-41-21.3-functional-traceability-2026-11-13.md`. Where dev
+  differs from the 2019 spec but matches live, the tests assert live: live
+  outranks the 2019 spec. They never submit a form. Seven assertions stay red on
+  dev because they are real gaps against live, not test faults:
+  - search results not scoped to the post type (#4);
+  - the archive Style/Type facet (#5);
+  - the price sort (#6);
+  - the tour map showing on mobile (#8);
+  - the Terms numbering and breadcrumb (#14);
+  - `/sitemap/` (#15);
+  - the Connect With Us videos and Follow Us block (#16).
+
 - **Dev Site Editor overrides captured before deploy.** ASD-32 (22.1). Dev held
   two customisations of this theme authored in the editor since the
   2026-10-21 reconciliation: an FAQ section appended to

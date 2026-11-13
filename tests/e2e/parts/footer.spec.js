@@ -166,3 +166,129 @@ test.describe( 'Footer link hovers', () => {
 		}
 	} );
 } );
+
+/**
+ * ASD-41 item 21.3 — the 2019 footer: four widgets (Logo, Contact Us, Follow
+ * Us, Instagram linked image) and links to Privacy and Terms (G13, G14).
+ */
+test.describe( 'Footer widgets and legal links (2019 spec)', () => {
+	test.beforeEach( async ( { page, visit } ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( '/' );
+	} );
+
+	const FOOTER = 'footer.wp-block-template-part';
+
+	// requirement: RQ-G13 / test-case: TC-G13-01
+	test( 'has four widgets: logo, Contact Us, Follow Us and Instagram', async ( {
+		page,
+	} ) => {
+		const footer = page.locator( FOOTER );
+
+		await expect(
+			footer.locator( 'img[src*="footer-logo"]' ),
+			'no logo widget'
+		).toHaveAttribute( 'alt', /Southern Destinations/ );
+		await expect(
+			footer
+				.locator( '.wp-block-columns' )
+				.first()
+				.locator( '> .wp-block-column' ),
+			'the widget row is not four columns'
+		).toHaveCount( 4 );
+
+		for ( const title of [ 'Contact Us', 'Follow Us', 'Instagram' ] ) {
+			await expect(
+				footer.getByRole( 'heading', { name: title, exact: true } ),
+				`no "${ title }" widget`
+			).toBeVisible();
+		}
+	} );
+
+	// requirement: RQ-G13 / test-case: TC-G13-02
+	test( 'Contact Us carries the phone numbers, address and email as links', async ( {
+		page,
+	} ) => {
+		const widget = page
+			.locator( FOOTER )
+			.getByRole( 'heading', { name: 'Contact Us', exact: true } )
+			.locator( 'xpath=..' );
+
+		await expect(
+			widget.locator( 'a[href^="tel:"]' ).first()
+		).toBeVisible();
+		await expect( widget.locator( 'a[href^="mailto:"]' ) ).toHaveCount( 1 );
+		await expect( widget.locator( 'a[href*="maps"]' ) ).toHaveCount( 1 );
+	} );
+
+	// requirement: RQ-G13 / test-case: TC-G13-03
+	test( 'Follow Us links the five social profiles', async ( { page } ) => {
+		const widget = page
+			.locator( FOOTER )
+			.getByRole( 'heading', { name: 'Follow Us', exact: true } )
+			.locator( 'xpath=..' );
+
+		for ( const [ name, host ] of [
+			[ 'Facebook', 'facebook.com' ],
+			[ 'Instagram', 'instagram.com' ],
+			[ 'Pinterest', 'pinterest.com' ],
+			[ 'LinkedIn', 'linkedin.com' ],
+			[ 'YouTube', 'youtube.com' ],
+		] ) {
+			await expect(
+				widget.getByRole( 'link', { name } ),
+				`no ${ name } link`
+			).toHaveAttribute(
+				'href',
+				new RegExp( host.replace( '.', '\\.' ) )
+			);
+		}
+	} );
+
+	// requirement: RQ-G13 / test-case: TC-G13-04
+	test( 'the Instagram widget is a grid of described, linked images', async ( {
+		page,
+	} ) => {
+		const widget = page
+			.locator( FOOTER )
+			.getByRole( 'heading', { name: 'Instagram', exact: true } )
+			.locator( 'xpath=..' );
+		const links = widget.locator( 'a[href*="instagram.com"]:has(img)' );
+
+		expect(
+			await links.count(),
+			'fewer than four images'
+		).toBeGreaterThanOrEqual( 4 );
+		for ( const alt of await links
+			.locator( 'img' )
+			.evaluateAll( ( imgs ) => imgs.map( ( i ) => i.alt ) ) ) {
+			expect( alt.trim(), 'an Instagram image has no alt text' ).not.toBe(
+				''
+			);
+		}
+	} );
+
+	// requirement: RQ-G14 / test-case: TC-G14-01
+	test( 'links Privacy Policy and Terms & Conditions, and both pages load', async ( {
+		page,
+		request,
+	} ) => {
+		const footer = page.locator( FOOTER );
+
+		for ( const [ name, path ] of [
+			[ 'Privacy Policy', /\/privacy-policy\/?$/ ],
+			[ 'Terms & Conditions', /\/terms-conditions\/?$/ ],
+		] ) {
+			const link = footer.getByRole( 'link', { name } );
+			await expect( link, `no ${ name } link in the footer` ).toHaveCount(
+				1
+			);
+			await expect( link ).toHaveAttribute( 'href', path );
+
+			const status = (
+				await request.get( await link.getAttribute( 'href' ) )
+			).status();
+			expect( status, `${ name } returns ${ status }` ).toBe( 200 );
+		}
+	} );
+} );

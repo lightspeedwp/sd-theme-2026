@@ -292,7 +292,93 @@ const SYNTHETIC_ROUTES = [
 	},
 ];
 
+/**
+ * Content pages the 2019 functional list names that the rest of the suite does
+ * not sweep. Kept apart from STATIC_ROUTES on purpose: that list feeds the
+ * a11y, visual and template-resolution sweeps, and putting a page there signs
+ * it up for every one of them. These are asserted for what the 2019 spec says
+ * they hold, in templates/static-pages.spec.js.
+ *
+ * Measured on dev 2026-11-13 (REST `pages`):
+ *
+ *   faq     page-faq template, 200.
+ *   terms   `/terms-conditions/`, default page template, 200.
+ *   privacy `/privacy-policy/`, 200.
+ *   sitemap `/sitemap/` is NOT a page on dev: it 301s to `/` (live serves a
+ *           200 HTML sitemap there). Listed so the defect is asserted, not
+ *           silently left out.
+ *
+ * There is no "send us an email" page on dev or live (`/send-us-an-email/` is
+ * a 404 on both): the 2019 spec's page is the Contact Us form today.
+ */
+const CONTENT_PAGE_ROUTES = [
+	{ key: 'faq', name: 'FAQ', path: '/faq/', template: 'page-faq.html' },
+	{
+		key: 'terms',
+		name: 'Terms & Conditions',
+		path: '/terms-conditions/',
+		template: 'page.html',
+	},
+	{
+		key: 'privacy',
+		name: 'Privacy Policy',
+		path: '/privacy-policy/',
+		template: 'page.html',
+	},
+	{
+		key: 'sitemap',
+		name: 'Sitemap',
+		path: '/sitemap/',
+		template: 'page.html',
+	},
+];
+
+/**
+ * Content the ASD-41 functional specs pin by slug, because the assertion needs
+ * a page with a known shape rather than "whichever is newest" (global setup
+ * resolves the newest, which for destinations is a one-region country).
+ *
+ * Each was measured on dev 2026-11-13. A pinned page that is later unpublished
+ * fails at `visit()`'s status check with its path in the message, so it is
+ * noticed and re-pinned rather than silently skipped.
+ *
+ *   tour                       the sample tour: itinerary, WETU map, related shelf.
+ *   accommodationNoRooms       `bagatelle`: no units, so no Rooms band.
+ *   accommodationFewRooms      two units.
+ *   accommodationManyRooms     four units.
+ *   country                    South Africa: regions, gallery, map, tours.
+ *   region                     Kruger National Park: accommodation and tours shelves.
+ *   teamMember                 a consultant with every section populated.
+ *   teamMemberBare             a support-team member with no gallery or shelves.
+ */
+const PINNED = {
+	tour: '/tour/south-africa-mozambique/',
+	accommodationNoRooms: '/accommodation/bagatelle/',
+	accommodationFewRooms: '/accommodation/etosha-oberland-lodge/',
+	accommodationManyRooms: '/accommodation/khowarib-lodge-and-safaris/',
+	country: '/destination/south-africa/',
+	region: '/destination/south-africa/kruger-national-park/',
+	teamMember: '/team/ilze-fox/',
+	teamMemberBare: '/team/leigh-skibbe/',
+};
+
+/**
+ * A pinned path, prefixed the way this environment's permalinks need.
+ *
+ * @param {string} key Key of PINNED.
+ * @return {string} Path with a leading slash.
+ */
+function pinned( key ) {
+	if ( ! PINNED[ key ] ) {
+		throw new Error( `No pinned route "${ key }"` );
+	}
+	return PINNED[ key ];
+}
+
 module.exports = {
+	CONTENT_PAGE_ROUTES,
+	PINNED,
+	pinned,
 	STATIC_ROUTES,
 	RESOLVED_ROUTES,
 	RESOLVED_TAXONOMIES,

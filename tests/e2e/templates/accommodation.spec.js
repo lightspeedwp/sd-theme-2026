@@ -36,6 +36,7 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
+const { pinned } = require( '../fixtures/routes.js' );
 const {
 	describeHeroBanners,
 	resolvePreset,
@@ -524,5 +525,145 @@ test.describe( 'Filter flyout', () => {
 		await expect(
 			page.locator( 'aside.sd-search-filters .facetwp-facet' ).first()
 		).toBeAttached();
+	} );
+} );
+
+/**
+ * ASD-41 item 21.3 — the 2019 single-accommodation sections the suite did not
+ * reach: the rooms band, Best Price Guarantee and the tours shelf.
+ *
+ * Pinned to properties whose unit counts were measured on dev 2026-11-13, so
+ * the "only when there are rooms" rule is tested on both sides of it.
+ */
+test.describe( 'Single accommodation — rooms (2019 spec)', () => {
+	/**
+	 * The 2019 spec asks for a rooms *carousel*, only when there are more than
+	 * two. Live never rendered one: its `data-slick` options sit on a container
+	 * whose cards stack one to a row (patterns/template-single-accommodation.php,
+	 * the units band note), and the block theme matches live. What is asserted
+	 * is therefore the part both versions share and a visitor can see: the band
+	 * lists every unit the property has, and is absent when it has none.
+	 */
+	// requirement: RQ-A9 / test-case: TC-A9-01
+	test( 'a property with more than two rooms lists every one under a Rooms heading', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( pinned( 'accommodationManyRooms' ) );
+
+		const band = page.locator( '#rooms' );
+		await expect( band, 'no rooms band' ).toHaveCount( 1 );
+		await expect( band.locator( 'h2' ) ).toHaveText( 'Rooms' );
+
+		const units = band.locator( 'h3.unit-title' );
+		expect(
+			await units.count(),
+			'fewer units than the property has'
+		).toBeGreaterThan( 2 );
+		for ( const title of await units.allInnerTexts() ) {
+			expect( title.trim(), 'a unit has no name' ).not.toBe( '' );
+		}
+	} );
+
+	// requirement: RQ-A9 / test-case: TC-A9-02
+	test( 'a property with two rooms lists both and is not turned into a slider', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( pinned( 'accommodationFewRooms' ) );
+
+		const band = page.locator( '#rooms' );
+		await expect( band ).toHaveCount( 1 );
+		await expect( band.locator( 'h3.unit-title' ) ).toHaveCount( 2 );
+		await expect(
+			band.locator( '.slick-slider, [data-slick]' ),
+			'a two-room property got a carousel'
+		).toHaveCount( 0 );
+	} );
+
+	// requirement: RQ-A9 / test-case: TC-A9-03
+	test( 'a property with no rooms has no Rooms band at all', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( pinned( 'accommodationNoRooms' ) );
+
+		await expect( page.locator( '#rooms' ) ).toHaveCount( 0 );
+		await expect(
+			page.getByRole( 'heading', { name: 'Rooms', exact: true } ),
+			'an empty Rooms heading is showing'
+		).toHaveCount( 0 );
+	} );
+} );
+
+test.describe( 'Single accommodation — Best Price Guarantee and tours (2019 spec)', () => {
+	// requirement: RQ-A2 / test-case: TC-A2-01
+	test( 'states the Best Price Guarantee on a single', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( pinned( 'accommodationManyRooms' ) );
+
+		const heading = page.getByRole( 'heading', {
+			name: 'Best Price Guarantee',
+		} );
+		await expect( heading ).toHaveCount( 1 );
+		await expect(
+			heading.locator( 'xpath=following::p[1]' ),
+			'the guarantee has no wording under it'
+		).toContainText( /cheaper than going direct/i );
+	} );
+
+	// requirement: RQ-A2 / test-case: TC-A2-02
+	test( 'the accommodation landing states it and offers the current specials', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( '/accommodation/' );
+
+		await expect(
+			page.getByRole( 'heading', { name: 'Best Price Guarantee' } )
+		).toHaveCount( 1 );
+
+		const specials = page.getByRole( 'link', {
+			name: 'View Current Accommodation Specials',
+		} );
+		await expect( specials ).toHaveCount( 1 );
+		await expect( specials ).toHaveAttribute( 'href', /\/specials\/?$/ );
+	} );
+
+	// requirement: RQ-A10 / test-case: TC-A10-01
+	test( 'lists the tours featuring this lodge, each a tour that resolves', async ( {
+		page,
+		visit,
+		request,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( pinned( 'accommodationManyRooms' ) );
+
+		const shelf = page.locator(
+			'.lsx-tour-related-accommodation-query-wrapper'
+		);
+		await expect( shelf, 'no tours shelf' ).toHaveCount( 1 );
+		await expect( shelf.locator( 'h2' ).first() ).toHaveText(
+			/^Tours Featuring \S/
+		);
+
+		const hrefs = await shelf
+			.locator( 'li.wp-block-post:not(.slick-cloned) a[href*="/tour/"]' )
+			.evaluateAll( ( links ) => [
+				...new Set( links.map( ( a ) => a.href ) ),
+			] );
+		expect( hrefs.length, 'the shelf lists no tours' ).toBeGreaterThan( 0 );
+
+		for ( const href of hrefs ) {
+			const status = ( await request.get( href ) ).status();
+			expect( status, `${ href } returns ${ status }` ).toBe( 200 );
+		}
 	} );
 } );
