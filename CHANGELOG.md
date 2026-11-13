@@ -8,6 +8,18 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **Dev Site Editor overrides captured before deploy.** ASD-32 (22.1). Dev held
+  two customisations of this theme authored in the editor since the
+  2026-10-21 reconciliation: an FAQ section appended to
+  `taxonomy-accommodation-brand` (row 66046, 2026-10-27) and a custom `faq`
+  part (row 65996, 2026-10-21). The FAQ section is now the closing group of
+  `patterns/template-taxonomy-accommodation-brand.php`; the rest of that
+  override was an older expansion of the pattern and is not taken. The `faq`
+  part ships as `parts/faq.html`, registered in the `faq` area. Both depend on
+  the Tour Operator FAQ add-on (`tour-operator-faq`), active on dev only. The
+  dev rows are left in place for Warwick's FAQ work (ASD-37); they can be reset
+  once this deploys.
+
 - **FAQ page template (`page-faq`).** ASD-41. The general FAQ template parts on one
   page, as ASC's FAQ page composes its own: the hero banner and trail, the
   page's content as an intro, then `pages` (About, enquiries, service,

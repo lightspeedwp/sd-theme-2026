@@ -1317,6 +1317,11 @@
 			"area": "faq"
 		},
 		{
+			"name": "faq",
+			"title": "FAQ",
+			"area": "faq"
+		},
+		{
 			"name": "pages",
 			"title": "FAQ — Pages",
 			"area": "faq"
