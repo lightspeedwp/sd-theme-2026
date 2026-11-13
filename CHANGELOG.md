@@ -1363,6 +1363,29 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **The tour map is hidden on phones, as on live.** ASD-41. The "Tour Map"
+  group in `patterns/template-single-tour.php` carries a Block Visibility
+  `screenSize` rule hiding it at "small" (below 768px). Live's
+  `@media (max-width: 767px)` sets `#tour-map { display: none }`; dev's small
+  breakpoint is `max-width: 767.98px`, so the two switch at the same width.
+
+- **Terms & Conditions clauses number hierarchically.** ASD-41. New section
+  style `legal-clauses` (`styles/sections/legal-clauses.json`, with the
+  `::before` number in `assets/styles/core-group.css` because a `css` field
+  drops `content:`) reproduces live's `.terms-conditions ol` rules:
+  `counters(item, ".")`, so nested clauses read "1.1.12.". It applies to a
+  group wrapped around the contract's lists; the page content must adopt it.
+
+- **Default pages show the breadcrumb strip.** ASD-41. `template-page-centered`
+  runs `breadcrumbs.php` first in `<main>`, as the other inner templates do.
+  Live shows "Home / Terms & Conditions" on Terms, Privacy, Sitemap and Thank
+  You; dev's default page template had no trail.
+
+- **The accommodation-type archive offers the "Types" facet.** ASD-41.
+  `patterns/template-taxonomy-accommodation-type.php` adds the
+  `accommodation_type` facet after Specials, the third of the three facets live
+  registers on that page. The facet already exists in FacetWP on dev.
+
 - ♿ **Header Trustpilot links clear the 44px touch target at phone widths.**
   ASD-41, 21.2. `assets/styles/core-image.css`: the hit-area padding is 12px,
   not 10px. The artwork renders ~23px at 375px, so the link was 43px and failed

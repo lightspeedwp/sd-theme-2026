@@ -96,22 +96,17 @@
  * returns `destination_to_accommodation`, `specials_to_accommodation` and
  * `accommodation_type`. Not brands, not travel styles, not a price slider,
  * although all of those are configured in `facetwp_settings` for other pages.
- * The first two are carried over verbatim, by name.
+ * All three are carried over, by name.
  *
- * ⚠️ **`accommodation_type` is left out, and it is not an oversight.** Live can
- * offer it because its search page is not actually scoped: `total_rows` and
- * `total_rows_unfiltered` both come back as 200 on `/safari+lodges/` *and* on
- * bare `/accommodation/`, and the facet lists 16 types with "Safari Lodges
- * (162)" among them — the path segment does not narrow the base query at all.
- * A term archive does narrow it, before FacetWP ever sees the query, so the
- * facet's only possible choice here is the term the visitor is already on. A
- * filter offering one pre-applied option reads as broken. The term does that
- * job and is named in the `h1`; broadening to another type is the accommodation
- * archive's grid of tiles, one level up.
- *
- * If the type facet is genuinely wanted alongside the results, this cannot be a
- * taxonomy template — it has to be a page with an unscoped loop, which is a
- * different line item. → Change-Control Register, not a build decision.
+ * **`accommodation_type` is carried, as live has it (2026-11-13).** This was left
+ * out at first: a term archive narrows the base query before FacetWP sees it, so
+ * the facet's only choice here is the term the visitor is already on, and a filter
+ * offering one pre-applied option can read as broken. Live shows the "Types" facet
+ * on this page regardless — it is the third of the three it registers — and live
+ * outranks that reasoning (AGENTS.md, "Source-of-truth precedence"), so the facet
+ * is present, under the same heading as on the brand archive. The `accommodation_type`
+ * facet already exists in FacetWP's settings on dev (it renders on the brand
+ * archive), so no config is needed.
  *
  * ## The count, the sort and the pager are facet blocks, not shortcodes
  *
@@ -457,7 +452,7 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 
 				<?php
 				/*
-				 * The two facets live registers on this page, in live's order.
+				 * The three facets live registers on this page, in live's order.
 				 *
 				 * Each carries `hasHeader: true` **and** an inner
 				 * `core/heading`. The attribute is what makes the block print a
@@ -495,6 +490,12 @@ if ( ! is_string( $sd_specials_archive ) || '' === $sd_specials_archive ) {
 				<!-- wp:facetwp/facet {"facetName":"specials_to_accommodation","facetLabel":"Specials","facetType":"checkboxes","hasHeader":true,"hideOnEmpty":true} -->
 					<!-- wp:heading {"level":3,"fontSize":"400","anchor":"h-specials"} -->
 					<h3 class="wp-block-heading has-400-font-size" id="h-specials"><?php esc_html_e( 'Specials', 'sd-theme-2026' ); ?></h3>
+					<!-- /wp:heading -->
+				<!-- /wp:facetwp/facet -->
+
+				<!-- wp:facetwp/facet {"facetName":"accommodation_type","facetLabel":"Types","facetType":"checkboxes","hasHeader":true,"hideOnEmpty":true} -->
+					<!-- wp:heading {"level":3,"fontSize":"400","anchor":"h-types"} -->
+					<h3 class="wp-block-heading has-400-font-size" id="h-types"><?php esc_html_e( 'Types', 'sd-theme-2026' ); ?></h3>
 					<!-- /wp:heading -->
 				<!-- /wp:facetwp/facet -->
 
