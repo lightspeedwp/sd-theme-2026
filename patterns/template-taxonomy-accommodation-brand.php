@@ -108,11 +108,10 @@
  *
  * Live registers four controls on this page — a keyword box, Destination,
  * Specials and Types. **Three are carried; the keyword box is not**, dropped
- * on 2026-09-16 with the result count and the sort select. **Types belongs
- * here where it did not on the type archive**: this archive is scoped by
- * *brand*, so `accommodation_type` still has real choices to offer, where on
- * `taxonomy-accommodation-type` its only possible value was the term the
- * visitor was already standing on.
+ * on 2026-09-16 with the result count and the sort select. Types earns its
+ * place most here: this archive is scoped by *brand*, so `accommodation_type`
+ * still has real choices to offer. `taxonomy-accommodation-type` carries the
+ * same facet too, because live registers it there (ASD-41, 2026-11-13).
  *
  * Destination overlaps the region tabs — both narrow by place, one by URL and
  * one by facet. They **compose**, and no longer by accident: the region scope is
