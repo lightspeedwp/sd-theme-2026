@@ -117,22 +117,22 @@
 
 			<!-- wp:column {"width":"66.66%","style":{"color":{"background":"#00000085"}}} -->
 			<div class="wp-block-column has-background" style="background-color:#00000085;flex-basis:66.66%">
-				<!-- wp:group {"metadata":{"name":"Panel Frame"},"style":{"dimensions":{"minHeight":"520px"},"spacing":{"padding":{"top":"var:preset|spacing|100","bottom":"var:preset|spacing|100"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"center"}} -->
-				<div class="wp-block-group" style="min-height:520px;padding-top:var(--wp--preset--spacing--100);padding-bottom:var(--wp--preset--spacing--100)">
+				<!-- wp:group {"metadata":{"name":"Panel Frame"},"style":{"dimensions":{"minHeight":"520px"},"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"center"}} -->
+				<div class="wp-block-group" style="min-height:520px;padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50)">
 					<!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40","top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
 					<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
-						<!-- wp:heading {"className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent","anchor":"h-explore-the-destinations"} -->
-						<h2 id="h-explore-the-destinations" class="wp-block-heading is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Explore the destinations...', 'sd-theme-2026' ); ?></h2>
+						<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent","anchor":"h-explore-the-destinations"} -->
+						<h2 id="h-explore-the-destinations" class="wp-block-heading has-text-align-center is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Explore the destinations...', 'sd-theme-2026' ); ?></h2>
 						<!-- /wp:heading -->
 
-						<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base"} -->
-						<p class="has-base-color has-text-color has-link-color"><?php esc_html_e( 'Our Africa and safari gurus are ready to provide you with their insights and advice on which destinations to include on your must-see list.', 'sd-theme-2026' ); ?></p>
+						<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base"} -->
+						<p class="has-text-align-center has-base-color has-text-color has-link-color"><?php esc_html_e( 'Our Africa and safari gurus are ready to provide you with their insights and advice on which destinations to include on your must-see list.', 'sd-theme-2026' ); ?></p>
 						<!-- /wp:paragraph -->
 
-						<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+						<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
 						<div class="wp-block-group">
-							<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}}},"textColor":"accent-400"} -->
-							<p class="has-accent-400-color has-text-color has-link-color"><a href="<?php echo esc_url( home_url( '/destinations/' ) ); ?>"><?php esc_html_e( 'Take a look at our pick of inspiring destinations', 'sd-theme-2026' ); ?></a></p>
+							<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}}},"textColor":"accent-400"} -->
+							<p class="has-text-align-center has-accent-400-color has-text-color has-link-color"><a href="<?php echo esc_url( home_url( '/destinations/' ) ); ?>"><?php esc_html_e( 'Take a look at our pick of inspiring destinations', 'sd-theme-2026' ); ?></a></p>
 							<!-- /wp:paragraph -->
 
 							<!-- wp:outermost/icon-block {"iconName":""} -->
@@ -195,22 +195,22 @@
 
 			<!-- wp:column {"width":"66.66%","style":{"color":{"background":"#00000085"}}} -->
 			<div class="wp-block-column has-background" style="background-color:#00000085;flex-basis:66.66%">
-				<!-- wp:group {"metadata":{"name":"Panel Frame"},"style":{"dimensions":{"minHeight":"520px"},"spacing":{"padding":{"top":"var:preset|spacing|100","bottom":"var:preset|spacing|100"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"center"}} -->
-				<div class="wp-block-group" style="min-height:520px;padding-top:var(--wp--preset--spacing--100);padding-bottom:var(--wp--preset--spacing--100)">
+				<!-- wp:group {"metadata":{"name":"Panel Frame"},"style":{"dimensions":{"minHeight":"520px"},"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"center"}} -->
+				<div class="wp-block-group" style="min-height:520px;padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50)">
 					<!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40","top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
 					<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
-						<!-- wp:heading {"className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent","anchor":"h-review-the-lodges-amp-camps"} -->
-						<h2 id="h-review-the-lodges-amp-camps" class="wp-block-heading is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Review the lodges & camps…', 'sd-theme-2026' ); ?></h2>
+						<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent","anchor":"h-review-the-lodges-amp-camps"} -->
+						<h2 id="h-review-the-lodges-amp-camps" class="wp-block-heading has-text-align-center is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Review the lodges & camps…', 'sd-theme-2026' ); ?></h2>
 						<!-- /wp:heading -->
 
-						<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base"} -->
-						<p class="has-base-color has-text-color has-link-color"><?php esc_html_e( 'Which properties are best for your travel style and budget? Are you getting the best rate available? Are there specials you may not know about? As safari experts with more than 20 years experience and a vast network of hand-picked properties and operators at our fingertips, booking with us will give you the assurance you’re looking for.', 'sd-theme-2026' ); ?></p>
+						<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base"} -->
+						<p class="has-text-align-center has-base-color has-text-color has-link-color"><?php esc_html_e( 'Which properties are best for your travel style and budget? Are you getting the best rate available? Are there specials you may not know about? As safari experts with more than 20 years experience and a vast network of hand-picked properties and operators at our fingertips, booking with us will give you the assurance you’re looking for.', 'sd-theme-2026' ); ?></p>
 						<!-- /wp:paragraph -->
 
-						<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+						<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
 						<div class="wp-block-group">
-							<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-500"}}}},"textColor":"accent-500"} -->
-							<p class="has-accent-500-color has-text-color has-link-color"><a href="<?php echo esc_url( home_url( '/accommodation/' ) ); ?>"><?php esc_html_e( 'Explore Africa’s finest lodges, safaris and boutique hotels…', 'sd-theme-2026' ); ?></a></p>
+							<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-500"}}}},"textColor":"accent-500"} -->
+							<p class="has-text-align-center has-accent-500-color has-text-color has-link-color"><a href="<?php echo esc_url( home_url( '/accommodation/' ) ); ?>"><?php esc_html_e( 'Explore Africa’s finest lodges, safaris and boutique hotels…', 'sd-theme-2026' ); ?></a></p>
 							<!-- /wp:paragraph -->
 
 							<!-- wp:outermost/icon-block {"iconName":""} -->
@@ -279,22 +279,22 @@
 
 			<!-- wp:column {"width":"66.66%","style":{"color":{"background":"#00000085"}}} -->
 			<div class="wp-block-column has-background" style="background-color:#00000085;flex-basis:66.66%">
-				<!-- wp:group {"metadata":{"name":"Panel Frame"},"style":{"dimensions":{"minHeight":"520px"},"spacing":{"padding":{"top":"var:preset|spacing|100","bottom":"var:preset|spacing|100"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"center"}} -->
-				<div class="wp-block-group" style="min-height:520px;padding-top:var(--wp--preset--spacing--100);padding-bottom:var(--wp--preset--spacing--100)">
+				<!-- wp:group {"metadata":{"name":"Panel Frame"},"style":{"dimensions":{"minHeight":"520px"},"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"center"}} -->
+				<div class="wp-block-group" style="min-height:520px;padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50)">
 					<!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40","top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
 					<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
-						<!-- wp:heading {"className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent","anchor":"h-choose-your-safari-experience"} -->
-						<h2 id="h-choose-your-safari-experience" class="wp-block-heading is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Choose your safari experience…', 'sd-theme-2026' ); ?></h2>
+						<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent","anchor":"h-choose-your-safari-experience"} -->
+						<h2 id="h-choose-your-safari-experience" class="wp-block-heading has-text-align-center is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Choose your safari experience…', 'sd-theme-2026' ); ?></h2>
 						<!-- /wp:heading -->
 
-						<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base"} -->
-						<p class="has-base-color has-text-color has-link-color"><?php esc_html_e( 'There’s so much more to an African safari than seeing animals from the back of a game drive vehicle! The options are endless for special, never to be repeated encounters and experiences.', 'sd-theme-2026' ); ?></p>
+						<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base"} -->
+						<p class="has-text-align-center has-base-color has-text-color has-link-color"><?php esc_html_e( 'There’s so much more to an African safari than seeing animals from the back of a game drive vehicle! The options are endless for special, never to be repeated encounters and experiences.', 'sd-theme-2026' ); ?></p>
 						<!-- /wp:paragraph -->
 
-						<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+						<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
 						<div class="wp-block-group">
-							<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}}},"textColor":"accent-400"} -->
-							<p class="has-accent-400-color has-text-color has-link-color"><a href="<?php echo esc_url( home_url( '/tours/' ) ); ?>"><?php esc_html_e( 'Take a look at some of our latest tours for inspiration', 'sd-theme-2026' ); ?></a></p>
+							<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}}},"textColor":"accent-400"} -->
+							<p class="has-text-align-center has-accent-400-color has-text-color has-link-color"><a href="<?php echo esc_url( home_url( '/tours/' ) ); ?>"><?php esc_html_e( 'Take a look at some of our latest tours for inspiration', 'sd-theme-2026' ); ?></a></p>
 							<!-- /wp:paragraph -->
 
 							<!-- wp:outermost/icon-block {"iconName":""} -->
@@ -357,16 +357,16 @@
 
 			<!-- wp:column {"width":"66.66%","style":{"color":{"background":"#00000085"}}} -->
 			<div class="wp-block-column has-background" style="background-color:#00000085;flex-basis:66.66%">
-				<!-- wp:group {"metadata":{"name":"Panel Frame"},"style":{"dimensions":{"minHeight":"520px"},"spacing":{"padding":{"top":"var:preset|spacing|100","bottom":"var:preset|spacing|100"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"center"}} -->
-				<div class="wp-block-group" style="min-height:520px;padding-top:var(--wp--preset--spacing--100);padding-bottom:var(--wp--preset--spacing--100)">
+				<!-- wp:group {"metadata":{"name":"Panel Frame"},"style":{"dimensions":{"minHeight":"520px"},"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"center"}} -->
+				<div class="wp-block-group" style="min-height:520px;padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50)">
 					<!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40","top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
 					<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
-						<!-- wp:heading {"className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent","anchor":"h-ask-us-to-design-your-dream-trip-to-africa"} -->
-						<h2 id="h-ask-us-to-design-your-dream-trip-to-africa" class="wp-block-heading is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Ask us to design your dream trip to Africa!', 'sd-theme-2026' ); ?></h2>
+						<!-- wp:heading {"textAlign":"center","className":"is-style-script-accent","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent-400"}}},"typography":{"textTransform":"none"}},"textColor":"accent-400","fontFamily":"accent","anchor":"h-ask-us-to-design-your-dream-trip-to-africa"} -->
+						<h2 id="h-ask-us-to-design-your-dream-trip-to-africa" class="wp-block-heading has-text-align-center is-style-script-accent has-accent-400-color has-text-color has-link-color has-accent-font-family" style="text-transform:none"><?php esc_html_e( 'Ask us to design your dream trip to Africa!', 'sd-theme-2026' ); ?></h2>
 						<!-- /wp:heading -->
 
-						<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base"} -->
-						<p class="has-base-color has-text-color has-link-color"><?php esc_html_e( 'There’s no pressure and no obligation, just passionate people ready to make your trip a reality…', 'sd-theme-2026' ); ?></p>
+						<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"textColor":"base"} -->
+						<p class="has-text-align-center has-base-color has-text-color has-link-color"><?php esc_html_e( 'There’s no pressure and no obligation, just passionate people ready to make your trip a reality…', 'sd-theme-2026' ); ?></p>
 						<!-- /wp:paragraph -->
 					</div>
 					<!-- /wp:group -->

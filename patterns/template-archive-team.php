@@ -255,7 +255,7 @@ $sd_role_support     = $sd_role_support instanceof \WP_Term ? (int) $sd_role_sup
 		<div class="wp-block-group alignwide">
 
 			<!-- wp:paragraph {"align":"wide","className":"is-style-default","style":{"typography":{"textAlign":"center"}},"fontSize":"300"} -->
-			<p class="has-text-align-center alignwide is-style-default has-300-font-size"><?php esc_html_e( 'We have been in the wonderful world of travel for 28 years this year and can proudly say that thanks mainly to a rich collection of past clients, staff, suppliers, friends and family, we are well established, respected and unblemished. We started small on solid foundations of passion for our country and dedication to client service.', 'sd-theme-2026' ); ?></p>
+			<p class="has-text-align-center alignwide is-style-default has-300-font-size"><?php esc_html_e( 'We have been in the wonderful world of travel for 29 years this year and can proudly say that thanks mainly to a rich collection of past clients, staff, suppliers, friends and family, we are well established, respected and unblemished. We started small on solid foundations of passion for our country and dedication to client service.', 'sd-theme-2026' ); ?></p>
 			<!-- /wp:paragraph -->
 
 		</div>

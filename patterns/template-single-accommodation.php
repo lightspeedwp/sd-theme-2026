@@ -381,6 +381,14 @@
 						 * `.rating-stars` is hidden in core-group.css so it
 						 * does not add a second gap to the column.
 						 *
+						 * **The star authority follows the stars on the same line**
+						 * — live's `<small>(TGCSA)</small>` after the last star.
+						 * Bound through `sd/post-meta`'s `rating-authority`
+						 * format, not Tour Operator's source: TO prints the stored
+						 * option value raw, so it would read "(tgcsa)". The format
+						 * returns null for Unspecified, so the paragraph drops out
+						 * and the stars stand alone, as on live.
+						 *
 						 * An `h2`: the banner title is the page's `h1` and the
 						 * summary band carries no heading of its own — live's
 						 * "Summary" `<h2>` is `hidden-lg` and never shown on the
@@ -394,9 +402,19 @@
 							<h2 class="wp-block-heading has-text-align-center has-300-font-size" style="letter-spacing:var(--wp--custom--letter-spacing--heading);text-transform:uppercase"><?php esc_html_e( 'This property is rated:', 'sd-theme-2026' ); ?></h2>
 							<!-- /wp:heading -->
 
-							<!-- wp:paragraph {"metadata":{"name":"Rating Stars","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"rating"}}}},"style":{"typography":{"textAlign":"left"}},"fontSize":"200"} -->
-							<p class="has-text-align-left has-200-font-size"></p>
-							<!-- /wp:paragraph -->
+							<!-- wp:group {"metadata":{"name":"Stars and Authority"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+							<div class="wp-block-group">
+
+								<!-- wp:paragraph {"metadata":{"name":"Rating Stars","bindings":{"content":{"source":"lsx/post-meta","args":{"key":"rating"}}}},"style":{"typography":{"textAlign":"left"}},"fontSize":"200"} -->
+								<p class="has-text-align-left has-200-font-size"></p>
+								<!-- /wp:paragraph -->
+
+								<!-- wp:paragraph {"metadata":{"name":"Rating Authority","bindings":{"content":{"source":"sd/post-meta","args":{"key":"rating_type","format":"rating-authority","prefix":"(","suffix":")"}}}},"textColor":"neutral-700","fontSize":"100"} -->
+								<p class="has-neutral-700-color has-text-color has-100-font-size"></p>
+								<!-- /wp:paragraph -->
+
+							</div>
+							<!-- /wp:group -->
 
 						</div>
 						<!-- /wp:group -->

@@ -78,7 +78,7 @@ template — you don't need to place them by hand.
 | **Homepage — How To Plan Your Dream Trip** | The monogram, the script heading, the italic standfirst and the "Start here" cue. | — |
 | **Homepage — Main Content** | The four stacked photograph panels — Destinations, Accommodation, Tours, and the enquiry invitation — with the translucent panel alternating side to side. | — |
 | **Homepage — Let's Make It Happen** | The three-step invitation, the two office numbers, and the email action. | — |
-| **Why Choose Southern Destinations** | The three value columns on a darkened photograph, with the Trustpilot score and the We Are Africa badge beneath. Also used beneath inner pages. | Trustpilot score |
+| **Why Choose Southern Destinations** | The three value columns on a darkened photograph. Also used beneath inner pages. The Trustpilot score and We Are Africa badge are in the footer. | — |
 | **Homepage — Meet Our Safari Gurus** | The consultant row. Four team members, each a portrait whose bio links appear on hover. On phones it becomes a single button through to the team page. | Team |
 | **Homepage — Africa's Finest Brands** | The accommodation-brand logo carousel, five at a time. | Brands |
 | **Homepage — The Southern Destinations Difference** | Trustpilot's own review carousel. | Trustpilot |

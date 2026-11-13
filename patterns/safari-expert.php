@@ -45,34 +45,30 @@
  *     .lsx-to-contact-name  white             base, title case, font-size 400
  *     .lsx-to-meta-data     1px #fff, radius 2px, white text
  *                                             a bordered box, full-width half
- *     .lsx-to-enquire-form  the amber CTA     is-style-accent-cta, full-width half
+ *     .lsx-to-enquire-form  white-border CTA  is-style-outline-light, full-width half
  *     .trust-pilot-box beneath the card       beneath the card, centred
  *
  * ### ⚠️ The ground is brand-600, not live's brand-500
  *
  * Live's `#cc7f16` **is** brand-500 exactly — the palette carries it. It is not
  * used here because white text on it measures **3.18:1**, under the 4.5:1
- * AA floor for the eyebrow, the Call Us label and the office numbers; and
- * accent-400 — the "Send an Email" fill — measures **1.83:1** against it, well
- * under the 3:1 SC 1.4.11 floor for a control's own boundary. Both are live
- * failings, inherited rather than introduced.
+ * AA floor for the eyebrow, both action labels and the office numbers. That is
+ * a live failing, inherited rather than introduced.
  *
  * brand-600 is the next step down the same ramp. Measured off the rendered
- * page on local, 2026-08-28:
+ * page on local, 2026-08-28 (re-computed from the palette on 2026-10-21 at
+ * 4.52:1 — re-measure before quoting either figure):
  *
- *     white eyebrow / name / label   5.18:1   AA at any size
- *     white Call Us outline          5.18:1   SC 1.4.11
- *     accent-400 CTA fill            2.98:1   see below
- *     primary-600 CTA label          7.23:1   AA at any size
+ *     white eyebrow / name / labels  5.18:1   AA at any size
+ *     white Call Us / Email outline  5.18:1   SC 1.4.11
  *
- * The CTA fill lands a hundredth under the 3:1 non-text floor, and that is
- * accepted rather than tuned: SC 1.4.11 asks for contrast on "visual
- * information required to identify" a control, and this control is identified
- * by a 19.2px uppercase label at 7.23:1, not by its fill. Moving it would mean
- * either a bespoke colour — no palette token sits between accent-400 and the
- * card — or giving `is-style-accent-cta` a visible boundary everywhere it is
- * used, which is a change to a shared button style and not this panel's to
- * make.
+ * Both actions are the same 1px white outline, as on live — Call Us and Send an
+ * Email were made one style at the client's request (BugHerd #12). Send an
+ * Email used to be the `is-style-accent-cta` amber plate, and Call Us was
+ * briefly given it too; Zared chose live's outline for both, so
+ * `is-style-outline-light` carries Send an Email, with
+ * the 1px border, semi-bold label and side padding of the Call Us box set as
+ * block attributes.
  *
  * Nothing between brand-500 and brand-600 exists in the palette, so the ground
  * is one token step, not a tuned value. **If Zared wants live's exact orange back it is one word** —
@@ -394,8 +390,8 @@
 
 			<?php /* Placeholder for the Enquiry module's modal — see the note above. */ ?>
 			<!-- wp:buttons {"className":"sd-expert__email","style":{"layout":{"selfStretch":"fill"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
-			<div class="wp-block-buttons sd-expert__email"><!-- wp:button {"className":"is-style-accent-cta","style":{"dimensions":{"width":"var:preset|dimension|100"}}} -->
-			<div class="wp-block-button is-style-accent-cta"><a class="wp-block-button__link wp-element-button" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send an Email', 'sd-theme-2026' ); ?></a></div>
+			<div class="wp-block-buttons sd-expert__email"><!-- wp:button {"className":"is-style-outline-light","style":{"dimensions":{"width":"var:preset|dimension|100"},"border":{"width":"var:custom|border-width|100"},"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"typography":{"fontWeight":"var:custom|font-weight|semi-bold"}}} -->
+			<div class="wp-block-button is-style-outline-light"><a class="wp-block-button__link wp-element-button" style="border-width:var(--wp--custom--border-width--100);padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20);font-weight:var(--wp--custom--font-weight--semi-bold)" href="#to-modal-modal-enquiry"><?php esc_html_e( 'Send an Email', 'sd-theme-2026' ); ?></a></div>
 			<!-- /wp:button --></div>
 			<!-- /wp:buttons -->
 

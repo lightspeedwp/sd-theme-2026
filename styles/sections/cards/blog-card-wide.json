@@ -33,7 +33,7 @@
 					"fontFamily": "var:preset|font-family|heading",
 					"fontSize": "var:preset|font-size|400",
 					"fontWeight": "var:custom|font-weight|semi-bold",
-					"lineHeight": "var:custom|line-height|heading",
+					"lineHeight": "var:custom|line-height|snug",
 					"textTransform": "none"
 				}
 			},
@@ -54,6 +54,13 @@
 				}
 			}
 		},
-		"css": "& .wp-block-post-terms__prefix { font-style: italic; font-weight: var(--wp--custom--font-weight--regular) !important; } & .wp-block-post-author__content { display: flex; flex-flow: row nowrap; gap: 0.3em; } & .wp-block-post-author p { margin: 0; } & .wp-block-post-author__byline { font-size: inherit; }"
+		"css": "& .wp-block-post-terms__prefix { font-style: italic; font-weight: var(--wp--custom--font-weight--regular) !important; } & .wp-block-post-author__content { display: flex; flex-flow: row nowrap; gap: 0.3em; } & .wp-block-post-author p { margin: 0; } & .wp-block-post-author__byline { font-size: inherit; }",
+		"blocks": {
+			"core/paragraph": {
+				"typography": {
+					"lineHeight": "var:custom|line-height|card"
+				}
+			}
+		}
 	}
 }
