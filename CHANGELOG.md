@@ -1363,6 +1363,11 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- ♿ **Header Trustpilot links clear the 44px touch target at phone widths.**
+  ASD-41, 21.2. `assets/styles/core-image.css`: the hit-area padding is 12px,
+  not 10px. The artwork renders ~23px at 375px, so the link was 43px and failed
+  `responsive.spec.js` › touch targets. The header height is unchanged.
+
 - ♿ **One `h1` on the home page.** ASD-41, 21.7. `patterns/homepage-hero.php`
   carries three copies of the hero, one per breakpoint, switched by Block
   Visibility, and all three were `h1`. The desktop copy keeps the `h1`. The
