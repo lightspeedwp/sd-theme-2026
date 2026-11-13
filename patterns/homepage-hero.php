@@ -70,8 +70,8 @@
 <section class="wp-block-cover alignfull" style="margin-top:var(--wp--preset--spacing--0);margin-bottom:var(--wp--preset--spacing--0);min-height:544px"><img class="wp-block-cover__image-background wp-image-52466" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/10/home-slider1.jpg" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-contrast-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
 	<!-- wp:group {"className":"is-style-default","style":{"spacing":{"blockGap":"var:preset|spacing|60"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group is-style-default">
-		<!-- wp:heading {"level":1,"align":"wide","className":"is-style-shadow-text","style":{"typography":{"textAlign":"center","fontStyle":"normal","fontWeight":"700"}},"fontFamily":"accent","fontSize":"600"} -->
-		<h1 class="wp-block-heading has-text-align-center alignwide is-style-shadow-text has-accent-font-family has-600-font-size" style="font-style:normal;font-weight:700"><?php esc_html_e( '29 years of crafting extraordinary safari experiences', 'sd-theme-2026' ); ?></h1>
+		<!-- wp:heading {"align":"wide","className":"is-style-shadow-text","style":{"typography":{"textAlign":"center","fontStyle":"normal","fontWeight":"700","textTransform":"none"}},"fontFamily":"accent","fontSize":"600"} -->
+		<h2 class="wp-block-heading has-text-align-center alignwide is-style-shadow-text has-accent-font-family has-600-font-size" style="font-style:normal;font-weight:700;text-transform:none"><?php esc_html_e( '29 years of crafting extraordinary safari experiences', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"className":"is-style-shadow-text","style":{"typography":{"textAlign":"center"}},"fontSize":"400"} -->
@@ -86,8 +86,8 @@
 <section class="wp-block-cover alignfull" style="margin-top:var(--wp--preset--spacing--0);margin-bottom:var(--wp--preset--spacing--0);min-height:153px"><img class="wp-block-cover__image-background wp-image-52466 size-medium_large" alt="" src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/10/home-slider1-768x316.jpg" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-contrast-background-color has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container">
 	<!-- wp:group {"className":"is-style-default","style":{"spacing":{"blockGap":"var:preset|spacing|60"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group is-style-default">
-		<!-- wp:heading {"level":1,"align":"wide","className":"is-style-shadow-text","style":{"typography":{"textAlign":"center","fontStyle":"normal","fontWeight":"700"}},"fontFamily":"accent","fontSize":"500"} -->
-		<h1 class="wp-block-heading has-text-align-center alignwide is-style-shadow-text has-accent-font-family has-500-font-size" style="font-style:normal;font-weight:700"><?php esc_html_e( '29 years of crafting extraordinary safari experiences', 'sd-theme-2026' ); ?></h1>
+		<!-- wp:heading {"align":"wide","className":"is-style-shadow-text","style":{"typography":{"textAlign":"center","fontStyle":"normal","fontWeight":"700","textTransform":"none"}},"fontFamily":"accent","fontSize":"500"} -->
+		<h2 class="wp-block-heading has-text-align-center alignwide is-style-shadow-text has-accent-font-family has-500-font-size" style="font-style:normal;font-weight:700;text-transform:none"><?php esc_html_e( '29 years of crafting extraordinary safari experiences', 'sd-theme-2026' ); ?></h2>
 		<!-- /wp:heading -->
 	</div>
 	<!-- /wp:group -->

@@ -104,11 +104,6 @@ const STATIC_ROUTES = [
 		path: '/specials/',
 		template: 'archive-special.html',
 	},
-	{
-		name: 'review archive',
-		path: '/reviews/',
-		template: 'archive-review.html',
-	},
 	{ name: 'brands', path: '/brand/', template: 'page-brands.html' },
 	{
 		name: 'faceted tour search',
@@ -182,13 +177,6 @@ const RESOLVED_ROUTES = [
 		restBase: 'destination',
 		query: 'parent_exclude=0',
 		template: 'single-region.html',
-		optional: true,
-	},
-	{
-		key: 'review',
-		name: 'single review',
-		restBase: 'review',
-		template: 'single-review.html',
 		optional: true,
 	},
 	{

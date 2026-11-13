@@ -46,6 +46,7 @@
 
 const { test, expect } = require( '../fixtures/base.js' );
 const {
+	CONTENT_BANNER,
 	describeHeroBanners,
 	resolvePreset,
 } = require( '../utils/hero-banner.js' );
@@ -73,42 +74,50 @@ const PAGES = [
 		name: 'About Us',
 		path: '/about-us/',
 		title: 'About Us',
-		strapline: null,
+		h1: 'About Us',
+		eyebrow: null,
 		intro: 0,
 	},
 	{
 		name: 'Why Book With Us',
 		path: '/about-us/why-book-with-us/',
 		title: 'Why Book With Us',
-		strapline: 'About Us',
+		h1: 'Why Book With Us',
+		eyebrow: 'About Us',
 		intro: 1,
 	},
 	{
 		name: 'Social Responsibility',
 		path: '/about-us/social-responsibility/',
 		title: 'Social Responsibility',
-		strapline: 'About Us',
-		intro: 2,
+		h1: 'Social Responsibility',
+		eyebrow: 'About Us',
+		// One standfirst on dev since the ASD-36 rebuild of the page (was two).
+		intro: 1,
 	},
 	{
 		name: 'Connect With Us',
 		path: '/about-us/connect-with-us/',
 		title: 'Connect With Us',
-		strapline: 'About Us',
+		h1: 'Connect With Us',
+		eyebrow: 'About Us',
 		intro: 1,
 	},
 	{
 		name: 'Contact Us',
 		path: '/contact/',
 		title: 'Contact Us',
-		strapline: 'Get in Touch',
+		// The page's own title is "Contact Us"; the banner's h1 is its subtitle.
+		h1: 'Get in Touch',
+		eyebrow: null,
 		intro: 1,
 	},
 	{
 		name: 'Thank You',
 		path: '/thank-you/',
 		title: 'Thank You',
-		strapline: 'Send Us an Email',
+		h1: 'Send Us an Email',
+		eyebrow: null,
 		intro: 0,
 	},
 ];
@@ -153,7 +162,11 @@ function luminance( rgb ) {
 	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-const BANNER = 'main > .wp-block-cover.is-style-hero-banner';
+/**
+ * ASD-36: the six pages sit on `page-about-us`, which supplies no banner. Each
+ * carries its own hero cover as the first block of its post content.
+ */
+const BANNER = CONTENT_BANNER;
 const CONTENT = 'main .wp-block-post-content';
 const INTRO = `${ CONTENT } p.is-style-archive-intro`;
 
@@ -180,54 +193,60 @@ describeHeroBanners(
 	PAGES.map( ( p ) => ( {
 		name: p.name,
 		path: ( routes ) => envPath( routes, p.path ),
-		strapline: !! p.strapline,
+		banner: BANNER,
+		strapline: !! p.eyebrow,
 	} ) )
 );
 
 test.describe( 'Static page banners', () => {
 	for ( const p of PAGES ) {
 		test( `${ p.name } is titled in the banner, with ${
-			p.strapline ? `"${ p.strapline }" under it` : 'no strapline'
+			p.eyebrow ? `"${ p.eyebrow }" above it` : 'no eyebrow'
 		}`, async ( { page, visit, routes } ) => {
 			await page.setViewportSize( { width: 1280, height: 800 } );
 			await visit( envPath( routes, p.path ) );
 
 			const banner = page.locator( BANNER );
 			await expect( banner ).toHaveCount( 1 );
-			await expect( banner.locator( 'h1' ) ).toHaveText( p.title );
+			await expect( banner.locator( 'h1' ) ).toHaveText( p.h1 );
 
-			const strapline = banner.locator( 'p.is-style-subheading-large' );
+			// On the three child pages the h1 is the page's own title, under an
+			// "About Us" script line (a paragraph, not a second heading).
+			const eyebrow = banner.locator(
+				'.wp-block-cover__inner-container p',
+				{ hasText: /\S/ }
+			);
 
-			if ( p.strapline ) {
-				await expect( strapline ).toHaveText( p.strapline );
-				await expect( strapline ).toBeVisible();
+			if ( p.eyebrow ) {
+				await expect( eyebrow ).toHaveText( p.eyebrow );
+				await expect( eyebrow ).toBeVisible();
 			} else {
-				// Authored empty and hidden by `p:empty` — no placeholder line, no gap.
-				for ( const el of await strapline.all() ) {
-					await expect( el ).toBeHidden();
-				}
+				await expect( eyebrow ).toHaveCount( 0 );
 			}
 		} );
 
-		test( `${ p.name } holds no banner of its own and sits the trail under the template's`, async ( {
+		test( `${ p.name } carries its own banner and sits the trail under it`, async ( {
 			page,
 			visit,
 			routes,
 		} ) => {
 			await visit( envPath( routes, p.path ) );
 
+			// page-about-us supplies no banner: the cover is the first block of
+			// the page's content, and the only one that is a hero banner.
 			await expect(
 				page.locator(
 					`${ CONTENT } .wp-block-cover.is-style-hero-banner`
 				),
-				'the page content still carries its own banner'
-			).toHaveCount( 0 );
+				'the page content does not carry exactly one hero banner'
+			).toHaveCount( 1 );
 
 			// The old content banners painted a literal #636c75 overlay.
 			await expect(
 				page.locator( `${ CONTENT } [style*="636c75" i]` )
 			).toHaveCount( 0 );
 
+			// ASD-36 moves the breadcrumbs into the content, under the cover.
 			const next = page.locator( `${ BANNER } + *` );
 			await expect(
 				next,
@@ -466,12 +485,16 @@ test.describe( 'Contact Us', () => {
 			'564399480000ff0005856b81'
 		);
 
-		// The fallback link is what shows with sd-enhancements off or JavaScript disabled.
-		await expect(
-			widget.locator(
-				'a[href*="trustpilot.com/review/southerndestinations.com"]'
-			)
-		).toHaveCount( 1 );
+		// The fallback link is what shows with sd-enhancements off or JavaScript
+		// disabled. The TrustBox script swaps it for an iframe once it runs, so
+		// read it from the served markup, not the live DOM.
+		const served = await page.request.get( page.url() );
+		expect(
+			await served.text(),
+			'the served widget has lost its fallback link'
+		).toMatch(
+			/<div class="trustpilot-widget"[^>]*>\s*<a href="https:\/\/[a-z.]*trustpilot\.com\/review\/southerndestinations\.com"/
+		);
 
 		await expect(
 			page.locator( `${ CONTENT } .sd-trustpilot` ),

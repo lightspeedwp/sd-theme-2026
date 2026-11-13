@@ -448,12 +448,17 @@ test.describe( 'Header — mobile', () => {
 			).toHaveCount( 0 );
 		} );
 
-		test( 'shows a flag beside each of the four phone numbers', async ( {
+		/**
+		 * Two numbers, as on live: Vanessa asked for the panel to be cut from
+		 * four to two during the client review. The four office numbers still
+		 * appear on Why Book With Us and in the FAQ answers.
+		 */
+		test( 'shows a flag beside each of the two phone numbers', async ( {
 			page,
 		} ) => {
 			const flags = panel( page ).locator( 'img[src*="/flags/"]' );
 
-			await expect( flags ).toHaveCount( 4 );
+			await expect( flags ).toHaveCount( 2 );
 
 			for ( const flag of await flags.all() ) {
 				await expect( flag ).toBeVisible();
@@ -467,7 +472,7 @@ test.describe( 'Header — mobile', () => {
 
 			await expect(
 				panel( page ).locator( 'a[href^="tel:"]' )
-			).toHaveCount( 4 );
+			).toHaveCount( 2 );
 		} );
 
 		/**
