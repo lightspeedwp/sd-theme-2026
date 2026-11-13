@@ -502,6 +502,15 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Footer trust marks moved under the Instagram grid.** Client mockup, email
+  2026-11-12. The We Are Africa badge and the Trustpilot score now sit centred
+  under the Instagram grid, badge first, rather than under the logo in the
+  brand column. Both are smaller (badge 70px, Trustpilot mark 100px, stars
+  110px), sized from the mockup. The grid and the marks share an "Instagram and
+  Trust Marks" group whose `blockGap` sets the space between them, so no child
+  carries a margin. The brand column loses its "Brand Marks" wrapper and now
+  holds only the logo.
+
 - **Trustpilot score and We Are Africa badge moved to the footer.** BugHerd #21,
   client email 2026-11-05, pending client approval. Both marks sat in two
   half-width columns under the "Why choose" band, so they read as off-centre,

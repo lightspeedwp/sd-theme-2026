@@ -153,102 +153,9 @@
 				 * row (2026-11-06).
 				 */
 				?>
-				<?php
-				/*
-				 * The logo and the Trust Marks row sit in one vertical flex group,
-				 * so the row is centred on the logo rather than on the column. The
-				 * column is wider than the 254px logo, so centring on the column
-				 * would leave the marks off-axis. The group shrink-wraps to its
-				 * widest child (live's `#custom_html-20` is `text-align: center`
-				 * for the same result).
-				 */
-				?>
-				<!-- wp:group {"metadata":{"name":"Brand Marks"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
-				<div class="wp-block-group">
 				<!-- wp:image {"width":"254px","sizeSlug":"full","linkDestination":"none"} -->
 				<figure class="wp-block-image size-full is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/footer-logo.svg" alt="<?php esc_attr_e( 'Southern Destinations — Journeys with Imagination', 'sd-theme-2026' ); ?>" style="width:254px"/></figure>
 				<!-- /wp:image -->
-
-				<?php
-				/*
-				 * Trust Marks — the Trustpilot score and the We Are Africa badge, side
-				 * by side under the logo. Moved here from the closing band in
-				 * patterns/why-choose-sd.php at the client's request (BugHerd #21,
-				 * email 2026-11-05), so both marks show on every page rather than only
-				 * on the eight templates that carry the band. Pending client approval.
-				 *
-				 * The Trustpilot stack keeps the band's arrangement (mark over stars
-				 * over the score line) but not its colours. The band sat on a dark
-				 * photograph and used the white wordmark and white text. The footer's
-				 * sunset photograph is light and its copy is neutral-700, so white read
-				 * as washed out (client feedback, 2026-11-06). The mark here is
-				 * `trustpilot-logo-neutral-700.svg`: a copy of the header's
-				 * `trustpilot-logo.svg` with the wordmark's #191919 changed to
-				 * neutral-700 (#5B4E41), so it matches the footer copy. The star keeps
-				 * Trustpilot's green. An `<img>` can't take a CSS colour, so the token
-				 * is baked into the file. ⚠️ If neutral-700 changes in theme.json,
-				 * update the `.st0` fill in that SVG to match.
-				 * Everything variable comes through the `sd/trustpilot` binding
-				 * source. The two number paragraphs are authored empty so a null
-				 * binding prints nothing, and the star tile falls back to the grey
-				 * `stars-0.svg`.
-				 *
-				 * The badge stays unlinked at the client's request (BugHerd #4). The
-				 * `-300x300` intermediate is used because the full file is 2250px.
-				 */
-				?>
-				<!-- wp:group {"metadata":{"name":"Trust Marks"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center","verticalAlignment":"center"}} -->
-				<div class="wp-block-group">
-					<!-- wp:group {"metadata":{"name":"Trustpilot Score"},"className":"sd-trustpilot","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
-					<div class="wp-block-group sd-trustpilot">
-
-						<?php /* The mark. Static — theme asset, constant URL — and the one link in the badge. */ ?>
-						<!-- wp:image {"width":"120px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
-						<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo-neutral-700.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:120px;height:auto"/></a></figure>
-						<!-- /wp:image -->
-
-						<?php /* The star tile. Bound on `url`; decorative, because the rating is in the line below it. */ ?>
-						<!-- wp:image {"width":"140px","sizeSlug":"full","className":"sd-trustpilot__stars","metadata":{"name":"Star rating","bindings":{"url":{"source":"sd/trustpilot","args":{"key":"stars_image"}}}}} -->
-						<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg' ) ); ?>" alt="" style="width:140px;height:auto"/></figure>
-						<!-- /wp:image -->
-
-						<?php
-						/*
-						 * The TrustScore line — one row, as live sets it. Two paragraphs
-						 * rather than one with a bound span, because a binding replaces a
-						 * block's whole `content`, so the static words travel as the
-						 * source's `prefix` and `suffix` args. The spaces sit here, outside
-						 * the translation calls, so a translator cannot drop the one thing
-						 * holding the words apart.
-						 *
-						 * Both set neutral-700, the footer's body colour, explicitly so
-						 * the score reads the same as the copy around it.
-						 */
-						?>
-						<!-- wp:group {"metadata":{"name":"TrustScore line"},"className":"sd-trustpilot__line","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
-						<div class="wp-block-group sd-trustpilot__line">
-
-							<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","textColor":"neutral-700","fontSize":"100"} -->
-							<p class="sd-trustpilot__score has-neutral-700-color has-text-color has-100-font-size"></p>
-							<!-- /wp:paragraph -->
-
-							<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","textColor":"neutral-700","fontSize":"100"} -->
-							<p class="sd-trustpilot__count has-neutral-700-color has-text-color has-100-font-size"></p>
-							<!-- /wp:paragraph -->
-
-						</div>
-						<!-- /wp:group -->
-
-					</div>
-					<!-- /wp:group -->
-
-					<!-- wp:image {"width":"120px","sizeSlug":"medium","linkDestination":"none"} -->
-					<figure class="wp-block-image size-medium is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:120px"/></figure>
-					<!-- /wp:image -->
-				</div>
-				<!-- /wp:group -->
-				</div>
-				<!-- /wp:group -->
 			</div>
 			<!-- /wp:column -->
 
@@ -341,6 +248,8 @@
 				<h2 class="wp-block-heading has-400-font-size" style="margin-bottom:var(--wp--preset--spacing--40)"><?php esc_html_e( 'Instagram', 'sd-theme-2026' ); ?></h2>
 				<!-- /wp:heading -->
 
+				<!-- wp:group {"metadata":{"name":"Instagram and Trust Marks"},"style":{"spacing":{"blockGap":"var:preset|spacing|50"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+				<div class="wp-block-group">
 				<?php
 				/*
 				 * Nine tiles, three across, each an 83px square.
@@ -394,6 +303,88 @@
 					<!-- wp:image {"width":"83px","height":"83px","scale":"cover","sizeSlug":"full","linkDestination":"custom"} -->
 					<figure class="wp-block-image size-full is-resized"><a href="https://www.instagram.com/southerndestinations/" target="_blank" rel="noreferrer noopener"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2019/07/instagram-9.jpg" alt="<?php esc_attr_e( 'An elephant walking across pale desert sand', 'sd-theme-2026' ); ?>" style="object-fit:cover;width:83px;height:83px"/></a></figure>
 					<!-- /wp:image -->
+				</div>
+				<!-- /wp:group -->
+
+				<?php
+				/*
+				 * Trust Marks — the We Are Africa badge, then the Trustpilot score,
+				 * side by side under the Instagram grid. They came to the footer from
+				 * the closing band in patterns/why-choose-sd.php at the client's
+				 * request (BugHerd #21, email 2026-11-05), so both show on every page.
+				 * The client then placed them here, badge first and smaller than the
+				 * brand column had them, from a mockup (email 2026-11-12). Sizes are
+				 * read off that 1500px mockup: badge 70px, Trustpilot mark 100px.
+				 *
+				 * The Trustpilot stack keeps the band's arrangement (mark over stars
+				 * over the score line) but not its colours. The footer's sunset
+				 * photograph is light and its copy is neutral-700, so white read as
+				 * washed out (client feedback, 2026-11-06). The mark here is
+				 * `trustpilot-logo-neutral-700.svg`: a copy of the header's
+				 * `trustpilot-logo.svg` with the wordmark's #191919 changed to
+				 * neutral-700 (#5B4E41), so it matches the footer copy. The star keeps
+				 * Trustpilot's green. An `<img>` can't take a CSS colour, so the token
+				 * is baked into the file. ⚠️ If neutral-700 changes in theme.json,
+				 * update the `.st0` fill in that SVG to match.
+				 * Everything variable comes through the `sd/trustpilot` binding
+				 * source. The two number paragraphs are authored empty so a null
+				 * binding prints nothing, and the star tile falls back to the grey
+				 * `stars-0.svg`.
+				 *
+				 * The badge stays unlinked at the client's request (BugHerd #4). The
+				 * `-300x300` intermediate is used because the full file is 2250px.
+				 */
+				?>
+				<!-- wp:group {"metadata":{"name":"Trust Marks"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center","verticalAlignment":"center"}} -->
+				<div class="wp-block-group">
+					<!-- wp:image {"width":"70px","sizeSlug":"medium","linkDestination":"none"} -->
+					<figure class="wp-block-image size-medium is-resized"><img src="https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2024/02/WAA-Tribe-Member-Badge-2024-34-white-300x300.png" alt="<?php esc_attr_e( 'We Are Africa — 2024 Tribe Member', 'sd-theme-2026' ); ?>" style="width:70px"/></figure>
+					<!-- /wp:image -->
+					<!-- wp:group {"metadata":{"name":"Trustpilot Score"},"className":"sd-trustpilot","style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+					<div class="wp-block-group sd-trustpilot">
+
+						<?php /* The mark. Static — theme asset, constant URL — and the one link in the badge. */ ?>
+						<!-- wp:image {"width":"100px","sizeSlug":"full","linkDestination":"custom","className":"sd-trustpilot__logo"} -->
+						<figure class="wp-block-image size-full is-resized sd-trustpilot__logo"><a href="https://www.trustpilot.com/review/southerndestinations.com" target="_blank" rel="noreferrer noopener"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/trustpilot-logo-neutral-700.svg' ) ); ?>" alt="<?php esc_attr_e( 'Trustpilot', 'sd-theme-2026' ); ?>" style="width:100px;height:auto"/></a></figure>
+						<!-- /wp:image -->
+
+						<?php /* The star tile. Bound on `url`; decorative, because the rating is in the line below it. */ ?>
+						<!-- wp:image {"width":"110px","sizeSlug":"full","className":"sd-trustpilot__stars","metadata":{"name":"Star rating","bindings":{"url":{"source":"sd/trustpilot","args":{"key":"stars_image"}}}}} -->
+						<figure class="wp-block-image size-full is-resized sd-trustpilot__stars"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/trustpilot/stars/stars-0.svg' ) ); ?>" alt="" style="width:110px;height:auto"/></figure>
+						<!-- /wp:image -->
+
+						<?php
+						/*
+						 * The TrustScore line — one row, as live sets it. Two paragraphs
+						 * rather than one with a bound span, because a binding replaces a
+						 * block's whole `content`, so the static words travel as the
+						 * source's `prefix` and `suffix` args. The spaces sit here, outside
+						 * the translation calls, so a translator cannot drop the one thing
+						 * holding the words apart.
+						 *
+						 * Both set neutral-700, the footer's body colour, explicitly so
+						 * the score reads the same as the copy around it.
+						 */
+						?>
+						<!-- wp:group {"metadata":{"name":"TrustScore line"},"className":"sd-trustpilot__line","style":{"spacing":{"blockGap":"var:preset|spacing|5"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
+						<div class="wp-block-group sd-trustpilot__line">
+
+							<!-- wp:paragraph {"metadata":{"name":"TrustScore","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"score","prefix":"<?php echo esc_attr_x( 'TrustScore', 'precedes the Trustpilot score figure', 'sd-theme-2026' ); ?> ","suffix":" |"}}}},"className":"sd-trustpilot__score","textColor":"neutral-700","fontSize":"100"} -->
+							<p class="sd-trustpilot__score has-neutral-700-color has-text-color has-100-font-size"></p>
+							<!-- /wp:paragraph -->
+
+							<!-- wp:paragraph {"metadata":{"name":"Review count","bindings":{"content":{"source":"sd/trustpilot","args":{"key":"count","suffix":" <?php echo esc_attr_x( 'reviews', 'follows the Trustpilot review count', 'sd-theme-2026' ); ?>"}}}},"className":"sd-trustpilot__count","textColor":"neutral-700","fontSize":"100"} -->
+							<p class="sd-trustpilot__count has-neutral-700-color has-text-color has-100-font-size"></p>
+							<!-- /wp:paragraph -->
+
+						</div>
+						<!-- /wp:group -->
+
+					</div>
+					<!-- /wp:group -->
+
+				</div>
+				<!-- /wp:group -->
 				</div>
 				<!-- /wp:group -->
 			</div>
