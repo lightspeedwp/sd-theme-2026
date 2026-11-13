@@ -433,10 +433,8 @@
 
 				<?php
 				/*
-				 * Types. Present here where the type archive deliberately left
-				 * it out: that page was already scoped to a type, so the facet's
-				 * only possible choice was the one the visitor was standing on.
-				 * A brand archive is scoped by brand, so this still narrows.
+				 * Types. A brand archive is scoped by brand, so this narrows.
+				 * The type archive carries the same facet, as live does.
 				 */
 				?>
 				<!-- wp:facetwp/facet {"facetName":"accommodation_type","facetLabel":"Types","facetType":"checkboxes","hasHeader":true,"hideOnEmpty":true} -->

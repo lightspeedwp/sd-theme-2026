@@ -1750,3 +1750,23 @@
 .is-style-site-footer .wp-block-social-links .wp-social-link a:focus-visible .wp-block-social-link-label {
 	color: var(--wp--preset--color--brand-700) !important;
 }
+
+/**
+ * Legal Clauses — the clause numbers.
+ *
+ * Structure (counter reset, block items, spacing) lives in the section style
+ * styles/sections/legal-clauses.json. The number is a `::before` whose
+ * `content` is a counters() value, and a `css` field drops any rule containing
+ * `content:`, so it is drawn here. `counters(item, ".")` joins every ancestor
+ * level, giving "1.1.12." — the browser's own `decimal` marker shows only the
+ * last level. Top-level clauses are bold and nested ones regular, as on live.
+ */
+.is-style-legal-clauses ol li::before {
+	content: counters(item, ".") ". ";
+	counter-increment: item 1;
+	font-weight: var(--wp--custom--font-weight--bold);
+}
+
+.is-style-legal-clauses ol li ol > li::before {
+	font-weight: var(--wp--custom--font-weight--regular);
+}

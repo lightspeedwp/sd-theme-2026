@@ -531,9 +531,15 @@
 	 * Live runs the band edge to edge (`margin: 0 -9999rem`, custom.css:2425) on
 	 * the page's own white ground. `lsx-wetu-map-wrapper` removes it when
 	 * `lsx_to_has_map()` is false.
+	 *
+	 * Hidden on a phone, as live is: live's `@media (max-width: 767px)` sets
+	 * `#tour-map { display: none }` (measured 2026-11-13; the iframe still
+	 * loads, only the section is hidden). That is Block Visibility's "small"
+	 * screen size — `max-width: 767.98px` on dev — so it is a control on the
+	 * block, not a CSS media query.
 	 */
 	?>
-	<!-- wp:group {"tagName":"section","metadata":{"name":"Tour Map"},"align":"full","className":"is-style-light-page-section lsx-wetu-map-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"tour-map"} -->
+	<!-- wp:group {"tagName":"section","metadata":{"name":"Tour Map"},"align":"full","className":"is-style-light-page-section lsx-wetu-map-wrapper","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"},"anchor":"tour-map","blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{"screenSize":{"hideOnScreenSize":{"small":true}}}}]}} -->
 	<section class="wp-block-group alignfull is-style-light-page-section lsx-wetu-map-wrapper" id="tour-map">
 
 		<!-- wp:group {"metadata":{"name":"WETU Map","bindings":{"content":{"source":"lsx/map","type":"wetu"}}},"align":"wide","className":"lsx-wetu-map","layout":{"type":"default"}} -->
