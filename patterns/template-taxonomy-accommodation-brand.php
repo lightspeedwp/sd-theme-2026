@@ -633,7 +633,33 @@
 	 * the reader back out of the page they just arrived on.
 	 */
 	require __DIR__ . '/why-choose-sd.php';
+
+	/*
+	 * The brand's FAQs. Captured from the dev Site Editor override of this
+	 * template (row 66046, edited 2026-10-27) so the theme file is
+	 * authoritative before deploy (ASD-32 22.1). The rest of that override was
+	 * an older expansion of this pattern and is not taken.
+	 *
+	 * ⚠️ `lsxToPostFaqs` is read by the Tour Operator FAQ add-on
+	 * (`tour-operator-faq`), which is active on dev but not installed locally.
+	 * Without it the Yoast FAQ block renders empty under its heading. The FAQ
+	 * work is ASD-37. The editor's group label read "Botswana FAQs", a
+	 * copy-paste leftover, and is renamed here.
+	 */
 	?>
+	<!-- wp:group {"metadata":{"name":"Brand FAQs"},"className":"is-style-listing-card-list","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"},"blockVisibility":{"controlSets":[{"id":1,"enable":true,"controls":{}}]}} -->
+	<div class="wp-block-group is-style-listing-card-list" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
+
+		<!-- wp:heading {"className":"is-style-section-title","style":{"typography":{"textAlign":"center"}},"textColor":"neutral-800","anchor":"h-faqs"} -->
+		<h2 class="wp-block-heading has-text-align-center is-style-section-title has-neutral-800-color has-text-color" id="h-faqs"><?php esc_html_e( 'FAQs', 'sd-theme-2026' ); ?></h2>
+		<!-- /wp:heading -->
+
+		<!-- wp:yoast/faq-block {"lsxToPostFaqs":true} -->
+		<div class="schema-faq wp-block-yoast-faq-block"></div>
+		<!-- /wp:yoast/faq-block -->
+
+	</div>
+	<!-- /wp:group -->
 
 </main>
 <!-- /wp:group -->
