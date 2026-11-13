@@ -6,3 +6,4 @@ tests/e2e/test-results/
 .specify/
 .claude/
 specs/
+tests/schema-audit/

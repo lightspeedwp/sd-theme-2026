@@ -8,7 +8,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
-- **FAQ page template (`page-faq`).** The general FAQ template parts on one
+- **FAQ page template (`page-faq`).** ASD-41. The general FAQ template parts on one
   page, as ASC's FAQ page composes its own: the hero banner and trail, the
   page's content as an intro, then `pages` (About, enquiries, service,
   connecting) and `destinations` — 20 questions — closing on the "Why choose"
@@ -502,7 +502,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- **Footer trust marks moved under the Instagram grid.** Client mockup, email
+- **Footer trust marks moved under the Instagram grid.** ASD-41. Client mockup, email
   2026-11-12. The We Are Africa badge and the Trustpilot score now sit centred
   under the Instagram grid, badge first, rather than under the logo in the
   brand column. Both are smaller (badge 70px, Trustpilot mark 100px, stars
@@ -511,7 +511,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   carries a margin. The brand column loses its "Brand Marks" wrapper and now
   holds only the logo.
 
-- **Trustpilot score and We Are Africa badge moved to the footer.** BugHerd #21,
+- **Trustpilot score and We Are Africa badge moved to the footer.** ASD-41. BugHerd #21,
   client email 2026-11-05, pending client approval. Both marks sat in two
   half-width columns under the "Why choose" band, so they read as off-centre,
   and the footer carried a second WAA badge under the logo. They now sit
@@ -527,12 +527,12 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   light photograph. The WAA badge is 120px and stays unlinked (BugHerd
   #4). The band's own badge linked out, so that link is gone with it.
 
-- **"Why choose" band has more top and bottom padding.** With the logo row
+- **"Why choose" band has more top and bottom padding.** ASD-41. With the logo row
   gone it read as narrow, so `patterns/why-choose-sd.php` now sets spacing 100
   top and bottom on the block, up from the Light Page Section style's 70. The
   side padding still comes from the style.
 
-- **About Us mega menu matches the other panels.** Client email 2026-11-05.
+- **About Us mega menu matches the other panels.** ASD-41. Client email 2026-11-05.
   `parts/mega-menu-about.html`'s three headings carried `textColor: contrast`
   and `fontSize: 400`, which the Tours, Destinations and Accommodation panels
   don't. Both are removed, so the headings take the Section Title Left style
@@ -541,7 +541,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   paragraph size of 300) in a wrapper group. The column gap is 10, as in the
   other columns.
 
-- **Mega menu type is sans-serif again, as live.** Client follow-up by email
+- **Mega menu type is sans-serif again, as live.** ASD-41. Client follow-up by email
   on BugHerd #20, 2026-10-30. Measured on live and dev at 1440px,
   2026-11-03: every line in live's four panels is Open Sans, while dev set the
   column headings and the featured card title in the heading serif.
@@ -557,7 +557,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
     attribute is removed so its `!important` class can't beat the panel style.
 
 - **Card line spacing tightens again; mega menu card title is charcoal
-  brown.** Client follow-up by email on BugHerd #20, 2026-10-30.
+  brown.** ASD-41. Client follow-up by email on BugHerd #20, 2026-10-30.
   - New `settings.custom.lineHeight.card` token, 1.35 (between `button` 1.3
     and `body` 1.45). Card body copy uses it: `core/paragraph` and
     `core/post-excerpt` in `post-grid-card` and `listing-card-compact`, the
@@ -573,7 +573,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
     card title not on `neutral-700`. It now matches the other cards; the
     `brand-600` hover is unchanged.
 
-- **Cards share one text size, one padding and tighter meta: BugHerd #20.**
+- **Cards share one text size, one padding and tighter meta: BugHerd #20.** ASD-41.
   The homepage post cards, the compact tour and accommodation cards, and the
   tour/accommodation/destination modals now read as one family:
   - New `settings.custom.fontSize.card` token, 0.9375rem (15px, live's
@@ -598,14 +598,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
     button 1.35→1.3, body 1.5→1.45.
 
 - **Site still reads "zoomed in": wide rail narrows and spacing drops another
-  step.** Client follow-up by email on BugHerd #6/#7/#10, 2026-10-27.
+  step.** ASD-41. Client follow-up by email on BugHerd #6/#7/#10, 2026-10-27.
   `settings.layout.wideSize` goes from 1280px to 1200px. Live's Bootstrap
   `.container` is 1170px; 1200px is used instead because the expert card's wide
   arrangement in `template-archive-destination` needs a 576px half column, and
   at 1170px that falls to ~566px. Spacing `20`–`100` drops another 12.5% at
   both clamp ends (`spacing|60` is now ~46px max, from 52px), still reaching
   its max at 1600px. Spacing `5`/`10` are unchanged, as in the last pass.
-- **Stylelint accepts BEM class names; `core-group.css` lints clean.** The
+- **Stylelint accepts BEM class names; `core-group.css` lints clean.** ASD-41. The
   global pre-commit hook lints whole staged files, and `core-group.css` carried
   70 errors, so any change to it was blocked. 45 were `selector-class-pattern`
   on `__`/`--` classes, including core's own (`.wp-block-post-author__name`,
@@ -617,7 +617,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   specific (so it wins whatever the order), the deliberate second
   `.is-style-slider-frame` block, and core's `taxonomy-post_tag`. Compared with
   comments stripped, the rules are unchanged.
-- **Accommodation rating shows its star authority, as live does.** The stars
+- **Accommodation rating shows its star authority, as live does.** ASD-41. The stars
   and a new "Rating Authority" paragraph share a row in
   `template-single-accommodation`, so a TGCSA lodge reads ★★★★☆ (TGCSA) like
   live's `<small>(TGCSA)</small>`. Bound through `sd/post-meta`'s
@@ -626,10 +626,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   with the parser's empty split `<p>` — `.lsx-rating-wrapper p:empty` in
   `core-group.css` is now a descendant selector to reach both inside the row.
   Needs `sd-enhancements` with the new format.
-- **"29 years" everywhere.** BugHerd #17. Both the desktop and mobile
+- **"29 years" everywhere.** ASD-41. BugHerd #17. Both the desktop and mobile
   `<h1>` in `homepage-hero`, the desktop heading's anchor, and the intro copy
   in `template-archive-team`.
-- **Site-wide type and spacing brought back to live's scale.** BugHerd #6, #7,
+- **Site-wide type and spacing brought back to live's scale.** ASD-41. BugHerd #6, #7,
   #9, #10. Measured at 1650px: live's body copy is 15px/24px against our
   19.2px/28.8px, and our root `blockGap` put ~60px between blocks where live
   has 12–24px. Root `fontSize` in `theme.json` moves from `300` to `200` (16px;
@@ -643,47 +643,47 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   with its group gaps tightened (`80`→`40`, `30`→`20`). The four desktop panels
   in `homepage-main-content` centre their heading, copy and CTA row, so the
   arrow sits beside its text, and their frame padding halves (`100`→`50`).
-- **Category tiles hold their shape without an image.** The Category Card
+- **Category tiles hold their shape without an image.** ASD-41. The Category Card
   section style takes a 16:9 ratio on the tile itself, so a category with no
   `thumbnail` renders the same 256×144 tile — name centred on the existing
   neutral-700 ground — rather than collapsing to 1px and leaving a gap in the
   blog's category slider. Safari Tips is that category on dev, and it has no
   image on live either; one is to come from the client
   (`styles/sections/cards/category-card.json`).
-- **FAQ accordion: question and chevron centred in a closed card.** With the
+- **FAQ accordion: question and chevron centred in a closed card.** ASD-41. With the
   Tour Operator FAQ plugin active, the answer's `spacing|10` top margin stayed
   under every collapsed question (a margin does not collapse with
   `max-height: 0`), making closed cards 72.8px with the question riding high.
   It is zeroed in accordion mode — cards are 62.8px, question centred — and the
   chevron's nudge goes from the plugin's 1px to 3px each way, onto the
   question's centre line (`assets/styles/yoast-faq-block.css`).
-- **Home intro: more room above "Start here".** The logo and the heading +
+- **Home intro: more room above "Start here".** ASD-41. The logo and the heading +
   standfirst move into their own "Intro" group (gap `spacing|40`, unchanged), so
   the outer gap sets intro → "Start here" alone: `spacing|40` → `spacing|100`,
   87px at desktop against live's 89px, where it was 35px
   (`patterns/homepage-dream-trip.php`).
-- **Vertical cards tightened.** The home blog card (`card-post-grid`) and the
+- **Vertical cards tightened.** ASD-41. The home blog card (`card-post-grid`) and the
   tour and accommodation compact cards take their Body gap from `spacing|20` to
   `spacing|10`, so title → meta → excerpt sit closer; the tour meta rows go
   from `spacing|5` to `0` (each row keeps its 2px padding) and the
   accommodation meta rows from `spacing|10` to `spacing|5`. Judged by eye, not
   matched to a live measurement.
-- **Destination summary map group carries `lsx-map`.** Captured from dev's
+- **Destination summary map group carries `lsx-map`.** ASD-41. Captured from dev's
   `single-country` Site Editor override (2026-10-20), its one genuine edit, so
   the override can be reset. Whether it revives the map plate's click on TO 2.2
   is untested (`patterns/destination-summary.php`). Full reconciliation in
   `.github/reports/dev-override-reconciliation-2026-10-21.md`.
 - **Wide layout narrows from 1340px to 1280px** (`settings.layout.wideSize`).
-  Zared's call alongside BugHerd #7. The safari expert card keeps its wide
+  Zared's call alongside BugHerd #7. ASD-41. The safari expert card keeps its wide
   arrangement: emulated on dev at a 1651px viewport, the card is 610px against
   its 576px container threshold, at an unchanged 183px tall. Below ~1250px
   viewports the card switched to the narrow arrangement before and still does.
-- **About Us mega menu matches live.** BugHerd #11. The three panel headings
+- **About Us mega menu matches live.** ASD-41. BugHerd #11. The three panel headings
   take `contrast` (live's black) and step down from `500` to `400`, as block
   attributes in `parts/mega-menu-about.html`; the site-wide
   `section-title-left` style is untouched. The "Meet the team" button is
   removed — live has none, and it repeated the left column's Meet Our Team link.
-- **Safari expert: Send an Email matches Call Us.** BugHerd #12. Both actions
+- **Safari expert: Send an Email matches Call Us.** ASD-41. BugHerd #12. Both actions
   are live's 1px white outline with a white semi-bold label. Send an Email
   moves from the `accent-cta` amber plate to `is-style-outline-light`, with the
   Call Us box's 1px border, semi-bold weight and side padding as block
@@ -1351,7 +1351,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
-- **Blog post body text is the site's body size.** BugHerd #22. Post
+- **Blog post body text is the site's body size.** ASD-41. BugHerd #22. Post
   paragraphs are bare `<p>`s, so theme.json's `core/paragraph` size (300,
   1.125rem) beat the body's 200. They rendered larger than the rest of the
   site's body copy, such as the rooms cards. `patterns/template-single-post.php`'s
@@ -1649,14 +1649,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - **UK and Australia toll-free numbers** from the Call Us dropdown
   (`parts/dropdown-call-us.html`), which the desktop header, the safari expert
-  panel and the mobile menu all share. US and South Africa remain. BugHerd #1.
-- **Slider counter, site-wide.** BugHerd #8. Tour Operator's slick sliders
+  panel and the mobile menu all share. US and South Africa remain. BugHerd #1. ASD-41.
+- **Slider counter, site-wide.** ASD-41. BugHerd #8. Tour Operator's slick sliders
   hardcode `dots: true` with no filter, so `.slick-dots` and
   `.swiper-pagination` are hidden inside `.is-style-slider-frame`
   (`assets/styles/core-group.css`). Prev/next arrows stay.
 - **Footer: the Twitter link** from Follow Us (BugHerd #3), and **the link on
   the We Are Africa badge** (BugHerd #4) — the image, alt text and size stay
-  (`patterns/footer.php`).
+  (`patterns/footer.php`). ASD-41.
 - Unreferenced style variations `paragraph/subheading-medium`,
   `paragraph/subheading-small`, `sections/inner-page-section` and
   `sections/section-header`. ASD-36.
@@ -6613,6 +6613,13 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   missing comma, and TTF delivery instead of WOFF2. *(LS-2012)*
 
 ### Security
+
+- **Deploy prerequisite: `sd-enhancements` with the `rating-authority` format.** ASD-41.
+  The accommodation template's "Rating Authority" paragraph binds through
+  `sd/post-meta` with that format (TO-220), which is on `sd-enhancements-2026`'s
+  `fix/ls-2034-to-22-migration-gaps` branch (8caf148) and not yet merged. Deploy
+  that plugin change before, or with, this theme release, or the rating shows
+  without its authority name.
 
 - **`assets/fonts/optima-*.woff2` and `joe-hand-*.woff2` are `.gitignore`d and untracked**,
   delivered by the build/deploy pipeline instead of being committed. They are commercially

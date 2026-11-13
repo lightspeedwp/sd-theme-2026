@@ -148,21 +148,25 @@ These are **role-mapping** rules — which ramp step a role points at. Changing 
 
 ## 3. Typography tokens
 
-### 3.1 Font sizes — fluid, 8 of 9 confirmed against Figma
+### 3.1 Font sizes — fluid, 6 of 9 match Figma; 3 depart by decision
 
 | Slug | Name | Min | Max | Preset |
 | --- | --- | --- | --- | --- |
 | `100` | Tiny | 11px | 12px | `var:preset\|font-size\|100` |
 | `200` | Base | 14px | 16px | `var:preset\|font-size\|200` |
-| `300` | Small | 16px | ⚠️ 19.2px *(Figma: 20px)* | `var:preset\|font-size\|300` |
-| `400` | Medium | 20px | 24px | `var:preset\|font-size\|400` |
-| `500` | Large | 26px | 32px | `var:preset\|font-size\|500` |
+| `300` | Small | 15px | 18px *(Figma: 16 / 20px)* | `var:preset\|font-size\|300` |
+| `400` | Medium | 18px | 22px *(Figma: 20 / 24px)* | `var:preset\|font-size\|400` |
+| `500` | Large | 23px | 28px *(Figma: 26 / 32px)* | `var:preset\|font-size\|500` |
 | `600` | X-Large | 34px | 40px | `var:preset\|font-size\|600` |
 | `700` | Huge | 38px | 48px | `var:preset\|font-size\|700` |
 | `800` | Gigantic | 42px | 64px | `var:preset\|font-size\|800` |
 | `900` | Colossal | 48px | 80px | `var:preset\|font-size\|900` |
 
-Slug `300`'s max is `1.20rem` against Figma's 20px — likely a typo for `1.25rem` (register item **T1**).
+**`300`–`500` depart from Figma on purpose** (BugHerd #6, #7, #9, #10, ASD-41). Live's
+body copy measures 15px/24px at 1650px; the Figma scale read as "zoomed in" against it.
+The root body size also moves from `300` to `200`. Supersedes register item **T1**
+(the old `1.20rem` max). ⚠️ **A re-extraction from Figma will revert these three steps**
+— keep the values above, or push them into the Figma file first.
 
 ### 3.2 🔴 Font families — three-way disagreement, do not extract yet
 
@@ -193,15 +197,20 @@ Slug `300`'s max is `1.20rem` against Figma's 20px — likely a typo for `1.25re
 
 ### 3.3 Line height, weight, letter spacing
 
-`settings.custom` — no Figma equivalent except the two line heights, which match.
+`settings.custom` — no Figma equivalent except the two line heights.
 
 | Family | Tokens |
 | --- | --- |
-| `lineHeight` | `snug 1.125` · `heading 1.25` ✅ · `button 1.35` · `body 1.5` ✅ |
+| `lineHeight` | `snug 1.1` · `heading 1.2` *(Figma: 1.25)* · `button 1.3` · `card 1.35` · `body 1.45` *(Figma: 1.5)* |
 | `fontWeight` | `thin 100` → `black 900`, all nine steps |
 | `letterSpacing` | `none 0em` · `narrow 0.02em` · `heading 0.04em` · `wide 0.075em` |
+| `fontSize` | `card 0.9375rem` (15px) — the shared card text size, BugHerd #20 |
 
-Figma declares only `lineHeight/heading 125` and `lineHeight/body 150`; both match. The theme is a superset — keep the extras. Figma silence is not deletion.
+Figma declares only `lineHeight/heading 125` and `lineHeight/body 150`. **Both now depart
+by decision** (BugHerd #20, ASD-41): every line height tightened a step to match live's
+rhythm, and `card` was added between `button` and `body`. The theme is a superset — keep
+the extras. Figma silence is not deletion. ⚠️ A re-extraction will revert `heading` and
+`body`.
 
 ### 3.4 Font licensing — Joe Hand and Optima both cleared
 
@@ -523,23 +532,27 @@ The LSX parent loads **Lora** (4 faces), **Noto Sans** (4 faces) and **FontAweso
 
 ---
 
-## 4. Spacing — ✅ 11 of 11 confirmed
+## 4. Spacing — 2 of 11 match Figma; `20`–`100` depart by decision
 
-Figma and `theme.json` agree at every step. **No change required.**
+`5` and `10` match Figma. **`20`–`100` are scaled down from Figma on purpose**
+(BugHerd #6, #7, #10, ASD-41): live puts 12–24px between blocks where the Figma scale
+put ~60px. Two client rounds each took the scale down a step, at both clamp ends. Each
+step still reaches its max at 1600px. ⚠️ **A re-extraction from Figma will revert
+`20`–`100`** — keep the values below, or push them into the Figma file first.
 
-| Slug | Name | Min | Max | Preset |
-| --- | --- | --- | --- | --- |
-| `5` | XXS | 4px | 5px | `var:preset\|spacing\|5` |
-| `10` | XS | 8px | 10px | `var:preset\|spacing\|10` |
-| `20` | S | 14px | 20px | `var:preset\|spacing\|20` |
-| `30` | M | 20px | 30px | `var:preset\|spacing\|30` |
-| `40` | L | 26px | 40px | `var:preset\|spacing\|40` |
-| `50` | XL | 33px | 50px | `var:preset\|spacing\|50` |
-| `60` | XXL | 37px | 60px | `var:preset\|spacing\|60` |
-| `70` | XXXL | 42px | 70px | `var:preset\|spacing\|70` |
-| `80` | XXXXL | 48px | 80px | `var:preset\|spacing\|80` |
-| `90` | Gigantic | 56px | 90px | `var:preset\|spacing\|90` |
-| `100` | Colossal | 64px | 100px | `var:preset\|spacing\|100` |
+| Slug | Name | Min | Max | Figma min / max | Preset |
+| --- | --- | --- | --- | --- | --- |
+| `5` | XXS | 4px | 5px | ✅ | `var:preset\|spacing\|5` |
+| `10` | XS | 8px | 10px | ✅ | `var:preset\|spacing\|10` |
+| `20` | S | 10.7px | 15.2px | 14 / 20px | `var:preset\|spacing\|20` |
+| `30` | M | 15.2px | 22.8px | 20 / 30px | `var:preset\|spacing\|30` |
+| `40` | L | 19.8px | 30.4px | 26 / 40px | `var:preset\|spacing\|40` |
+| `50` | XL | 25.1px | 38.1px | 33 / 50px | `var:preset\|spacing\|50` |
+| `60` | XXL | 28.2px | 45.7px | 37 / 60px | `var:preset\|spacing\|60` |
+| `70` | XXXL | 32px | 53.3px | 42 / 70px | `var:preset\|spacing\|70` |
+| `80` | XXXXL | 36.5px | 60.9px | 48 / 80px | `var:preset\|spacing\|80` |
+| `90` | Gigantic | 42.6px | 68.5px | 56 / 90px | `var:preset\|spacing\|90` |
+| `100` | Colossal | 48.7px | 76.1px | 64 / 100px | `var:preset\|spacing\|100` |
 
 Buttons carry their own spacing customs: `spacing.button.padding-horizontal` `clamp(32px, 14vw, 48px)` · `padding-vertical` `clamp(14px, 10vw, 18px)`.
 
@@ -592,7 +605,7 @@ Both agree the shadow colour is `#111111` and both scale monotonically, but no p
 | Token | Figma | `theme.json` | |
 | --- | --- | --- | --- |
 | `contentSize` | 800 | `900px` | ⚠️ divergent (**L1**) |
-| `wideSize` | 1520 | `1520px` | ✅ |
+| `wideSize` | 1520 | `1200px` | ⚠️ departs by decision — BugHerd #6, #7, #10 (ASD-41): 1520 → 1340 → 1280 → 1200px to match live's Bootstrap rail. A re-extraction will revert it |
 | `fullWidth` | 1920 | *(absent)* | Add to `settings.custom` — no core token exists (**L2**) |
 
 Figma's reference screenshots are captured at **1920 / 1440 / 1024 / 768 / 390**, corroborating 1920 as the full-width ceiling. These widths are *not* declared as Figma variables.
