@@ -122,3 +122,88 @@ test.describe( 'Search and 404', () => {
 		expect( page.url() ).toMatch( /[?&]s=safari/ );
 	} );
 } );
+
+/**
+ * The 2019 spec's pretty search endpoints (SF1, SF2, SF3):
+ * `/search/key+words/`, `/search/tours/key+words/` and
+ * `/search/accommodation/key+words/`. The post-type segment is meant to scope
+ * the engine, so `/search/accommodation/safari/` is a search for "safari" in
+ * accommodation.
+ *
+ * Measured on dev 2026-11-13: all three routes answer 200 and list results, but
+ * the rewrite hands the whole path to WordPress as the keyword, so the box
+ * reads "accommodation/safari" and the results are not narrowed to the post
+ * type. `/search/` on its own is a 404; the spec names no bare endpoint, so
+ * nothing here asserts on it.
+ *
+ * Search autocomplete and SearchWP weighting depend on an open decision and are
+ * not tested here.
+ */
+const SEARCH_ENDPOINTS = [
+	{ id: 'SF1', path: '/search/safari/', postType: null },
+	{ id: 'SF2', path: '/search/tours/safari/', postType: 'tour' },
+	{
+		id: 'SF3',
+		path: '/search/accommodation/safari/',
+		postType: 'accommodation',
+	},
+];
+
+/*
+ * REGRESSION, kept failing. Live outranks the 2019 spec, and live scopes
+ * /search/accommodation/safari/ and /search/tours/safari/ to that post type
+ * and shows only "safari" in the keyword box (measured 2026-11-13). Dev
+ * shows "accommodation/safari" and lists every post type. Owner: the
+ * sd-enhancements plugin (search routing).
+ */
+test.describe( 'Pretty search endpoints', () => {
+	for ( const endpoint of SEARCH_ENDPOINTS ) {
+		// requirement: RQ-SF1..SF3 / test-case: TC-SF-01 (one per endpoint)
+		test( `${ endpoint.path } renders a results page`, async ( {
+			page,
+			visit,
+		} ) => {
+			await visit( endpoint.path );
+
+			await assertPageContract( page );
+
+			await expect(
+				results( page ),
+				`${ endpoint.path } listed no results for "safari"`
+			).not.toHaveCount( 0 );
+		} );
+
+		// requirement: RQ-SF1..SF3, RQ-SF7 / test-case: TC-SF-02
+		test( `${ endpoint.path } puts only the keyword in the search box`, async ( {
+			page,
+			visit,
+		} ) => {
+			await visit( endpoint.path );
+
+			await expect(
+				mainContent( page ).locator( 'input[type="search"]' ).first(),
+				'the search box should carry the keyword "safari", not the post-type segment of the URL'
+			).toHaveValue( 'safari' );
+		} );
+
+		if ( endpoint.postType ) {
+			// requirement: RQ-SF2, RQ-SF3 / test-case: TC-SF-03
+			test( `${ endpoint.path } lists only ${ endpoint.postType } results`, async ( {
+				page,
+				visit,
+			} ) => {
+				await visit( endpoint.path );
+
+				const total = await results( page ).count();
+				const matching = results( page ).locator(
+					`xpath=self::*[contains(concat(" ", @class, " "), " ${ endpoint.postType } ")]`
+				);
+
+				await expect(
+					matching,
+					`${ endpoint.path } should list ${ endpoint.postType } only, but ${ total - matching } of ${ total } results on page one are another post type`
+				).toHaveCount( total );
+			} );
+		}
+	}
+} );

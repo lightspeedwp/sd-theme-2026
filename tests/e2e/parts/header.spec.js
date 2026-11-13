@@ -462,12 +462,22 @@ test.describe( 'Header — mobile', () => {
 
 			for ( const flag of await flags.all() ) {
 				await expect( flag ).toBeVisible();
-				expect(
-					await flag.evaluate(
-						( img ) => img.complete && img.naturalWidth > 0
-					),
-					'a flag image failed to load'
-				).toBe( true );
+				// The flags are loading="lazy" inside a closed panel, so they
+				// only start fetching once the panel opens. Poll rather than
+				// read `complete` the instant the panel is visible (that was a
+				// timing flake, not a missing image).
+				await expect
+					.poll(
+						async () =>
+							flag.evaluate(
+								( img ) => img.complete && img.naturalWidth > 0
+							),
+						{
+							message: 'a flag image failed to load',
+							timeout: 5000,
+						}
+					)
+					.toBe( true );
 			}
 
 			await expect(
@@ -497,5 +507,92 @@ test.describe( 'Header — mobile', () => {
 				'panel logo is cut off at the top'
 			).toBeGreaterThanOrEqual( 0 );
 		} );
+	} );
+} );
+
+/**
+ * Header search routing by post type (SF9).
+ *
+ * The 2019 spec had the header search route to the tour or accommodation
+ * engine by post type. Live outranks the 2019 spec, and live's header form
+ * posts to `/` with only `s` from every page (measured 2026-11-13 from
+ * /tours/, /accommodation/ and /about-us/), landing on the global
+ * `/search/safari` results. Dev does the same, so routing by post type is a
+ * stale requirement and all three origins are asserted to use the global
+ * engine.
+ *
+ * Search autocomplete and SearchWP weighting are an open decision and are not
+ * covered.
+ */
+test.describe( 'Header search routing by post type', () => {
+	const GLOBAL_SEARCH = /^(\/\?s=safari|\/search\/safari\/?)/;
+
+	/**
+	 * Run the header search from a page and return where it lands.
+	 *
+	 * @param {import('@playwright/test').Page} page   Page.
+	 * @param {Function}                        visit  Visit helper.
+	 * @param {string}                          origin Path to search from.
+	 * @return {Promise<URL>} The results URL.
+	 */
+	async function searchFrom( page, visit, origin ) {
+		await visit( origin );
+
+		const form = page
+			.locator( 'header.wp-block-template-part form' )
+			.first();
+		const input = form
+			.locator( 'input[type="search"], input[name="s"]' )
+			.first();
+
+		// The control is collapsed until its button is pressed.
+		await form.locator( 'button.wp-block-search__button' ).first().click();
+		await input.fill( 'safari' );
+		await input.press( 'Enter' );
+
+		await page.waitForURL(
+			( url ) => url.pathname + url.search !== origin
+		);
+
+		return new URL( page.url() );
+	}
+
+	// requirement: RQ-SF9 / test-case: TC-SF9-01
+	test( 'from the tours archive it searches the whole site, as live does', async ( {
+		page,
+		visit,
+	} ) => {
+		const landed = await searchFrom( page, visit, '/tours/' );
+
+		expect(
+			landed.pathname + landed.search,
+			`header search on /tours/ landed on ${ landed.pathname }${ landed.search }, but live uses the global engine`
+		).toMatch( GLOBAL_SEARCH );
+	} );
+
+	// requirement: RQ-SF9 / test-case: TC-SF9-02
+	test( 'from the accommodation archive it searches the whole site, as live does', async ( {
+		page,
+		visit,
+	} ) => {
+		const landed = await searchFrom( page, visit, '/accommodation/' );
+
+		expect(
+			landed.pathname + landed.search,
+			`header search on /accommodation/ landed on ${ landed.pathname }${ landed.search }, but live uses the global engine`
+		).toMatch( GLOBAL_SEARCH );
+	} );
+
+	// requirement: RQ-SF9 / test-case: TC-SF9-03
+	test( 'from a general page it searches the whole site', async ( {
+		page,
+		visit,
+	} ) => {
+		const landed = await searchFrom( page, visit, '/about-us/' );
+
+		expect(
+			landed.pathname + landed.search,
+			'header search on a page should use the global engine'
+		).toMatch( GLOBAL_SEARCH );
 	} );
 } );

@@ -390,3 +390,99 @@ test.describe( 'Front page — moved from the plugin suite', () => {
 		).not.toHaveAttribute( 'data-slick-index', before );
 	} );
 } );
+
+/**
+ * ASD-41 item 21.3 — homepage blocks the suite did not assert (H3, H5, H6):
+ * the "Let's make it happen" contact details and button, the safari gurus and
+ * the brands block. Only the layout the current screen shows is read (the
+ * page prints a copy per breakpoint, so every locator filters to what is
+ * displayed).
+ */
+test.describe( 'Front page — dream trip, gurus and brands (2019 spec)', () => {
+	test.beforeEach( async ( { page, visit } ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( '/' );
+	} );
+
+	/**
+	 * The section a heading id anchors.
+	 *
+	 * @param {import('@playwright/test').Page} page Page.
+	 * @param {string}                          id   Heading id.
+	 * @return {import('@playwright/test').Locator} The heading's section.
+	 */
+	const sectionOf = ( page, id ) =>
+		page.locator( `#${ id }` ).locator( 'xpath=ancestor::section[1]' );
+
+	// requirement: RQ-H3 / test-case: TC-H3-01
+	test( '"Let\u2019s make it happen" gives both phone numbers and an email button that opens the enquiry dialog', async ( {
+		page,
+	} ) => {
+		const section = sectionOf( page, 'h-let-s-make-it-happen' );
+
+		await expect(
+			section.locator( 'a[href^="tel:"]:visible' )
+		).toHaveCount( 2 );
+
+		const button = section.getByRole( 'link', {
+			name: /send us an email/i,
+		} );
+		await expect( button ).toBeVisible();
+		await expect( button ).toHaveAttribute(
+			'href',
+			'#to-modal-modal-enquiry'
+		);
+
+		// Opens the dialog only. Nothing is typed or submitted.
+		await button.click();
+		await expect(
+			page.locator( '#to-modal-modal-enquiry' )
+		).toHaveAttribute( 'open', '' );
+	} );
+
+	// requirement: RQ-H5 / test-case: TC-H5-01
+	test( '"Meet our safari gurus" shows four consultants, each with a photo, profile and email link', async ( {
+		page,
+	} ) => {
+		const section = sectionOf( page, 'h-meet-our-safari-gurus' );
+		const cards = section.locator( 'li.wp-block-post:visible' );
+
+		await expect( cards ).toHaveCount( 4 );
+		for ( const card of await cards.all() ) {
+			await expect( card.locator( 'img' ).first() ).toBeVisible();
+			await expect(
+				card.locator( 'a[href*="/team/"]' ).first()
+			).toHaveAttribute( 'href', /\/team\/[^/]+\/?$/ );
+			await expect( card.locator( 'a[href^="mailto:"]' ) ).toHaveCount(
+				1
+			);
+		}
+	} );
+
+	// requirement: RQ-H6 / test-case: TC-H6-01
+	test( '"We only work with Africa\u2019s finest" is a wall of brand logos, each linking to its brand', async ( {
+		page,
+	} ) => {
+		const section = sectionOf( page, 'h-we-only-work-with-africas-finest' );
+		const logos = section.locator( 'a[href*="/brand/"]:has(img):visible' );
+
+		expect(
+			await logos.count(),
+			'fewer than ten brands'
+		).toBeGreaterThanOrEqual( 10 );
+		for ( const alt of await logos
+			.locator( 'img' )
+			.evaluateAll( ( imgs ) => imgs.map( ( i ) => i.alt ) ) ) {
+			expect( alt.trim(), 'a brand logo has no alt text' ).not.toBe( '' );
+		}
+	} );
+
+	/**
+	 * Not asserted: the 2019 spec asks for a hover effect on the gurus. There
+	 * is no state to read that is not a pure restyle, and the suite asserts
+	 * hover colours by their resolved preset elsewhere (footer.spec.js); an
+	 * invented "what changes" would be a guess.
+	 */
+	// requirement: RQ-H5 / test-case: TC-H5-02
+	test.skip( 'a guru card has a hover effect', () => {} );
+} );
