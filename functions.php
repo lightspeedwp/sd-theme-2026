@@ -275,6 +275,11 @@ add_filter( 'default_wp_template_part_areas', __NAMESPACE__ . '\template_part_ar
 // scan.
 require_once get_theme_file_path( 'inc/mega-menu.php' );
 
+// Lazy-loads the images in menu panels that start hidden (mega menus, the
+// always-overlay mobile navigation). An HTML attribute set at render time,
+// which theme.json can't express, and core never lazy-loads in the header.
+require_once get_theme_file_path( 'inc/menu-images.php' );
+
 // Styles yoast-seo/breadcrumbs, whose markup is a bare `.yoast-breadcrumbs`
 // div with no block wrapper attributes — so there is no `wp-block-*` selector
 // for theme.json to target — and a non-core block is outside
