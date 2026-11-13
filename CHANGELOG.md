@@ -1366,7 +1366,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   weight, line height and case through `elements.heading`, which applies to
   every level, so nothing changes visually.
 
-- ✅ **E2E specs brought in line with decisions taken in review.** The mobile
+- ✅ **E2E specs brought in line with decisions taken in review.** ASD-41. The mobile
   call-us panel test expects two numbers, as on live and as Vanessa asked; the
   review archive and single are out of the route fixtures, because the Reviews
   templates were sunset in favour of Trustpilot.

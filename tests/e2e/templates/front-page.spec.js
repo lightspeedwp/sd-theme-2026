@@ -64,9 +64,16 @@ test.describe( 'Front page', () => {
 		const variant = variantFor( page );
 		const expected = VARIANTS[ variant ];
 
+		/*
+		 * One hero per breakpoint, switched by Block Visibility. Only the
+		 * desktop copy's title is the page's `h1`; the tablet and phone copies
+		 * are `h2`s styled the same (ASD-41: a single `h1` in the document,
+		 * Zared's call, 2026-11-13). So the hero is found by its title style,
+		 * not its heading level.
+		 */
 		const heroes = page
 			.locator( 'main .wp-block-cover' )
-			.filter( { has: page.locator( 'h1' ) } )
+			.filter( { has: page.locator( '.is-style-shadow-text' ) } )
 			.filter( { visible: true } );
 
 		await expect(
@@ -75,9 +82,17 @@ test.describe( 'Front page', () => {
 				'is showing none or several'
 		).toHaveCount( 1 );
 
-		await expect( page.getByRole( 'heading', { level: 1 } ) ).toHaveCount(
-			1
-		);
+		await expect(
+			page.locator( 'h1' ),
+			'the document should carry exactly one h1'
+		).toHaveCount( 1 );
+
+		await expect(
+			heroes.first().locator( variant === 'desktop' ? 'h1' : 'h2' ),
+			`the ${ variant } hero title should be an ${
+				variant === 'desktop' ? 'h1' : 'h2'
+			}`
+		).toHaveCount( 1 );
 
 		const { height } = await heroes.first().boundingBox();
 
