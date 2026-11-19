@@ -1,0 +1,207 @@
+name: dependency automation
+
+# Trusted, default-branch-only. Uses this repository's own GITHUB_TOKEN - no App
+# key, no organisation-wide credential. Never checks out or executes
+# pull-request code; every fact is read back from the API.
+#
+# KNOWN CONSEQUENCE of using GITHUB_TOKEN: GitHub does not start workflow runs
+# for events created with it. A pull request merged here therefore lands on the
+# default branch with NO post-merge CI run and NO deploy run. Verified on
+# lightspeedwp/grounded-docs-infra 2026-08-10: #30 merged as 616d2eb and neither
+# CI nor Deploy fired; the host stayed on the previous commit until the deploy
+# was dispatched by hand.
+#
+# If a repository deploys from its default branch, an auto-merge here is a
+# change that is committed but not shipped. Either dispatch that repository's
+# deploy manually, or resolve it centrally - see the tracking issue.
+#
+# Managed centrally by lightspeedwp/dependency-merge-controller. Local edits
+# will be reverted by the daily reconciliation job.
+
+on:
+  schedule:
+    - cron: '23 5 * * *'      # merge sweep, daily
+    - cron: '23 4 * * 0'      # stale branch cleanup, Sundays
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Evaluate only, change nothing'
+        default: 'true'
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  statuses: read
+  # No `workflows` key exists in this block - GitHub's documented list of
+  # permissions: scopes does not include one. The 403 seen on playwright-mcp
+  # #55 ("without `workflows` permission") is GitHub's own GITHUB_TOKEN
+  # hard-refusing to touch .github/workflows/** at all: that specific write
+  # is only ever available to a GitHub App installation with the "Workflows"
+  # App permission, or a PAT with the workflow OAuth scope - never to the
+  # repo's own auto-issued GITHUB_TOKEN, and there is no permissions: line
+  # that changes that. This workflow deliberately uses only GITHUB_TOKEN (see
+  # header), so workflow-file PRs are refused below rather than merged.
+
+concurrency:
+  group: dependency-automation
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    name: Merge eligible dependency pull requests
+    if: github.event.schedule != '23 4 * * 0'
+    runs-on: [self-hosted, linux, x64, dependency-merge-trusted]
+    timeout-minutes: 20
+    steps:
+      - name: Evaluate and merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          DRY: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          [ "$(gh api "repos/$REPO" --jq .private)" = "true" ] || {
+            echo "public repository - refusing"; exit 0; }
+
+          DEFAULT="$(gh api "repos/$REPO" --jq .default_branch)"
+          ACTORS='dependabot[bot] renovate[bot]'
+
+          gh api "repos/$REPO/pulls?state=open&per_page=100" --paginate \
+            --jq '.[]|[.number,.user.login,.draft,.base.ref,.head.ref,.title]|@tsv' |
+          while IFS=$'\t' read -r N AUTHOR DRAFT BASE HEAD TITLE; do
+            skip() { echo "REFUSE #$N: $1"; }
+
+            case " $ACTORS " in *" $AUTHOR "*) ;; *) skip "actor $AUTHOR not approved"; continue;; esac
+            [ "$DRAFT" = "false" ]   || { skip "draft"; continue; }
+            [ "$BASE" = "$DEFAULT" ] || { skip "not targeting $DEFAULT"; continue; }
+
+            # Version policy: major updates are no longer refused outright (2026-08-21) -
+            # they pass through the same gates as any other bump: mergeable, green
+            # Actions checks, no changes requested, and no diff that adds permissions,
+            # a secret reference or a runner-selection change. Prerelease/draft versions
+            # still refuse unconditionally, since there is no CI signal that can vouch
+            # for a version that was never a real release.
+            printf '%s' "$TITLE" | grep -qiE '(alpha|beta|rc|pre)' && { skip "prerelease"; continue; }
+
+            # Mergeability, waited on until GitHub has computed it.
+            MERGEABLE=null
+            for _ in 1 2 3 4 5 6; do
+              MERGEABLE="$(gh api "repos/$REPO/pulls/$N" --jq '.mergeable|tostring')"
+              [ "$MERGEABLE" != "null" ] && break
+              sleep 5
+            done
+            [ "$MERGEABLE" = "true" ] || { skip "not mergeable ($MERGEABLE)"; continue; }
+
+            # CODEOWNERS still refuses outright - it is reviewer routing, not a
+            # dependency version, and has no version-bump shape to validate.
+            FILES="$(gh api "repos/$REPO/pulls/$N/files" --paginate --jq '.[].filename')"
+            echo "$FILES" | grep -qiE '(^|/)CODEOWNERS$' && { skip "CODEOWNERS change"; continue; }
+
+            # Workflow files refuse outright (reverted 2026-08-22): GITHUB_TOKEN
+            # can never be granted the App-level "Workflows" permission needed
+            # to update .github/workflows/** via a squash-merge - confirmed on
+            # playwright-mcp #55, which passed every other gate and then failed
+            # at the merge call itself with a 403. No permissions: line fixes
+            # this; it is a hard GitHub restriction on this token type, not a
+            # policy choice. Route workflow-file bumps through a privileged,
+            # App-token-based path instead if that becomes worth building.
+            echo "$FILES" | grep -qE '(^|/)\.github/workflows/' && { skip "workflow file change"; continue; }
+
+            # Diff-content guard: no permission widening, no new secret
+            # reference, no runner-selection change, in any non-workflow file
+            # the PR touches.
+            DIFF="$(gh api "repos/$REPO/pulls/$N" -H 'Accept: application/vnd.github.v3.diff' 2>/dev/null || true)"
+            printf '%s' "$DIFF" | grep -qE '^\+.*(permissions:|secrets\.|runs-on:)' && {
+              skip "diff adds permissions, secrets or runner selection"; continue; }
+
+            SHA="$(gh api "repos/$REPO/pulls/$N" --jq .head.sha)"
+            # Free plan: no branch protection, so the gate is this repository's
+            # own Actions check runs. Advisory third-party checks are not gates.
+            #
+            # Wait for any still-running check to finish before judging it, the
+            # same way mergeability above is waited on. Without this, a check
+            # that is merely still queued or in_progress (conclusion null, not
+            # yet failed) was refused immediately as if it had already failed.
+            # Bounded to two minutes; a check that is absent entirely never has
+            # a pending run to wait on, so that refusal path is unaffected.
+            # A transient gh api failure here must never read as "0 pending" or
+            # "0 bad" - under set -e it would otherwise abort the whole sweep,
+            # and worse, a failed fetch must fail closed (treated as still
+            # pending / not successful), never as an accidental pass.
+            for _ in 1 2 3 4 5 6 7 8 9 10 11 12; do
+              PENDING="$(gh api "repos/$REPO/commits/$SHA/check-runs" \
+                --jq '[.check_runs[]|select(.app.slug=="github-actions")|select(.conclusion==null)]|length' \
+                2>/dev/null || echo 1)"
+              [ "$PENDING" = "0" ] && break
+              sleep 10
+            done
+            BAD="$(gh api "repos/$REPO/commits/$SHA/check-runs" \
+              --jq '[.check_runs[]|select(.app.slug=="github-actions")|select(.conclusion!="success" and .conclusion!="neutral" and .conclusion!="skipped")]|length' \
+              2>/dev/null || echo 1)"
+            [ "$BAD" = "0" ] || { skip "$BAD Actions check(s) not successful"; continue; }
+
+            CR="$(gh api "repos/$REPO/pulls/$N/reviews" --jq '[.[]|select(.state=="CHANGES_REQUESTED")]|length')"
+            [ "$CR" = "0" ] || { skip "changes requested"; continue; }
+
+            if [ "$DRY" = "true" ]; then
+              echo "ACCEPT #$N ($TITLE) [dry-run]"
+            else
+              gh api --method PUT "repos/$REPO/pulls/$N/merge" -f merge_method=squash -f sha="$SHA" >/dev/null
+              echo "MERGED #$N sha=$SHA ($TITLE)"
+              gh api --method DELETE "repos/$REPO/git/refs/heads/$HEAD" 2>/dev/null \
+                && echo "DELETED $HEAD restore_sha=$SHA" || echo "branch $HEAD already gone"
+            fi
+          done
+
+  cleanup:
+    name: Stale branch cleanup
+    if: github.event.schedule == '23 4 * * 0' || github.event_name == 'workflow_dispatch'
+    runs-on: [self-hosted, linux, x64, dependency-merge-trusted]
+    timeout-minutes: 20
+    steps:
+      - name: Classify and delete
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          DRY: ${{ inputs.dry_run || 'false' }}
+          INACTIVE_DAYS: '30'
+        run: |
+          set -euo pipefail
+          [ "$(gh api "repos/$REPO" --jq .private)" = "true" ] || {
+            echo "public repository - refusing"; exit 0; }
+
+          DEFAULT="$(gh api "repos/$REPO" --jq .default_branch)"
+          OPEN="$(gh api "repos/$REPO/pulls?state=open&per_page=100" --paginate --jq '[.[].head.ref]|join(" ")')"
+          CUTOFF="$(date -u -d "-${INACTIVE_DAYS} days" +%s)"
+
+          gh api "repos/$REPO/branches?per_page=100" --paginate \
+            --jq '.[]|[.name,(.protected|tostring)]|@tsv' |
+          while IFS=$'\t' read -r B P; do
+            case "$B" in
+              "$DEFAULT"|main|master|develop|development|production|staging|stage|qa|uat|gh-pages)
+                echo "PRESERVE $B (preservation pattern)"; continue;;
+              release/*|releases/*|hotfix/*|support/*)
+                echo "PRESERVE $B (long-lived pattern)"; continue;;
+            esac
+            [ "$P" = "true" ] && { echo "PRESERVE $B (protected)"; continue; }
+            case " $OPEN " in *" $B "*) echo "PRESERVE $B (open pull request)"; continue;; esac
+
+            SHA="$(gh api "repos/$REPO/branches/$B" --jq .commit.sha)"
+            WHEN="$(gh api "repos/$REPO/commits/$SHA" --jq .commit.committer.date)"
+            [ -n "$WHEN" ] || { echo "AMBIGUOUS $B (no commit date) - preserved"; continue; }
+            [ "$(date -u -d "$WHEN" +%s)" -gt "$CUTOFF" ] && {
+              echo "PRESERVE $B (active within ${INACTIVE_DAYS}d)"; continue; }
+
+            ST="$(gh api "repos/$REPO/compare/$DEFAULT...$B" --jq .status 2>/dev/null || echo unknown)"
+            case "$ST" in
+              identical|behind)
+                if [ "$DRY" = "true" ]; then
+                  echo "DELETE $B (merged into $DEFAULT) restore_sha=$SHA [dry-run]"
+                else
+                  gh api --method DELETE "repos/$REPO/git/refs/heads/$B"
+                  echo "DELETED $B restore_sha=$SHA"
+                fi;;
+              *) echo "AMBIGUOUS $B (unmerged: $ST) - preserved";;
+            esac
+          done
