@@ -306,3 +306,172 @@ test.describe( 'Book Special', () => {
 		await expect( page.locator( `dialog${ MODAL }` ) ).toBeVisible();
 	} );
 } );
+
+/**
+ * ASD-41 item 21.3 — Specials, the 2019 loop rules: description length, order
+ * and pagination (S2, S4, S5).
+ */
+
+/**
+ * Published specials in the order the archive should list them, from the REST
+ * API: the slug, the full body as plain text and the date.
+ *
+ * @param {import('@playwright/test').APIRequestContext} request Request context.
+ * @return {Promise<Array<{slug: string, words: number, date: string}>>} Specials, newest first.
+ */
+async function publishedSpecials( request ) {
+	const response = await request.get(
+		'/wp-json/wp/v2/special?per_page=100&status=publish&orderby=date&order=desc&_fields=slug,date,content'
+	);
+	expect( response.ok(), 'Could not list published specials' ).toBe( true );
+
+	return ( await response.json() ).map( ( special ) => ( {
+		slug: special.slug,
+		date: special.date,
+		words: special.content.rendered
+			.replace( /<[^>]+>/g, ' ' )
+			.replace( /&nbsp;|\u00a0/g, ' ' )
+			.split( /\s+/ )
+			.filter( ( word ) => /\w/.test( word ) ).length,
+	} ) );
+}
+
+test.describe( 'Specials — description length (2019 spec)', () => {
+	/**
+	 * The 2019 spec shortens each description to 40-50 words. Neither live nor
+	 * this build does: both print the offer's complete body copy, authored
+	 * lists and terms included (measured 2026-11-13: live bands run 56-138
+	 * words), and the template records "not an excerpt, no read more" as
+	 * FR-012. The 40-50 word cut is therefore not asserted; what is asserted is
+	 * the behaviour that replaced it, that nothing is cut short.
+	 */
+	// requirement: RQ-S2 / test-case: TC-S2-01
+	test( 'prints each offer\u2019s complete copy, not a cut-down excerpt', async ( {
+		page,
+		visit,
+		routes,
+		request,
+	} ) => {
+		const bands = await visitSpecials( { page, visit, routes } );
+		const published = await publishedSpecials( request );
+		const count = await bands.count();
+
+		for ( let i = 0; i < count; i++ ) {
+			const band = bands.nth( i );
+			const slug = ( await band.getAttribute( 'id' ) ).replace(
+				/^special-/,
+				''
+			);
+			const special = published.find( ( s ) => s.slug === slug );
+			if ( ! special ) {
+				continue;
+			}
+
+			const copy = await band
+				.locator( '.wp-block-post-content' )
+				.innerText();
+			const shown = copy
+				.split( /\s+/ )
+				.filter( ( word ) => /\w/.test( word ) ).length;
+
+			expect(
+				Math.abs( shown - special.words ),
+				`"${ slug }" shows ${ shown } words of ${ special.words }`
+			).toBeLessThanOrEqual( 2 );
+			await expect(
+				band.locator( 'a.wp-block-read-more' ),
+				`"${ slug }" has a Read more`
+			).toHaveCount( 0 );
+		}
+	} );
+
+	// requirement: RQ-S2 / test-case: TC-S2-02
+	test.skip( 'shortens each description to 40-50 words', () => {
+		// Deliberately not built: FR-012 and live both print the full copy.
+		// Kept as a skip so the 2019 line is visibly accounted for.
+	} );
+} );
+
+test.describe( 'Specials — order and pagination (2019 spec)', () => {
+	/**
+	 * The 2019 loop queries by the special's start date. The start date is an
+	 * admin-side field the public API does not expose, so what can be observed
+	 * is the order the archive actually uses: newest first by publish date, and
+	 * one unbroken run across pages. If the order key ever changes, this fails.
+	 */
+	// requirement: RQ-S4 / test-case: TC-S4-01
+	test( 'lists offers newest first, as one run across the pages', async ( {
+		page,
+		visit,
+		routes,
+		request,
+	} ) => {
+		const published = await publishedSpecials( request );
+		test.skip( 2 > published.length, 'Fewer than two published specials' );
+
+		const first = await visitSpecials( { page, visit, routes } );
+		const shown = (
+			await first.evaluateAll( ( els ) =>
+				els.map( ( el ) => el.id.replace( /^special-/, '' ) )
+			)
+		).slice();
+
+		if ( published.length > shown.length ) {
+			await visit( envPath( routes, '/specials/page/2/' ) );
+			shown.push(
+				...( await page
+					.locator( BAND )
+					.evaluateAll( ( els ) =>
+						els.map( ( el ) => el.id.replace( /^special-/, '' ) )
+					) )
+			);
+		}
+
+		expect( shown, 'the archive order differs from newest-first' ).toEqual(
+			published.map( ( s ) => s.slug ).slice( 0, shown.length )
+		);
+	} );
+
+	// requirement: RQ-S5 / test-case: TC-S5-01
+	test( 'paginates when there are more offers than fit a page', async ( {
+		page,
+		visit,
+		routes,
+		request,
+	} ) => {
+		const published = await publishedSpecials( request );
+		const first = await visitSpecials( { page, visit, routes } );
+		const perPage = await first.count();
+		test.skip(
+			published.length <= perPage,
+			`Only ${ published.length } published specials: one page`
+		);
+
+		const nav = page.locator( 'main nav.wp-block-query-pagination' );
+		await expect(
+			nav,
+			'more offers than a page but no pagination'
+		).toBeVisible();
+		await expect(
+			nav.locator( 'a.wp-block-query-pagination-next' )
+		).toHaveAttribute( 'href', /\/specials\/page\/2\/?$/ );
+
+		const onFirst = await first.evaluateAll( ( els ) =>
+			els.map( ( el ) => el.id )
+		);
+		await visit( envPath( routes, '/specials/page/2/' ) );
+		const onSecond = await page
+			.locator( BAND )
+			.evaluateAll( ( els ) => els.map( ( el ) => el.id ) );
+
+		expect( onSecond.length, 'page 2 is empty' ).toBeGreaterThan( 0 );
+		expect(
+			onSecond.filter( ( id ) => onFirst.includes( id ) ),
+			'an offer is on both pages'
+		).toEqual( [] );
+		expect(
+			onFirst.length + onSecond.length,
+			'offers went missing between the pages'
+		).toBe( published.length );
+	} );
+} );

@@ -45,6 +45,7 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
+const { CONTENT_PAGE_ROUTES } = require( '../fixtures/routes.js' );
 const {
 	CONTENT_BANNER,
 	describeHeroBanners,
@@ -606,5 +607,279 @@ test.describe( 'Thank You', () => {
 		await expect( heading ).toHaveCount( 1 );
 
 		await expectPhoneRow( heading.locator( 'xpath=..' ), 2 );
+	} );
+} );
+
+/**
+ * ASD-41 item 21.3 — the 2019 pages the suite did not reach: FAQ, Sitemap,
+ * Terms & Conditions, "Send us an email" and the Connect With Us video block.
+ *
+ * Routes come from fixtures/routes.js (CONTENT_PAGE_ROUTES), measured on dev
+ * 2026-11-13.
+ */
+const CONTENT_PAGE = Object.fromEntries(
+	CONTENT_PAGE_ROUTES.map( ( route ) => [ route.key, route ] )
+);
+
+/**
+ * The breadcrumb trail text under the banner.
+ *
+ * @param {import('@playwright/test').Page} page Page.
+ * @return {Promise<string>} Trail, whitespace collapsed; empty when absent.
+ */
+async function trailText( page ) {
+	const trail = page.locator( 'main .yoast-breadcrumbs' ).first();
+
+	return 0 === ( await trail.count() )
+		? ''
+		: ( await trail.innerText() ).replace( /\s+/g, ' ' ).trim();
+}
+
+test.describe( 'FAQ page (2019 spec)', () => {
+	test.beforeEach( async ( { page, visit } ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( CONTENT_PAGE.faq.path );
+	} );
+
+	// requirement: RQ-PG5 / test-case: TC-PG5-01
+	test( 'has a banner with one h1, and a breadcrumb trail', async ( {
+		page,
+	} ) => {
+		await expect( page.locator( 'main h1' ) ).toHaveCount( 1 );
+		await expect(
+			page.locator( 'main .wp-block-cover:has(h1)' ),
+			'the h1 is not in a banner'
+		).toHaveCount( 1 );
+		expect( await trailText( page ) ).toMatch(
+			/^Home \/ .*Frequently Asked/
+		);
+	} );
+
+	// requirement: RQ-PG5 / test-case: TC-PG5-02
+	test( 'is an accordion: a question opens its answer and reports it', async ( {
+		page,
+	} ) => {
+		const questions = page.locator( 'main .schema-faq-question' );
+		expect(
+			await questions.count(),
+			'fewer than three FAQ entries'
+		).toBeGreaterThan( 2 );
+
+		const first = questions.first();
+		const answer = page
+			.locator( 'main .schema-faq-section' )
+			.first()
+			.locator( '.schema-faq-answer' );
+
+		await expect( first ).toHaveAttribute( 'role', 'button' );
+		await expect( first ).toHaveAttribute( 'aria-expanded', 'false' );
+		const closed = ( await answer.boundingBox() )?.height ?? 0;
+
+		await first.click();
+		await expect( first ).toHaveAttribute( 'aria-expanded', 'true' );
+		await expect
+			.poll(
+				async () => ( await answer.boundingBox() )?.height ?? 0,
+				'opening the question did not reveal its answer'
+			)
+			.toBeGreaterThan( closed );
+
+		await first.click();
+		await expect( first ).toHaveAttribute( 'aria-expanded', 'false' );
+	} );
+} );
+
+test.describe( 'Terms & Conditions (2019 spec)', () => {
+	test.beforeEach( async ( { page, visit } ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( CONTENT_PAGE.terms.path );
+	} );
+
+	// requirement: RQ-PG10 / test-case: TC-PG10-01
+	test( 'has a titled page with the contract in nested numbered clauses', async ( {
+		page,
+	} ) => {
+		await expect( page.locator( 'main h1' ) ).toHaveText(
+			'Terms & Conditions'
+		);
+
+		const depth = await page.locator( 'main li' ).evaluateAll( ( items ) =>
+			Math.max(
+				...items.map( ( li ) => {
+					let levels = 0;
+					let node = li;
+					while ( ( node = node.parentElement?.closest( 'ol' ) ) ) {
+						levels++;
+					}
+					return levels;
+				} )
+			)
+		);
+		expect( depth, 'the clauses are not nested' ).toBeGreaterThanOrEqual(
+			3
+		);
+	} );
+
+	/**
+	 * REGRESSION, kept failing: live matches the 2019 spec here. Live's Terms
+	 * nested `li` uses `counters(item, ".")` (measured 2026-11-13); dev's
+	 * markers are plain. Owner: the theme (a counters() rule for Terms lists).
+	 *
+	 * The 2019 page numbers clauses hierarchically ("1.1.12"). The browser's
+	 * own `decimal` list numbers each level from 1 and shows only the last
+	 * part, so hierarchical numbers need a `counters()` rule. Nested clauses
+	 * are cross-referenced in the text ("clause 1.2.3"), so a reader needs the
+	 * numbers to match.
+	 */
+	// requirement: RQ-PG10 / test-case: TC-PG10-02
+	test( 'numbers nested clauses hierarchically, so "clause 1.2.3" can be found', async ( {
+		page,
+	} ) => {
+		const marker = await page
+			.locator( 'main ol ol li' )
+			.first()
+			.evaluate( ( li ) => ( {
+				before: getComputedStyle( li, '::before' ).content,
+				style: getComputedStyle( li ).listStyleType,
+			} ) );
+
+		expect(
+			marker.before,
+			`nested clauses use plain "${ marker.style }" numbering with no counters() rule`
+		).toMatch( /counters?\(/ );
+	} );
+
+	// REGRESSION, kept failing: live's /terms-conditions/ and /privacy-policy/
+	// both show a breadcrumb ("Home Terms & Conditions", measured 2026-11-13);
+	// dev's Terms page has none. Owner: the theme (page template).
+	// requirement: RQ-PG10 / test-case: TC-PG10-03
+	test( 'sits under a breadcrumb trail like the other pages', async ( {
+		page,
+	} ) => {
+		expect(
+			await trailText( page ),
+			'no breadcrumb strip on the Terms & Conditions page'
+		).toMatch( /^Home \/ .*Terms/ );
+	} );
+} );
+
+test.describe( 'Sitemap page (2019 spec)', () => {
+	/**
+	 * The 2019 sitemap is an HTML page of loops: pages, latest posts,
+	 * categories, destinations, tour styles, specials, tours, accommodation,
+	 * types and brands. Live serves it at /sitemap/; dev has no such page and
+	 * 301s the path to the home page (Yoast's XML index lives at
+	 * /sitemap_index.xml, which is for crawlers, not visitors).
+	 */
+	// REGRESSION, kept failing: live serves /sitemap/ as a 200 HTML page and
+	// dev 301s it to `/` (measured 2026-11-13). Owner: content/config (a
+	// Sitemap page or a redirect rule).
+	// requirement: RQ-PG9 / test-case: TC-PG9-01
+	test( 'serves an HTML sitemap at /sitemap/, not a redirect to the home page', async ( {
+		page,
+	} ) => {
+		const response = await page.goto( CONTENT_PAGE.sitemap.path, {
+			waitUntil: 'domcontentloaded',
+		} );
+
+		expect( response.status() ).toBe( 200 );
+		expect(
+			new URL( page.url() ).pathname,
+			'/sitemap/ redirects away: there is no sitemap page'
+		).toBe( CONTENT_PAGE.sitemap.path );
+		await expect( page.locator( 'main h1' ) ).toHaveText( /sitemap/i );
+	} );
+
+	// requirement: RQ-PG9 / test-case: TC-PG9-02
+	test( 'lists links under a heading for each loop', async ( {
+		page,
+		visit,
+	} ) => {
+		test.skip(
+			'/' ===
+				new URL(
+					(
+						await page.request.get( CONTENT_PAGE.sitemap.path )
+					).url()
+				).pathname,
+			'No sitemap page to inspect: see the previous test'
+		);
+		await visit( CONTENT_PAGE.sitemap.path );
+
+		for ( const loop of [
+			/pages/i,
+			/posts/i,
+			/destinations/i,
+			/tours/i,
+			/accommodation/i,
+			/specials/i,
+		] ) {
+			const heading = page.getByRole( 'heading', { name: loop } ).first();
+			await expect( heading ).toBeVisible();
+			await expect(
+				heading.locator( 'xpath=following::a[1]' )
+			).toHaveAttribute( 'href', /\S/ );
+		}
+	} );
+} );
+
+test.describe( 'Send us an email (2019 spec)', () => {
+	// requirement: RQ-PG8 / test-case: TC-PG8-01
+	test.skip( 'has its own page with a banner, breadcrumbs and the form', () => {
+		// There is no such page: /send-us-an-email/ is a 404 on dev and on live,
+		// and the REST page list has none. Its job is done by Contact Us (banner,
+		// breadcrumbs, form), covered above and in forms/enquiry.spec.js, and by
+		// the "Send us an email" modal. Nothing to assert until the page exists.
+	} );
+} );
+
+test.describe( 'Connect With Us — videos, newsletter and follow (2019 spec)', () => {
+	const PATH = '/about-us/connect-with-us/';
+	const YOUTUBE =
+		/^https:\/\/www\.youtube\.com\/channel\/UCny_nCkQmY1vZwQPOmYbs_Q\/?$/;
+
+	test.beforeEach( async ( { page, visit, routes } ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( envPath( routes, PATH ) );
+	} );
+
+	// REGRESSION, kept failing: live's Connect With Us has a "Watch the
+	// videos" h2, a YouTube button (`.sd-tooltip.tt-youtube`) and a "Follow Us"
+	// h2 in the content (measured 2026-11-13); dev has none of the three.
+	// Owner: content (the page's blocks) plus any theme pattern behind them.
+	// requirement: RQ-PG2 / test-case: TC-PG2-01
+	test( 'has a Videos container with a button to the YouTube channel', async ( {
+		page,
+	} ) => {
+		await expect(
+			page.locator( `${ CONTENT } h2`, { hasText: /video/i } ),
+			'no Videos heading'
+		).toHaveCount( 1 );
+
+		const button = page.locator(
+			`${ CONTENT } .wp-block-button__link[href*="youtube.com"]`
+		);
+		await expect(
+			button,
+			'no button to the YouTube channel in the content'
+		).toHaveCount( 1 );
+		await expect( button ).toHaveAttribute( 'href', YOUTUBE );
+	} );
+
+	// REGRESSION, kept failing: see the Videos test above; live has the
+	// "Follow Us" block, dev does not.
+	// requirement: RQ-PG2 / test-case: TC-PG2-02
+	test( 'has a newsletter block, and a Follow Us block', async ( {
+		page,
+	} ) => {
+		await expect(
+			page.locator( CONTENT ),
+			'no newsletter invitation'
+		).toContainText( /subscribe to our newsletter/i );
+
+		await expect(
+			page.locator( `${ CONTENT } h2`, { hasText: /^Follow Us$/ } ),
+			'no Follow Us block'
+		).toHaveCount( 1 );
 	} );
 } );

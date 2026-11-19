@@ -31,6 +31,7 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
+const { pinned } = require( '../fixtures/routes.js' );
 
 const BANNER = 'main > .wp-block-cover.is-style-hero-banner';
 const BANNER_IMAGE = `${ BANNER } > img.wp-block-cover__image-background`;
@@ -556,5 +557,163 @@ test.describe( 'Single tour — highlights', () => {
 			);
 
 		expect( tick ).toBe( brand500 );
+	} );
+} );
+
+/**
+ * ASD-41 item 21.3 — the 2019 single-tour sections the suite did not reach:
+ * Related Trips, the Map (and its mobile rule) and what is visible of expiry.
+ *
+ * Pinned to the sample tour so the shelf, map and itinerary are known to exist.
+ */
+test.describe( 'Single tour — related trips (2019 spec)', () => {
+	// requirement: RQ-TR12 / test-case: TC-TR12-01
+	test( 'carries a related-tours shelf of linked tour cards', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( pinned( 'tour' ) );
+
+		const shelf = page.locator( '.lsx-tour-related-tour-query-wrapper' );
+		await expect( shelf, 'no related-tours shelf' ).toHaveCount( 1 );
+		await expect( shelf.locator( 'h2' ).first() ).toHaveText( /\S/ );
+
+		const hrefs = await shelf
+			.locator(
+				'.wp-block-post-template li.wp-block-post:not(.slick-cloned) a[href*="/tour/"]'
+			)
+			.evaluateAll( ( links ) => links.map( ( a ) => a.href ) );
+
+		expect( hrefs.length, 'the shelf lists no tours' ).toBeGreaterThan( 0 );
+		for ( const href of hrefs ) {
+			expect( href, 'a related card is not a tour' ).toContain(
+				'/tour/'
+			);
+		}
+	} );
+
+	/**
+	 * Live outranks the 2019 spec. Live's "Other tours you might like" shelf
+	 * includes the tour you are on (measured 2026-11-13 on
+	 * /tour/south-africa-mozambique/), so "never lists itself" is a stale
+	 * requirement. What matters is that the shelf offers other tours too.
+	 */
+	// requirement: RQ-TR12 / test-case: TC-TR12-02
+	test( 'offers other tours in the related shelf', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( pinned( 'tour' ) );
+
+		const hrefs = await page
+			.locator(
+				'.lsx-tour-related-tour-query-wrapper .wp-block-post-template li.wp-block-post:not(.slick-cloned) a[href*="/tour/"]'
+			)
+			.evaluateAll( ( links ) =>
+				links.map( ( a ) => new URL( a.href ).pathname )
+			);
+
+		expect(
+			hrefs.filter( ( href ) => href !== pinned( 'tour' ) ).length,
+			'the shelf offers no tour other than the current one'
+		).toBeGreaterThan( 0 );
+	} );
+} );
+
+test.describe( 'Single tour — map (2019 spec)', () => {
+	// requirement: RQ-TR10 / test-case: TC-TR10-01
+	test( 'embeds the WETU itinerary map on desktop', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( pinned( 'tour' ) );
+
+		const map = page.locator( '#tour-map iframe.wetu-map' );
+		await expect( map, 'no WETU map embed' ).toHaveCount( 1 );
+		await map.scrollIntoViewIfNeeded();
+		await expect( map ).toBeVisible();
+		await expect( map ).toHaveAttribute(
+			'src',
+			/^https:\/\/wetu\.com\/Itinerary\//
+		);
+		expect(
+			( await map.boundingBox() ).height,
+			'the map is too short to use'
+		).toBeGreaterThanOrEqual( 300 );
+	} );
+
+	/**
+	 * REGRESSION, kept failing. The 2019 rule says the map does not load on
+	 * mobile, but live outranks the 2019 spec and live still fires the WETU
+	 * requests on a phone (measured 2026-11-13), so request counts are not
+	 * asserted. What live does do is hide the section: at 390px `#tour-map` is
+	 * `display: none`. Dev leaves it visible. Owner: the theme (a mobile hide
+	 * rule for the map section).
+	 */
+	// requirement: RQ-TR10 / test-case: TC-TR10-02
+	test( 'hides the map section on a phone, as live does', async ( {
+		page,
+		visit,
+	} ) => {
+		await page.setViewportSize( { width: 390, height: 844 } );
+		await visit( pinned( 'tour' ) );
+
+		await expect(
+			page.locator( '#tour-map' ),
+			'live hides #tour-map at 390px, but it is visible on dev'
+		).toBeHidden();
+	} );
+} );
+
+test.describe( 'Single tour — expiry as the front end shows it (2019 spec)', () => {
+	/**
+	 * Expiry itself is a Tour Operator setting and the validity dates are
+	 * admin-side, so they cannot be read on a public page. What the front end
+	 * can prove is the consequence: an expired tour leaves the listing and does
+	 * not stay linked. Every tour a listing links to must be a published tour
+	 * that resolves, so a lapsed one is never a dead card. The listing is the Top
+	 * 10 travel-style archive: `/tours/` itself is a grid of travel styles, with
+	 * no tour cards on it.
+	 */
+	// requirement: RQ-TR4 / test-case: TC-TR4-01
+	test( 'every tour the Top 10 listing links to is published and resolves', async ( {
+		page,
+		visit,
+		request,
+	} ) => {
+		await visit( '/travel-style/top-10-safari-tours/' );
+
+		const hrefs = await page
+			.locator(
+				'main .wp-block-post-template li.wp-block-post a[href*="/tour/"]'
+			)
+			.evaluateAll( ( links ) => [
+				...new Set( links.map( ( a ) => a.href ) ),
+			] );
+		expect(
+			hrefs.length,
+			'the Top 10 listing has no tours'
+		).toBeGreaterThan( 0 );
+
+		const response = await request.get(
+			'/wp-json/wp/v2/tour?per_page=100&status=publish&_fields=link'
+		);
+		expect( response.ok() ).toBe( true );
+		const published = ( await response.json() ).map( ( t ) => t.link );
+
+		for ( const href of hrefs ) {
+			expect(
+				published,
+				`${ href } is listed but is not a published tour`
+			).toContain( href );
+			const status = ( await request.get( href ) ).status();
+			expect(
+				status,
+				`${ href } is linked but returns ${ status }`
+			).toBe( 200 );
+		}
 	} );
 } );

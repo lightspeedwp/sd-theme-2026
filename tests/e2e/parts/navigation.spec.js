@@ -14,6 +14,7 @@
  */
 
 const { test, expect } = require( '../fixtures/base.js' );
+const { pinned } = require( '../fixtures/routes.js' );
 
 const MEGA_MENU_TOGGLE = '.wp-block-ollie-mega-menu__toggle';
 
@@ -298,5 +299,233 @@ test.describe( 'Mobile menu', () => {
 			.click();
 
 		await expect( dialog ).toBeHidden();
+	} );
+} );
+
+/**
+ * ASD-41 item 21.3 — what is *inside* the mega menu panels, and the 2019
+ * "country and region" variant of the Destinations menu (G1–G3).
+ *
+ * The block above proves each toggle opens a dropdown; these prove the dropdown
+ * holds what the 2019 spec configured: Destinations (Countries, Popular
+ * Destinations, Featured), Tours & Safaris (travel styles, Top 10, Featured),
+ * About Us (menu, Meet the team, Featured post).
+ */
+
+/**
+ * Open the mega menu whose row label matches, and return its panel.
+ *
+ * @param {import('@playwright/test').Page} page  Page.
+ * @param {RegExp}                          label Row label, e.g. /^destinations$/i.
+ * @return {Promise<import('@playwright/test').Locator>} The open panel.
+ */
+async function openMegaMenu( page, label ) {
+	await page.setViewportSize( { width: 1280, height: 800 } );
+	await parkPointer( page );
+
+	const toggles = page.locator( MEGA_MENU_TOGGLE );
+	const count = await toggles.count();
+
+	for ( let index = 0; index < count; index++ ) {
+		const toggle = toggles.nth( index );
+
+		if ( label.test( await labelOf( toggle ) ) ) {
+			await rowOf( toggle ).hover();
+			const panel = page.locator(
+				`#${ await toggle.getAttribute( 'aria-controls' ) }`
+			);
+			await expect( panel ).toBeVisible();
+			return panel;
+		}
+	}
+
+	throw new Error( `No mega menu labelled ${ label }` );
+}
+
+test.describe( 'Mega menu panel contents (2019 spec)', () => {
+	// requirement: RQ-G1 / test-case: TC-G1-01
+	test( 'Destinations holds Countries, Popular Destinations and a Featured card', async ( {
+		page,
+		visit,
+	} ) => {
+		await visit( '/' );
+		const panel = await openMegaMenu( page, /^destinations$/i );
+
+		for ( const heading of [
+			'Countries',
+			'Popular Destinations',
+			'Featured',
+		] ) {
+			await expect(
+				panel.getByText( heading, { exact: true } ),
+				`Destinations has no "${ heading }" column`
+			).toBeVisible();
+		}
+
+		const countries = await panel
+			.locator( 'a[href*="/destination/"]' )
+			.evaluateAll( ( links ) =>
+				links
+					.filter( ( a ) => a.offsetParent )
+					.map( ( a ) => new URL( a.href ).pathname )
+					.filter( ( path ) =>
+						/^\/destination\/[^/]+\/$/.test( path )
+					)
+			);
+		expect(
+			new Set( countries ).size,
+			'fewer countries than the site has (10)'
+		).toBeGreaterThanOrEqual( 10 );
+		await expect(
+			panel.locator( '.lsx-featured-destinations-query a[href]' ).first(),
+			'the Featured card links nowhere'
+		).toBeVisible();
+	} );
+
+	// requirement: RQ-G1 / test-case: TC-G1-02
+	test( 'Tours & Safaris holds the travel styles, a Top 10 list and a Featured tour', async ( {
+		page,
+		visit,
+		request,
+	} ) => {
+		await visit( '/' );
+		const panel = await openMegaMenu( page, /^tours\s*&\s*safaris$/i );
+
+		await expect( panel.getByText( 'Top 10 Safaris' ) ).toBeVisible();
+		await expect(
+			panel.getByText( 'Featured', { exact: true } )
+		).toBeVisible();
+
+		const styles = await panel
+			.locator( 'a[href*="/travel-style/"]' )
+			.evaluateAll( ( links ) => links.map( ( a ) => a.href ) );
+		expect( styles.length, 'no travel-style links' ).toBeGreaterThan( 5 );
+
+		const tours = await panel
+			.locator( 'a[href*="/tour/"]' )
+			.evaluateAll( ( links ) => [
+				...new Set( links.map( ( a ) => a.href ) ),
+			] );
+		expect(
+			tours.length,
+			'no Top 10 / Featured tour links'
+		).toBeGreaterThan( 1 );
+
+		// The first Top 10 link must land on a real tour.
+		expect( ( await request.get( tours[ 0 ] ) ).status() ).toBe( 200 );
+	} );
+
+	// requirement: RQ-G1 / test-case: TC-G1-03
+	test( 'About Us holds its menu, Meet the team and a Featured post', async ( {
+		page,
+		visit,
+	} ) => {
+		await visit( '/' );
+		const panel = await openMegaMenu( page, /^about us$/i );
+
+		await expect( panel.getByText( /^meet\s+the\s+team$/i ) ).toBeVisible();
+		await expect(
+			panel.getByRole( 'link', { name: /^Meet our Team$/ } )
+		).toHaveAttribute( 'href', /\/team\/?$/ );
+		await expect( panel.getByText( /^from\s+the\s+blog$/i ) ).toBeVisible();
+		await expect(
+			panel.locator( 'a[href]' ).last(),
+			'the featured post link is empty'
+		).toHaveAttribute( 'href', /\S/ );
+	} );
+} );
+
+test.describe( 'Destinations menu on a country or region (2019 spec)', () => {
+	/**
+	 * Live outranks the 2019 spec. The 2019 build swapped the Destinations menu
+	 * on a country or region page for a "country and region" variant with a
+	 * Back control and Recommended Tours & Safaris. Live does not: its menu on
+	 * /destination/south-africa/ has no Back link and no Recommended Tours,
+	 * and is the same menu as on the home page (measured 2026-11-13). Dev is
+	 * the same, so the variant is a stale requirement and the test below
+	 * asserts the menu is stable instead, by comparing the links it lists on
+	 * a country page with the links it lists on the home page.
+	 */
+	// requirement: RQ-G3 / test-case: TC-G3-01
+	test( 'a country page shows the same Destinations menu as the home page, as live does', async ( {
+		page,
+		visit,
+	} ) => {
+		const linksOf = ( panel ) =>
+			panel
+				.locator( 'a[href]' )
+				.evaluateAll( ( links ) =>
+					links
+						.filter( ( a ) => a.offsetParent )
+						.map( ( a ) => a.href )
+				);
+
+		await visit( '/' );
+		const onHome = await linksOf(
+			await openMegaMenu( page, /^destinations$/i )
+		);
+
+		await visit( pinned( 'country' ) );
+		const onCountry = await linksOf(
+			await openMegaMenu( page, /^destinations$/i )
+		);
+
+		expect(
+			onCountry,
+			'live shows the same Destinations menu on a country page as on the home page, but dev swapped it'
+		).toEqual( onHome );
+	} );
+} );
+
+/**
+ * ASD-41 item 21.3 — header gaps G7 and G8: the "Get in touch" button and the
+ * Trustpilot header image. (The header's other behaviour is parts/header.spec.js.)
+ */
+test.describe( 'Header — Get in touch and Trustpilot (2019 spec)', () => {
+	test.beforeEach( async ( { page, visit } ) => {
+		await page.setViewportSize( { width: 1280, height: 800 } );
+		await visit( '/' );
+	} );
+
+	// requirement: RQ-G7 / test-case: TC-G7-01
+	test( 'the header has a Get in touch button that goes to Contact Us', async ( {
+		page,
+		request,
+	} ) => {
+		const button = page
+			.locator( 'header' )
+			.getByRole( 'link', { name: 'Get in touch' } );
+
+		await expect( button ).toBeVisible();
+		await expect( button ).toHaveAttribute( 'href', /\/contact\/?$/ );
+		expect(
+			(
+				await request.get( await button.getAttribute( 'href' ) )
+			).status()
+		).toBe( 200 );
+	} );
+
+	// requirement: RQ-G8 / test-case: TC-G8-01
+	test( 'the header shows the Trustpilot logo and rating, linked to the profile', async ( {
+		page,
+	} ) => {
+		const header = page.locator( 'header' );
+		const logo = header.getByRole( 'img', {
+			name: 'Trustpilot',
+			exact: true,
+		} );
+		const stars = header.getByRole( 'img', {
+			name: /Rated \d(\.\d)? out of 5 on Trustpilot/,
+		} );
+
+		await expect( logo ).toBeVisible();
+		await expect( stars ).toBeVisible();
+		await expect(
+			logo.locator( 'xpath=ancestor::a[1]' ),
+			'the Trustpilot header image does not link to the profile'
+		).toHaveAttribute(
+			'href',
+			/^https:\/\/www\.trustpilot\.com\/review\/southerndestinations\.com/
+		);
 	} );
 } );
