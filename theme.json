@@ -61,62 +61,107 @@
 				{
 					"name": "Neutral 200",
 					"slug": "neutral-200",
-					"color": "#F9FAFB"
+					"color": "#F7F5F2"
 				},
 				{
 					"name": "Neutral 300",
 					"slug": "neutral-300",
-					"color": "#D8D8D8"
+					"color": "#DFD7CC"
 				},
 				{
 					"name": "Neutral 400",
 					"slug": "neutral-400",
-					"color": "#B8B8B8"
+					"color": "#C3B6A6"
 				},
 				{
 					"name": "Neutral 500",
 					"slug": "neutral-500",
-					"color": "#909090"
+					"color": "#9D8E7B"
 				},
 				{
 					"name": "Neutral 600",
 					"slug": "neutral-600",
-					"color": "#707070"
+					"color": "#7C6E5E"
 				},
 				{
 					"name": "Neutral 700",
 					"slug": "neutral-700",
-					"color": "#505050"
+					"color": "#5B4E41"
 				},
 				{
 					"name": "Neutral 800",
 					"slug": "neutral-800",
-					"color": "#303030"
+					"color": "#382E25"
 				},
 				{
 					"name": "Neutral 900",
 					"slug": "neutral-900",
-					"color": "#181818"
+					"color": "#1D1711"
+				},
+				{
+					"slug": "primary-100",
+					"name": "Primary 100",
+					"color": "#F0E5D9"
+				},
+				{
+					"slug": "primary-200",
+					"name": "Primary 200",
+					"color": "#D1B69C"
+				},
+				{
+					"slug": "primary-300",
+					"name": "Primary 300",
+					"color": "#B99472"
+				},
+				{
+					"slug": "primary-400",
+					"name": "Primary 400",
+					"color": "#89664B"
+				},
+				{
+					"slug": "primary-500",
+					"name": "Primary 500",
+					"color": "#554234"
+				},
+				{
+					"slug": "primary-600",
+					"name": "Primary 600",
+					"color": "#403028"
+				},
+				{
+					"slug": "primary-700",
+					"name": "Primary 700",
+					"color": "#2B1F1C"
+				},
+				{
+					"slug": "primary-800",
+					"name": "Primary 800",
+					"color": "#17100F"
+				},
+				{
+					"slug": "primary-900",
+					"name": "Primary 900",
+					"color": "#030202"
 				},
 				{
 					"name": "Brand 100",
 					"slug": "brand-100",
-					"color": "#F9F5F1"
+					"color": "#FCECCC"
 				},
 				{
 					"name": "Brand 200",
 					"slug": "brand-200",
-					"color": "#EEE0CE"
+					"color": "#F8D597"
 				},
 				{
 					"name": "Brand 300",
 					"slug": "brand-300",
-					"color": "#E3C396"
+					"color": "#F2BC63"
 				},
 				{
 					"name": "Brand 400",
 					"slug": "brand-400",
-					"color": "#EBA647"
+					"color": "#EBA030"
 				},
 				{
 					"name": "Brand 500",
@@ -126,22 +171,67 @@
 				{
 					"name": "Brand 600",
 					"slug": "brand-600",
-					"color": "#9B6111"
+					"color": "#BC5B18"
 				},
 				{
 					"name": "Brand 700",
 					"slug": "brand-700",
-					"color": "#6A420B"
+					"color": "#9E451E"
 				},
 				{
 					"name": "Brand 800",
 					"slug": "brand-800",
-					"color": "#3D2607"
+					"color": "#531608"
 				},
 				{
 					"name": "Brand 900",
 					"slug": "brand-900",
-					"color": "#180F03"
+					"color": "#0F0000"
+				},
+				{
+					"slug": "accent-100",
+					"name": "Accent 100",
+					"color": "#FFF0DA"
+				},
+				{
+					"slug": "accent-200",
+					"name": "Accent 200",
+					"color": "#FFDEA8"
+				},
+				{
+					"slug": "accent-300",
+					"name": "Accent 300",
+					"color": "#FFCC66"
+				},
+				{
+					"slug": "accent-400",
+					"name": "Accent 400",
+					"color": "#F7BB1F"
+				},
+				{
+					"slug": "accent-500",
+					"name": "Accent 500",
+					"color": "#E6AD10"
+				},
+				{
+					"slug": "accent-600",
+					"name": "Accent 600",
+					"color": "#A97F15"
+				},
+				{
+					"slug": "accent-700",
+					"name": "Accent 700",
+					"color": "#705413"
+				},
+				{
+					"slug": "accent-800",
+					"name": "Accent 800",
+					"color": "#3B2D10"
+				},
+				{
+					"slug": "accent-900",
+					"name": "Accent 900",
+					"color": "#050301"
 				},
 				{
 					"name": "Error Foreground",
@@ -198,11 +288,15 @@
 				"extra-bold": 800,
 				"black": 900
 			},
+			"fontSize": {
+				"card": "0.9375rem"
+			},
 			"lineHeight": {
-				"snug": "1.125",
-				"heading": "1.25",
-				"button": "1.35",
-				"body": "1.5"
+				"snug": "1.1",
+				"heading": "1.2",
+				"button": "1.3",
+				"card": "1.35",
+				"body": "1.45"
 			},
 			"letterSpacing": {
 				"none": "0em",
@@ -212,14 +306,31 @@
 			},
 			"spacing": {
 				"button": {
-					"padding-horizontal": "clamp(32px, 14vw, 48px)",
-					"padding-vertical": "clamp(14px, 10vw, 18px)"
+					"padding-vertical": "0.875rem",
+					"padding-horizontal": "2rem"
 				}
+			},
+			"mega-menu": {
+				"row-padding": "var(--wp--preset--spacing--10)"
+			},
+			"borderWidth": {
+				"0": "0",
+				"100": "1px",
+				"200": "2px",
+				"300": "4px",
+				"400": "8px"
+			},
+			"header": {
+				"nav-link-height": "50px",
+				"search-panel-width": "600px"
+			},
+			"footer": {
+				"widgets-min-height": "615px"
 			}
 		},
 		"layout": {
 			"contentSize": "900px",
-			"wideSize": "1520px"
+			"wideSize": "1200px"
 		},
 		"shadow": {
 			"defaultPresets": false,
@@ -261,57 +372,57 @@
 			"spacingSizes": [
 				{
 					"name": "XXS",
-					"size": "clamp(0.25rem, calc(0.227rem + 0.006vw), 0.313rem)",
+					"size": "clamp(0.25rem, 0.25rem + ((1vw - 0.2rem) * 0.079), 0.3125rem)",
 					"slug": "5"
 				},
 				{
 					"name": "XS",
-					"size": "clamp(0.5rem, calc(0.454rem + 0.012vw), 0.625rem)",
+					"size": "clamp(0.5rem, 0.5rem + ((1vw - 0.2rem) * 0.156), 0.625rem)",
 					"slug": "10"
 				},
 				{
 					"name": "S",
-					"size": "clamp(0.875rem, calc(0.736rem + 0.036vw), 1.25rem)",
+					"size": "clamp(0.666rem, 0.666rem + ((1vw - 0.2rem) * 0.356), 0.951rem)",
 					"slug": "20"
 				},
 				{
 					"name": "M",
-					"size": "clamp(1.25rem, calc(1.018rem + 0.06vw), 1.875rem)",
+					"size": "clamp(0.951rem, 0.951rem + ((1vw - 0.2rem) * 0.595), 1.427rem)",
 					"slug": "30"
 				},
 				{
 					"name": "L",
-					"size": "clamp(1.625rem, calc(1.3rem + 0.083vw), 2.5rem)",
+					"size": "clamp(1.237rem, 1.237rem + ((1vw - 0.2rem) * 0.832), 1.903rem)",
 					"slug": "40"
 				},
 				{
 					"name": "XL",
-					"size": "clamp(2.063rem, calc(1.668rem + 0.101vw), 3.125rem)",
+					"size": "clamp(1.571rem, 1.571rem + ((1vw - 0.2rem) * 1.011), 2.379rem)",
 					"slug": "50"
 				},
 				{
 					"name": "XXL",
-					"size": "clamp(2.313rem, calc(1.779rem + 0.137vw), 3.75rem)",
+					"size": "clamp(1.76rem, 1.76rem + ((1vw - 0.2rem) * 1.369), 2.855rem)",
 					"slug": "60"
 				},
 				{
 					"name": "XXXL",
-					"size": "clamp(2.625rem, calc(1.975rem + 0.167vw), 4.375rem)",
+					"size": "clamp(1.998rem, 1.998rem + ((1vw - 0.2rem) * 1.665), 3.33rem)",
 					"slug": "70"
 				},
 				{
 					"name": "XXXXL",
-					"size": "clamp(3rem, calc(2.257rem + 0.19vw), 5rem)",
+					"size": "clamp(2.284rem, 2.284rem + ((1vw - 0.2rem) * 1.903), 3.806rem)",
 					"slug": "80"
 				},
 				{
 					"name": "Gigantic",
-					"size": "clamp(3.5rem, calc(2.711rem + 0.202vw), 5.625rem)",
+					"size": "clamp(2.664rem, 2.664rem + ((1vw - 0.2rem) * 2.022), 4.282rem)",
 					"slug": "90"
 				},
 				{
 					"name": "Colossal",
-					"size": "clamp(4rem, calc(3.164rem + 0.214vw), 6.25rem)",
+					"size": "clamp(3.045rem, 3.045rem + ((1vw - 0.2rem) * 2.141), 4.758rem)",
 					"slug": "100"
 				}
 			],
@@ -336,17 +447,91 @@
 				{
 					"name": "Heading",
 					"slug": "heading",
-					"fontFamily": "Optima, Belleza, Palatino, Georgia, serif"
+					"fontFamily": "Optima, \"Optima LT Pro\", Belleza, sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Optima",
+							"fontWeight": "600",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/optima-600-normal.woff2"
+							]
+						}
+					]
+				},
+				{
+					"name": "Belleza",
+					"slug": "belleza",
+					"fontFamily": "Belleza, sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Belleza",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/belleza-400-normal.woff2"
+							]
+						}
+					]
 				},
 				{
 					"name": "Body",
 					"slug": "body",
-					"fontFamily": "\"Open Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif"
+					"fontFamily": "\"Open Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "300 700",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-variable-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "Open Sans",
+							"fontWeight": "300 700",
+							"fontStyle": "italic",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/open-sans-variable-italic.woff2"
+							]
+						}
+					]
 				},
 				{
 					"name": "Accent",
 					"slug": "accent",
-					"fontFamily": "\"La Belle Aurore\", cursive"
+					"fontFamily": "\"Joe Hand\", \"La Belle Aurore\", cursive",
+					"fontFace": [
+						{
+							"fontFamily": "Joe Hand",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/joe-hand-400-normal.woff2"
+							]
+						}
+					]
+				},
+				{
+					"name": "La Belle Aurore",
+					"slug": "la-belle-aurore",
+					"fontFamily": "\"La Belle Aurore\", cursive",
+					"fontFace": [
+						{
+							"fontFamily": "La Belle Aurore",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/la-belle-aurore-400-normal.woff2"
+							]
+						}
+					]
 				},
 				{
 					"fontFamily": "monospace",
@@ -375,28 +560,28 @@
 				},
 				{
 					"fluid": {
-						"min": "1rem",
-						"max": "1.20rem"
+						"min": "0.9375rem",
+						"max": "1.125rem"
 					},
-					"size": "1.20rem",
+					"size": "1.125rem",
 					"slug": "300",
 					"name": "Small"
 				},
 				{
 					"fluid": {
-						"min": "1.25rem",
-						"max": "1.5rem"
+						"min": "1.125rem",
+						"max": "1.375rem"
 					},
-					"size": "1.5rem",
+					"size": "1.375rem",
 					"slug": "400",
 					"name": "Medium"
 				},
 				{
 					"fluid": {
-						"min": "1.625rem",
-						"max": "2rem"
+						"min": "1.4375rem",
+						"max": "1.75rem"
 					},
-					"size": "2rem",
+					"size": "1.75rem",
 					"slug": "500",
 					"name": "Large"
 				},
@@ -445,7 +630,17 @@
 		"blocks": {
 			"core/button": {
 				"variations": {
-					"outline": {
+					"fill": {
+						"color": {
+							"background": "var:preset|color|brand-600",
+							"text": "var:preset|color|base"
+						},
+						"border": {
+							"radius": "var:preset|border-radius|0",
+							"width": "var:custom|border-width|200",
+							"style": "solid",
+							"color": "transparent"
+						},
 						"spacing": {
 							"padding": {
 								"top": "var:custom|spacing|button|padding-vertical",
@@ -455,29 +650,72 @@
 							}
 						},
 						"typography": {
+							"fontFamily": "var:preset|font-family|heading",
 							"fontSize": "var:preset|font-size|300",
-							"fontWeight": "var:custom|font-weight|medium",
+							"fontWeight": "var:custom|font-weight|bold",
+							"lineHeight": "var:custom|line-height|button",
 							"textTransform": "uppercase",
-							"letterSpacing": "var:custom|letter-spacing|wide"
-						},
-						"color": {
-							"background": "var:preset|color|contrast",
-							"text": "var:preset|color|base"
-						},
-						"border": {
-							"width": "1px",
-							"style": "solid",
-							"color": "var:preset|color|base"
+							"letterSpacing": "var:custom|letter-spacing|narrow"
 						},
 						":hover": {
 							"color": {
-								"background": "var:preset|color|base",
-								"text": "var:preset|color|contrast"
+								"background": "var:preset|color|brand-700",
+								"text": "var:preset|color|base"
 							},
 							"border": {
-								"width": "1px",
-								"style": "solid",
-								"color": "var:preset|color|base"
+								"color": "transparent"
+							}
+						},
+						":focus": {
+							"color": {
+								"background": "var:preset|color|brand-700",
+								"text": "var:preset|color|base"
+							}
+						}
+					},
+					"outline": {
+						"color": {
+							"background": "transparent",
+							"text": "var:preset|color|brand-700"
+						},
+						"border": {
+							"radius": "var:preset|border-radius|0",
+							"width": "var:custom|border-width|200",
+							"style": "solid",
+							"color": "var:preset|color|brand-500"
+						},
+						"spacing": {
+							"padding": {
+								"top": "var:custom|spacing|button|padding-vertical",
+								"right": "var:custom|spacing|button|padding-horizontal",
+								"bottom": "var:custom|spacing|button|padding-vertical",
+								"left": "var:custom|spacing|button|padding-horizontal"
+							}
+						},
+						"typography": {
+							"fontFamily": "var:preset|font-family|heading",
+							"fontSize": "var:preset|font-size|300",
+							"fontWeight": "var:custom|font-weight|bold",
+							"lineHeight": "var:custom|line-height|button",
+							"textTransform": "uppercase",
+							"letterSpacing": "var:custom|letter-spacing|narrow"
+						},
+						":hover": {
+							"color": {
+								"background": "var:preset|color|brand-500",
+								"text": "var:preset|color|base"
+							},
+							"border": {
+								"color": "var:preset|color|brand-500"
+							}
+						},
+						":focus": {
+							"color": {
+								"background": "var:preset|color|brand-500",
+								"text": "var:preset|color|base"
+							},
+							"border": {
+								"color": "var:preset|color|brand-500"
 							}
 						}
 					}
@@ -601,7 +839,10 @@
 				}
 			},
 			"core/paragraph": {
-				"css": "&.has-background { padding: var(--wp--preset--spacing--20) }"
+				"typography": {
+					"fontSize": "var:preset|font-size|300",
+					"lineHeight": "var:custom|line-height|body"
+				}
 			},
 			"core/post-template": {
 				"elements": {
@@ -618,6 +859,11 @@
 					"link": {
 						"typography": {
 							"textDecoration": "none"
+						},
+						":hover": {
+							"typography": {
+								"textDecoration": "none"
+							}
 						}
 					}
 				}
@@ -630,7 +876,7 @@
 						},
 						":hover": {
 							"typography": {
-								"textDecoration": "underline"
+								"textDecoration": "none"
 							}
 						}
 					}
@@ -700,8 +946,7 @@
 							"width": "0"
 						},
 						"color": {
-							"background": "transparent !important",
-							"text": "var:preset|color|neutral-700"
+							"text": "var:preset|color|primary-500"
 						},
 						"spacing": {
 							"padding": {
@@ -712,14 +957,14 @@
 							}
 						},
 						"typography": {
-							"fontSize": "var:preset|font-size|300",
+							"fontSize": "var:preset|font-size|200",
 							"fontWeight": "var:custom|font-weight|medium",
 							"textDecoration": "none"
 						},
 						":hover": {
 							"color": {
-								"text": "var:preset|color|brand-600",
-								"background": "transparent !important"
+								"text": "var:preset|color|base",
+								"background": "var:preset|color|primary-500"
 							},
 							"typography": {
 								"textDecoration": "none"
@@ -728,9 +973,9 @@
 					}
 				},
 				"typography": {
-					"fontSize": "var:preset|font-size|300"
+					"fontSize": "var:preset|font-size|200"
 				},
-				"css": "& .wp-block-query-pagination-numbers{gap:var(--wp--preset--spacing--10)} & .page-numbers{color:var(--wp--preset--color--neutral-700);} & .page-numbers.current{color:var(--wp--preset--color--brand-600);font-weight:var(--wp--custom--font-weight--bold);} & .page-numbers.dots{color:var(--wp--preset--color--neutral-700)}"
+				"css": "& .wp-block-query-pagination-numbers{gap:var(--wp--preset--spacing--10)} & .page-numbers.current{background-color:var(--wp--preset--color--primary-500);color:var(--wp--preset--color--base);font-weight:var(--wp--custom--font-weight--bold)} & .page-numbers.dots{border-color:transparent;background-color:transparent}"
 			},
 			"core/quote": {
 				"elements": {
@@ -814,18 +1059,18 @@
 		},
 		"color": {
 			"background": "var:preset|color|base",
-			"text": "var:preset|color|contrast"
+			"text": "var:preset|color|neutral-700"
 		},
 		"elements": {
 			"button": {
 				"border": {
-					"radius": "0",
-					"width": "1px",
-					"color": "var:preset|color|base",
-					"style": "solid"
+					"radius": "var:preset|border-radius|0",
+					"width": "var:custom|border-width|200",
+					"style": "solid",
+					"color": "transparent"
 				},
 				"color": {
-					"background": "color-mix(in srgb, var(--wp--preset--color--contrast) 20%, transparent)",
+					"background": "var:preset|color|brand-500",
 					"text": "var:preset|color|base"
 				},
 				"spacing": {
@@ -837,32 +1082,35 @@
 					}
 				},
 				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
 					"fontSize": "var:preset|font-size|300",
-					"fontWeight": "var:custom|font-weight|medium",
+					"fontWeight": "var:custom|font-weight|bold",
+					"lineHeight": "var:custom|line-height|button",
 					"textTransform": "uppercase",
-					"letterSpacing": "var:custom|letter-spacing|wide"
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				},
 				":hover": {
 					"color": {
-						"background": "var:preset|color|contrast"
+						"background": "var:preset|color|brand-600"
 					}
 				},
-				"css": "& { transition: all 0.25s ease-in-out; } & svg { transition: all 0.25s ease-in-out; }"
+				"css": "& { transition: background-color 0.25s ease-in-out, border-color 0.25s ease-in-out, color 0.25s ease-in-out; } & svg { transition: all 0.25s ease-in-out; }"
 			},
 			"h1": {
 				"typography": {
 					"fontSize": "var:preset|font-size|700",
 					"lineHeight": "var:custom|line-height|heading",
-					"fontWeight": "var:custom|font-weight|bold",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				}
 			},
 			"h2": {
 				"typography": {
 					"fontSize": "var:preset|font-size|500",
 					"lineHeight": "var:custom|line-height|heading",
-					"fontWeight": "var:custom|font-weight|bold",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"letterSpacing": "var:custom|letter-spacing|narrow",
+					"textTransform": "uppercase"
 				}
 			},
 			"h3": {
@@ -870,38 +1118,36 @@
 					"fontSize": "var:preset|font-size|400",
 					"lineHeight": "var:custom|line-height|button",
 					"fontWeight": "var:custom|font-weight|semi-bold",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				}
 			},
 			"h4": {
 				"typography": {
 					"fontSize": "var:preset|font-size|300",
 					"lineHeight": "var:custom|line-height|button",
-					"fontWeight": "var:custom|font-weight|medium",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				}
 			},
 			"h5": {
 				"typography": {
 					"fontSize": "var:preset|font-size|200",
 					"lineHeight": "var:custom|line-height|button",
-					"fontWeight": "var:custom|font-weight|medium",
-					"letterSpacing": "var:custom|letter-spacing|heading"
+					"fontWeight": "var:custom|font-weight|semi-bold",
+					"letterSpacing": "var:custom|letter-spacing|narrow"
 				}
 			},
 			"h6": {
 				"typography": {
 					"fontSize": "var:preset|font-size|200",
 					"lineHeight": "var:custom|line-height|button",
-					"textTransform": "uppercase",
 					"letterSpacing": "var:custom|letter-spacing|wide"
 				}
 			},
 			"heading": {
 				"typography": {
 					"fontFamily": "var:preset|font-family|heading",
-					"lineHeight": "var:custom|line-height|heading",
-					"textTransform": "uppercase"
+					"lineHeight": "var:custom|line-height|heading"
 				}
 			},
 			"link": {
@@ -936,7 +1182,7 @@
 		},
 		"typography": {
 			"fontFamily": "var:preset|font-family|body",
-			"fontSize": "var:preset|font-size|300",
+			"fontSize": "var:preset|font-size|200",
 			"fontWeight": "var:custom|font-weight|regular",
 			"lineHeight": "var:custom|line-height|body"
 		}
@@ -950,8 +1196,22 @@
 			]
 		},
 		{
+			"name": "page-about-us",
+			"title": "About Us",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
+			"name": "page-faq",
+			"title": "FAQ",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
 			"name": "page-no-title",
-			"title": "Page (Full Width, No Title)",
+			"title": "Page (Full Width, Banner)",
 			"postTypes": [
 				"page",
 				"post"
@@ -963,6 +1223,20 @@
 			"postTypes": [
 				"page",
 				"post"
+			]
+		},
+		{
+			"name": "single-country",
+			"title": "Single Country",
+			"postTypes": [
+				"destination"
+			]
+		},
+		{
+			"name": "single-region",
+			"title": "Single Region",
+			"postTypes": [
+				"destination"
 			]
 		}
 	],
@@ -983,13 +1257,28 @@
 			"area": "sidebar"
 		},
 		{
-			"name": "mega-menu",
-			"title": "Mega Menu",
+			"name": "dropdown-call-us",
+			"title": "Dropdown — Call Us",
 			"area": "menu"
 		},
 		{
-			"name": "dropdown-menu",
-			"title": "Dropdown Menu",
+			"name": "mega-menu-destinations",
+			"title": "Mega Menu — Destinations",
+			"area": "menu"
+		},
+		{
+			"name": "mega-menu-tours",
+			"title": "Mega Menu — Tours & Safaris",
+			"area": "menu"
+		},
+		{
+			"name": "mega-menu-accommodation",
+			"title": "Mega Menu — Accommodation",
+			"area": "menu"
+		},
+		{
+			"name": "mega-menu-about",
+			"title": "Mega Menu — About Us",
 			"area": "menu"
 		},
 		{
@@ -998,9 +1287,49 @@
 			"area": "menu"
 		},
 		{
-			"name": "single-hero",
-			"title": "Single Hero",
-			"area": "uncategorized"
+			"name": "modal-tour",
+			"title": "Modal — Tour",
+			"area": "modals"
+		},
+		{
+			"name": "modal-accommodation",
+			"title": "Modal — Accommodation",
+			"area": "modals"
+		},
+		{
+			"name": "modal-destination",
+			"title": "Modal — Destination",
+			"area": "modals"
+		},
+		{
+			"name": "modal-enquiry",
+			"title": "Modal — Enquiry",
+			"area": "modals"
+		},
+		{
+			"name": "modal-special",
+			"title": "Modal — Special",
+			"area": "modals"
+		},
+		{
+			"name": "faq-countries",
+			"title": "FAQ — Countries",
+			"area": "faq"
+		},
+		{
+			"name": "faq",
+			"title": "FAQ",
+			"area": "faq"
+		},
+		{
+			"name": "pages",
+			"title": "FAQ — Pages",
+			"area": "faq"
+		},
+		{
+			"name": "destinations",
+			"title": "FAQ — Destinations",
+			"area": "faq"
 		}
 	]
 }

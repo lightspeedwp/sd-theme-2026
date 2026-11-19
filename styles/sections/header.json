@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Header",
+	"slug": "header",
+	"blockTypes": [
+		"core/group"
+	],
+	"description": "The site header, as one band. Neutral-200 ground, no vertical padding of its own, and a drop shadow rather than a hairline border — live's is `0 4px 3px -1px rgba(0,0,0,.4)`, and preset 300 is the token that reads the same.\n\nReplaces the pair this used to be — \"Header — Utility Bar\" and \"Header — Row\" — because the header is no longer two stacked full-width bands. It is one `sd-header` group holding a two-column row: the logo on the left, and on the right the utility cluster above the navigation. Both bands always shared one neutral-200 ground anyway (so the logo could cross the seam between them), so a single style was always what the two were describing. Matched to dev and local, 2026-08-21.\n\nNothing here sets a band height. The old styles carried `custom.header.utility-height` and `row-height` for that, and both are gone: the columns are vertically centred and the bar takes its height from the enquiry button's own padding, which is one fewer number to keep in sync and is editable in place.\n\nSticky positioning is **not** here either — `core/group` supports `position: sticky` natively, so it travels in the block's own `style.position` and stays editable in the Site Editor. See patterns/header.php.\n\nThe `z-index` is in the `css` field because it has nowhere structured to go. It is load-bearing: the mega-menu panels drop out of the header, so the header has to stack above the page content that follows it. It moved here from a `.sd-header` rule in assets/styles/core-group.css, which is what let that bespoke class be retired.",
+	"styles": {
+		"color": {
+			"background": "var:preset|color|neutral-200",
+			"text": "var:preset|color|neutral-800"
+		},
+		"shadow": "var:preset|shadow|300",
+		"spacing": {
+			"padding": {
+				"top": "0",
+				"bottom": "0"
+			}
+		},
+		"elements": {
+			"link": {
+				"color": {
+					"text": "var:preset|color|neutral-800"
+				}
+			}
+		},
+		"css": "&{z-index:100 !important;}"
+	}
+}

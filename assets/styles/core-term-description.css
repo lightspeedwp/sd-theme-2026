@@ -1,0 +1,226 @@
+/**
+ * core/term-description — the archive-intro treatment, and the Read more collapse.
+ *
+ * Auto-enqueued for `core/term-description` by `enqueue_custom_block_styles()`'
+ * `core-*` scan; the filename is the wiring.
+ *
+ * This file exists because the archive-intro look could not be expressed as a
+ * block style variation on this block. `styles/blocks/paragraph/archive-intro.json`
+ * registers `is-style-archive-intro` for `core/paragraph` only, and
+ * `core/paragraph`'s `selectors.root` is a bare `p`
+ * (wp-includes/blocks/paragraph/block.json), so the variation compiles to a
+ * `p.is-style-archive-intro` rule that can only ever match a `<p>` carrying the
+ * class itself. `core/term-description` renders a `<div>` wrapper with the
+ * description's own paragraphs inside it, so that rule can never reach it —
+ * the class on the block in `patterns/template-taxonomy-accommodation-brand.php`
+ * marks the block's role, and these rules do the work.
+ *
+ * Adding `core/term-description` to that JSON's `blockTypes` was the other
+ * route and was not taken: the two blocks want the same *look* but not the same
+ * *box*, the drop cap below is already CSS rather than JSON for its own
+ * reasons, and one variation compiling against two `selectors.root` values is
+ * how a shared style quietly stops matching one of them.
+ *
+ * @package sd-theme-2026
+ */
+
+/*
+ * The standfirst itself, mirroring styles/blocks/paragraph/archive-intro.json
+ * value for value so the two read identically on the page. The italic is set
+ * on the wrapper and inherited by the description's paragraphs; `font-size`
+ * is not set as a block attribute in the pattern as well, because two sources
+ * for one value is how they drift apart.
+ */
+.wp-block-term-description.is-style-archive-intro {
+	font-size: var(--wp--preset--font-size--300);
+	font-style: italic;
+	line-height: var(--wp--custom--line-height--body);
+}
+
+/*
+ * The drop cap. Identical to the paragraph's — see assets/styles/core-paragraph.css
+ * for the measurement, why it is CSS rather than the block style's `css` field,
+ * why `::first-letter` and not `:first-letter`, and why `initial-letter` is
+ * unusable. Gated at the same 900px, for the same reason: a 55px letter floated
+ * beside a narrow measure leaves one or two words per line next to it.
+ *
+ * `> :first-child` because the cap has to land on the first *paragraph* inside
+ * the wrapper. `get_the_archive_description()` runs its content through
+ * `wpautop()`, so the block's own box has no direct text of its own for
+ * `::first-letter` to attach to.
+ */
+@media (min-width: 900px) {
+
+	.wp-block-term-description.is-style-archive-intro > :first-child::first-letter {
+		float: left;
+		margin-block-start: 0.09em;
+		margin-block-end: -0.2em;
+		margin-inline-end: 0.3rem;
+		color: var(--wp--preset--color--brand-500);
+		font-family: var(--wp--preset--font-family--heading);
+		font-size: 3.2em;
+		font-style: normal;
+		line-height: 1;
+	}
+}
+
+/*
+ * The Read more collapse.
+ *
+ * `assets/js/intro-collapse.js` carries the behaviour and the reasoning for why
+ * this is a script at all rather than `core/read-more`. The contract between
+ * the two files, and the pattern that names them:
+ *
+ *   - `.sd-intro-collapse`            the container, written in the pattern;
+ *   - `.sd-intro-collapse__text`      the description to clamp;
+ *   - `.sd-intro-collapse__toggle`    the button;
+ *   - `.is-enhanced`                  added by the script *only* once it has
+ *                                     confirmed the text actually overflows;
+ *   - `.is-expanded`                  added by the script while open.
+ *
+ * ⚠️ Everything below is gated behind `.is-enhanced`. Nothing here may apply
+ * without it: with JavaScript off, or on a description short enough not to need
+ * clamping, the reader must get the whole story and no dead control. That is
+ * also live's behaviour — live has no Read more on this page at all.
+ *
+ * ⚠️ The button is hidden with `display: none` rather than `[hidden]` or
+ * `visibility`. The script's overflow test applies the clamp and measures what
+ * it costs, so these rules are the thing being measured — see the head of
+ * `assets/js/intro-collapse.js`.
+ */
+
+/*
+ * ⚠️ **The hide is scoped to the container, and it has to be.** `core/buttons`
+ * is a flex layout, and global styles print `body .is-layout-flex { display:
+ * flex }` — specificity (0,1,1), which outranks a lone class. A bare
+ * `.sd-intro-collapse__actions { display: none }` therefore lost, and the
+ * toggle showed on every brand whether the story overflowed or not; measured
+ * on dev 2026-09-16, where a six-line description that the script had
+ * correctly declined to enhance still carried a Read more that did nothing.
+ * Scoping to the container takes the hide to (0,2,0) and it lands. The reveal
+ * below is (0,3,0) and still wins over it.
+ */
+.sd-intro-collapse .sd-intro-collapse__actions {
+	display: none;
+}
+
+.sd-intro-collapse.is-enhanced .sd-intro-collapse__actions {
+	display: flex;
+}
+
+/*
+ * The toggle, dressed as a link.
+ *
+ * It reads as the plain `core/read-more` every Tour Operator single carries —
+ * `patterns/destination-summary.php` — rather than as the outlined button it
+ * was. Zared's call, 2026-09-16.
+ *
+ * ⚠️ **It is still a `core/button` and must stay one.** `intro-collapse.js`
+ * binds to `.sd-intro-collapse__toggle a` and puts `role="button"`,
+ * `tabindex`, `aria-expanded` and `aria-controls` on it; `core/read-more`
+ * renders a link to a *post* permalink and there is no post on a taxonomy
+ * archive. So the element keeps its semantics and only its paint changes. The
+ * appearance is written here, not as a button style variation, because it
+ * dresses exactly one control and a new `is-style-*` would be a theme-wide
+ * affordance nothing else asks for.
+ *
+ * ⚠️ **Why the reset is this long.** With `is-style-outline` removed the button
+ * falls back to core's `.wp-block-button__link`, which ships its own padding,
+ * ground and radius from the block library. Those compile to
+ * `:root :where(.wp-block-button__link)` — zero specificity, but a real
+ * declaration all the same, so each property has to be answered by name rather
+ * than left to inherit. (0,2,0) here clears both that and theme.json's element
+ * styles.
+ *
+ * Colours are `elements.link` on `styles/sections/tinted-page-section.json` —
+ * brand-600 resting, brand-500 on hover — restated rather than inherited,
+ * because the `wp-element-button` class the block also carries points the link
+ * colour at the *button* element, not the link one.
+ *
+ * ⚠️ **Italic, like the copy above it and like the link it imitates.** On
+ * `patterns/destination-summary.php` the read-more inherits its italic from the
+ * inline `font-style:italic` on the wrapping group. Here the italic stops at
+ * the description — the toggle is a sibling of `.sd-intro-collapse__text`, not
+ * a descendant — so it is set by name. It pairs with the ellipsis on the
+ * pattern's label: both were asked for so the two pages read alike. Zared's
+ * call, 2026-09-16.
+ *
+ * ⚠️ **No underline, in either state.** theme.json's `elements.link` sets
+ * `textDecoration: none` on `:hover` as well as at rest, so the read-more this
+ * is matching is not underlined anywhere on the site. An underline here would
+ * be the one link on the page that has one.
+ *
+ * ⚠️ **`font-size: inherit`, not the `300` on the block.** `core/button` puts
+ * its font-size class on the wrapping `<div class="wp-block-button">`, but
+ * theme.json's `elements.button` writes `fontSize` onto the anchor itself, so
+ * the `<a>` would take the button's size and ignore the wrapper's. Inheriting
+ * is what lets the `fontSize: 300` authored in the pattern actually reach the
+ * text — the same trap as the font family, which `elements.button` points at
+ * the heading face.
+ */
+.sd-intro-collapse__toggle .wp-block-button__link {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	background-color: transparent;
+	color: var(--wp--preset--color--brand-600);
+	font-family: inherit;
+	font-size: inherit;
+	font-style: italic;
+	font-weight: var(--wp--custom--font-weight--regular);
+	line-height: inherit;
+	letter-spacing: normal;
+	text-decoration: none;
+	text-transform: none;
+	transition: color 0.25s ease;
+}
+
+.sd-intro-collapse__toggle .wp-block-button__link:hover,
+.sd-intro-collapse__toggle .wp-block-button__link:focus-visible {
+	background: none;
+	background-color: transparent;
+	color: var(--wp--preset--color--brand-500);
+	text-decoration: none;
+}
+
+/*
+ * The focus ring the anchor no longer gets for free. `core/button`'s own
+ * outline came with the variation's border; a bare `<a>` with `role="button"`
+ * and no `href` has nothing, and this is a keyboard-operable control.
+ */
+.sd-intro-collapse__toggle .wp-block-button__link:focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-500);
+	outline-offset: 2px;
+}
+
+/*
+ * Ten lines is the clamp — up from six, Zared's call 2026-09-16, because six
+ * cut most brand stories mid-thought. `-webkit-line-clamp` with `-webkit-box`
+ * is still the only form Safari and Firefox both honour; the unprefixed
+ * `line-clamp` is not yet safe to rely on alone, so both are declared and the
+ * prefixed one wins where it has to.
+ *
+ * This is now the **only** place the line count is written.
+ * `assets/js/intro-collapse.js` used to carry a `CLAMP_LINES` copy that had to
+ * be kept in step by hand; it measures the clamp itself instead, so changing
+ * the number here is the whole change.
+ *
+ * The drop cap and the clamp coexist: a floated `::first-letter` inside a
+ * `-webkit-box` is laid out before the clamp is applied, so the cap survives
+ * the collapse.
+ */
+.sd-intro-collapse.is-enhanced .sd-intro-collapse__text {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 10;
+	line-clamp: 10;
+}
+
+.sd-intro-collapse.is-enhanced.is-expanded .sd-intro-collapse__text {
+	display: block;
+	overflow: visible;
+	-webkit-line-clamp: unset;
+	line-clamp: unset;
+}

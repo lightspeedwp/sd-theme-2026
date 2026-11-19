@@ -1,0 +1,47 @@
+/**
+ * Southern Destinations — core/site-logo block styles.
+ *
+ * Auto-enqueued for core/site-logo by the theme's per-block style loader
+ * (see functions.php, enqueue_custom_block_styles).
+ */
+
+/* The header logo — base box
+   ===========================================================================
+   The logo sits in its own vertically-centred column, so the column does the
+   alignment and the width is set on the block in patterns/header.php. All that
+   is left here is making the image behave inside that box: fill the column's
+   width, keep its aspect ratio, and lose the inline-element baseline gap.
+
+   `flex: 0 0 auto` keeps the block from being shrunk if it is ever placed in a
+   flex row instead. */
+.wp-block-site-logo.sd-header__logo {
+	align-self: center;
+	flex: 0 0 auto;
+}
+
+.wp-block-site-logo.sd-header__logo img {
+	display: block;
+	height: auto;
+	width: 100%;
+}
+
+
+/* The header logo's overhang — removed 2026-08-21
+   ===========================================================================
+   Live's most recognisable header move: the elephants broke out of the main row
+   and rose into the utility bar above it, reproduced here as a negative top
+   margin of `custom.header.logo-lift` (24px, measured on live at 1440px) above
+   1200px, plus a `width: min(100%, 248px)` cap below it.
+
+   Both are gone, and so is the token. The overhang only ever made sense because
+   the header was two stacked bands sharing one ground — the lift is the mark
+   crossing the seam between them. The header is one band with a two-column row
+   now, and the logo sits in a vertically-centred column: there is no seam to
+   cross, and a negative margin would just push the mark out of the header.
+
+   The width cap went with it: the logo's width is set on the block in
+   patterns/header.php and the column does the responsive work.
+
+   If the overhang is wanted back, it is a design decision to take against the
+   current header, not a rule to restore — the old numbers were measured against
+   a layout that no longer exists. */

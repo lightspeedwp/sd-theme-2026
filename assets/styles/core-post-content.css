@@ -1,0 +1,25 @@
+/* Post Content
+--------------------------------------------- */
+
+/* Make the block's own font-size control reach the text — the same fix as
+   assets/styles/core-post-excerpt.css, for the same reason.
+
+   A `fontSize` attribute on `core/post-content` puts `.has-N-font-size` on the
+   wrapper only. The post's paragraphs are bare `<p>`s, which theme.json's
+   `core/paragraph` styles catch with `:root :where(p){font-size:var(--wp--preset--font-size--300)}`
+   at (0,1,0) — enough to beat inheritance from the wrapper. So a size set on the
+   block did nothing, and blog posts rendered at 300 against the 200 body size
+   used everywhere else (BugHerd #22, measured on dev 2026-11-06).
+
+   Opt-in by design: only a post-content block that carries a font size is
+   touched, so pages and Tour Operator singles — which set none — do not move.
+   Paragraphs given their own size keep it (the `:not()`, plus core's preset
+   classes are `!important` anyway).
+
+   Here rather than in a JSON style's `css` field because the field is
+   `:where()`-zero-specificity and could not out-rank the (0,1,0) paragraph rule
+   without `!important`, which would then beat the block's own control too.
+   → AGENTS.md § Styling lives in JSON. */
+:root .wp-block-post-content[class*="-font-size"] p:not([class*="-font-size"]) {
+	font-size: inherit;
+}

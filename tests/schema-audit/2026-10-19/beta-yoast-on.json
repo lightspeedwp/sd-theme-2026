@@ -1,0 +1,1368 @@
+{
+  "vocabulary": {
+    "version": "30.1"
+  },
+  "pages": [
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/",
+      "finalUrl": "https://beta.local/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 1,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/hello-world/",
+      "finalUrl": "https://beta.local/hello-world/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "Article": 1,
+        "CommentAction": 1,
+        "WebPage": 1,
+        "ReadAction": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 2,
+        "Person": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[0]<Article>",
+          "detail": "Article should have 'image'."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/review/empty-review/",
+      "finalUrl": "https://beta.local/review/empty-review/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1,
+        "Review": 1,
+        "Person": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "warn",
+          "check": "rich-result-required",
+          "path": "block0.@graph[4]<Review>",
+          "detail": "Review needs 'reviewRating' for a Google rich result."
+        },
+        {
+          "severity": "warn",
+          "check": "rich-result-required",
+          "path": "block0.@graph[4]<Review>",
+          "detail": "Review needs 'itemReviewed' for a Google rich result."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/reviews/",
+      "finalUrl": "https://beta.local/reviews/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/accommodation/clouds-estate/",
+      "finalUrl": "https://beta.local/accommodation/clouds-estate/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "FAQPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 4,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Question": 5,
+        "Answer": 5,
+        "LodgingBusiness": 1,
+        "GeoCoordinates": 1,
+        "TouristDestination": 2
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[10]<LodgingBusiness>.containedInPlace[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[10]<LodgingBusiness>.containedInPlace[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[10]<LodgingBusiness>",
+          "detail": "LocalBusiness should have 'telephone'."
+        },
+        {
+          "severity": "info",
+          "check": "address-text",
+          "path": "block0.@graph[10]<LodgingBusiness>",
+          "detail": "'address' is plain text; Google expects a PostalAddress."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/accommodation/",
+      "finalUrl": "https://beta.local/accommodation/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/destination/south-africa/stellenbosch/",
+      "finalUrl": "https://beta.local/destination/south-africa/stellenbosch/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 5,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1,
+        "TouristDestination": 2,
+        "GeoCoordinates": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[4]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[4]<TouristDestination>.containedInPlace<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/destinations/",
+      "finalUrl": "https://beta.local/destinations/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/tour/western-cape-in-8-days/",
+      "finalUrl": "https://beta.local/tour/western-cape-in-8-days/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "FAQPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "TouristTrip": 10,
+        "Product": 1,
+        "PropertyValue": 4,
+        "Place": 1,
+        "Offer": 1,
+        "LodgingBusiness": 9,
+        "TouristDestination": 9
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>",
+          "detail": "'subTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[0]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[0]<TouristTrip>.itinerary[0]<LodgingBusiness>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[0]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[1]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[1]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[1]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[2]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[2]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[2]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[3]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[3]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[3]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[4]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[4]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[4]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[5]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[5]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[5]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[6]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[6]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[6]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[7]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[7]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[7]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[8]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[8]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip/Product>.subTrip[8]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[5]<TouristTrip/Product>.offers<Offer>",
+          "detail": "Offer should have 'availability'."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[5]<TouristTrip/Product>.offers<Offer>",
+          "detail": "Offer should have 'url'."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/tours/",
+      "finalUrl": "https://beta.local/tours/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/special/giraffe-conservation-safari/",
+      "finalUrl": "https://beta.local/special/giraffe-conservation-safari/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Offer": 1,
+        "UnitPriceSpecification": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/specials/",
+      "finalUrl": "https://beta.local/specials/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/team/warwick-booth/",
+      "finalUrl": "https://beta.local/team/warwick-booth/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Person": 1,
+        "TouristTrip": 3,
+        "LodgingBusiness": 6
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Person>.knowsAbout[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Person>.knowsAbout[1]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Person>.knowsAbout[2]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/team/",
+      "finalUrl": "https://beta.local/team/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/category/uncategorized/",
+      "finalUrl": "https://beta.local/category/uncategorized/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/accommodation-type/hotel/",
+      "finalUrl": "https://beta.local/accommodation-type/hotel/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/travel-style/self-drive/",
+      "finalUrl": "https://beta.local/travel-style/self-drive/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/facility/available-services/",
+      "finalUrl": "https://beta.local/facility/available-services/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/continent/africa/",
+      "finalUrl": "https://beta.local/continent/africa/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/author/admin/",
+      "finalUrl": "https://beta.local/author/admin/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "ProfilePage": 1,
+        "ReadAction": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 2,
+        "Person": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/?s=a",
+      "finalUrl": "https://beta.local/?s=a",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "SearchResultsPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/review/rachel-nigel/",
+      "finalUrl": "https://beta.local/review/rachel-nigel/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Review": 1,
+        "Person": 1,
+        "Rating": 1,
+        "TouristTrip": 1,
+        "LodgingBusiness": 1,
+        "TouristDestination": 4
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[0]<WebPage>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[2]<BreadcrumbList>.itemListElement[2]<ListItem>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.itemReviewed[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.itemReviewed[2]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.itemReviewed[3]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.spatialCoverage[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.spatialCoverage[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/destination/zimbabwe/",
+      "finalUrl": "https://beta.local/destination/zimbabwe/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 4,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1,
+        "TouristDestination": 2,
+        "GeoCoordinates": 1,
+        "PropertyValue": 6
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[4]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[4]<TouristDestination>.containsPlace[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/special/best-of-the-desert-special-11-nights/",
+      "finalUrl": "https://beta.local/special/best-of-the-desert-special-11-nights/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Offer": 1,
+        "UnitPriceSpecification": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[3]<WebSite>.description",
+          "detail": "'description' is empty."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/tour/phuket-krabi-thailand-14-nights/",
+      "finalUrl": "https://beta.local/tour/phuket-krabi-thailand-14-nights/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "FAQPage": 1,
+        "ReadAction": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 4,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1,
+        "Question": 2,
+        "Answer": 2,
+        "TouristTrip": 7,
+        "Product": 1,
+        "PropertyValue": 4,
+        "Place": 1,
+        "Offer": 1,
+        "LodgingBusiness": 6,
+        "TouristDestination": 6
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[1]<BreadcrumbList>.itemListElement[3]<ListItem>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[6]<TouristTrip/Product>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[6]<TouristTrip/Product>",
+          "detail": "'subTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[0]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[0]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[1]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[1]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[1]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[2]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[2]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[2]<TouristTrip>.itinerary[0]<LodgingBusiness>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[2]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[3]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[3]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[3]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[4]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[4]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[4]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[5]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[5]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[6]<TouristTrip/Product>.subTrip[5]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[6]<TouristTrip/Product>.offers<Offer>",
+          "detail": "Offer should have 'availability'."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[6]<TouristTrip/Product>.offers<Offer>",
+          "detail": "Offer should have 'url'."
+        }
+      ]
+    },
+    {
+      "kind": "",
+      "label": "",
+      "url": "https://beta.local/destination/namibia/",
+      "finalUrl": "https://beta.local/destination/namibia/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "FAQPage": 1,
+        "ReadAction": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 4,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1,
+        "Question": 6,
+        "Answer": 6,
+        "TouristDestination": 2,
+        "GeoCoordinates": 1,
+        "PropertyValue": 6
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "empty-value",
+          "path": "block0.@graph[2]<WebSite>.description",
+          "detail": "'description' is empty."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[10]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[10]<TouristDestination>.containsPlace[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "error": 0,
+    "warn": 28,
+    "info": 78
+  },
+  "notes": []
+}

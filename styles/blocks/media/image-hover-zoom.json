@@ -8,7 +8,7 @@
 		"core/image",
 		"core/post-featured-image"
 	],
-	"description": "Image scales slightly on hover",
+	"description": "Image scales slightly on hover.",
 	"styles": {
 		"css": "&{overflow: hidden;} & .wp-block-cover__image-background{transition: transform 300ms ease;} & > img{transition: transform 300ms ease;} & > a > img{transition: transform 300ms ease;} &:hover .wp-block-cover__image-background{transform: scale(1.05);} &:hover > img{transform: scale(1.05);} &:hover > a > img{transform: scale(1.05);}"
 	}

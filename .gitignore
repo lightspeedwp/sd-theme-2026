@@ -22,9 +22,60 @@ dist/
 .mcp.json
 .env
 .env.*
+# ...but the placeholder template must ship — the org standard requires it.
+!.env.example
 wp-config.php
+
+# Commercially-licensed font faces.
+#
+# Joe Hand IS committed, as of 2026-09-09. It is licensed for web embedding (JOEBOB graphics
+# Webfont EULA 1.0, licence owner Southern Destinations, LightSpeed acting as its agent) and
+# the §1.3 pageview cap is accepted by the client. It was previously ignored on a
+# redistribution reading of §1.5/§1.6 — but nothing placed it, so it 404'd on dev and would
+# have 404'd on production at launch. Committing it is the decision that makes the face
+# actually work; this repository is private and access is agency + client only.
+#
+# ⚠️ That decision depends on the repo staying private. If it is ever made public, this face
+# must come out and history must be rewritten first. See CHANGELOG.md → Security.
+#
+# Optima IS committed, as of 2026-09-10, on exactly the reasoning above. SD's web licence
+# covers *Optima DemiBold* alone (annually renewable) and the kit arrived that day; the
+# single face it licenses ships as assets/fonts/optima-600-normal.woff2. The Monotype
+# webfont EULA's transfer restrictions read like JOEBOB's, and the same answer applies —
+# private repo, agency + client access, the client is the licence owner — with the added
+# point that ignoring it is what made Joe Hand 404 on dev. → LS-2641
+#
+# ⚠️ Same condition as Joe Hand: this depends on the repo staying private. If it is ever made
+# public, this face must come out and history must be rewritten first.
+#
+# ⚠️ The licence is ANNUALLY RENEWABLE. If it lapses the file must be removed, not merely
+# left in place — headings then fall back to Belleza. Diarised on SD's side; noted on LS-2033.
+#
+# The twelve DESKTOP OTFs in docs/ remain unusable here: that EULA forbids server
+# installation and defines OTF→WOFF2 conversion as a Derivative Work. Never convert them.
+#
+# The OFL/Apache faces (Open Sans, Belleza, La Belle Aurore) are committed and safe to ship.
 
 # Test artefacts
 tests/**/test-results/
 tests/**/playwright-report/
 tests/**/node_modules/
+
+# Resolved at run time by tests/e2e/global-setup.js
+tests/e2e/.resolved-routes.json
+
+# Saved admin session for the `editor` project. An auth-state file is a
+# credential — the org standard forbids committing one.
+tests/e2e/.auth/
+
+# Jest coverage output
+tests/unit/coverage/
+
+# PHPUnit cache
+.phpunit.result.cache
+.phpunit.cache/
+
+# @wordpress/e2e-test-utils-playwright's default output directory (storage
+# state, Lighthouse reports). The suite points STORAGE_STATE_PATH at
+# tests/e2e/.auth/ instead, but a run outside the config would land here.
+artifacts/

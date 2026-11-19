@@ -8,7 +8,7 @@ Tags: block-patterns, block-styles, custom-logo, custom-menu, editor-style, feat
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Version: 0.1.0
+Version: 1.0.0
 License: GNU General Public License v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Text Domain: sd-theme-2026
@@ -64,6 +64,7 @@ figure {
 }
 
 /* Temporary fix for text-decoration-thickness in Firefox */
+/* stylelint-disable-next-line at-rule-prelude-no-invalid -- Firefox-only `url-prefix()` hook; no standard equivalent. */
 @-moz-document url-prefix() {
 	a {
 		text-decoration-thickness: .1rem !important;
@@ -90,21 +91,51 @@ textarea {
 	appearance: none;
 }
 
-input:not([type="submit"]):not([type="radio"]),
-select,
-textarea,
-.wp-block-post-comments-form input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]),
-.wp-block-post-comments-form textarea {
-	color: var(--wp--preset--color--contrast);
-	border-radius: 5px;
-	border: solid 1px color-mix(in srgb, var(--wp--preset--color--neutral-200) 100%, var(--wp--preset--color--contrast) 20%);
-	padding: .5em 1em;
-	font-size: var(--wp--preset--font-size--300);
-	background-color: var(--wp--preset--color--base);
-	box-shadow:
-		0 1px 2px rgba(0, 0, 0, 0.02),
-		0 0.5px 1px rgba(0, 0, 0, 0.04);
-}
+/* ⚠️ Removed 2026-08-21 — the blanket form-control rule.
+   ---------------------------------------------------------------------------
+   This used to be
+
+       input:not([type="submit"]):not([type="radio"]),
+       select,
+       textarea,
+       .wp-block-post-comments-form input:not(…),
+       .wp-block-post-comments-form textarea {
+           color; border-radius: 5px; border: solid 1px color-mix(…);
+           padding: .5em 1em; font-size: 300; background-color;
+           box-shadow: 0 1px 2px rgba(0,0,0,.02), 0 .5px 1px rgba(0,0,0,.04);
+       }
+
+   Inherited from the KWV base. Two problems, both structural:
+
+   1. **It hardcodes.** A raw 5px radius (the theme has a radius scale) and two
+      raw rgba shadows (the theme has a shadow scale), against the tokens-only
+      rule in AGENTS.md.
+   2. **It out-specifies every block style.** At (0,2,1) it beat any sanely
+      scoped `.is-style-x .wp-block-…__input` rule at (0,2,0), so a block style
+      could not set an input's border, radius, padding, font-size, background or
+      shadow without either doubling a class or reaching for `!important`. The
+      header search was quietly rendering this rule's values instead of the
+      tokens its own file named — see assets/styles/core-search.css.
+
+   Form controls now take the browser default unless a block style says
+   otherwise. theme.json has no `elements.input`, so there is no global
+   replacement to move this to: inputs get styled per block, by the block style
+   that owns them, which is the point.
+
+   Blocks in this theme that render a form control, and where their styling now
+   lives:
+
+     core/search       styles/blocks/search/header-search.json
+                       + assets/styles/core-search.css  (header, done)
+                       patterns/template-page-search.php, template-page-404.php,
+                       parts/mobile-menu.html — these render a bare core/search
+                       with no style variation and are now unstyled. → clean-up
+     core/post-comments-form  no template renders it; nothing to do
+     Gravity Forms     plugin markup, styled by the plugin
+     FacetWP           plugin markup, styled by the plugin
+
+   Do not reinstate this as a blanket selector. If a shared input treatment is
+   wanted, it belongs in a block style applied per block. */
 
 input:focus-visible,
 textarea:focus-visible,
@@ -146,9 +177,13 @@ a.more-link {
 	display: block;
 }
 
-/* Inline code */
+/* Inline code
+   The text colour is set explicitly rather than inherited. Without it, inline
+   code inside a dark or brand-filled section inherits that section's `base`
+   text colour and renders white on this fixed light plate — invisible. */
 *:not(.wp-block-code) > code {
 	background-color: var(--wp--preset--color--neutral-200);
+	color: var(--wp--preset--color--neutral-800);
 	padding: 3px 5px;
 	position: relative;
 	border-radius: 3px;
@@ -172,19 +207,138 @@ a.more-link {
 	display: none;
 }
 
-/* Sticky header */
+/* Sticky header — desktop only
 
-body:not(.wp-admin) header:has(>.is-position-sticky) {
-	position: sticky;
-	top: calc( 0px + var( --wp-admin--admin-bar--height, 0px ) );
-	z-index: 100;
+   A sticky group can only stick inside its parent, and its parent here is the
+   template part's own `<header>`, which is exactly as tall as it is. So the
+   wrapper is what has to stick; the block's `position: sticky` is the flag that
+   asks for it.
+
+   ⚠️ The media query is load-bearing. The header pattern holds a sticky desktop
+   band and a non-sticky mobile band, and Block Visibility hides whichever one
+   does not apply with `display: none` — but a hidden element still matches
+   `:has()`, so without the query the wrapper stuck at every width and took the
+   mobile band with it. Live's mobile header scrolls away (measured at 390px,
+   2026-09-23).
+
+   992px is Block Visibility's `large` breakpoint on dev, which is what deploys
+   to live. Local's is 1200px, so on local between 992px and 1199px the mobile
+   band renders and sticks; that is a local settings drift, not a theme bug.
+   The plugin's breakpoints are global settings with no CSS variable to read,
+   so if `large` is changed there, change it here. */
+@media (min-width: 992px) {
+	body:not(.wp-admin) header:has(> .is-position-sticky) {
+		position: sticky;
+		top: calc( 0px + var( --wp-admin--admin-bar--height, 0px ) );
+		z-index: 100;
+	}
 }
 
-/* Account for admin bar on mobile */
+/* Hero banner — the empty strapline
+   -------------------------------------------------------------------------
+   The strapline in `patterns/hero-page-banner.php` is bound to `sd/banner`'s
+   `subtitle` and authored empty, so a post with no `banner_subtitle` renders
+   `<p class="is-style-subheading-large …"></p>`. Left in the flow, that empty
+   paragraph still takes the banner group's block gap and pushes the title up
+   by it. Hiding it gives the page the title alone, which is what live shows
+   on About Us.
 
-@media (max-width: 600px) {
-	header:has(>.is-position-sticky) {
-		top: 0;
+   Here rather than in `styles/sections/hero-banner.json`'s `css` field only
+   because `:empty` is not a pseudo-class that field's sanitiser is known to
+   keep, and a silently dropped rule would bring the gap back unnoticed.
+--------------------------------------------- */
+
+.wp-block-cover.is-style-hero-banner p:empty {
+	display: none;
+}
+
+/* Hero banner — the phone stack
+   -------------------------------------------------------------------------
+   Live's inner-page banner is two layouts, not one, and the switch is at
+   768px (`sd-lsx-child/assets/css/custom.css`:324-360). Measured on live at
+   1440px and at 390px on `/destination/botswana/moremi-game-reserve/`:
+
+   - From 768px up, `.page-banner-image` is `position: absolute` with
+     `top: 0; bottom: 0`, so the photograph fills the band and the title sits
+     over it in white. That is what `core/cover` does natively, so nothing
+     here touches it.
+
+   - Below 768px, live gives the image a `bottom` offset so it shrinks to a
+     strip at the top (122px at a 390px viewport) and `.container` takes an
+     opaque `#ece9e3` ground underneath it, with the title in `#cc7f16` and
+     the tagline in `#60483b`. The palette resolves those to `neutral-200`,
+     `brand-500` and `neutral-700` — the same mapping
+     `patterns/template-single-accommodation.php` records for `#ece9e3` and
+     `patterns/itinerary-stay.php` for `#60483b`.
+
+   This block is the second layout. It lives here and not in the `css` field
+   of `styles/sections/hero-banner.json` because `@media` does not survive
+   that field — it compiles to a dead selector, measured on WP 7.0 and
+   written up in `styles/blocks/search/header-search.json`.
+
+   Specificity: the section style's `css` field is wrapped in `:where()`, so
+   every rule below outranks it on the class count alone. Core's own
+   `.wp-block-cover img.wp-block-cover__image-background` is the one to beat
+   for the image, which is why that selector carries the block class as well.
+
+   `min-height` and `padding` are the two `!important`s here and the only ones
+   needed. Both arrive as an inline `style` attribute on the cover — every
+   banner pattern in this theme picks its own floor, and most of the templates
+   still write their own desktop padding inline — and an inline declaration
+   outranks a stylesheet at any specificity. Left to the inline padding, the
+   cover showed a band of plate above the photograph. The 430px phone floor in
+   `assets/styles/core-cover.css` excludes this style for the same reason.
+--------------------------------------------- */
+
+@media (max-width: 767px) {
+	.wp-block-cover.is-style-hero-banner {
+		display: block;
+		min-height: 0 !important;
+		padding: 0 !important;
+		background-color: var(--wp--preset--color--neutral-200);
+	}
+
+	.wp-block-cover.is-style-hero-banner > .wp-block-cover__image-background {
+		position: relative;
+		inset: auto;
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 3 / 1;
+		object-fit: cover;
+	}
+
+	/* The scrim is a full-bleed overlay on a photograph that is no longer
+	   full-bleed. Nothing to dim once the type has left the image. */
+	.wp-block-cover.is-style-hero-banner > .wp-block-cover__background {
+		display: none;
+	}
+
+	/* The section style paints the banner's type `base` for the photograph it
+	   normally sits on. On the plate that is white on near-white, so the
+	   default is reset on the container rather than per block — a date, a term
+	   list or a button added to the banner later inherits the fix. Only the
+	   title, which the style colours by element, needs naming. */
+	.wp-block-cover.is-style-hero-banner > .wp-block-cover__inner-container {
+		padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--20);
+		color: var(--wp--preset--color--neutral-700);
+	}
+
+	.wp-block-cover.is-style-hero-banner .wp-block-post-title,
+	.wp-block-cover.is-style-hero-banner .wp-block-query-title,
+	.wp-block-cover.is-style-hero-banner .wp-block-heading,
+	.wp-block-cover.is-style-hero-banner a:where(:not(.wp-element-button)) {
+		color: var(--wp--preset--color--brand-500);
+	}
+
+	/* Live steps the tagline from 30px to 24px here (custom.css:380-386) while
+	   the title's clamp takes 60px down to 48px on its own.
+	   `is-style-subheading-large` rests at font-size 500; one step down to 400
+	   is the same move. Fluid typography lands it at ~20px at a 390px viewport
+	   rather than live's flat 24px — the scale is doing its job, and matching
+	   the step matters more here than matching the absolute value. */
+	.wp-block-cover.is-style-hero-banner > .wp-block-cover__inner-container p {
+		font-size: var(--wp--preset--font-size--400);
 	}
 }
 
@@ -205,7 +359,7 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 	background-color: var(--wp--preset--color--neutral-200);
 }
 
-.wp-block-table td,
+.wp-block-table td, 
 .wp-block-table th,
 .wp-block-table thead {
 	border: none;
@@ -218,7 +372,7 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-200) 75%, var(--wp--preset--color--base) 5%);
 }
 
-.wp-block-table td,
+.wp-block-table td, 
 .wp-block-table th {
 	padding: .8em 1em;
 }
@@ -230,3 +384,270 @@ body:not(.wp-admin) header:has(>.is-position-sticky) {
 .wp-block-table tfoot td {
 	border-bottom: none;
 }
+
+/* Tour Operator modals
+   -------------------------------------------------------------------------
+   Tour Operator 2.2 prints its modals into `wp_footer` as a bare
+   `<dialog class="wp-block-hm-popup">` — outside the block system, so there is
+   no block to hang `wp_enqueue_block_style()` on and no `is-style-*` class to
+   reach it with. It arrives already styled by `tour-operator-style`
+   (tour-operator/build/style.css, src/css/_modals.scss). That sheet is enqueued
+   on `wp_enqueue_scripts` at priority 1 and this one at 10, so these rules land
+   after it and win on equal specificity — no `!important`, no dependency.
+   → `wp-thirdparty-markup-styling`
+
+   The panel *interior* is not styled here. Each modal is a template part
+   (parts/modal-*.html) built from the same blocks as its carousel card, so
+   `is-style-listing-card-compact` already delivers live's centred neutral-700 /
+   brand-600 treatment. Only the chrome around it needs saying.
+
+   That treatment only reaches the page because SD Enhancements puts it there.
+   Rendering on `wp_footer` is *after* core reads both of its block-CSS stores,
+   so every rule a modal render generates — the section style's heading size and
+   link colours, and the `blockGap` that holds the image against the panel — is
+   computed and discarded. `SD\Enhancements\ModalStyles` diffs the two stores
+   around Tour Operator's render and enqueues what was missed. Without it the
+   modal falls back to the global h2 and the default block gap, which is the
+   large title and the gap under the image. Do not paper over that here with
+   sizes: fix the store, or the modal and its card drift apart.
+
+   Measured from live's `sd-lsx-child/assets/css/custom.css` on 2026-09-01;
+   the store diagnosis measured on dev, 2026-09-04. */
+
+/* Live: `.modal .modal-dialog { max-width: 590px }`. Tour Operator's default is
+   `var(--wp--style--global--content-size)`, which in this theme is 900px — half
+   again as wide as the design. */
+.wp-block-hm-popup {
+	max-width: 590px;
+}
+
+/* Tour Operator paints the direct child white and pads it 1.5rem, which was
+   right for its own parts and is wrong for a card: it puts a white gutter
+   around an image that is meant to meet the panel edge. The part owns its own
+   ground and padding instead. Square, not rounded — the panel is the card, and
+   the cards on the page behind it are square (Zared, 2026-09-04). */
+.wp-block-hm-popup > * {
+	background-color: transparent;
+	padding: 0;
+	border-radius: 0;
+	overflow-x: hidden;
+}
+
+/* One rule for every modal, and deliberately so. All four parts —
+   modal-tour, modal-accommodation, modal-destination, modal-enquiry — share
+   this chrome, and the three card modals share their interior through
+   `is-style-listing-card-compact`, the same section style their carousel cards
+   use. That is the shared style: the interior is the compact card, and the only
+   thing a modal has to say about it is the line below. A second section style
+   layered on top would not work even if it were wanted — core applies only the
+   first `is-style-*` variation that carries data
+   (wp-includes/block-supports/block-style-variations.php:93-100), so stacking
+   one on `listing-card-compact` silently drops it, and duplicating the compact
+   card into a modal-only style re-introduces the drift that style exists to
+   prevent. Anything genuinely modal-specific belongs here.
+
+   `is-style-listing-card-compact` sets `height: 100%` so cards in a carousel
+   row match each other. In a dialog there is no row, and it stretches the panel
+   to the full 95vh. */
+.wp-block-hm-popup .is-style-listing-card-compact {
+	height: auto;
+}
+
+/* Live's close button is a `&times;` on #C6BCAA — neutral-400. Tour Operator's
+   is an SVG on translucent white, welded into the top-right corner with a
+   quarter-radius, and with no focus style at all: on a control that sits over a
+   photograph that is both invisible and unreachable by keyboard.
+
+   The rebuild's is the mark on its own — the glyph, transparent, inset from the
+   corner, and picking up its chrome only on hover and keyboard focus: a 2px
+   brand-600 border, `base` at 75% over whatever is behind it, and the glyph
+   itself going brand-600. The border is declared transparent at rest rather
+   than omitted so the box does not move when it appears. Zared, 2026-09-04.
+
+   ⚠️ **Do not set a width or height on the close SVG.** Tour Operator's
+   `wp_kses` allow-list for the modal markup declares the attribute as
+   `'viewBox' => true` (Modals::get_modal_allowed_html()), and `wp_kses` lowercases
+   every attribute name before it looks it up — so `viewbox` misses the list and
+   the attribute is **stripped from the output**. Core's own allow-lists spell it
+   `'viewbox'` for exactly this reason. Without a viewBox the SVG cannot scale:
+   `width`/`height` resize the viewport while the path stays at its authored 32
+   user units, so the mark is drawn at full size against the top-left corner and
+   clipped on the other two. Measured on dev 2026-09-04 with `width: 1.25rem`:
+   the 20px box centred to the pixel, and the ink inside it 16px wide with gaps
+   of 16/4 left/right and 16.5/3.5 top/bottom — the off-centre, cut-off mark.
+   At its authored 32px the path is centred in its own viewport and correct.
+   Reported upstream; until the allow-list is fixed, the button is sized around
+   the glyph rather than the glyph around the button — 36px box, 2px border,
+   a 32px viewport with a 16px mark in it. */
+.wp-block-hm-popup__close {
+	top: var(--wp--preset--spacing--10);
+	right: var(--wp--preset--spacing--10);
+	box-sizing: border-box;
+	width: 2.25rem;
+	height: 2.25rem;
+	padding: 0;
+	background: transparent;
+	border: 2px solid transparent;
+	border-radius: 0;
+	color: var(--wp--preset--color--neutral-800);
+	transition:
+		color 150ms linear,
+		border-color 150ms linear,
+		background-color 150ms linear;
+}
+
+.wp-block-hm-popup__close:hover,
+.wp-block-hm-popup__close:focus-visible {
+	background: color-mix(in srgb, var(--wp--preset--color--base) 75%, transparent);
+	border-color: var(--wp--preset--color--brand-600);
+	color: var(--wp--preset--color--brand-600);
+}
+
+.wp-block-hm-popup__close:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent-500);
+	outline-offset: 2px;
+}
+
+/* `modals.js` calls `popup.focus()` on the dialog itself so the whole panel
+   takes focus on open, which in Chrome draws a ring around the entire modal.
+   Suppress it for pointer users only — keyboard focus keeps its ring. */
+.wp-block-hm-popup:focus:not(:focus-visible) {
+	outline: none;
+}
+
+/* Tour Operator animates `opacity`, `top` and the backdrop on open with no
+   guard. The dialog still appears and still closes; only the travel is
+   dropped. */
+@media (prefers-reduced-motion: reduce) {
+
+	.wp-block-hm-popup,
+	.wp-block-hm-popup[open],
+	.wp-block-hm-popup::backdrop,
+	.wp-block-hm-popup[open]::backdrop {
+		transition: none;
+	}
+}
+
+/* Gravity Forms in a modal
+   -------------------------------------------------------------------------
+   The enquiry modal is `parts/modal-enquiry.html` — a heading and one
+   `gravityforms/form` block on the `orbital` theme, Gravity Form 1. Gravity
+   Forms' own framework sheets ship a full design system in custom properties
+   and size it for a page, not a 590px dialog: `--gf-form-gap-y: 40px` between
+   fields, `--gf-ctrl-size-md: 38px` tall inputs, and 14px text in them
+   (`--gf-font-size-primary`), all measured from
+   gravity-forms-theme-framework.min.css and
+   gravity-forms-theme-foundation.min.css on dev, 2026-09-04. Beside this
+   theme's own text controls that reads as small fields with a large gap
+   between them.
+
+   So this block re-declares the tokens rather than the rules — no widths, no
+   heights, no `!important`, and nothing that has to be revisited when Gravity
+   Forms changes a selector.
+
+   Two things make that work, and both are worth knowing before editing:
+
+   1. **Scope beats definition.** Every token below is declared by Gravity
+      Forms on a single class — `.gform-theme--framework` or
+      `.gform-theme--foundation`, (0,1,0). `.wp-block-hm-popup .gform-theme` is
+      (0,2,0), so these win on specificity and carry no dependency on
+      stylesheet order.
+
+   2. **Override the `-md` variant, not the resolved token.** The form block
+      prints an inline `<style>` at `#gform_wrapper_1[data-form-index="0"].gform-theme`
+      — (1,2,0), which no class selector can reach — and among the settings it
+      writes there are `--gf-ctrl-size: var(--gf-ctrl-size-md)`,
+      `--gf-ctrl-btn-size: var(--gf-ctrl-btn-size-md)` and
+      `--gf-ctrl-btn-font-size: var(--gf-ctrl-btn-font-size-md)`. Those are
+      `var()` references to the size-step tokens, and the size steps are *not*
+      in the inline style. Redefine the step and the inline declaration
+      resolves to it. Set `--gf-ctrl-size` here instead and the inline style
+      wins, which is how this ends up in an `!important` fight.
+
+   Colour is deliberately absent. It arrives through the block's own style
+   attributes in `parts/modal-enquiry.html` — `inputPrimaryColor` and
+   `buttonPrimaryBackgroundColor`, already pointing at `primary-500` and
+   `brand-500` — which is the editable, token-referencing place for it. Add
+   colour there, not here.
+
+   The stray paragraphs and line breaks this form used to render with are not a
+   CSS problem and are not papered over here: Tour Operator ran `wpautop()`
+   and `wp_kses()` over the rendered template part, which paragraphed the name
+   field's two sub-field `<span>`s out of their flex row, put a margin-bearing
+   `<p>` around the inline `<script>` above the first field, and gave
+   `.gform-footer` — `display: flex`, `align-items: stretch` — ten `<br />`
+   to stretch the submit button against. `SD\Enhancements\ModalMarkup` prints
+   the template-part modals itself instead. Without that module the form comes
+   back mangled and no gap or height set here will square it up. */
+.wp-block-hm-popup .gform-theme {
+
+	/* Was 40px. `spacing-20` is the gap the theme uses between stacked
+	   controls elsewhere, and 40px in a 590px dialog reads as four unrelated
+	   fields rather than one form. */
+	--gf-form-gap-y: var(--wp--preset--spacing--20);
+
+	/* The same box as the header search input
+	   (assets/styles/core-search.css): `font-size-200` text, `spacing-10`
+	   above and below it, and a 1px border. Written as the sum rather than a
+	   flat length because Gravity Forms applies this token as `block-size` on
+	   single-line controls, so the box cannot come out of its content — and
+	   because every part of it then tracks the token it came from. Feeds
+	   `--gf-ctrl-size`, the field height. The submit no longer follows it:
+	   its box comes from the button element's own padding and type, set in
+	   assets/styles/gravityforms-form.css, so it is taller than the fields
+	   by design. */
+	--gf-ctrl-size-md: calc(
+		(var(--wp--preset--font-size--200) * var(--wp--custom--line-height--body)) +
+		(var(--wp--preset--spacing--10) * 2) +
+		(var(--wp--custom--border-width--100) * 2)
+	);
+
+	/* Was 14px, for both the value and the placeholder — and the placeholders
+	   are the labels here, the form hides its own. `--gf-ctrl-font-size` and
+	   `--gf-ctrl-placeholder-font-size` both reference this. */
+	--gf-font-size-primary: var(--wp--preset--font-size--200);
+
+	/* Was 12px each. Matches the search input's `padding-inline` and
+	   `padding-block`; `--gf-padding-y` reaches the textarea, which sizes from
+	   its rows rather than from `--gf-ctrl-size`. */
+	--gf-padding-x: var(--wp--preset--spacing--20);
+	--gf-padding-y: var(--wp--preset--spacing--10);
+}
+
+/* Gravity Forms submit — the legacy theme
+   -------------------------------------------------------------------------
+   The Popup Maker popups (newsletter, "Send us an email") print their forms by
+   shortcode, and those forms are on Gravity Forms' legacy `gravity-theme`
+   wrapper, not Orbital. That theme ships no button rules, so the submit was the
+   browser's own grey button — 27px tall, 1px 6px padding, outset border —
+   measured on local 2026-10-09. Orbital's submits are set with `--gf-ctrl-btn-*`
+   tokens in assets/styles/gravityforms-form.css; the legacy theme has no
+   tokens to set, so the same values are written as properties here. Keep the
+   two in step.
+
+   This is in style.css rather than that file because the popups sit on every
+   page and gravityforms-form.css prints only where a `gravityforms/form` block
+   renders. It is the fill button: `spacing.button` padding, the heading face at
+   `font-size-300`, bold, uppercase, a 2px transparent border, brand-600 with a
+   base label, and brand-700 on hover and focus as on the Orbital submits. */
+/* stylelint-disable selector-class-pattern -- Gravity Forms' own class names (`gform_wrapper`, `gform_button`); not ours to rename. */
+.gform_wrapper.gravity-theme :is(button.gform-button, button.gform_button, input.gform_button) {
+	padding: var(--wp--custom--spacing--button--padding-vertical) var(--wp--custom--spacing--button--padding-horizontal);
+	border: var(--wp--custom--border-width--200) solid transparent;
+	border-radius: var(--wp--preset--border-radius--0);
+	background-color: var(--wp--preset--color--brand-600);
+	color: var(--wp--preset--color--base);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--300);
+	font-weight: var(--wp--custom--font-weight--bold);
+	letter-spacing: var(--wp--custom--letter-spacing--narrow);
+	line-height: var(--wp--custom--line-height--button);
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background-color 0.25s ease-in-out, border-color 0.25s ease-in-out, color 0.25s ease-in-out;
+}
+
+.gform_wrapper.gravity-theme :is(button.gform-button, button.gform_button, input.gform_button):is(:hover, :focus) {
+	background-color: var(--wp--preset--color--brand-700);
+}
+/* stylelint-enable selector-class-pattern */

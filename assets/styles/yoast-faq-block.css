@@ -1,0 +1,134 @@
+/**
+ * Yoast FAQ block.
+ *
+ * Markup, as the block saves it (Yoast itself ships no front-end stylesheet
+ * for this block, only an editor one):
+ *
+ *   div.schema-faq.wp-block-yoast-faq-block
+ *     div.schema-faq-section#faq-question-…
+ *       strong.schema-faq-question
+ *       p.schema-faq-answer
+ *
+ * The Tour Operator FAQ plugin (lightspeedwp/to-faq) turns that into an
+ * accordion: `faq-accordion.js` adds `.is-accordion` to the wrapper,
+ * `.is-open` to an expanded section and `role="button"` to the question, and
+ * its stylesheet styles it as rounded cards with the padding moved onto the
+ * question and answer. Its selectors are (0,3,0)–(0,4,0) and its stylesheet
+ * prints after this one, so every rule below is prefixed
+ * `.wp-block-yoast-faq-block.schema-faq` and, where TO has a matching
+ * `.is-accordion` rule, repeated with `.is-accordion` to stay one class ahead.
+ * Both shapes are styled: without the accordion script the answers are simply
+ * always visible.
+ *
+ * Each item is a card: a 2px neutral-300 border, square corners. Hover is a
+ * neutral-200 fill with a brand-600 border; an item that is open, holds focus
+ * or is the URL fragment's target (`:target`, the `#faq-question-…` ids Yoast
+ * writes) keeps the brand-600 border. The border width never changes, so
+ * nothing shifts between states.
+ *
+ * The question keeps the heading face and semi-bold it inherits from the
+ * `listing-card-list` group that wraps the block; the accordion's bold is
+ * reset to that. The Section Title heading above each group is set on the
+ * heading blocks in parts/pages.html, parts/destinations.html and
+ * parts/faq-countries.html, not in this file.
+ *
+ * Plain authored CSS rather than a `styles/**` partial: Yoast's wrapper does
+ * not carry an `is-style-*` class the editor can set, a variation's `css`
+ * field strips `:hover` and `:focus-within`, and its `:where()` selectors
+ * could not out-rank Tour Operator's.
+ *
+ * @package sd-theme-2026
+ */
+
+.wp-block-yoast-faq-block.schema-faq {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--10);
+}
+
+.wp-block-yoast-faq-block.schema-faq .schema-faq-section,
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-section {
+	box-sizing: border-box;
+	margin: 0;
+	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
+	background-color: transparent;
+	border: var(--wp--custom--border-width--200) solid var(--wp--preset--color--neutral-300);
+	border-radius: var(--wp--preset--border-radius--0);
+	box-shadow: none;
+	transition: background-color 0.25s ease-in-out, border-color 0.25s ease-in-out;
+}
+
+/* The accordion pads the question and answer instead, with the same tokens. */
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-section {
+	padding: 0;
+}
+
+.wp-block-yoast-faq-block.schema-faq .schema-faq-section:focus-within,
+.wp-block-yoast-faq-block.schema-faq .schema-faq-section:target {
+	border-color: var(--wp--preset--color--brand-600);
+}
+
+.wp-block-yoast-faq-block.schema-faq .schema-faq-section:hover {
+	background-color: var(--wp--preset--color--neutral-200);
+	border-color: var(--wp--preset--color--brand-600);
+}
+
+/* The same three states against the accordion's (0,4,0) rules. */
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-section:focus-within,
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-section.is-open {
+	background-color: transparent;
+	border-color: var(--wp--preset--color--brand-600);
+	box-shadow: none;
+}
+
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-section:hover {
+	background-color: var(--wp--preset--color--neutral-200);
+	border-color: var(--wp--preset--color--brand-600);
+}
+
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-question {
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+}
+
+/* The chevron is a two-bordered square turned 45deg, so the visible "V" fills
+   only the half of the turned box it points towards. The plugin's 1px nudge
+   leaves it below the question's centre line; 3px, up when closed and down when
+   open, puts the V's optical centre on it. Measured on dev, 2026-10-21. */
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-question::after {
+	transform: translateY(-3px) rotate(45deg);
+}
+
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-section.is-open > .schema-faq-question::after {
+	transform: translateY(3px) rotate(-135deg);
+}
+
+.wp-block-yoast-faq-block.schema-faq .schema-faq-answer {
+	margin-block: var(--wp--preset--spacing--10) 0;
+}
+
+/* The accordion collapses the answer to `max-height: 0` but cannot collapse a
+   margin, so the gap above would stay under every closed question and push it
+   off-centre in its card. The plugin spaces the open answer itself. */
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-answer {
+	margin-block: 0;
+}
+
+/* Keyboard users: links in an answer, and the accordion's question button. */
+.wp-block-yoast-faq-block.schema-faq .schema-faq-section :focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-600);
+	outline-offset: 2px;
+}
+
+/* The accordion section clips its overflow, so the ring is drawn inside. */
+.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-question:focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--brand-600);
+	outline-offset: calc(-1 * var(--wp--custom--border-width--200));
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.wp-block-yoast-faq-block.schema-faq .schema-faq-section,
+	.wp-block-yoast-faq-block.schema-faq.is-accordion .schema-faq-section {
+		transition: none;
+	}
+}

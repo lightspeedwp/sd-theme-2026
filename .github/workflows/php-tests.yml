@@ -1,0 +1,86 @@
+name: PHP tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    name: Integration (WordPress ${{ matrix.wp }}, Tour Operator ${{ matrix.to }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # What dev and local run. Raise both together.
+        wp: [ '7.1' ]
+        to: [ '2.2.0' ]
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress_tests
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      WP_CORE_DIR: /tmp/wordpress
+      TO_PLUGIN_DIR: /tmp/plugins/tour-operator
+      OLLIE_MENU_PLUGIN_DIR: /tmp/plugins/ollie-menu-designer
+      WP_TESTS_DB_NAME: wordpress_tests
+      WP_TESTS_DB_USER: root
+      WP_TESTS_DB_PASSWORD: root
+      WP_TESTS_DB_HOST: 127.0.0.1:3306
+    # sd-enhancements is a private repository and is not loaded here; the
+    # suite passes without it (verified locally with SD_ENH_PLUGIN_DIR unset).
+    steps:
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: lightspeedwp/tour-operator
+          ref: ${{ matrix.to }}
+          path: .deps/tour-operator
+
+      - name: Place plugin dependencies
+        run: |
+          mkdir -p /tmp/plugins
+          mv .deps/tour-operator "$TO_PLUGIN_DIR"
+          # Registers the `menu` template part area the mega-menu parts use.
+          curl -sSL -o /tmp/ollie.zip https://downloads.wordpress.org/plugin/ollie-menu-designer.latest-stable.zip
+          unzip -q /tmp/ollie.zip -d /tmp/plugins
+
+      # shivammathur/setup-php@2.37.2
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: '8.3'
+          coverage: none
+          extensions: mysqli
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Download WordPress ${{ matrix.wp }}
+        run: |
+          mkdir -p "$WP_CORE_DIR"
+          curl -sSL "https://wordpress.org/wordpress-${{ matrix.wp }}.tar.gz" | tar -xz --strip-components=1 -C "$WP_CORE_DIR"
+
+      - name: Run integration suite
+        run: composer run test

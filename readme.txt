@@ -4,7 +4,7 @@ Contributors: lightspeedwp
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 1.0.0
 License: GNU General Public License v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Tags: block-patterns, block-styles, custom-logo, custom-menu, editor-style, featured-images, full-site-editing, full-width-template, rtl-language-support, template-editing, translation-ready, wide-blocks
@@ -18,6 +18,9 @@ The theme carries design only: theme.json tokens, block and section styles, patt
 Post types for Accommodation, Destination and Tour are supplied by the LSX Tour Operator plugin; the theme provides their templates and patterns.
 
 == Changelog ==
+
+= 1.0.0 =
+* First release. Full notes are in CHANGELOG.md.
 
 = 0.1.0 =
 * Initial scaffold, derived from the LightSpeed kwv-theme-2026 block theme.

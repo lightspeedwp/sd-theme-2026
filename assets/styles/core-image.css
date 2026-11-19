@@ -27,6 +27,48 @@ html .is-layout-flex .wp-block-image {
 	border-radius: 10px;
 }
 
-.sd-avatar-row > figure:not(:first-child) {
-	margin-left: -10px !important;
+/*
+ * Accommodation unit photograph — live's `.rooms-thumbnail a { min-height: 100% }`.
+ *
+ * The rooms band's card is a horizontal row: a square photograph in a 33.33%
+ * `core/column` and the unit's name and copy in the column beside it
+ * (patterns/accommodation-unit.php). `.wp-block-columns` is `align-items: normal`,
+ * so the photograph's column already stretches to whatever height the copy sets —
+ * but the figure and the image inside it do not follow, because the block library
+ * gives `.wp-block-image img` `height: auto; width: auto`. Filling a stretched
+ * column is a height set by a *sibling*, which no block attribute can express, so
+ * it is here rather than in the markup or in the card's style JSON. `aspectRatio`
+ * stays on the block: it is live's square crop and it is what the editor shows.
+ *
+ * `!important` because the block library's rule sits at the same (0,2,0)
+ * specificity and only source order would separate the two.
+ * → AGENTS.md, "Structure belongs in markup, not in a `css` field"
+ */
+.wp-block-image.unit-image {
+	height: 100%;
+	margin: 0;
+}
+
+.wp-block-image.unit-image img {
+	height: 100% !important;
+	object-fit: cover;
+	width: 100% !important;
+}
+
+/* Trustpilot links in the site header: a 44px hit area on 24px artwork.
+   At phone widths the logo and stars render 24px tall, under the 44px
+   touch-target floor the Playwright responsive suite enforces (org standard;
+   WCAG 2.5.5). 12px of block padding grows the link past 44px and the
+   matching negative margin keeps its laid-out box, so the header height
+   doesn't move. 12px, not 10px: the artwork actually renders ~23px at 375px,
+   so 10px left the link at 43px (measured on dev, 2026-11-13). Literals, not
+   spacing presets: `spacing|10` is fluid and is only 10px at wide viewports,
+   and the sum has to clear 44 at 375px.
+
+   Here and not in the `is-style-header` section style's `css` field because
+   the header renders two copies of the badge, one per Block Visibility
+   screen size, and only the desktop group carries that style. */
+header.wp-block-template-part .sd-trustpilot .wp-block-image a {
+	padding-block: 12px;
+	margin-block: -12px;
 }

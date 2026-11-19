@@ -52,6 +52,9 @@ You do not add complexity without clear justification.
 - Keep `functions.php` and `inc/` minimal.
 - Always escape PHP output with the appropriate function.
 - Always include the text domain in translation function calls.
+- In `patterns/*.php`, follow core's form: inline `esc_html_e()` / `esc_html_x()` at the point
+  of use, never `echo esc_html__()`, and no top-level variables holding literals, no loops, no
+  computed markup and no `phpcs:ignore`. A pattern is block markup. See AGENTS.md, "PHP".
 - Use semantic HTML `tagName` attributes in block templates and parts.
 - Keep templates and parts lean — avoid inline styles.
 - Validate JSON files against the WordPress schema before committing.

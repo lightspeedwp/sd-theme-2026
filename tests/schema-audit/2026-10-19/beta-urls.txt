@@ -1,0 +1,27 @@
+https://beta.local/
+https://beta.local/hello-world/
+https://beta.local/review/empty-review/
+https://beta.local/reviews/
+https://beta.local/accommodation/clouds-estate/
+https://beta.local/accommodation/
+https://beta.local/destination/south-africa/stellenbosch/
+https://beta.local/destinations/
+https://beta.local/tour/western-cape-in-8-days/
+https://beta.local/tours/
+https://beta.local/special/giraffe-conservation-safari/
+https://beta.local/specials/
+https://beta.local/team/warwick-booth/
+https://beta.local/team/
+https://beta.local/category/uncategorized/
+https://beta.local/accommodation-type/hotel/
+https://beta.local/travel-style/self-drive/
+https://beta.local/facility/available-services/
+https://beta.local/continent/africa/
+https://beta.local/author/admin/
+https://beta.local/?s=a
+# Hand-added variants
+https://beta.local/review/rachel-nigel/
+https://beta.local/destination/zimbabwe/
+https://beta.local/special/best-of-the-desert-special-11-nights/
+https://beta.local/tour/phuket-krabi-thailand-14-nights/
+https://beta.local/destination/namibia/

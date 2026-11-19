@@ -1,0 +1,5 @@
+{
+	"extends": "./node_modules/@wordpress/scripts/config/.markdownlint.json",
+	"MD007": { "indent": 2 },
+	"MD024": { "siblings_only": true }
+}

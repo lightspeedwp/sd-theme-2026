@@ -7,49 +7,153 @@
 }
 
 @media (max-width: 600px) {
+
 	header div.is-style-background-blur {
 		backdrop-filter: none;
 	}
 }
 
-/* Improvements for row group */
-@media (max-width: 781px) {
-	.sd-row-stack {
-		flex-direction: column;
-		align-items: flex-start !important;
-	}
+/**
+ * Media Overlay Card — the scrim lift.
+ *
+ * Structure (image crop, absolute scrim, centred type) lives in the section
+ * style styles/sections/cards/media-overlay-card.json so it renders in the
+ * editor. Three pieces cannot live there:
+ *
+ *   1. the resting scrim colour + the :hover flip to transparent — the
+ *      block-style compiler strips :hover entirely;
+ *   2. the trailing chevron, because a css-field rule containing
+ *      `content: ""` is dropped whole, not just the content line;
+ *   3. the prefers-reduced-motion fallback.
+ *
+ * Measured on the live site 2026-08-20: rgba(26, 18, 5, 0.3) resting,
+ * transparent on hover, `transition: background-color 0.5s ease`. The scrim
+ * lifting rather than deepening is deliberate — the photograph is the subject.
+ *
+ * :focus-within matches the hover so the card is reachable by keyboard.
+ */
+.is-style-media-overlay-card .media-overlay-card__scrim {
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 55%, transparent);
+	transition: background-color 0.5s ease;
+}
 
-	.sd-row-stack > * {
-		flex-basis: 100% !important;
-	}
+.is-style-media-overlay-card:hover .media-overlay-card__scrim,
+.is-style-media-overlay-card:focus-within .media-overlay-card__scrim {
+	background-color: transparent;
+}
 
-	.sd-flex-start {
-		align-items: flex-start !important;
-	}
+/* The chevron the live card appends to its title (FontAwesome \f105 there; a
+   plain character here so the theme carries no icon-font dependency). Set at
+   1.15em so it reads as a deliberate affordance next to the enlarged title
+   rather than a stray punctuation mark, and nudged optically to sit on the
+   cap-height centre.
 
-	.sd-justify-start {
-		justify-content: flex-start !important;
+   It must never wrap onto a line of its own. `display: inline-block` made it an
+   atomic inline, and the line breaker takes a break opportunity either side of
+   one of those — so a two-word title could drop the chevron alone onto line
+   two. Kept `inline` instead, with the gap carried by a leading no-break space
+   inside `content` rather than a margin, so the chevron is glued to the last
+   word of the title and travels with it. The optical nudge moves to relative
+   positioning because `transform` has no effect on a non-replaced inline.
+
+   The no-break space is necessary but was not sufficient — see the two rules
+   below, which are what actually hold the chevron on the line. */
+.is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6)::after {
+	content: "\00A0\203A";
+	font-size: 1.15em;
+	font-weight: var(--wp--custom--font-weight--regular);
+	line-height: 1;
+	position: relative;
+	top: 0.06em;
+}
+
+/* ⚠️ The two rules that make the no-break space above actually bind. Both undo
+   a declaration core's own `core/post-title` stylesheet makes, and without them
+   the chevron still lands on a line of its own — measured on dev 2026-09-03,
+   Mozambique orphaning its chevron onto a fourth line in a squeezed tile.
+
+   1. `.wp-block-post-title :where(a) { display: inline-block }`
+      (wp-includes/blocks/post-title/style.css:5) makes the title link an
+      **atomic inline** — which is precisely the hazard the comment above
+      describes, one level out. The no-break space is the first character of the
+      heading's `::after`, so it cannot glue across the anchor's box boundary:
+      the line breaker takes its break opportunity there instead, and the
+      chevron goes down alone however short the title. Restoring `display:
+      inline` puts the title text and the pseudo-element in one inline run,
+      where the no-break space is what the breaker actually sees.
+
+   2. `.wp-block-post-title { word-break: break-word }`
+      (same file, line 3) is the deprecated value that means
+      `overflow-wrap: anywhere` — a soft wrap opportunity around *every*
+      character, and one that counts towards min-content. The scrim is a flex
+      container, so the heading's automatic minimum size collapsed to the width
+      of one letter (25px for "Botswana", measured); the tile then squeezed the
+      heading far below its text and the emergency breaks landed wherever they
+      liked, including immediately before the no-break space. `normal` restores
+      min-content to the widest unbreakable run — which, thanks to rule 1, is
+      now "lastword + chevron" — so the flex item stops shrinking at the point
+      where the chevron still fits. Long titles still wrap at their spaces; a
+      single word longer than the tile is clipped by the card's `overflow:
+      hidden` rather than shredded a letter at a time.
+
+   Both are scoped to the card, so `core/post-title` is untouched everywhere
+   else, and both are (0,2,1) against core's (0,1,0) — a section style's `css`
+   field compiles to `:root :where(…)` at (0,1,0) and would tie with the block
+   library, decided only by source order, which WordPress inverts between the
+   editor and the front end. That is the limit that forces these here.
+   → AGENTS.md, "Styling lives in JSON"
+
+   `core/term-name` carries neither declaration, so on the term twin these are
+   inert — they are written for both headings anyway to keep the two cards in
+   step. */
+.is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6) {
+	word-break: normal;
+}
+
+.is-style-media-overlay-card .media-overlay-card__scrim :is(h1, h2, h3, h4, h5, h6) a {
+	display: inline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.is-style-media-overlay-card .media-overlay-card__scrim {
+		transition-duration: 1ms;
 	}
 }
 
-.sd-row-stack > .wp-block-buttons,
-.sd-no-shrink {
-	flex-shrink: 0;
+/*
+ * Editor: restore the overlay stack.
+ *
+ * Gutenberg's content.css sets
+ *   .block-editor-block-list__layout .block-editor-block-list__block { position: relative }
+ * at specificity (0,2,0). A block-style `css` field compiles to
+ * `:root :where(…)` at (0,1,0), so inside the editor the scrim loses its
+ * `position: absolute` and drops *below* the image instead of covering it —
+ * the card reads as a stacked image-then-caption rather than the overlay it is.
+ *
+ * These rules are (0,3,0), so they beat the editor reset without !important.
+ * They apply to both cards, and to the team card's name band, which has the
+ * same problem.
+ */
+.editor-styles-wrapper .is-style-media-overlay-card .media-overlay-card__scrim,
+.editor-styles-wrapper .is-style-team-member-card .team-member-card__overlay {
+	position: absolute;
+	inset: 0;
 }
 
-.wp-block-group.sd-sticky-top {
-	top: calc(20px + var(--wp-admin--admin-bar--position-offset, 0px))
+/*
+ * The team archive card's name band has the same problem and the same fix, but
+ * it is pinned to the foot of the photograph rather than covering it, so it
+ * takes its own rule instead of joining the selector list above. `inset: 0`
+ * would stretch the band over the whole image in the canvas and nowhere else.
+ * → styles/sections/cards/team-archive-card.json
+ */
+.editor-styles-wrapper .is-style-team-archive-card .team-archive-card__caption {
+	position: absolute;
+	inset-inline: 0;
+	inset-block-end: 0;
 }
 
-/* Helper class to swap order on mobile */
-@media (max-width: 781px) {
-	.sd-swap-order {
-		flex-direction: column-reverse;
-	}
-	.sd-row-reverse {
-		flex-direction: row-reverse;
-	}
-}
 
 /**
  * Team Member Card — bio overlay reveal animation.
@@ -66,6 +170,7 @@
  * Resting state: hidden, faded out, nudged down. Visibility switches with a
  * delay so it doesn't cut the opacity/transform fade short on the way out.
  */
+/* stylelint-disable-next-line no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
 .is-style-team-member-card .team-member-card__overlay {
 	opacity: 0;
 	visibility: hidden;
@@ -82,7 +187,22 @@
 	transition: opacity 300ms ease, transform 300ms ease, visibility 0s linear 0s;
 }
 
+/*
+ * Keep the bio panel permanently open inside the editor so its text can be
+ * selected and edited without a hover — the same treatment the Timeline
+ * Milestone slide-out gets below. `.editor-styles-wrapper` only exists in the
+ * editor iframe, so the front end stays hidden-until-hover. The extra class
+ * also out-specifies the resting rule above.
+ */
+.editor-styles-wrapper .is-style-team-member-card .team-member-card__overlay {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+
 	.is-style-team-member-card .team-member-card__overlay {
 		transform: none;
 		transition-duration: 1ms;
@@ -90,48 +210,1563 @@
 }
 
 /**
- * Timeline Milestone — round image with a hover slide-out info panel.
+ * Slider Frame — arrow and dot presentation for third-party carousels.
  *
- * The structure (round media crop, layout, typography) lives in the section
- * style styles/sections/cards/timeline-milestone.json so it renders in the
- * editor. The collapse/expand reveal lives here as plain CSS because the
- * block-style-variation compiler drops `:hover`/`:focus-within` from that JSON
- * and wraps it at `:where()` zero specificity (see the theme AGENTS.md
- * "Styling lives in JSON" rule).
+ * The three colours are declared as custom properties by the section style
+ * styles/sections/slider-frame.json; this block binds them to the markup two
+ * different carousels emit. Neither vendor's nav elements are ours, so they
+ * cannot be driven from a block-style JSON at all — see the
+ * wp-thirdparty-markup-styling skill. Everything is scoped to the
+ * `.is-style-slider-frame` class, but on the arrows that scope is not enough
+ * on its own — see the !important note at the end of this comment.
  *
- * The panel uses a grid-template-rows 0fr -> 1fr transition so the info slides
- * open from behind the year and pushes nothing else around. The child needs
- * min-height:0 + overflow:hidden for the collapsed row to actually clip it.
+ * Geometry follows ati-theme-2026 (style.css:23-118) at Zared's direction
+ * 2026-08-26 — arrows lifted clear of the shelf on either side, and a bar dot
+ * rather than a disc.
+ *
+ * Revised 2026-09-03, again at Zared's direction: the arrows are bigger and
+ * thicker in primary-500 with a brand-600 hover, and the dots are lighter,
+ * thinner and square-cornered. That supersedes the live measurement of
+ * 2026-08-20 (arrows #B4A48C, dots #938673) — those colours are no longer what
+ * we ship. The chevron itself is asnz-block-theme's stroked SVG, applied as a
+ * mask so the colour still comes from a token — see the block below for why the
+ * two-border CSS chevron it replaced could not be shaped. ATI's arrow SVGs are
+ * a filled disc and are deliberately still not ported. Every value comes from a
+ * custom property declared on the frame in styles/sections/slider-frame.json.
+ *
+ * ATI also styles `cb/carousel` with `.slick-*` selectors in its theme.json.
+ * That is stale there: Carousel Block 2.1.5 bundles Swiper
+ * (carousel-block/blocks/vendor/swiper/), not Slick, so those rules match
+ * nothing. Both vendors are covered here instead — Slick for Tour Operator's
+ * query-loop slider, Swiper for the Carousel Block.
+ *
+ * !important is unavoidable on the arrows, and on more than the geometry.
+ * Measured on dev 2026-09-03: Tour Operator does not enqueue `slick-theme.css`
+ * at all — it inlines its own arrow theming into `tour-operator/build/style.css`,
+ * which loads *after* this sheet and reaches (0,4,1):
+ *
+ *   .lsx-to-slider .slick-arrow                                  (0,2,0)
+ *     border, color:#fff, height:4rem, position, margin-top
+ *   .wp-block-query.lsx-to-slider .slick-arrow(::before)         (0,3,0)/(0,3,1)
+ *     width/height:30px
+ *   .lsx-to-slider .slick-arrow.slick-prev::before               (0,2,1)
+ *     color:#fff, position:absolute, top:47%, transform, font-family:slick
+ *   .wp-block-query.lsx-to-slider .slick-arrow.slick-prev::before (0,4,1)
+ *     background: url(<feather chevron, stroke #000>); width/height:20px; left:3px
+ *
+ * Our selectors are (0,2,0)/(0,2,1), so before this every one of those won: the
+ * button rendered 30px in white and the pseudo-element painted TO's own 20px
+ * stroked chevron instead of our masked caret — the "arrows look like defaults"
+ * regression. Beating (0,4,1) naturally would mean forking the selector per
+ * query block and would still not cover `core/group` or `cb/carousel`, so the
+ * declarations the vendor reaches are marked !important instead. `background`
+ * is a shorthand there, so `background-image: none` has to be restated
+ * explicitly — `background-color: currentColor` alone leaves TO's artwork
+ * showing through our mask. Every colour still resolves through a custom
+ * property; nothing here hardcodes one.
  */
-.is-style-timeline-milestone .timeline-milestone__info {
-	display: grid;
-	grid-template-rows: 0fr;
-	transition: grid-template-rows 320ms ease;
+.is-style-slider-frame {
+	position: relative;
 }
 
-.is-style-timeline-milestone .timeline-milestone__info > * {
-	min-height: 0;
-	overflow: hidden;
+/* Room for a card to lift inside the shelf.
+   ---------------------------------------------------------------------------
+   Slick builds its own `.slick-list` wrapper and vendor slick.css gives it
+   `overflow: hidden` — necessary horizontally, since that clip is what makes
+   the carousel a carousel, but it clips vertically too. A card's shadow is
+   therefore sheared off at the shelf edges, and the Post Grid Card's 4px hover
+   rise would be cut in half.
+
+   Padding opens the clip box vertically; the matching negative margin gives it
+   back, so the shelf occupies exactly the height it did before and the arrows
+   (absolutely centred on the frame) and the dot row (a static sibling) do not
+   move. Both axes still clip as Slick needs.
+
+   (0,2,0) against slick.css's (0,1,0) `.slick-list { margin: 0; padding: 0 }`,
+   so it wins without !important. */
+.is-style-slider-frame .slick-list {
+	padding-block: var(--wp--preset--spacing--20);
+	margin-block: calc(var(--wp--preset--spacing--20) * -1);
 }
 
-/* Reveal on hover / keyboard focus within the milestone. */
-.is-style-timeline-milestone:hover .timeline-milestone__info,
-.is-style-timeline-milestone:focus-within .timeline-milestone__info {
-	grid-template-rows: 1fr;
+/* The gutter between slides, as a number rather than a vendor constant.
+   ---------------------------------------------------------------------------
+   Tour Operator insets every slide by 15px on all four sides —
+   `.wp-block-query.lsx-to-slider .slick-slide,
+    .wp-block-terms-query.lsx-to-slider .slick-slide { padding: 15px !important }`
+   (tour-operator/build/style.css) — which reads as a 30px gutter between any
+   two slides. That is right for the card shelves (tours, accommodation,
+   regions, reviews) and wrong for a shelf whose design is a continuous band,
+   so the constant is restated here as `--sd-slider-slide-gutter` and a shelf
+   that wants a different one sets the token instead of re-fighting the vendor.
+
+   The vendor selector is (0,3,0) and carries `!important`, so ours matches its
+   shape plus our own style class to reach (0,4,0) — the least surprising way
+   past it, and the same move `.sd-slider-flush` below already makes. The
+   fallback is the vendor's own 15px, so a frame that never sets the token
+   renders exactly as it does today.
+
+   `sd-slider-tight` is the band variant: zero gutter, slides butting together.
+   It is *not* `sd-slider-flush` — that one also strips the `.slick-list`
+   padding above, drops the shelf's block margins and forces a flex track,
+   which a normal in-flow shelf does not want. */
+.wp-block-query.lsx-to-slider.is-style-slider-frame .slick-slide,
+.wp-block-terms-query.lsx-to-slider.is-style-slider-frame .slick-slide {
+	padding: var(--sd-slider-slide-gutter, 15px) !important;
 }
 
-/*
- * Keep the slide-out permanently open inside the editor so the info text can be
- * selected and edited without a hover. `.editor-styles-wrapper` only exists in
- * the editor iframe, so the front end stays collapsed-until-hover. The extra
- * class also out-specifies the resting rule above.
- */
-.editor-styles-wrapper .is-style-timeline-milestone .timeline-milestone__info {
-	grid-template-rows: 1fr;
+/* 28px rather than the frame's 10px: the band's tiles meet the frame edge
+   exactly, where every other shelf keeps the vendor's 15px inset between the
+   artwork and that edge. 10px + 15px is the clearance the card shelves read at,
+   and 28px is that plus a little, which is what the category band was asked
+   for. Nothing else about the tight band changes — the gutter *between* tiles
+   stays 0, which is the whole point of the continuous bar. */
+.is-style-slider-frame.sd-slider-tight {
+	--sd-slider-slide-gutter: 0px;
+	--sd-slider-nav-offset: 28px;
+}
+
+/* Arrows — vertically centred against the shelf, clear of its outer edges. */
+.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next) {
+	position: absolute !important;
+	top: 50% !important;
+	transform: translateY(-50%) !important;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--sd-slider-nav-size, 56px) !important;
+	height: var(--sd-slider-nav-size, 56px) !important;
+	margin: 0 !important;
+	padding: 0;
+	border: 0 !important;
+	background-color: transparent !important;
+	color: var(--sd-slider-nav-color) !important;
+
+	/* Slick's arrow carries a visible text label ("Previous"/"Next") that its own
+	   `font-size: 0` collapses. We override the vendor's `color: transparent`, so
+	   the collapse has to be restated here or the label reappears. The chevron is
+	   sized in px and is unaffected. */
+	font-size: 0;
+	line-height: 1;
+	transition: color 0.25s;
+}
+
+/* Offset from the button's own half-width rather than a flat -2rem, so the
+   target can grow without dragging the chevron in over the shelf: the centre
+   stays `--sd-slider-nav-offset` outside the frame edge at any
+   --sd-slider-nav-size. The 10px fallback is where the 44px/-2rem pair put it
+   before the arrows were enlarged.
+
+   The offset is a token because the clearance a reader sees is not this number
+   alone — it is this number plus the slide's own 15px inset plus the empty
+   margin inside the caret's square box. A shelf that sets
+   `--sd-slider-slide-gutter` to 0 has given the first of those three away, so
+   the chevron ends up sitting almost against the artwork. `.sd-slider-tight`
+   buys it back here rather than re-introducing a gutter it deliberately does
+   not want. Zared, 2026-09-16. */
+
+/* …but never further out than the viewport allows. The offset above assumes
+   the page has room either side of the frame, and a wide frame does not: at
+   1280px an `alignwide` shelf sits ~18px from the viewport edge, so an arrow
+   38px out pushed the document to 1300px and the whole page scrolled
+   sideways. Live never shows this only because its shelf is inset ~100px.
+
+   The frame is the arrows' containing block (`position: relative` above), so
+   inside `left`/`right` 100% is the frame's width and (100vw - 100%) / 2 is
+   the gap from its edge to the viewport's. `max()` keeps the design offset
+   wherever that gap can hold it — every width from ~1434px up renders exactly
+   as before — and walks the arrow in by only as much as it has to below that.
+
+   Two assumptions, both true of every shelf in this theme today: the frame is
+   centred in the viewport (so the gap is the same both sides), and `100vw`
+   counts a classic scrollbar that the layout width does not. The latter is
+   what `--sd-slider-nav-edge` absorbs — half of the widest desktop scrollbar
+   (Windows, 17px), so the arrow clears the viewport with or without one.
+   Measured on dev 2026-09-23. */
+/* stylelint-disable-next-line no-duplicate-selectors -- the custom-property half of .is-style-slider-frame, kept beside the arrow rules it documents. */
+.is-style-slider-frame {
+	--sd-slider-nav-edge: 9px;
+
+	/* Where each arrow's outer edge sits relative to the frame edge (negative =
+	   outside it). One definition so the arrows and, on the Swiper carousel, the
+	   track inset that clears them cannot drift apart. */
+	--sd-slider-nav-pos: max(
+		calc(var(--sd-slider-nav-size, 56px) / -2 - var(--sd-slider-nav-offset, 10px)),
+		calc((100% - 100vw) / 2 + var(--sd-slider-nav-edge))
+	);
+}
+
+.is-style-slider-frame :is(.slick-prev, .swiper-button-prev) {
+	left: var(--sd-slider-nav-pos) !important;
+	right: auto !important;
+}
+
+.is-style-slider-frame :is(.slick-next, .swiper-button-next) {
+	right: var(--sd-slider-nav-pos) !important;
+	left: auto !important;
+}
+
+/* Swiper (Carousel Block) — clear the arrows, tighten the dots.
+   ---------------------------------------------------------------------------
+   Slick's `.slick-list` carries the slide inset and the card shelves rely on
+   that, so none of this touches Slick; it is keyed to Swiper's own classes.
+
+   1. Arrows. The arrows sit at `--sd-slider-nav-pos` and may overlap the shelf
+      (by 18px at 1440, by ~50px on a phone where the frame has no margin to
+      hang them in). Carousel Block runs its track edge to edge, so a video
+      slide sat underneath its own arrow. The track is inset by the arrow's
+      inner edge plus `--sd-slider-nav-gap` instead; the arrows stay exactly
+      where they were. Margin percentages resolve against the frame's width,
+      the same box `left`/`right` 100% resolve against above.
+
+   2. Dots. Carousel Block reserves `bullet-size * 4` (64px) under the track for
+      an absolutely-positioned pagination bar. Ours is a static row with its own
+      top margin (above), so that reserve is dead space on top of it. The slide
+      also keeps its last child's bottom margin (a figure's 1em), which is more
+      dead space between the artwork and the dots.
+
+   (0,4,0) to beat Carousel Block's own
+   `.wp-block-cb-carousel-v2[data-cb-pagination="true"] .swiper-horizontal`
+   (0,3,0) whichever stylesheet loads last. */
+.is-style-slider-frame.wp-block-cb-carousel-v2[data-cb-navigation="true"] .swiper-horizontal {
+	margin-inline: calc(
+		var(--sd-slider-nav-pos) + var(--sd-slider-nav-size, 56px) + var(--sd-slider-nav-gap, var(--wp--preset--spacing--20))
+	);
+}
+
+.is-style-slider-frame.wp-block-cb-carousel-v2[data-cb-pagination="true"] .swiper-horizontal {
+	margin-block-end: 0;
+}
+
+.is-style-slider-frame.wp-block-cb-carousel-v2 .swiper-slide > :last-child {
+	margin-block-end: 0;
+}
+
+/* Phones — smaller arrows, no extra gap, so the video keeps its width.
+   ---------------------------------------------------------------------------
+   Below the carousel's own 768px breakpoint it shows one slide, and the frame
+   has no margin to hang the arrows in: `--sd-slider-nav-pos` clamps them to the
+   viewport edge, so the track inset above is the arrow's whole width twice
+   over. At 56px that left a 390px phone with a 231px video. 40px keeps a tap
+   target well over WCAG 2.5.8's 24px minimum and the 26px chevron still fits
+   inside it; the zero gap leaves the arrow box touching, not overlapping, the
+   video, with the chevron's own 7px of empty box as the visible clearance.
+   Scoped to the Swiper carousel, so the Slick card shelves keep 56px arrows.
+   767px matches the file's other mobile rules and the carousel breakpoint.
+   (0,2,0) to beat the :where() custom properties from the section style. */
+@media (max-width: 767px) {
+
+	.is-style-slider-frame.wp-block-cb-carousel-v2 {
+		--sd-slider-nav-size: 40px;
+		--sd-slider-nav-gap: 0px;
+	}
+}
+
+/* The chevron itself.
+   ---------------------------------------------------------------------------
+   Slick and Swiper each draw their glyph as a character from a bundled icon
+   font — Slick's `←`/`→` in `slick`, Swiper's `prev`/`next` ligature in
+   `swiper-icons`. Neither gives us a stroke weight: an icon font's thickness is
+   baked into the outline, and `font-weight` does nothing because there is only
+   one face. So the glyph is switched off and our own chevron is drawn in its
+   place.
+
+   That chevron was two borders on a square rotated 45° (2026-09-03), then a
+   stroked 14x24 polyline masked in from asnz-block-theme (2026-09-03) — both
+   superseded 2026-09-03, at Zared's direction, by Phosphor's `caret-left` /
+   `caret-right` glyphs (256x256, filled path), the same icon set
+   `.rating-stars` already uses further down this file. Two separate assets
+   rather than one mirrored with `scaleX(-1)`: Phosphor's own caret paths are
+   each already drawn pointing the right way, so there is nothing to flip and
+   no risk of a mirror leaving a caret subtly off-centre in its box the way the
+   rotated-square and polyline treatments both had to correct for.
+
+   ## Why a mask and not a background-image
+
+   Our arrow colours are tokens — `--sd-slider-nav-color` and
+   `--sd-slider-nav-color-active` — so painting colour into the SVG would fork
+   it per state and put hex in an authored file. Masked instead, the artwork
+   carries shape only and `currentColor` carries the colour, so the hover state
+   stays the single `color` change below and both values still resolve through
+   theme.json. That is the same mask idiom as `.rating-stars`.
+
+   Inline rather than a `url()` to a file: WordPress appends `?ver=` to
+   style.css but never to the assets a stylesheet points at, so a revised icon
+   under an unchanged filename is served from cache. Inlined, the icon is
+   versioned with the stylesheet.
+
+   ## What must not be dropped
+
+   Almost all of it. `slick-theme.css` is not the sheet to beat — Tour Operator
+   never enqueues it, and inlines its own arrow theming into build/style.css at
+   up to (0,4,1) against our (0,2,1), so every declaration the vendor also sets
+   carries !important; the table in this block's header comment lists them.
+
+   Two are easy to lose. `background-image: none` looks redundant next to
+   `background-color: currentColor` but is not: TO paints its chevron with the
+   `background` shorthand, so without an explicit reset its artwork shows
+   through our mask. And `color: inherit` is load-bearing rather than tidiness —
+   TO sets `color: #fff` on this pseudo-element, and `currentColor` is what the
+   mask is painted with, so without the reset every arrow is white on white.
+
+   The glyph's viewBox is square, so `--sd-slider-chevron-size` sets both box
+   dimensions — no aspect calc needed, unlike the polyline treatment it
+   replaced. */
+/* stylelint-disable no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
+.is-style-slider-frame :is(.slick-prev)::before,
+.is-style-slider-frame :is(.swiper-button-prev)::after {
+	content: "" !important;
+	position: static !important;
+	inset: auto !important;
+	transform: none !important;
+	display: block;
+	box-sizing: border-box;
+	inline-size: var(--sd-slider-chevron-size, 26px) !important;
+	block-size: var(--sd-slider-chevron-size, 26px) !important;
+	margin: 0;
+	border: 0;
+	font-size: 0;
+	line-height: 0;
+	color: inherit !important;
+	background-image: none !important;
+	background-color: currentcolor !important;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z'/%3E%3C/svg%3E");
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
+.is-style-slider-frame :is(.slick-next)::before,
+.is-style-slider-frame :is(.swiper-button-next)::after {
+	content: "" !important;
+	position: static !important;
+	inset: auto !important;
+	transform: none !important;
+	display: block;
+	box-sizing: border-box;
+	inline-size: var(--sd-slider-chevron-size, 26px) !important;
+	block-size: var(--sd-slider-chevron-size, 26px) !important;
+	margin: 0;
+	border: 0;
+	font-size: 0;
+	line-height: 0;
+	color: inherit !important;
+	background-image: none !important;
+	background-color: currentcolor !important;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'/%3E%3C/svg%3E");
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+/* stylelint-enable no-descending-specificity */
+
+.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):hover,
+.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next):focus-visible {
+
+	/* !important because the base `color` above now carries it — without a
+	   matching flag here the hover state would lose to our own base rule. */
+	color: var(--sd-slider-nav-color-active) !important;
+}
+
+/* Dots — a static row beneath the shelf, not Slick's absolute overlay. */
+.is-style-slider-frame :is(.slick-dots, .swiper-pagination) {
+	position: static !important;
+	left: auto !important;
+	right: auto !important;
+	transform: none !important;
+	width: max-content !important;
+	max-width: 100% !important;
+	margin: var(--wp--preset--spacing--30) auto 0 !important;
+	padding: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: var(--wp--preset--spacing--20) !important;
+	list-style: none !important;
+}
+
+.is-style-slider-frame .slick-dots li {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: auto;
+	height: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+	list-style: none;
+}
+
+.is-style-slider-frame .slick-dots li button::before {
+	content: none !important;
+}
+
+/* A square-cornered bar, lighter and thinner than the live disc — Zared,
+   2026-09-03. Radius is explicitly 0 rather than omitted: slick-theme.css and
+   Swiper both round their dot to a circle, so the corner has to be squared
+   back off, not merely left unset. */
+.is-style-slider-frame :is(.slick-dots li button, .swiper-pagination-bullet) {
+	display: block;
+	width: var(--sd-slider-dot-width, 24px) !important;
+	height: var(--sd-slider-dot-height, 6px) !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background-color: var(--sd-slider-dot-color) !important;
+	font-size: 0;
+	line-height: 0;
+	opacity: 1;
+	cursor: pointer;
+	transition: background-color 0.25s;
+}
+
+/* The active dot takes the brand fill. Live leaves both states on #938673,
+   which gives the reader no position cue — this is the one deliberate
+   improvement in the slider port, and it is recorded in style.md. */
+.is-style-slider-frame :is(.slick-dots li.slick-active button, .swiper-pagination-bullet-active) {
+	background-color: var(--sd-slider-nav-color-active) !important;
+}
+
+.is-style-slider-frame :is(.slick-dots li button, .swiper-pagination-bullet):focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--sd-slider-nav-color-active);
+	outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.is-style-timeline-milestone .timeline-milestone__info {
+
+	.is-style-slider-frame :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next, .slick-dots li button, .swiper-pagination-bullet) {
 		transition-duration: 1ms;
 	}
+}
+
+/* Slider Frame — the nav-less variant.
+ *
+ * The review shelves on every Tour Operator single carry a full-bleed quote one
+ * slide at a time, and live draws no chevrons and no dot row against it — the
+ * quote is the whole band, edge to edge, with nothing painted over it. Zared
+ * confirmed 2026-09-03 that the block theme follows live here.
+ *
+ * Tour Operator gives us no way to ask for that: `build_slider()`
+ * (tour-operator/build/custom.js) hardcodes `dots: true` and leaves `arrows` at
+ * Slick's default, on every `.lsx-to-slider .wp-block-post-template`, with no
+ * filter and no data attribute. The only opt-out it offers is the
+ * `.slider-disabled` class, which turns the carousel off altogether and stacks
+ * every review. So the controls are emitted and suppressed here.
+ *
+ * `display: none` rather than `visibility: hidden` — a hidden-but-present nav
+ * is still a tab stop with no visible focus ring. !important for the same
+ * reason the block above needs it: `tour-operator/build/style.css` loads after
+ * this sheet and reaches (0,4,1) on `.slick-arrow`.
+ *
+ * Slick appends both to the *parent* of the template element (custom.js
+ * `appendArrows`/`appendDots`), which is the query block itself — so this class
+ * goes on the query alongside `is-style-slider-frame`, not on the template.
+ *
+ * The shelf still advances on its own: Tour Operator writes a `data-slick`
+ * override onto the post-template — `{"autoplay":true,"autoplaySpeed":5000,
+ * "pauseOnHover":true,"pauseOnFocus":true}` — which is merged over the
+ * `autoplay: false` default in `build_slider()`. Verified on dev 2026-09-04. */
+.sd-slider-nav-hidden :is(.slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next),
+.sd-slider-nav-hidden :is(.slick-dots, .swiper-pagination) {
+	display: none !important;
+}
+
+/* Slider Frame — no dot / counter row, site-wide.
+ *
+ * Client feedback (BugHerd, dev /blog/): "turn off the slide show counter site
+ * wide". The numbered/bar dots are Slick's `.slick-dots` (Tour Operator) and
+ * Swiper's `.swiper-pagination` (Carousel Block). Tour Operator's
+ * `build_slider()` hardcodes `dots: true` with no filter or data attribute, so
+ * there is no setting to switch off — suppressed here, scoped to the slider
+ * frame, arrows untouched. `display: none` (not visibility) so no hidden tab
+ * stop remains. Doubled class beats the `display: flex !important` dot-row
+ * rule above on specificity, not source order. */
+.is-style-slider-frame.is-style-slider-frame :is(.slick-dots, .swiper-pagination) {
+	display: none !important;
+}
+
+/* Slider Frame — the flush variant.
+ *
+ * The review band is edge to edge on live: the quote's dimmed image runs the
+ * full viewport width and butts straight up against the sections above and
+ * below it. Making the query `alignfull` gets the *frame* there; four separate
+ * things then hold the slide off it, all measured on dev 2026-09-04.
+ *
+ * 1. `:root :where(.is-layout-flow) > *` (global styles) puts the root
+ *    `spacing|60` block gap on the post-template. It escapes the `:first-child`
+ *    exemption because Slick *prepends* its prev arrow to the query
+ *    (`appendArrows: o.parent()`), so the template is no longer the first
+ *    child — the arrow is, hidden by the block above but still in the DOM.
+ *    That is the whole reason the gap appeared on top and not on the bottom.
+ * 2. `.is-style-slider-frame .slick-list` above pads the list by `spacing|20`
+ *    and pulls it back with a negative margin, so a focus ring on a card in a
+ *    normal shelf is not clipped. A flush band has nothing to clip.
+ * 3. Tour Operator insets every slide by 15px on all four sides
+ *    (`.wp-block-query.lsx-to-slider .slick-slide{padding:15px!important}`,
+ *    tour-operator/build/style.css). That selector is (0,3,0) and carries
+ *    `!important`, so ours has to reach (0,4,0) to take it off — matching the
+ *    vendor's own shape plus our class is the least surprising way to get there.
+ * 4. Slick sizes the track to the tallest slide and leaves the rest at their
+ *    own height, so a short review left a strip of page background under it.
+ *    A flex track with `align-items: stretch` is the standard equal-height
+ *    recipe; Slick's inline widths on track and slides survive it untouched.
+ *
+ * The inset in (3) is right for the card shelves — tours, accommodation,
+ * regions — so none of this is unset globally on `.slick-slide`; it comes off
+ * only where a shelf asks to be flush. The cover's own `spacing|80`/`spacing|40`
+ * padding stays: that keeps the quote off the screen edge while the image and
+ * its scrim run the full width. */
+.sd-slider-flush > * {
+	margin-block: 0 !important;
+}
+
+.sd-slider-flush :is(.slick-list, .slick-track) {
+	margin-block: 0 !important;
+	padding: 0 !important;
+}
+
+.wp-block-query.lsx-to-slider.sd-slider-flush .slick-slide,
+.wp-block-terms-query.lsx-to-slider.sd-slider-flush .slick-slide {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.sd-slider-flush .slick-track {
+	display: flex !important;
+	align-items: stretch !important;
+}
+
+/* stylelint-disable-next-line no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
+.sd-slider-flush .slick-slide {
+	height: auto !important;
+}
+
+.sd-slider-flush .slick-slide > * {
+	height: 100%;
+}
+
+/**
+ * Review Slider — the Trustpilot row on the team single.
+ *
+ * The frame is `core/group.sd-review-slider.is-style-slider-frame` and the
+ * track is `sd/trustpilot-reviews` inside it; assets/js/review-slider.js hands
+ * the track to Slick. Everything above that is keyed to `.is-style-slider-frame`
+ * already applies — the `.slick-list` clip relief and the dot row both come for
+ * free. Two things do not, and they are here rather than in a block-style JSON
+ * because both target Slick's own generated markup, which no `styles` object
+ * can reach.
+ *
+ * 1. **The gutter.** Tour Operator insets every slide by 15px, but its selector
+ *    is `.wp-block-query.lsx-to-slider .slick-slide`
+ *    (tour-operator/build/style.css) and this frame is neither a query block nor
+ *    an `lsx-to-slider` — nothing here is TO's slider. So the row would go
+ *    edge-to-edge: the block's own `blockGap` is a grid gap, and the script
+ *    removes `is-layout-grid` at the moment Slick takes over. Half the gap on
+ *    each side reproduces it, from the same token the block authors, so the two
+ *    presentations measure the same. `!important` is not needed — nothing else
+ *    reaches this selector.
+ * 2. **Equal height.** Slick sizes the track to the tallest slide and leaves the
+ *    rest at their own height, so a short review left a strip of section ground
+ *    under its card. Same flex-track recipe as `.sd-slider-flush` above; Slick's
+ *    inline widths on track and slides survive it untouched. It matters more
+ *    here than on the card shelves because review length is a Trustpilot
+ *    author's, not an editor's.
+ *
+ * No arrow rules: the script runs this row without arrows at every width, and
+ * why is documented there.
+ */
+/* stylelint-disable-next-line no-descending-specificity -- the earlier rule is more specific, so it wins whatever the order; the pair never competes on order. */
+.sd-review-slider .slick-slide {
+	padding-inline: calc(var(--wp--preset--spacing--40) / 2);
+	height: auto;
+}
+
+.sd-review-slider .slick-track {
+	display: flex;
+	align-items: stretch;
+}
+
+/* Equal-height cards — `:not([class])` is load-bearing, not tidiness.
+   ---------------------------------------------------------------------------
+   Slick only wraps each slide in a bare `<div>` when `rows`/`slidesPerRow` ask
+   it to. At this row's settings it does not: it puts `.slick-slide` on the
+   review card itself, so the card is a direct child of `.slick-track`.
+
+   Written as a plain `.slick-slide > div`, this rule therefore matched the
+   *card's own first child*. It hit nothing for as long as the card's children
+   were a heading and three paragraphs — and the moment one of them became a
+   group (the stars-and-date row, 2026-09-16) that group was stretched to the
+   full height of the card, pushing the headline, the extract and the reviewer
+   name out of `.slick-list`, which clips. The row rendered correctly and then,
+   on Slick init, collapsed to a date and a star tile.
+
+   Slick's wrapper carries no attributes at all, and every authored block
+   carries at least one class, so `:not([class])` matches the wrapper and can
+   never match block markup. Keep it on both lines.
+
+   Nothing is needed for the unwrapped shape: `.slick-track` is `display: flex`
+   with `align-items: stretch` above, which already gives every slide the height
+   of the tallest. */
+.sd-review-slider .slick-slide > div:not([class]),
+.sd-review-slider .slick-slide > div:not([class]) > * {
+	height: 100%;
+}
+
+/* Header rules removed 2026-08-21
+   ===========================================================================
+   Three blocks went from here, all of them hanging off hooks the header no
+   longer has:
+
+   1. `.sd-header { z-index: 100 }` — moved into the `css` field of
+      styles/sections/header.json, so the header's stacking travels with its
+      section style instead of with a bespoke class. Still load-bearing: the
+      mega-menu panels drop out of the header and have to sit above the page
+      content that follows it.
+
+   2. The `.sd-header__utility` Trustpilot rules, which hid the band word, the
+      TrustScore and the review count. `.sd-header__utility` was the old utility
+      *band*, which no longer exists, so the rules had already stopped matching.
+
+      ✅ Resolved 2026-08-21, and **not** by putting them back. The note here
+      used to suggest re-adding them against `.sd-trustpilot__*`; don't. Those
+      three rules existed because the header was rendering the data-bound badge
+      and then hiding most of it — which meant paying for a live Trustpilot
+      lookup to produce nothing visible.
+
+      patterns/header.php now authors the header badge as two static linked
+      images, because that is all live's header shows: `.tp-wording` and
+      `.tb-score` are `display:none` there, and they are the only two children
+      the API feeds. Nothing to hide, so no rules needed.
+
+      The bound pattern (patterns/trustpilot-score.php) is still used by
+      patterns/safari-expert.php, where `.tb-score` *is* visible on live — so if
+      you need to style the badge's text, scope it to the expert panel, never to
+      the header.
+
+   3. The 991px block that hid Call Us and the enquiry plate and re-centred the
+      badge. Two of its rules were already marked as placeholders for Block
+      Visibility, which is now active on dev — so that half is a per-block
+      setting, not a stylesheet. The other half was scoped to
+      `.sd-header__utility` and matched nothing.
+
+      ⚠️ Nothing replaces this yet on the responsive side. Both actions are also
+      in the mobile menu (parts/mobile-menu.html carries a full-width "Get in
+      touch" and a "Call us today" list), which is why live can drop them at all;
+      set the visibility on the two blocks in the editor when you next have the
+      header open. */
+
+
+/* The footer band below the tablet breakpoint
+   ===========================================================================
+   Live collapses its four footer columns into one centred 290px stack at 767px:
+
+       @media (max-width: 767px) {
+           #footer-widgets .widget-title,
+           #footer-widgets p, #footer-widgets .textwidget, #footer-widgets ul li,
+           #footer-widgets a:not(.btn):not(button)        { text-align: center }
+           #footer-widgets .widget_media_image            { margin-left: auto; margin-right: auto }
+           #footer-widgets .col-md-3:not(:first-child)    { margin-top: 20px; margin-left: auto; margin-right: auto }
+       }
+       @media (max-width: 900px) {
+           #footer-widgets .col-md-3:not(:first-child)    { max-width: 290px }
+       }
+
+   Core already stacks `wp-block-columns` at 781px, so only the centring is
+   reproduced — the 767px breakpoint is live's, and it is deliberately not
+   rounded to core's 781: the stack and the centring are two different decisions
+   on live and the fourteen pixels between them are where the columns are stacked
+   but still left-aligned, which is what live does.
+
+   Live's 290px cap is applied to every column here, not to
+   `:not(:first-child)`. On live the first column is exempt because the brand
+   logo is 254px inside a Bootstrap column that is already narrower; capping it
+   too is what keeps the stack on one axis rather than leaving the logo aligned
+   to a different edge than everything under it.
+
+   Scoped to `.is-style-site-footer` — the band's own block style — not to a
+   `.sd-footer__widgets` hook class, which is gone along with the rest of the
+   footer's bespoke classes. This is here rather than in the style's `css` field
+   for the one reason AGENTS.md accepts: `@media` does not compile in a `css`
+   field. See styles/blocks/search/header-search.json for the measurement.
+
+   One responsive decision about one component, so it stays in one block rather
+   than being split by block type across core-columns.css and core-image.css —
+   the same reasoning as the utility bar above. */
+
+@media (max-width: 767px) {
+
+	.is-style-site-footer .wp-block-column {
+		max-width: 290px;
+		margin-inline: auto;
+		text-align: center;
+	}
+
+	/* The brand mark and the trade badge are capped to their own widths on the
+	   blocks, so they need centring explicitly: core lays a `wp-block-image` out
+	   as a block-level figure whose `img` is also block, and there is no inline
+	   box for the column's `text-align` to move. Direct children of the column
+	   only — the Instagram tiles are inside a grid that centres itself below. */
+	.is-style-site-footer .wp-block-column > .wp-block-image img {
+		margin-inline: auto;
+	}
+
+	/* The brand marks' group is shrink-wrapped to the logo, so it is the box
+	   that has to be centred in the stacked column; the badge is already
+	   centred inside it. */
+	.is-style-site-footer .wp-block-column > .wp-block-group.is-vertical {
+		margin-inline: auto;
+	}
+
+	/* The social rows and the Instagram grid centre as boxes, not as text: both
+	   are flex/grid containers, so `text-align` on the column does not reach
+	   them. */
+	.is-style-site-footer .wp-block-social-links {
+		align-items: center;
+	}
+
+	.is-style-site-footer .wp-block-group.is-layout-grid {
+		justify-content: center;
+	}
+
+	/* The colophon stacks; live leaves both rows left-aligned rather than
+	   centring them, so only the horizontal distribution changes. */
+	.is-style-footer-colophon .wp-block-group.is-layout-flex {
+		justify-content: flex-start;
+	}
+}
+
+
+/* The footer photograph swaps below 600px
+   ===========================================================================
+   Live carries two footer photographs and swaps them at 600px:
+
+       #footer-bg-sd #footer-widgets { background-image: url(../../images/footer-bg.jpg) }
+
+       @media (max-width: 600px) {
+           #footer-bg-sd #footer-widgets { background-image: url(../../images/mobile-footer-bg-img.jpg); min-height: 1400px }
+       }
+
+   The swap is not decoration — the desktop file is 1916×840, and at 390px a
+   `cover` fit of a 2.3:1 landscape crops to a band of water with the sun gone.
+   The mobile file is 750×2752, cut for the column.
+
+   The desktop image is set on the block in patterns/footer.php, where the editor
+   can see and change it. This one cannot be: a media query is not expressible as
+   a block attribute, and it does not compile in a `css` field either. It used to
+   be printed from inc/footer.php purely because the URL had to be resolved out
+   of the media library per environment; the pattern now writes dev's URLs
+   plainly, so this is an ordinary static rule and that module is gone.
+
+   ⚠️ This URL is dev's, and it must be rewritten at go-live along with the ones
+   in patterns/footer.php.
+
+   `!important` is load-bearing here: core's `background` support writes
+   `style="background-image:…"` onto this very element, and no selector outranks
+   an inline style. An `!important` author declaration does — normal inline
+   styles lose to important author declarations regardless of specificity — so
+   one class is enough and the rule needs no doubling.
+
+   ⚠️ `min-height: 1400px` is **not** reproduced. Measured at 390px, live's
+   mobile footer runs ~400px of empty photograph between the Instagram grid and
+   the copyright bar. The band keeps its `cover` fit and its 615px floor and ends
+   where its content ends. Agreed as a deliberate deviation, recorded in style.md.
+
+   Dropping the height forces the background *position* to change with it, which
+   is the second declaration. The mobile file is a tall crop — pale sky for its
+   top ~60%, then the treeline, then dark water — and at 390px `cover` scales it
+   to 1431px tall. Live's 1400px band therefore shows almost the whole frame and
+   its text lands on the sky. A 1077px band bottom-anchored (`50% 100%`, the
+   desktop value) shows the bottom 1077px instead, which slides the dark water up
+   behind the "Follow Us" and "Instagram" columns: measured there, the labels sat
+   at roughly 1.5:1. Anchoring to the top keeps the same relationship live has
+   between the text and the sky, at the shorter height — so trimming the dead
+   space costs no legibility. */
+@media (max-width: 600px) {
+
+	.is-style-site-footer {
+		background-image: url(https://southerndestinations.lightspeedwp.dev/wp-content/uploads/2026/08/mobile-footer-bg-img.jpg) !important;
+		background-position: 50% 0% !important;
+	}
+}
+
+/**
+ * Category Card — the scrim deepens, and a rule fades up inside the border.
+ *
+ * Structure (100px crop, absolute label, centred type) lives in the section
+ * style styles/sections/cards/category-card.json. Three pieces cannot:
+ *
+ *   1. the resting scrim and the :hover deepen — the block-style compiler
+ *      strips :hover entirely;
+ *   2. the inset border fade, for the same reason;
+ *   3. the prefers-reduced-motion fallback.
+ *
+ * Measured on the live site 2026-08-20: rgba(55, 71, 80, 0.33) resting going
+ * to 0.75 over 400ms, and a 5px transparent border going to
+ * rgba(255, 255, 255, 0.1) over 300ms on a 100ms delay.
+ *
+ * Note the direction, which is the opposite of the Media Overlay Card above.
+ * That card lifts its scrim so the photograph comes forward; this one deepens,
+ * because at 100px tall the label has nowhere to go and lifting the scrim
+ * would lose it against a bright frame.
+ *
+ * :focus-within matches the hover so the tile is reachable by keyboard.
+ */
+.is-style-category-card .category-card__label {
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 33%, transparent);
+	border: 5px solid transparent;
+	transition: background-color 400ms ease-in-out, border-color 300ms ease-in-out 100ms;
+}
+
+.is-style-category-card:hover .category-card__label,
+.is-style-category-card:focus-within .category-card__label {
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 75%, transparent);
+	border-color: color-mix(in srgb, var(--wp--preset--color--base) 10%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.is-style-category-card .category-card__label {
+		transition-duration: 1ms;
+		transition-delay: 0s;
+	}
+}
+
+/**
+ * Special Card — the scrim.
+ *
+ * Live sets the offer copy on an `rgba(26, 18, 5, 0.8)` panel over the
+ * photograph. It lives here rather than in the section style because the
+ * band's ground is the image itself: a `background-color` in the JSON would
+ * sit *behind* the photograph, not over it.
+ *
+ * Held flat rather than animated — the band is a full-width panel, not a grid
+ * tile, so there is no row of siblings for a hover to differentiate it from.
+ */
+.is-style-special-card > .wp-block-group {
+	background-color: color-mix(in srgb, var(--wp--preset--color--neutral-900) 80%, transparent);
+}
+
+/**
+ * Special Card — the alternating edge.
+ *
+ * Live holds the panel against the leading edge of odd bands and the trailing
+ * edge of even ones (`… .lsx-to-archive-item:nth-of-type(even)
+ * .lsx-to-archive-container { justify-content: flex-end }`), which is what
+ * gives the list its rhythm once the bands butt together.
+ *
+ * It cannot live in the section style: the thing being counted is the
+ * `core/post-template` `<li>` *above* the band, and a `css` field can only
+ * describe the band and its descendants.
+ */
+.wp-block-post-template > li:nth-child(even) > .is-style-special-card {
+	justify-content: flex-end;
+}
+
+/**
+ * Special Card — the offer copy is one size, whatever it is authored as.
+ *
+ * `theme.json` styles `core/paragraph`, and core compiles that block's styles
+ * against the bare element selector — `:root :where(p){font-size:…300}`. A
+ * *direct* rule beats inheritance, so every raw `<p>` in an offer's migrated
+ * content rendered at preset 300 while the `<li>`s beside it, which no rule
+ * matches, inherited preset 200 from the `core/post-content` block. Offers
+ * authored as paragraphs (Thornybush) therefore came out visibly larger than
+ * offers authored as bullets (RockFig, Dulini). Measured on dev 2026-09-17.
+ *
+ * `inherit` rather than a literal preset, so the copy follows whatever font
+ * size the `core/post-content` block is set to and this never has to be kept
+ * in step by hand. At (0,2,0) it beats the (0,1,0) global rule in both the
+ * editor and the front end, so the two environments cannot disagree.
+ *
+ * The offers keep their authored list markers — the content renders as it was
+ * written, as live renders it.
+ */
+.is-style-special-card .wp-block-post-content :where(p, li, ul, ol) {
+	font-size: inherit;
+}
+
+/**
+ * Special Card — the sub-900px stack.
+ *
+ * Live drops the 460px panel to 90% of the band and centres it below 900px.
+ * An `@media` block inside a `css` field is unwrapped rather than honoured, so
+ * the query has to be here.
+ */
+@media (max-width: 900px) {
+
+	.is-style-special-card > .wp-block-group,
+	.wp-block-post-template > li:nth-child(even) > .is-style-special-card > .wp-block-group {
+		max-width: 90%;
+	}
+
+	.is-style-special-card,
+	.wp-block-post-template > li:nth-child(even) > .is-style-special-card {
+		justify-content: center;
+	}
+}
+
+/**
+ * Editor: restore the overlay stack.
+ *
+ * Same Gutenberg `position: relative` reset described above the Media Overlay
+ * Card rules — a block-style `css` field compiles to `:root :where(…)` at
+ * (0,1,0) and loses to content.css at (0,2,0), so the photograph drops below
+ * the panel in the editor and the band reads as a stack. These selectors are
+ * (0,3,0) and beat the reset without !important.
+ */
+.editor-styles-wrapper .is-style-category-card .category-card__label {
+	position: absolute;
+	inset: 0;
+}
+
+.editor-styles-wrapper .is-style-special-card > .wp-block-post-featured-image {
+	position: absolute;
+	inset: 0;
+}
+
+/**
+ * Listing Card — the read-more chevron.
+ *
+ * The live archive appends a FontAwesome \f105 to every "View more"; this is
+ * the same plain character the Media Overlay Card uses, so the theme carries
+ * no icon-font dependency. It cannot live in the section style because a
+ * css-field rule containing `content: ""` is dropped whole.
+ *
+ * Applies to the read-more of all three listing shapes. The compact card hides
+ * its read-more inside a carousel on live — that is a placement decision, made
+ * where the card is placed, not here.
+ */
+.is-style-listing-card-list .wp-block-read-more::after,
+.is-style-listing-card-compact .wp-block-read-more::after,
+.is-style-blog-card-wide .wp-block-read-more::after {
+	content: "\203A";
+	display: inline-block;
+	margin-inline-start: 0.3em;
+	font-size: 1.15em;
+	font-weight: var(--wp--custom--font-weight--extra-light);
+	line-height: 1;
+	transform: translateY(0.06em);
+}
+
+/**
+ * Blog Card (list) — centre the body below the small breakpoint.
+ *
+ * The card is a core/columns, so core stacks it on its own below 782px and the
+ * old flex-wrap and flex-basis rules here are gone with it. What core does not
+ * do is live's centring: every `text-align: center` on the title, byline and
+ * excerpt sits inside `@media (max-width: 767px)` in sd-lsx-child/custom.css,
+ * and desktop is left-aligned.
+ *
+ * It cannot move into the section style, because **the `css` field silently
+ * unwraps `@media`** — the query is dropped and its rules are promoted to
+ * unconditional ones, which is a silent failure rather than an error. No
+ * `@media` belongs in a `css` field.
+ *
+ * 781px rather than live's 768px: it is WordPress's own small breakpoint and
+ * every other responsive rule in this file already uses it.
+ */
+@media (max-width: 781px) {
+
+	.is-style-blog-card-wide > .wp-block-column:last-child {
+		text-align: center;
+	}
+
+	.is-style-blog-card-wide > .wp-block-column:last-child .wp-block-group.is-layout-flex {
+		justify-content: center;
+	}
+}
+
+/**
+ * Blog Card (list) — the `#` on each tag.
+ *
+ * Live sets it with `.post-tags > a:before { content: "#" }`
+ * (lsx-blog-customizer.css), which is why the tag row reads
+ * "#Tanzania Visa Application" and carries no comma between tags — the glyph
+ * is the delimiter, so the pattern sets `core/post-terms`' separator to a
+ * plain space.
+ *
+ * It cannot live in the section style: a `css`-field rule containing
+ * `content: ""` is dropped whole, the same limit that forced the read-more
+ * chevron down here.
+ */
+/* stylelint-disable-next-line selector-class-pattern -- `taxonomy-post_tag` is core's class, built from the taxonomy slug. */
+.is-style-blog-card-wide .wp-block-post-terms.taxonomy-post_tag a::before {
+	content: "#";
+	display: inline-block;
+}
+
+/**
+ * Blog Card (list) — the comma after the author.
+ *
+ * Live closes the author span with one — "by Vanessa Ratcliffe, Posted in:
+ * News" — and without it the byline runs two clauses together on a single
+ * space. core/post-author has no suffix attribute, and a `css`-field rule
+ * containing `content: ""` is dropped whole, so it lands here with the tag
+ * glyph above. Scoped to the byline so the block is unchanged everywhere else.
+ */
+.is-style-blog-card-wide .wp-block-post-author__name::after {
+	content: ",";
+}
+
+/**
+ * Post Grid Card — the hover lift.
+ *
+ * The card's resting treatment lives in the section style
+ * styles/sections/cards/post-grid-card.json, and its resting shadow is written
+ * as an *inline* style by the pattern's `style.shadow` attribute
+ * (`box-shadow: var(--wp--preset--shadow--200)`), so the editor can see and
+ * change it. Three pieces cannot live in that JSON:
+ *
+ *   1. the `:hover` flip itself — the block-style compiler strips `:hover`
+ *      entirely, so the rule would silently vanish;
+ *   2. the resting `transition`, kept next to the flip it animates rather than
+ *      split across two files;
+ *   3. the prefers-reduced-motion fallback — `@media` in a `css` field does not
+ *      just fail, it fails *wrong*: the query text is concatenated into the
+ *      selector and the inner rule is emitted unconditionally.
+ *
+ * `!important` on the shadow is load-bearing and cannot be traded for
+ * specificity: the resting value is an inline style, and no selector outranks
+ * one — an `!important` author declaration does. It is confined to that single
+ * declaration; the value still resolves through the preset token.
+ *
+ * One step up the shadow scale (200 → 300, `0 2px 4px` → `0 4px 8px`) and a 4px
+ * rise. Deliberately small: the band is a three-up shelf of identical tiles, so
+ * the hover only has to say "this one", and the same card is reused on the blog
+ * grid where a larger lift would fight the page rhythm.
+ *
+ * `:focus-within` matches the hover so the card answers the keyboard — the
+ * whole tile is a link (sd-enhancements' `sdLinkTo`), and the title and image
+ * carry their own anchors.
+ */
+.is-style-post-grid-card {
+	transition: transform 250ms ease, box-shadow 250ms ease;
+}
+
+.is-style-post-grid-card:hover,
+.is-style-post-grid-card:focus-within {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--300) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.is-style-post-grid-card {
+		transition-duration: 1ms;
+	}
+
+	/* The shadow still grows — it is the state cue, not the motion. Only the
+	   rise is dropped, because that is the part that moves. */
+	.is-style-post-grid-card:hover,
+	.is-style-post-grid-card:focus-within {
+		transform: none;
+	}
+}
+
+/**
+ * Listing Card (Compact) — the same hover lift, for the whole family.
+ *
+ * The compact cards — patterns/card-tour-compact.php,
+ * patterns/card-accommodation-compact.php and the destination modal,
+ * parts/modal-destination.html — are all the same device as the post
+ * grid card above: a panel carrying an *inline* `shadow|200`, a cropped
+ * featured image and `sdLinkTo`. They get the same 4px rise and the same step
+ * up the shadow scale, for the same reasons — including the `!important`, which
+ * is still load-bearing against the inline resting value, and the
+ * reduced-motion fallback that drops the rise but keeps the shadow.
+ *
+ * **Keyed off the section style, not a shelf class** (widened 2026-09-01). It
+ * used to be scoped to `.lsx-tour-related-tour-query`, the post-template class
+ * the related-tours shelf carries. That scope meant the *same* card missed the
+ * lift on the destination single, whose shelf is
+ * `.lsx-tour-related-destination-query` — the class is per-shelf, and the card
+ * is on four templates. So the selector is the section style itself: apply
+ * `is-style-listing-card-compact` and the card lifts, wherever it is. A card
+ * added to the family needs a resting `shadow|200` in its pattern, or its hover
+ * will step up from nothing instead of one stop.
+ *
+ * **Qualified by `.sd-has-link`, which is not decoration.** A rise plus a
+ * deeper shadow is an affordance — it says *this is one thing and you can click
+ * it*. `sd-has-link` is the class `SD\Enhancements\GroupLink` adds to a
+ * `core/group` once it has actually resolved an `sdLinkTo` into an overlay
+ * anchor (modules/group-link.php:101, and the hook that module's own docblock
+ * nominates), so the lift lands on exactly the cards that are clickable. The
+ * one member of the family that is *not* a link —
+ * `patterns/accommodation-unit.php`, the repeated room tile on the
+ * accommodation single, which wears this section style so a unit reads as the
+ * same object as the tiles around it — is excluded by that qualifier rather
+ * than by a hand-rolled opt-out class. Without it a room tile lifts under the
+ * cursor and nothing happens on click.
+ *
+ * The lift is not sheared by the carousel: `.is-style-slider-frame .slick-list`
+ * above opens the clip box vertically for exactly this.
+ */
+.is-style-listing-card-compact.sd-has-link {
+	transition: transform 250ms ease, box-shadow 250ms ease;
+}
+
+.is-style-listing-card-compact.sd-has-link:hover,
+.is-style-listing-card-compact.sd-has-link:focus-within {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--300) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.is-style-listing-card-compact.sd-has-link {
+		transition-duration: 1ms;
+	}
+
+	.is-style-listing-card-compact.sd-has-link:hover,
+	.is-style-listing-card-compact.sd-has-link:focus-within {
+		transform: none;
+	}
+}
+
+/**
+ * The accommodation star rating — brand-500 Phosphor stars over Tour Operator's
+ * PNGs.
+ *
+ * `lsx/post-meta` on the `rating` key does not return a number. Tour Operator's
+ * `lsx_to_accommodation_rating()`
+ * (includes/classes/legacy/class-accommodation.php:179) filters it into five
+ * `<figure class="wp-block-image">` wrappers around 20px PNGs from its own
+ * plugin directory — `rating-star-full.png` for each whole star up to the
+ * stored value, `rating-star-empty.png` for the rest — inside a
+ * `<div class="rating-stars">`. Two consequences worth knowing:
+ *
+ *   1. **The stars cannot be recoloured.** They are raster images of a
+ *      particular gold, not glyphs, so nothing in theme.json or a section style
+ *      reaches them.
+ *   2. **The markup arrives as a sibling, not a child.** TO emits the `<div>`
+ *      inside the bound `<p>`; the HTML parser closes the paragraph in front of
+ *      it, so on the front end `.rating-stars` is a direct flex child of
+ *      `.lsx-rating-wrapper` alongside an empty `<p>` the split leaves behind.
+ *      Measured on dev 2026-09-01. Don't write selectors that assume the nesting
+ *      the source shows.
+ *
+ * So the PNG is hidden and the star is repainted as a **mask** over a
+ * `brand-500` ground: the fill silhouette for a whole star, the outline for an
+ * empty one. Both are Phosphor Icons' `star` at 256 — `star-fill` and `star`
+ * (regular) — whose outer contours are identical, so a full and an empty star
+ * are the same size and sit on the same centres. One colour token paints both,
+ * which is what "brand-500 fill and border, brand-500 border" reduces to.
+ *
+ * ## Why this is CSS and not a section style's `css` field
+ *
+ * A `css` field would hold the selectors happily — `:has()` survives
+ * sanitisation, as styles/sections/cards/post-grid-card.json already relies on.
+ * What it cannot hold is the asset reference: a variation's `css` is emitted in
+ * a `<style>` in the document head, so a relative `url()` would resolve against
+ * the *page*, not the theme. The masks are therefore inline `data:` URIs, which
+ * resolve identically from anywhere — and which also survive
+ * `wp_maybe_inline_styles()` deciding to inline this sheet. → AGENTS.md,
+ * "Styling lives in JSON"; `wp-thirdparty-markup-styling`.
+ *
+ * ## Why the discriminator is the `src`
+ *
+ * Full and empty are distinguishable only by the PNG filename — TO gives the
+ * two figures identical classes. `:has()` moves that test up to the `<figure>`,
+ * which is the box that has to carry the mask once the `<img>` is gone. If TO
+ * ever renames or re-formats those files the masks stop matching and the PNGs
+ * come back, which is the right way for this to fail.
+ */
+.rating-stars {
+	display: flex;
+	align-items: center;
+}
+
+/* The empty paragraph the parser splits off in front of `.rating-stars` (note
+   2 above), and the star-authority paragraph when the rating is Unspecified
+   (its binding returns null). Both are flex items, and the block gap lands on
+   both sides of each. A descendant selector because the stars and the
+   authority now share a row group one level below the wrapper. */
+.lsx-rating-wrapper p:empty {
+	display: none;
+}
+
+.rating-stars figure {
+
+	/* The <img> is hidden below, so the figure carries its own box. 20px is
+	   TO's own inline width on the image it replaces. */
+	flex: none;
+	inline-size: 1.25rem;
+	block-size: 1.25rem;
+	margin: 0;
+	background-color: var(--wp--preset--color--brand-500);
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+
+/* Phosphor `star-fill` — a solid star, so fill and border are one colour. */
+.rating-stars figure:has(img[src$="rating-star-full.png"]) {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z'/%3E%3C/svg%3E");
+}
+
+/* Phosphor `star` (regular) — the outline alone, so the ground shows through
+   the middle and only the border is brand-500. */
+.rating-stars figure:has(img[src$="rating-star-empty.png"]) {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z'/%3E%3C/svg%3E");
+}
+
+/* The PNG itself. `display: none` and not `visibility`/`opacity`: those would
+   take the figure's background — and therefore the star — with them. */
+.rating-stars figure img {
+	display: none;
+}
+
+/* The empty paragraphs the rating row leaves behind are hidden in the section
+   style's `css` field, not here — see styles/sections/cards/listing-card-compact.json.
+   Nothing about that rule needs `:hover`, `@media`, `content` or a URL, so it
+   belongs in the JSON. → AGENTS.md, "Styling lives in JSON" */
+
+/*
+ * Card image sizing used to live here — ~100 lines of (0,3,0) selectors that
+ * existed only because `height`/`width` set in a section style's `css` field
+ * compile to `:root :where(…)` at (0,1,0) and lose to the block library's
+ * `.wp-block-image img { height:auto; width:auto }` at (0,2,0).
+ *
+ * It is all gone. core/post-featured-image and core/image serialise
+ * `aspectRatio`, `height` and `scale` as *inline* styles on the <img>
+ * (wp-includes/blocks/post-featured-image.php:46-65), which no stylesheet rule
+ * can lose to, and which the editor renders and exposes as a control. Each card
+ * now carries its crop as an `aspectRatio` attribute in its pattern instead.
+ */
+
+
+/* Tour itinerary — the numbered spine
+--------------------------------------------- */
+
+/*
+ * Live's `#single-tour-summary .itinerary-data` (custom.css:2334-2394): a
+ * filled circle carrying the stay's index, a dashed rule joining it to the one
+ * below, and the last row's rule suppressed.
+ *
+ * All of it is here rather than in a block-style JSON because every rule needs
+ * a pseudo-element with `content:`, and a `css` field drops any rule containing
+ * `content:` outright. → AGENTS.md, "Styling lives in JSON"
+ *
+ * The number is a CSS counter, not a bound value. Tour Operator's
+ * `render_itinerary_block()` passes a row index into `build_itinerary_field()`
+ * and never uses it, so there is no field to bind — and a counter has the
+ * better behaviour anyway: it renumbers on its own when a row is dropped.
+ *
+ * Every colour and measure is live's, through the nearest token. The circle is
+ * `brand-600` (#BC5B18) — live paints it `#BF5C17`, and brand-600 is that
+ * colour to within a shade, so the marker takes it directly rather than the
+ * lighter `brand-500` the lodge links use. Keeping the two apart is the point:
+ * the spine reads as one deeper accent and the links stay the lighter one.
+ * The dashed rule is `#B4A48C` → `neutral-400`, the mapping style.md made on
+ * 2026-08-20.
+ */
+.sd-itinerary {
+	counter-reset: sd-itinerary;
+}
+
+.sd-itinerary__stay {
+	counter-increment: sd-itinerary;
+	position: relative;
+}
+
+/* The marker. 33px on live; `min-width` as well as `width` so a two-digit
+   count cannot stretch it into an ellipse. */
+.sd-itinerary__stay::before {
+	content: counter(sd-itinerary);
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 33px;
+	min-width: 33px;
+	height: 33px;
+	border-radius: var(--wp--preset--border-radius--500);
+	background-color: var(--wp--preset--color--brand-600);
+	color: var(--wp--preset--color--base);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--300);
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+	line-height: 1;
+}
+
+/* The rule joining one marker to the next. Live starts it 34px down — just
+   below the circle — and runs it the height of the row, so the gap between
+   rows is spanned by the *next* row's own offset. `left: 16px` puts it on the
+   circle's centre line. */
+.sd-itinerary__stay::after {
+	content: "";
+	position: absolute;
+	top: 34px;
+	bottom: calc(var(--wp--preset--spacing--20) * -1);
+	left: 16px;
+	border-left: 1px dashed var(--wp--preset--color--neutral-400);
+}
+
+.sd-itinerary__stay:last-child::after {
+	content: none;
+}
+
+/* The row is one inline flow, so it breaks on the word rather than on the term.
+
+   Live's `.lsx-to-archive-content` is a plain block whose night-count `h3` is
+   `display: inline` (custom.css:2375-2378), with the lodge and its destination
+   as `<span>`s after it: nothing in the row is a box that can drop whole, so a
+   long lodge name breaks between its own words. The block version was three
+   wrapping flex rows, which made every `itin-<field>-wrapper` an atomic flex
+   item — the lodge dropped whole below the night count, the destination whole
+   below the lodge. The groups are flow layout now (patterns/itinerary-stay.php)
+   and are made inline here.
+
+   The wrappers cannot be flattened away: Tour Operator rewrites
+   `itin-<field>-wrapper` to `hidden itin-<field>-wrapper` to drop an empty
+   field, and its `.lsx-itinerary-wrapper .hidden { display: none }` is (0,2,0)
+   — the same weight this rule would carry without `:not(.hidden)`, decided by
+   source order. The negation puts these at (0,3,0) so an empty field still
+   disappears.
+
+   `display: inline` on the wrappers is also what replaced the `flex: 0 0 auto`
+   that used to pin the night count: there is no flex item left to shrink, so
+   "2 Nights" can no longer be squeezed until it breaks into "2 / Night / s".
+   The spaces between the three terms are the newlines between the wrappers in
+   the serialized markup, collapsed by the inline formatting context — live
+   emits the same single space with `echo ' '` (layout.php:405). */
+.sd-itinerary__stay .itin-title-wrapper:not(.hidden),
+.sd-itinerary__stay .itin-accommodation-wrapper:not(.hidden),
+.sd-itinerary__stay .itin-location-wrapper:not(.hidden),
+.sd-itinerary__stay .itinerary-title,
+.sd-itinerary__stay .itinerary-accommodation,
+.sd-itinerary__stay .itinerary-location {
+	display: inline;
+	margin: 0;
+}
+
+/* The comma between the lodge and its destination. It belongs to the lodge's
+   inline flow, so it is a pseudo-element rather than the block it was authored
+   as: as a block it was a flex item of its own, and once the lodge name wrapped
+   it stayed pinned to the right edge of the lodge's shrunken box, a line away
+   from the word it punctuates. Here it can neither detach nor begin a line, and
+   it is hidden along with the lodge when Tour Operator marks
+   `itin-accommodation-wrapper` hidden. `content:` is why this is not in a
+   block-style `css` field. → AGENTS.md, "Styling lives in JSON"
+
+   Drawn only while a *visible* destination follows. A stay with no published
+   destination gets `hidden itin-location-wrapper` from Tour Operator, and the
+   comma goes with it rather than dangling after the lodge — live does leave
+   it dangling (`.itinerary-accommodation:not(.last-child):after`,
+   custom.css:2383), which is a defect rather than a design. */
+.sd-itinerary__stay .itinerary-accommodation:has(+ .itin-location-wrapper:not(.hidden))::after {
+	content: ",";
+}
+
+
+/* Tour highlights — the check marker and the two-column run
+--------------------------------------------- */
+
+/*
+ * The rest of this band is in styles/sections/highlights-list.json. These two
+ * rules cannot join it: the first needs `content:`, which a `css` field drops,
+ * and the second is an `@media` query, which a `css` field does not merely
+ * fail to honour — it concatenates the query text into the selector and emits
+ * the inner rules unconditionally. → AGENTS.md, "Styling lives in JSON"
+ *
+ * Live hangs FontAwesome's `\f058` (check-circle) in the gutter in `#e6ad10`
+ * (tour-operator/assets/css/style.css:1221, recoloured by custom.css:2418).
+ * This theme does not load FontAwesome, so the same mark is Phosphor's
+ * CheckCircle as a mask — a mask rather than a background image so the colour
+ * is a token and not baked into the asset.
+ *
+ * The disc is **brand-500** as of 2026-09-23 (Zared's call), not live's gold
+ * `#e6ad10` (accent-500). The glyph is a filled circle with the tick knocked
+ * out, so `background-color` paints the circle and the tick shows the band's
+ * ground through it.
+ */
+.is-style-highlights-list ul li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.15em;
+	width: 1em;
+	height: 1em;
+	background-color: var(--wp--preset--color--brand-500);
+	-webkit-mask-image: var(--sd-check-circle);
+	mask-image: var(--sd-check-circle);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+
+.is-style-highlights-list {
+	--sd-check-circle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
+}
+
+/* Live runs the list in two columns from 768px up (custom.css:2412). The
+   `break-inside: avoid` that keeps an item whole across the column break is in
+   the section style, where it belongs — only the query has to be here. */
+@media (min-width: 768px) {
+
+	.is-style-highlights-list ul {
+		columns: 2;
+		column-gap: var(--wp--preset--spacing--50);
+	}
+}
+
+/**
+ * Safari Expert Panel — the arrangement.
+ *
+ * patterns/safari-expert.php. Three siblings in one grid: the portrait, the
+ * identity block (eyebrow + name) and the actions row. Two arrangements —
+ *
+ *     narrow   "portrait name"      the name beside the portrait,
+ *              "actions actions"    the actions across the full card
+ *
+ *     wide     "portrait name"      the portrait beside a stacked
+ *              "portrait actions"   name-over-actions column
+ *
+ * This is here rather than in a block-style JSON for the reason AGENTS.md
+ * gives for `@media`: a `css` field's sanitiser unwraps at-rules, dropping the
+ * query and promoting its rules to unconditional ones. `@container` goes the
+ * same way. `grid-template-areas` has no block attribute either.
+ *
+ * ## Why it is a container query
+ *
+ * Until 2026-09-04 the identity block was authored twice and Block
+ * Visibility's screen-size control chose between the copies. That left a band
+ * — roughly 990–1250px on the tour single — where the wide arrangement was
+ * switched on inside a card too narrow to hold it: the detail column was
+ * `flex: 1 1 auto`, so flexbox sized it from its ~470px max-content, could not
+ * fit that beside the 126px portrait, and wrapped it to a second flex line.
+ * The portrait was left alone on row one with everything else stacked beneath
+ * it — 313px tall at the switch against 175px at 1440px, measured on local.
+ *
+ * The band differed by environment, because Block Visibility's breakpoints are
+ * a global plugin setting: `large` is 1200px on local and 992px on dev. And no
+ * viewport breakpoint could have been right regardless — three templates
+ * require this pattern and the column it sits in is a different width in each.
+ * What decides the arrangement is the card's own width.
+ *
+ * ## The threshold is 36rem, and it is measured
+ *
+ * 576px of card width is where the actions row stops wrapping once the name
+ * column has given up the portrait's 126px and the gap. Measured on local
+ * 2026-09-04, card width against card height in the wide arrangement:
+ * **563px → 247px** (actions on two lines), **577px → 181px** (one line).
+ * Below the threshold the narrow arrangement hands the actions the full card
+ * width, so they stay on one line down to ~447px. Don't lower it without
+ * re-measuring — the failure mode is the tall card this replaced.
+ *
+ * `container-name` is set, not just `container-type`. Core's grid layout adds
+ * `container-type: inline-size` to the grid container itself as soon as a
+ * `minimumColumnWidth` is present (wp-includes/block-supports/layout.php:893),
+ * and an unnamed container would then shadow this one — a named query skips it.
+ */
+.sd-expert {
+	container-type: inline-size;
+	container-name: sd-expert;
+}
+
+/* (0,2,0), so it beats core's own `grid-template-columns: repeat(2, minmax(0,
+   1fr))` on `.wp-container-core-group-is-layout-*`, which is (0,1,0). The
+   block's `columnCount: 2` is authored so the editor shows two columns; the
+   real track sizing is here. */
+.sd-expert__panel.wp-block-group {
+	grid-template-columns: auto 1fr;
+	grid-template-areas:
+		"portrait name"
+		"actions actions";
+	align-items: center;
+}
+
+.sd-expert__panel > .sd-expert__portrait {
+	grid-area: portrait;
+}
+
+.sd-expert__panel > .sd-expert__identity {
+	grid-area: name;
+}
+
+.sd-expert__panel > .sd-expert__actions {
+	grid-area: actions;
+}
+
+@container sd-expert (min-width: 36rem) {
+
+	/* The portrait spans both rows and centres itself against them; the name
+	   and the actions stack in the second column. */
+	.sd-expert__panel.wp-block-group {
+		grid-template-areas:
+			"portrait name"
+			"portrait actions";
+		align-items: start;
+		column-gap: var(--wp--preset--spacing--20);
+	}
+
+	.sd-expert__panel > .sd-expert__portrait {
+		align-self: center;
+	}
+
+	/* The eyebrow drops a step once it sits above the name in a column rather
+	   than beside the portrait — Zared's sizes, 400 narrow and 300 wide,
+	   carried over from the two identity copies this replaced. `!important`
+	   because core marks every preset font-size class important
+	   (`.has-400-font-size{font-size:…!important}` in global-styles-inline-css),
+	   so nothing unmarked can beat the class the block attribute emits. */
+	.sd-expert__panel .sd-expert__eyebrow {
+		font-size: var(--wp--preset--font-size--300) !important;
+	}
+}
+
+
+/* Site footer — the "Follow Us" labels' hover
+   ===========================================================================
+   Every footer link hovers orange since 2026-09-23 (Zared's instruction; the
+   old `neutral-500` hover measured 2.93:1 on the photograph's pale band and
+   failed WCAG AA). The ordinary links take `brand-700` from
+   styles/sections/site-footer.json's `elements.link` `:hover`. These labels do
+   not: the section style's `css` field pins them to `neutral-700 !important`,
+   so a hover has to be `!important` too — and the `css` field strips `:hover`,
+   which is what forces the rule into this file.
+   → AGENTS.md, "Styling lives in JSON"
+
+   `brand-700`, not `brand-500`: on the band's `neutral-200`-like ground the
+   brand orange itself measures 2.92:1; `brand-700` measures 5.81:1. */
+.is-style-site-footer .wp-block-social-links .wp-social-link a:hover .wp-block-social-link-label,
+.is-style-site-footer .wp-block-social-links .wp-social-link a:focus-visible .wp-block-social-link-label {
+	color: var(--wp--preset--color--brand-700) !important;
+}
+
+/**
+ * Legal Clauses — the clause numbers.
+ *
+ * Structure (counter reset, block items, spacing) lives in the section style
+ * styles/sections/legal-clauses.json. The number is a `::before` whose
+ * `content` is a counters() value, and a `css` field drops any rule containing
+ * `content:`, so it is drawn here. `counters(item, ".")` joins every ancestor
+ * level, giving "1.1.12." — the browser's own `decimal` marker shows only the
+ * last level. Top-level clauses are bold and nested ones regular, as on live.
+ */
+.is-style-legal-clauses ol li::before {
+	content: counters(item, ".") ". ";
+	counter-increment: item 1;
+	font-weight: var(--wp--custom--font-weight--bold);
+}
+
+.is-style-legal-clauses ol li ol > li::before {
+	font-weight: var(--wp--custom--font-weight--regular);
 }

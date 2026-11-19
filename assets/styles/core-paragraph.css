@@ -1,0 +1,142 @@
+/**
+ * core/paragraph — the archive intro's drop cap.
+ *
+ * Auto-enqueued for `core/paragraph` by `enqueue_custom_block_styles()`'
+ * `core-*` scan; the filename is the wiring. Everything else about the intro
+ * paragraph — the italic, the size, the leading — is structured JSON in
+ * styles/blocks/paragraph/archive-intro.json, where the editor reads it.
+ *
+ * @package sd-theme-2026
+ */
+
+/*
+ * The drop cap, measured on live 2026-08-26 at
+ * `.archive #primary #main .lsx-to-archive-header.row .lsx-to-archive-description:first-letter`
+ * (custom.css:1338): 55px in the heading face, #cc7f16 — brand-500 to the
+ * digit — floated left and *upright*, undoing the
+ * paragraph's italic for the one character.
+ *
+ * Sized to the text, not copied from live's 55px / 28px line box, which sits
+ * the cap above line one. Measured on dev 2026-09-23 (paragraph 19px / 1.5,
+ * Optima): a `3.2em` cap on a `line-height: 1` box, pushed down `0.09em`, puts
+ * the top of the letter level with line one's capitals and its foot on line
+ * two's baseline, both to within half a pixel. `em` keeps that true as the
+ * fluid body size changes; Optima's ascent + descent is exactly 1em, which is
+ * why `line-height: 1` adds no leading to account for. The `-0.2em` bottom
+ * margin pulls the float's box up inside the two lines it spans: at full height
+ * (1.09em, ~66px) it pushed line three aside as well. Only the part below the
+ * baseline is given up, so no part of the letter itself is lost.
+ *
+ * Two reasons this is not in the block style's `css` field:
+ *
+ *   1. live applies it from 900px up only, and an `@media` block inside a
+ *      `css` field is unwrapped rather than honoured — the cap would render at
+ *      every width, where a 55px letter floated beside a narrow measure leaves
+ *      one or two words per line beside it;
+ *   2. `settings.typography.dropCap` is false theme-wide, so core's own drop
+ *      cap is not available to lean on.
+ *
+ * `::first-letter`, not `:first-letter`: the single-colon form is the CSS 2.1
+ * spelling, kept alive only for back-compatibility, and only the double-colon
+ * form is a pseudo-element in Selectors 4. Live uses the old one.
+ *
+ * `initial-letter` would express the whole of this in two values and is
+ * unusable here: Firefox has never shipped it, so it would silently fall back
+ * to no cap at all in a browser that renders every other part of the page.
+ *
+ * **One cap per standfirst, not one per paragraph.** A standfirst can run to
+ * more than one paragraph — Social Responsibility's does, and live sets both
+ * in the intro's italic at 18px while capping only the first. So the rule
+ * skips an intro paragraph that directly follows another, and an editor gives
+ * every paragraph of the standfirst the same style without a second cap
+ * appearing. The complex selector inside `:not()` is Selectors 4 and ships in
+ * every engine this site supports.
+ */
+@media (min-width: 900px) {
+	.is-style-archive-intro:not(.is-style-archive-intro + .is-style-archive-intro)::first-letter {
+		float: left;
+		margin-block-start: 0.09em;
+		margin-block-end: -0.2em;
+		margin-inline-end: 0.3rem;
+		color: var(--wp--preset--color--brand-500);
+		font-family: var(--wp--preset--font-family--heading);
+		font-size: 3.2em;
+		font-style: normal;
+		line-height: 1;
+	}
+}
+
+
+/* The Trustpilot review extract, clamped to three lines
+   ===========================================================================
+   Live cuts the body to ten words in PHP (`wp_trim_words( $review->text, 10 )`,
+   sd-lsx-child/includes/shortcodes.php:22) and appends an ellipsis. Three
+   reviews of very different lengths then still produce three cards of very
+   different heights, because ten words is not a number of lines.
+
+   Clamping instead cuts at the rendered measure, so the three cards in the row
+   agree at every width, and the full review stays in the markup for anyone
+   reading it with CSS off. `sd/trustpilot-review` hands over the whole body —
+   the plugin stores it whole — so nothing upstream needs to know this happens.
+
+   ⚠️ Not in a block-style `css` field and not in the pattern: the declaration
+   needs `display: -webkit-box`, which overrides the paragraph's own display, and
+   `-webkit-box-orient` is dropped by the `css` field's sanitiser along with the
+   rest of the vendor-prefixed property set.
+
+   `-webkit-line-clamp` first and `line-clamp` after it: the standard property is
+   still the newer of the two and the prefixed one is what every current engine
+   actually reads, so the unprefixed line is the forward declaration rather than
+   the working one. Both need the `-webkit-box` display to take effect. */
+.sd-trustpilot-review__text {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+}
+
+/*
+ * `is-style-back-link` — the left arrow on the "Back To Blog" link that opens
+ * the blog archives. → styles/blocks/paragraph/back-link.json
+ *
+ * Here rather than in the style's `css` field because the rule needs
+ * `content: ""`, and a `css` field mangles that declaration and drops the rule
+ * containing it. → AGENTS.md, "Styling lives in JSON"
+ *
+ * A long arrow, not a chevron, since 2026-09-24: live's `a.back-to-blog:before`
+ * is FontAwesome's `\f177` (fa-long-arrow-left, lsx/assets/css/scss/templates/
+ * _archive.scss:54-66), measured computing on `/category/rwanda/`. The path is
+ * Phosphor `ArrowLeft` at its regular weight — the same icon family as the
+ * slider frame's `CaretLeft` (assets/styles/core-group.css), with the thin
+ * shaft FontAwesome's arrow has.
+ *
+ * A mask painted with `currentColor` rather than a `background-image`: the
+ * anchor's colour is a token set on the block and its `:hover` colour comes
+ * from the page-section style, and a mask follows both without either being
+ * restated here.
+ *
+ * The anchor's own layout — `inline-flex`, the alignment and the gap — is in
+ * the variation's `css` field, where the editor reads it too. Only this rule is
+ * here, and only because of `content`. `inline-flex` sits on the anchor rather
+ * than the paragraph deliberately: the paragraph is the `alignwide` rail, and
+ * making it a flex container would take the wide alignment off the text.
+ *
+ * `0.9em`, so the arrow tracks the link's font size rather than pinning a
+ * pixel value; a long arrow needs the extra width to read as one at 15px.
+ */
+.is-style-back-link a::before {
+	content: "";
+	flex: none;
+	inline-size: 0.9em;
+	block-size: 0.9em;
+	background-color: currentColor;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z'/%3E%3C/svg%3E");
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}

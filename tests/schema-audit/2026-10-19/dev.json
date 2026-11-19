@@ -1,0 +1,1100 @@
+{
+  "vocabulary": {
+    "version": "30.1"
+  },
+  "pages": [
+    {
+      "kind": "home",
+      "label": "Home page",
+      "url": "https://southerndestinations.lightspeedwp.dev/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "Article": 1,
+        "BlogPosting": 1,
+        "WebPage": 1,
+        "CollectionPage": 1,
+        "ImageObject": 3,
+        "BreadcrumbList": 1,
+        "ListItem": 1,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Person": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "single",
+      "label": "Posts",
+      "url": "https://southerndestinations.lightspeedwp.dev/camille-experiences-the-magic-of-bush-and-beach-at-serondella-thornybush-and-santorini-mozambique/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/camille-experiences-the-magic-of-bush-and-beach-at-serondella-thornybush-and-santorini-mozambique/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "Article": 1,
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 3,
+        "BreadcrumbList": 1,
+        "ListItem": 4,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Person": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "single",
+      "label": "Reviews",
+      "url": "https://southerndestinations.lightspeedwp.dev/review/lion-sands-was-truly-a-little-slice-of-heaven/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/review/lion-sands-was-truly-a-little-slice-of-heaven/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Review": 1,
+        "Person": 1,
+        "TouristTrip": 1,
+        "LodgingBusiness": 1,
+        "TouristDestination": 4
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "rich-result-required",
+          "path": "block0.@graph[5]<Review>",
+          "detail": "Review needs 'reviewRating' for a Google rich result."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.itemReviewed[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.itemReviewed[2]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.itemReviewed[3]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.spatialCoverage[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<Review>.spatialCoverage[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "archive",
+      "label": "Reviews archive",
+      "url": "https://southerndestinations.lightspeedwp.dev/?post_type=review",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/?post_type=review",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "single",
+      "label": "Accommodation",
+      "url": "https://southerndestinations.lightspeedwp.dev/accommodation/bagatelle/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/accommodation/bagatelle/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 4,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "LodgingBusiness": 1,
+        "TouristDestination": 2
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "rich-result-required",
+          "path": "block0.@graph[5]<LodgingBusiness>",
+          "detail": "LocalBusiness needs 'address' for a Google rich result."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<LodgingBusiness>.containedInPlace[0]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<LodgingBusiness>.containedInPlace[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[5]<LodgingBusiness>",
+          "detail": "LocalBusiness should have 'geo'."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[5]<LodgingBusiness>",
+          "detail": "LocalBusiness should have 'telephone'."
+        }
+      ]
+    },
+    {
+      "kind": "archive",
+      "label": "Accommodation archive",
+      "url": "https://southerndestinations.lightspeedwp.dev/?post_type=accommodation",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/?post_type=accommodation",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "single",
+      "label": "Destinations",
+      "url": "https://southerndestinations.lightspeedwp.dev/destination/rwanda/kigali/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/destination/rwanda/kigali/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 5,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "TouristDestination": 2,
+        "GeoCoordinates": 1
+      },
+      "findings": [
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristDestination>.containedInPlace<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "archive",
+      "label": "Destinations archive",
+      "url": "https://southerndestinations.lightspeedwp.dev/?post_type=destination",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/?post_type=destination",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "single",
+      "label": "Tours",
+      "url": "https://southerndestinations.lightspeedwp.dev/tour/south-africa-mozambique/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/tour/south-africa-mozambique/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 5,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "TouristTrip": 12,
+        "Place": 1,
+        "LodgingBusiness": 10,
+        "TouristDestination": 10
+      },
+      "findings": [
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[2]<BreadcrumbList>.itemListElement[4]<ListItem>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[5]<TouristTrip>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>",
+          "detail": "'subTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[0]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[0]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[0]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[1]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[1]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[1]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[2]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[2]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[2]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[3]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[3]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[3]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[4]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[4]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[4]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[5]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[5]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[5]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[6]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[6]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[6]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[7]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[7]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[7]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[8]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[8]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[8]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[9]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-property",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[9]<TouristTrip>",
+          "detail": "'itinerary' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[9]<TouristTrip>.itinerary[1]<TouristDestination>",
+          "detail": "'TouristDestination' is still in schema.org's pending section."
+        },
+        {
+          "severity": "info",
+          "check": "pending-type",
+          "path": "block0.@graph[5]<TouristTrip>.subTrip[10]<TouristTrip>",
+          "detail": "'TouristTrip' is still in schema.org's pending section."
+        }
+      ]
+    },
+    {
+      "kind": "archive",
+      "label": "Tours archive",
+      "url": "https://southerndestinations.lightspeedwp.dev/?post_type=tour",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/?post_type=tour",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "single",
+      "label": "Specials",
+      "url": "https://southerndestinations.lightspeedwp.dev/special/thornybush-2026-specials/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/specials/",
+      "status": 200,
+      "redirects": [
+        {
+          "status": 301,
+          "from": "https://southerndestinations.lightspeedwp.dev/special/thornybush-2026-specials/",
+          "to": "https://southerndestinations.lightspeedwp.dev/specials/"
+        }
+      ],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": [
+        {
+          "severity": "warn",
+          "check": "redirected",
+          "path": "https://southerndestinations.lightspeedwp.dev/special/thornybush-2026-specials/",
+          "detail": "Redirects to https://southerndestinations.lightspeedwp.dev/specials/; its structured data is what crawlers see."
+        }
+      ]
+    },
+    {
+      "kind": "archive",
+      "label": "Specials archive",
+      "url": "https://southerndestinations.lightspeedwp.dev/?post_type=special",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/?post_type=special",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "single",
+      "label": "Team",
+      "url": "https://southerndestinations.lightspeedwp.dev/team/jeannot-blum/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/team/jeannot-blum/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "WebPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Person": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "archive",
+      "label": "Team archive",
+      "url": "https://southerndestinations.lightspeedwp.dev/?post_type=team",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/?post_type=team",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "term",
+      "label": "Categories",
+      "url": "https://southerndestinations.lightspeedwp.dev/category/news/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/category/news/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "term",
+      "label": "Tags",
+      "url": "https://southerndestinations.lightspeedwp.dev/tag/air-conditioning/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/tag/air-conditioning/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "term",
+      "label": "Brands",
+      "url": "https://southerndestinations.lightspeedwp.dev/brand/wilderness-safaris/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/brand/wilderness-safaris/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 4,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "term",
+      "label": "Accommodation Types",
+      "url": "https://southerndestinations.lightspeedwp.dev/accommodation-type/safari-lodges/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/accommodation-type/safari-lodges/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "term",
+      "label": "Continents",
+      "url": "https://southerndestinations.lightspeedwp.dev/continent/eastern-africa/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/continent/eastern-africa/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "term",
+      "label": "Facilities",
+      "url": "https://southerndestinations.lightspeedwp.dev/facility/available-services/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/facility/available-services/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "term",
+      "label": "Travel Styles",
+      "url": "https://southerndestinations.lightspeedwp.dev/travel-style/safari-honeymoons/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/travel-style/safari-honeymoons/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "ImageObject": 2,
+        "BreadcrumbList": 1,
+        "ListItem": 3,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1
+      },
+      "findings": []
+    },
+    {
+      "kind": "page",
+      "label": "blog",
+      "url": "https://southerndestinations.lightspeedwp.dev/blog/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/blog/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "Article": 1,
+        "BlogPosting": 1,
+        "WebPage": 1,
+        "CollectionPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 2,
+        "Person": 1
+      },
+      "findings": [
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[5]<Person>.description",
+          "detail": "'description' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[0]<Article/BlogPosting>",
+          "detail": "Article should have 'image'."
+        }
+      ]
+    },
+    {
+      "kind": "page",
+      "label": "privacy-policy",
+      "url": "https://southerndestinations.lightspeedwp.dev/privacy-policy/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/privacy-policy/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "Article": 1,
+        "BlogPosting": 1,
+        "WebPage": 1,
+        "CollectionPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 2,
+        "Person": 1
+      },
+      "findings": [
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[0]<Article/BlogPosting>",
+          "detail": "Article should have 'image'."
+        }
+      ]
+    },
+    {
+      "kind": "page",
+      "label": "terms-conditions",
+      "url": "https://southerndestinations.lightspeedwp.dev/terms-conditions/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/terms-conditions/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "Article": 1,
+        "BlogPosting": 1,
+        "WebPage": 1,
+        "CollectionPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 2,
+        "Person": 1
+      },
+      "findings": [
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[0]<Article/BlogPosting>.headline",
+          "detail": "'headline' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[2]<BreadcrumbList>.itemListElement[1]<ListItem>.name",
+          "detail": "'name' contains an HTML entity (for example &#8211;) instead of the character."
+        },
+        {
+          "severity": "info",
+          "check": "rich-result-recommended",
+          "path": "block0.@graph[0]<Article/BlogPosting>",
+          "detail": "Article should have 'image'."
+        }
+      ]
+    },
+    {
+      "kind": "page",
+      "label": "contact",
+      "url": "https://southerndestinations.lightspeedwp.dev/contact/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/contact/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "Article": 1,
+        "BlogPosting": 1,
+        "WebPage": 1,
+        "CollectionPage": 1,
+        "ImageObject": 3,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Person": 1
+      },
+      "findings": [
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[6]<Person>.description",
+          "detail": "'description' contains an HTML entity (for example &#8211;) instead of the character."
+        }
+      ]
+    },
+    {
+      "kind": "page",
+      "label": "about-us",
+      "url": "https://southerndestinations.lightspeedwp.dev/about-us/",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/about-us/",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "Article": 1,
+        "BlogPosting": 1,
+        "WebPage": 1,
+        "AboutPage": 1,
+        "ReadAction": 1,
+        "ImageObject": 3,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "Person": 1
+      },
+      "findings": [
+        {
+          "severity": "info",
+          "check": "html-entity",
+          "path": "block0.@graph[6]<Person>.description",
+          "detail": "'description' contains an HTML entity (for example &#8211;) instead of the character."
+        }
+      ]
+    },
+    {
+      "kind": "search",
+      "label": "Search results",
+      "url": "https://southerndestinations.lightspeedwp.dev/?s=a",
+      "finalUrl": "https://southerndestinations.lightspeedwp.dev/?s=a",
+      "status": 200,
+      "redirects": [],
+      "generators": [
+        "Yoast SEO"
+      ],
+      "yoastActive": true,
+      "blocks": 1,
+      "types": {
+        "CollectionPage": 1,
+        "SearchResultsPage": 1,
+        "BreadcrumbList": 1,
+        "ListItem": 2,
+        "WebSite": 1,
+        "SearchAction": 1,
+        "EntryPoint": 1,
+        "Organization": 1,
+        "ImageObject": 1
+      },
+      "findings": []
+    }
+  ],
+  "totals": {
+    "error": 0,
+    "warn": 3,
+    "info": 54
+  },
+  "notes": [],
+  "site": "https://southerndestinations.lightspeedwp.dev",
+  "skipped": [
+    {
+      "kind": "single",
+      "label": "Popups",
+      "url": "",
+      "reason": "no published items"
+    },
+    {
+      "kind": "single",
+      "label": "Popup Themes",
+      "url": "https://southerndestinations.lightspeedwp.dev/?post_type=popup_theme&p=62952",
+      "reason": "HTTP 404"
+    },
+    {
+      "kind": "single",
+      "label": "Calls to Action",
+      "url": "",
+      "reason": "no published items"
+    },
+    {
+      "kind": "single",
+      "label": "Presets",
+      "url": "",
+      "reason": "no published items"
+    },
+    {
+      "kind": "author",
+      "label": "Author archive",
+      "url": "",
+      "reason": "users endpoint not public"
+    }
+  ]
+}

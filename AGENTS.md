@@ -2,7 +2,8 @@
 
 > Orchestration guide for AI agents and developers working in this theme. **Read this first.**
 > Companions in this repo: [DESIGN.md](DESIGN.md) (tokens and the design pipeline),
-> [CONTRIBUTING.md](CONTRIBUTING.md) (workflow, git, quality bar).
+> [CONTRIBUTING.md](CONTRIBUTING.md) (workflow, git, quality bar),
+> [PATTERNS.md](PATTERNS.md) (the pattern library, for editors).
 >
 > This repo is a **portable copy** of the project's operating guidance so the theme can be
 > worked on standalone. The workspace originals live one level up at
@@ -20,7 +21,7 @@ tour operator. This directory is its own git repository
 work here, not in the workspace root.
 
 | | |
-|---|---|
+| --- | --- |
 | **Live site** | https://www.southerndestinations.com/ — **the design source of truth** |
 | **Dev site** | https://southerndestinations.lightspeedwp.dev/ |
 | **Local site** | http://localhost:8903 (WordPress Studio, WP 7.0.x, PHP 8.3, SQLite) |
@@ -108,7 +109,7 @@ sd-theme-2026/
 ├── inc/                  # Design-only modules (third-party markup styling). Usually empty.
 ├── templates/            # Core WP templates + Tour Operator archives/singles/taxonomies.
 ├── parts/                # header, footer, sidebar, mega-menu, dropdown-menu, mobile-menu,
-│                         #   single-hero.
+│                         #   modals, FAQ.
 ├── patterns/             # Block patterns (.php). Slugs namespaced `sd-theme-2026/*`.
 ├── styles/               # Block & section style variations. Scanned recursively.
 │   ├── blocks/<block>/   #   Variations scoped to one block type.
@@ -146,13 +147,39 @@ sd-theme-2026/
   `var:custom|line-height|…`.
 - **No** raw `#hex` / `rgb()` / font-family / raw font-weight literals. In raw `css` strings
   use `var(--wp--preset--…)` / `var(--wp--custom--…)`.
+- ⚠️ **On a *dynamic* block, `var:custom|…` is silently dropped — write
+  `var(--wp--custom--…)` instead.** A static block's `style` object is resolved by the editor
+  at save time, so the shorthand becomes an inline style in the saved markup. A dynamic block
+  (`core/post-title`, `core/term-name`, `core/query-title`, `core/post-excerpt`,
+  `core/post-terms`, `core/post-author-name`, `core/navigation`) has no saved markup: the
+  server-side style engine resolves it, and that only expands `var:preset|…`, and only for
+  properties declaring `css_vars` — `fontWeight`, `lineHeight`, `fontStyle`, `textTransform`
+  and `letterSpacing` declare none
+  (`wp-includes/style-engine/class-wp-style-engine.php:292-370`). Measured on local
+  2026-08-28: `wp_style_engine_get_styles()` given `fontWeight: var:custom|font-weight|semi-bold`,
+  `lineHeight: var:custom|line-height|heading` and `fontSize: var:preset|font-size|500`
+  returns **only** `font-size:var(--wp--preset--font-size--500);`. No notice, no fallback —
+  the declaration is simply absent and the block inherits. `var:preset|color|…` and
+  `var:preset|font-size|…` are safe on dynamic blocks; those two do declare `css_vars`.
+  The `var(--wp--custom--…)` form is still a token reference, so the rule above holds.
+  → `patterns/safari-expert.php` (and the note in
+  `patterns/card-media-overlay-term.php`, which no longer needs the workaround
+  itself — its label weight moved to the card section style)
 - Semantic HTML `tagName`s; correct heading hierarchy; keep templates/parts lean (no inline
   styles).
 - **Every template must have exactly one `<main>` landmark.** The sibling ATI theme shipped
   without one on its Tour Operator templates and had to retrofit it — don't repeat that.
-- **Never hardcode a `ref` ID on a `wp:navigation` block**, an uploads URL on an image, or a
-  Gravity Forms `formId` with inline colours. Those are per-install values; they were the
-  single largest source of breakage inherited from the KWV base.
+- **Never hardcode a `ref` ID on a `wp:navigation` block** or a Gravity Forms `formId` with
+  inline colours. Those are per-install values that no deploy step can fix; they were the
+  single largest source of breakage inherited from the KWV base. **A synced pattern
+  (`<!-- wp:block {"ref":…} /-->`) is the same** — make it a theme pattern and reference
+  it by slug (`patterns/card-mega-menu.php` replaced `wp_block` 65890 this way).
+  **Attachment IDs are the same too** — `"id":52466` and `wp-image-52466` survive only
+  because dev is deployed to live wholesale.
+- **Uploads URLs are the exception to that**, and they are written out literally as core
+  writes asset URLs. The go-live deployment runs a find-and-replace over the dev host by
+  convention, so a `$sd_uploads`-style variable buys nothing — it was still a hardcoded dev
+  host, one indirection away.
 
 ### Styling lives in JSON (block & section styles)
 
@@ -179,10 +206,115 @@ What goes where:
 When you must put something in a `.css` file, add a comment saying which limit forced it, and
 link back to this rule. The `wp-blockstyle-css-field` skill has the full matrix.
 
+> ⚠️ **`blockGap` is the exception: it never goes in a variation JSON.** Put it on the block
+> markup — `"style":{"spacing":{"blockGap":"var:preset|spacing|40"}}` in the pattern, part or
+> template. Measured on WP 7.1, 2026-08-27:
+>
+> - **`styles.spacing.blockGap` on the variation's own wrapper is emitted nowhere** — not in
+>   the editor and not on the front end. Core's variation stylesheet generator skips it, and
+>   the element gets no `wp-container-*` class, so the declaration is inert. Eighteen of this
+>   theme's nineteen variations carried one; all eighteen were dead.
+> - **`styles.blocks.<block>.spacing.blockGap` (a nested block) is emitted on the front end
+>   only.** The front end writes the full layout set — `…-is-layout-flex{gap}`,
+>   `…-is-layout-flow > *{margin-block-start}`, `> :first-child`, `> :last-child`,
+>   `…-is-layout-grid{gap}`. The editor writes **none of it** (`grep -c 'is-layout-'` over the
+>   editor's variation CSS returns 0), so the canvas silently falls back to theme.json's
+>   `:root :where(.is-layout-flex){gap:var(--wp--preset--spacing--60)}`. That is what made
+>   editor spacing disagree with the front end.
+>
+> Two related asymmetries to know about, both inherent to core and neither worth working
+> around: the variation selector is `.is-style-X--N` (0,2,0) on the front end but
+> `.wp-block-group.is-style-X-‹uuid›` (0,3,0) in the editor, and `style.css` sits *after*
+> global styles on the front end but *before* them in the editor. Don't write authored CSS
+> that depends on either winning.
+
+> ⚠️ **`spacing.margin` belongs to page-section styles only — top and bottom, and only
+> where it is genuinely necessary.** Never declare a margin on a block that sits inside a
+> parent carrying a `blockGap`. Core's layout contract is *the parent owns the spacing and
+> its children have zero margins*; a child margin is fighting that contract, and it wins in
+> the editor while losing on the front end. Measured on dev, WP 7.1, 2026-08-27:
+>
+> - An explicit `blockGap` compiles to `.wp-container-‹hash› > * { margin-block: 0 }` in
+>   **`core-block-supports-inline-css`**, and a variation's margin compiles to
+>   `:root :where(.wp-block-heading.is-style-X--N)`. Both sit at **(0,1,0)** — `:root`
+>   contributes (0,1,0), `:where()` contributes nothing — so **source order alone decides
+>   the winner, and WordPress inverts it between the two environments**:
+>
+>   | | Container rule | Variation rule | Winner | Child `margin-bottom` |
+>   | --- | --- | --- | --- | --- |
+>   | Front end | **55** | 50 | container | `0px` |
+>   | Editor | 125 | **142** | variation | `16.814px` |
+>
+> - So the child's margin **survives in the editor and collapses** with the next sibling's
+>   `margin-block-start`. The visible gap becomes `max(gap, childMargin)` instead of `gap`:
+>   every gap at or below the child's margin renders identically, and the control appears
+>   dead. With `margin-bottom: spacing|20` on a heading, `None`/`XXS`/`XS`/`S` all render at
+>   16.8px in the canvas and only `M` upwards begins to move — while the front end is exact.
+>   Where the parent's gap is *smaller* than the child's margin (e.g. `spacing|10` in
+>   `parts/mega-menu-tours.html`) the gap is swallowed whole and the control does nothing at
+>   all.
+> - The margin is **already inert on the front end** wherever the parent sets a `blockGap` —
+>   `core-block-supports` zeroes it. So these declarations buy nothing on the front end and
+>   cost correctness in the editor.
+> - `margin: 0` is the same hazard pointing the other way: it *kills* a parent's gap in the
+>   editor rather than flooring it. The theme's six `top: 0` section styles only escape
+>   because every parent that holds them sets `blockGap: 0`, so both environments agree.
+>   Give any of those parents a real gap and it will die in the canvas.
+>
+> **The rule:** express spacing as `blockGap` on the parent. Reach for `spacing.margin` only
+> on a page-section style, only `top`/`bottom`, and only where no parent gap can express it —
+> and say in the style's `description` why.
+
+> ⚠️ **Structure belongs in markup, not in a `css` field.** A section style's `css` field is
+> for what blocks genuinely cannot express — absolute overlays, `::before`/`::after` content,
+> `overflow`, `!important` overrides of core block CSS. It is **not** the place for layout.
+> If you find yourself writing a hand-rolled `__`-suffixed class in a pattern so a `css` rule
+> can target it, the rule almost certainly has a block attribute. Measured 2026-08-27:
+>
+> - **Image crops are `aspectRatio`, never CSS.** `core/post-featured-image` and `core/image`
+>   serialise `aspectRatio`, `height` and `scale` as *inline* styles on the `<img>`
+>   (`wp-includes/blocks/post-featured-image.php:46-65`). A `css`-field `height` compiles to
+>   `:root :where(…)` at (0,1,0) and **loses** to the block library's
+>   `.wp-block-image img{height:auto;width:auto}` at (0,2,0) — which is why this theme once
+>   carried ~100 lines of (0,3,0) selectors to win a fight it never needed to have.
+> - **A fixed-ratio row is `core/columns`.** `core/column`'s `width` attribute compiles to
+>   `flex-basis`, so column percentages are markup. Core stacks columns below 782px by
+>   itself — don't hand-write the media query.
+> - **`core/group` has no `typography.textAlign` support.** Set alignment on each child
+>   block; the post-`*` blocks all support it. Padding, gap, colour, font size, font style,
+>   line height and borders are all block attributes.
+> - **`@media` is silently unwrapped in a `css` field** — the query is dropped and its rules
+>   are promoted to unconditional ones. A rule containing `content:` is dropped whole.
+>   Responsive and pseudo-element rules therefore live in `assets/styles/`, keyed off core's
+>   own classes (`.wp-block-read-more`, `.wp-block-post-terms.taxonomy-post_tag`), never off
+>   a hand-written helper class.
+
 ### PHP (`functions.php`, `inc/`, `patterns/*.php`)
 
 - Escape **all** output (`esc_html`, `esc_attr`, `esc_url`, `wp_kses_post`) and include the
   text domain `sd-theme-2026` in every translation call.
+- **Patterns follow core's form exactly.** Twenty Twenty-Four and Twenty Twenty-Five were
+  measured for this (155 pattern files); match them, not a house style:
+  - Wrap every literal copy string, inline at the point of use — `esc_html_e()`,
+    `esc_attr_e()`, and `esc_html_x()` / `esc_attr_x()` when the string is short or its role
+    is not obvious to a translator. Core uses the `_x` forms heavily; in TT4 they outnumber
+    plain `esc_html_e()` 110 to 31.
+  - **Never `echo esc_html__()`.** Core does this zero times; the `_e` form is the whole
+    reason it exists.
+  - **No top-level variables holding literals** — copy, URLs, SVGs, config strings. Core's
+    patterns declare none. Write the value where it is used.
+  - **No loops and no computed markup.** Core's patterns contain not one `foreach`. Write the
+    repetitions out; a pattern is block markup that happens to live in a `.php` file. If the
+    markup genuinely must be built per request, it is not a pattern — it is a Query Loop, a
+    block binding, or plugin work.
+  - **No `phpcs:ignore`.** An escaping suppression means the value should have been a literal
+    in the markup instead. Inline SVGs are written out, not echoed from a variable, even when
+    that means repeating them — add a ⚠️ comment when copies must stay in step.
+  - A **guarded** runtime lookup with a fallback is the one thing that may hold a variable,
+    because it needs a conditional: `get_post_type_archive_link()`, `get_option()`. An
+    *unguarded* single call is inlined like core inlines `get_template_directory_uri()`.
+  - Include `@package sd-theme-2026` in the header docblock, then exactly one blank line.
+  - `phpcs --standard=WordPress patterns/` must be silent.
 - Keep `functions.php`/`inc/` minimal — no plugin-like features in the theme.
 - Block styles are registered in `functions.php`; per-block CSS in
   `assets/styles/core-<block>.css` is auto-enqueued only when the block is used — **don't
@@ -210,7 +342,7 @@ Ported into `.claude/` so this repo works standalone. In the full workspace thes
 **Skills** (`.claude/skills/`):
 
 | Skill | Use it for |
-|---|---|
+| --- | --- |
 | `themejson-extractor-orchestrator` | Sequences the whole token extraction, in dependency order |
 | `figma-themejson-{palette,spacing,typography,radius,shadow,style-variations}` | Individual token extractors |
 | `theme-orphaned-refs` | After **any** token change → target 0 orphans |

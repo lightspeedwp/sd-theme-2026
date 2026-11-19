@@ -30,7 +30,7 @@ There is **no WooCommerce** on this site.
 ## Requirements
 
 | | |
-|---|---|
+| --- | --- |
 | WordPress | 6.9+ |
 | PHP | 7.4+ |
 | Post types | `accommodation`, `destination`, `tour` — from the **LSX Tour Operator** plugin |
@@ -48,7 +48,7 @@ style.css       Theme header + CSS reset/base.
 functions.php   Setup, block styles, pattern categories. Namespace SdTheme2026.
 inc/            Design-only modules. Usually empty — see inc/README.md.
 templates/      Core WP templates + Tour Operator archives, singles and taxonomies.
-parts/          header · footer · sidebar · mega-menu · dropdown-menu · mobile-menu · single-hero
+parts/          header · footer · sidebar · mega-menu · dropdown-menu · mobile-menu · modals · FAQ
 patterns/       Block patterns (.php), slugs namespaced sd-theme-2026/*
 styles/         Block & section style variations (scanned recursively)
   blocks/<block>/   Variations scoped to one block type
@@ -104,10 +104,11 @@ discovered at startup, so start a fresh session after pulling changes to them.
 ## Documentation
 
 | File | What's in it |
-|---|---|
+| --- | --- |
 | [AGENTS.md](AGENTS.md) | Orchestration guide — boundary, scope, conventions, environment |
 | [DESIGN.md](DESIGN.md) | Design sources, token state, the extractor pipeline, pattern library |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Workflow, git, quality bar |
+| [PATTERNS.md](PATTERNS.md) | The pattern library, written for editors |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 | [inc/README.md](inc/README.md) | What may and may not live in `inc/` |
 

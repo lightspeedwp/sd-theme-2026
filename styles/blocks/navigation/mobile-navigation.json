@@ -6,9 +6,6 @@
 	"blockTypes": [ "core/navigation" ],
 	"description": "Vertical stacked nav for the dedicated mobile-menu template part. Full-width rows with a hairline divider between items, contrast-coloured links turning brand-500 on press. The borderless hamburger trigger and its 28px icon live in assets/styles/core-navigation.css — the css field cannot express them because they target core's generated .wp-block-navigation__responsive-container-open wrapper at a specificity the :where()-wrapped css field cannot reach.",
 	"styles": {
-		"spacing": {
-			"blockGap": "0"
-		},
 		"elements": {
 			"link": {
 				"color": {

@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Legal Clauses",
+	"slug": "legal-clauses",
+	"blockTypes": [ "core/group" ],
+	"description": "Hierarchically numbered clauses for the Terms & Conditions contract — live's `.terms-conditions ol` rules, measured 2026-11-13. Live scopes them on a body class set from the page slug, which a block theme has no equivalent of, so the scope is this style on a group wrapped around the contract's lists. Every `ol` inside restarts the shared `item` counter and every `li` becomes a block that carries its own number, so nesting reads `1.`, `1.1.`, `1.1.12.` and the text's cross-references (`clause 1.2.3`) can be found. Live's margins are kept as spacing tokens (15px and 10px are the nearest of the scale). The number itself is a `::before` with a `content:` value, which a `css` field drops, so it is in assets/styles/core-group.css.",
+	"styles": {
+		"css": "& ol { counter-reset: item 0; list-style: none; padding-inline-start: 0; } & ol li { display: block; margin-top: var(--wp--preset--spacing--30); } & ol li ol { margin-top: var(--wp--preset--spacing--20); } & ol li ol > li { margin-top: var(--wp--preset--spacing--20); }"
+	}
+}

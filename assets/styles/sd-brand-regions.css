@@ -1,0 +1,164 @@
+/**
+ * sd/brand-regions — the region tab strip on a brand archive.
+ *
+ * Enqueued by inc/brand-regions.php rather than by the `core-*` scan in
+ * functions.php: that scan maps `core-<block>.css` to `core/<block>` and only
+ * core blocks participate. Sheets for non-core blocks are enqueued by their own
+ * modules in `inc/`, which is what `facetwp-facets.css` and
+ * `ollie-mega-menu.css` already do.
+ *
+ * ## What the block renders
+ *
+ * `sd-enhancements-2026/blocks/brand-regions/render.php`, a `<nav>` with an
+ * accessible name around a plain list:
+ *
+ *   <nav class="wp-block-sd-brand-regions sd-brand-regions" aria-label="Regions">
+ *     <ul class="sd-brand-regions__list">
+ *       <li class="sd-brand-region botswana-tab is-current"><a aria-current="page">…</a></li>
+ *
+ * The per-region class (`botswana-tab`) is the child theme's, carried over so
+ * an existing per-region override keeps working; nothing here styles it.
+ *
+ * ⚠️ **These are links, not a `core/tabs` widget.** Each one is a distinct URL
+ * — `brand/{brand}/{region}/`, the rewrite `SD\Enhancements\BrandEndpoints`
+ * registers — so the strip is styled to *look* like a tab row while behaving
+ * like navigation. Do not add `role="tab"`, `aria-selected` or roving tabindex
+ * to it: the ARIA tabs pattern promises a panel that swaps in place without a
+ * navigation, and these do navigate. The active item is marked with
+ * `aria-current="page"`, which is the correct signal for a link.
+ *
+ * @package sd-theme-2026
+ */
+
+/*
+ * ## Rewritten against live, 2026-09-16 — Zared's call
+ *
+ * This was an underlined tab rail: a `neutral-300` bottom border with the
+ * active item overlapping it on a 3px marker. **That border is gone**, and so
+ * is the whole tab-rail idea. Live does not draw one, and with the strip moved
+ * into the results column (see `patterns/template-taxonomy-accommodation-brand.php`)
+ * a full-width line under it separated the strip from the cards it belongs to.
+ *
+ * Live is a tinted bar of flush segments with white hairlines between them, and
+ * the current segment inverted to a dark block with orange type. Measured from
+ * `.tax-lsx-to-accommodation-brand #brand-destination-tabs .brands-tabs .nav`
+ * in `sd-lsx-child/assets/css/partials/_single.scss` (compiled at
+ * `assets/css/custom.css:2846`):
+ *
+ *   | Live                        | Here                                  |
+ *   |-----------------------------|---------------------------------------|
+ *   | bar `#f0ebe5`               | `neutral-200` — the mapping decision 5 |
+ *   |                             | already made for the card meta strip   |
+ *   | item `#60483b`              | `neutral-700` (#5B4E41)                |
+ *   | `border-right: 1px white`   | `base`, `border-width|100`             |
+ *   | 14px, uppercase, 600        | font-size `200`, uppercase, semi-bold  |
+ *   | `margin: 5px 0`             | `spacing|5`                            |
+ *   | `padding: 5px 10px`         | `spacing|5` / `spacing|10`             |
+ *   | hover/active bar `#3E3530`  | `primary-600` (#403028 — nearest)      |
+ *   | hover/active type `#cc7f16` | `brand-500` (exact)                    |
+ *
+ * ⚠️ **The gap is zero and has to be.** The separation between items is the
+ * `border-inline-end` hairline, as it is on live. A `gap` would put the bar's
+ * own tint between the segments and the hairlines would read as stray ticks.
+ */
+.sd-brand-regions__list {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0;
+	padding: 0;
+	background-color: var(--wp--preset--color--neutral-200);
+	gap: 0;
+	list-style: none;
+}
+
+/*
+ * ⚠️ **The ground is on the `<li>`, not the `<a>`.** Live's `a` carries
+ * `margin: 5px 0`, so the link box is shorter than the bar, while the hover
+ * fill sits on the `li` and therefore paints the bar's full height. Keeping
+ * that split is what makes the current segment read as a block rather than as a
+ * floating chip, and it is why the state selectors below reach the `li`.
+ */
+.sd-brand-region {
+	margin: 0;
+	transition: background-color 0.25s ease;
+}
+
+.sd-brand-region a {
+	display: block;
+	margin-block: var(--wp--preset--spacing--5);
+	padding: var(--wp--preset--spacing--5) var(--wp--preset--spacing--10);
+	border-inline-end: var(--wp--custom--border-width--100) solid var(--wp--preset--color--base);
+	color: var(--wp--preset--color--neutral-700);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--200);
+	font-weight: var(--wp--custom--font-weight--semi-bold);
+	line-height: var(--wp--custom--line-height--body);
+	text-transform: uppercase;
+	text-decoration: none;
+	transition: color 0.25s ease;
+}
+
+/* The trailing hairline would be a tick hanging off the end of the bar. */
+.sd-brand-region:last-child a {
+	border-inline-end: 0;
+}
+
+/*
+ * The active segment, keyed off `aria-current` rather than off the `is-current`
+ * class the block also writes. Both are present; using the attribute keeps the
+ * visual state and the assistive state from being able to disagree — if one is
+ * ever dropped, the segment stops looking active instead of looking active
+ * while announcing nothing.
+ *
+ * `:has()` carries the hover and focus states up to the `li` for the reason
+ * above. It is already relied on elsewhere in this theme
+ * (`styles/sections/cards/listing-card-compact.json`), and it degrades the
+ * right way: without it the type still changes colour on the `a` rules below,
+ * so the state is never invisible — only unfilled.
+ */
+.sd-brand-region:hover,
+.sd-brand-region:has(a:focus-visible),
+.sd-brand-region:has(a[aria-current="page"]) {
+	background-color: var(--wp--preset--color--primary-600);
+}
+
+.sd-brand-region:hover a,
+.sd-brand-region a:focus-visible,
+.sd-brand-region a[aria-current="page"] {
+	border-inline-end-color: transparent;
+	color: var(--wp--preset--color--brand-500);
+}
+
+/*
+ * The hairline belongs to the segment *before* a filled one too — otherwise a
+ * white tick sits against the dark block's leading edge.
+ */
+.sd-brand-region:has(+ .sd-brand-region:hover) a,
+.sd-brand-region:has(+ .sd-brand-region:has(a:focus-visible)) a,
+.sd-brand-region:has(+ .sd-brand-region a[aria-current="page"]) a {
+	border-inline-end-color: transparent;
+}
+
+/*
+ * Focus has to stay visible against the filled ground, and `brand-500` type on
+ * `primary-600` is the same pair the active segment uses — so the ring is what
+ * separates focus from current. `accent-400` rather than `brand-500` for that
+ * reason, and inset so it is not clipped by the neighbouring segment.
+ */
+.sd-brand-region a:focus-visible {
+	outline: var(--wp--custom--border-width--200) solid var(--wp--preset--color--accent-400);
+	outline-offset: -4px;
+}
+
+/*
+ * Live's strip scrolls rather than wraps on a phone. It wraps here: the strip is
+ * three or four short place names, a horizontal scroller hides the ones past
+ * the edge with no affordance, and a wrapped second line costs one row.
+ *
+ * ⚠️ A wrapped row leaves one hairline hanging at the end of every line but the
+ * last — `:last-child` can only reach the final item, and CSS cannot see where
+ * a flex line breaks. It is a single 1px `base` tick against a `neutral-200`
+ * ground at the bar's trailing edge, and the only alternatives are a scroller
+ * (rejected above) or a fixed column count that would be wrong for a brand with
+ * two regions and a brand with six. Left as measured.
+ */

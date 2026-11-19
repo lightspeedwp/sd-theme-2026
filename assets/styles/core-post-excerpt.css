@@ -17,3 +17,24 @@ div[class*="is-style-excerpt-truncate-"] .wp-block-post-excerpt__excerpt {
 .is-style-excerpt-truncate-3 .wp-block-post-excerpt__excerpt {
 	-webkit-line-clamp: 3;
 }
+
+/* Make the block's own font-size control reach the text.
+
+   `core/post-excerpt` renders `<div {wrapper}><p class="…__excerpt">`, and a
+   `fontSize` attribute puts `.has-N-font-size` on the **wrapper** only. The
+   inner paragraph is then a bare `<p>`, which theme.json's `core/paragraph`
+   styles catch: the block's selector is `p`, so global styles emit
+   `:root :where(p){font-size:var(--wp--preset--font-size--300)}` at (0,1,0) —
+   enough to beat inheritance from the wrapper. Every excerpt in the theme was
+   therefore rendering at 300 whatever its block was set to. Measured on local
+   2026-09-17 via `wp_get_global_stylesheet()`.
+
+   `inherit` rather than a token, so the block stays the thing that decides.
+   `:root` prefix takes this to (0,2,0), which wins on specificity rather than
+   on load order — global styles and this lazily-enqueued block sheet are both
+   printed in `wp_head` and their order is not ours to rely on. Where no
+   ancestor sets a size the inherited value is `body`'s 300, which is what the
+   rule it displaces was giving anyway, so nothing else on the site moves. */
+:root .wp-block-post-excerpt__excerpt {
+	font-size: inherit;
+}
