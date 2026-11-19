@@ -73,6 +73,10 @@ const CONSOLE_ALLOWLIST = [
 	'ERR_BLOCKED_BY_CLIENT',
 	// Favicon 404s are not a theme defect worth failing a suite over.
 	'favicon.ico',
+	// YouTube's embed player probes the Compute Pressure API, which the
+	// iframe's permissions policy does not grant. Chromium logs it against the
+	// host page. Seen on Connect With Us since its videos went in (13 Nov).
+	'compute-pressure is not allowed',
 ];
 
 /**
